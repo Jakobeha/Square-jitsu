@@ -6,34 +6,32 @@
 import SpriteKit
 
 class Entity {
-    private(set) var position: CGPoint
-    private(set) var rotation: Angle
-    private(set) var radius: CGFloat
+    struct Components {
+        var locC: LocationComponent?
+        var dynC: MovingComponent?
+        var docC: DestroyOnCollideComponent?
+        var phyC: PhysicsComponent?
 
-    var nextPosition: CGPoint
-    var nextRotation: Angle
-    var nextRadius: CGFloat
-
-    var trajectoryNextFrame: Line {
-        Line(start: position, end: nextPosition)
+        func validate() {
+            assert(dynC == nil || (locC != nil))
+            assert(docC == nil || (locC != nil && dynC != nil))
+            assert(phyC == nil || (locC != nil && dynC != nil))
+        }
     }
+
+    private(set) var prev: Components
+    var next: Components
 
     weak var world: World? = nil
     var worldIndex: Int = -1
 
-    init(position: CGPoint, rotation: Angle = Angle.zero, radius: CGFloat = 0.5) {
-        self.position = position
-        self.rotation = rotation
-        self.radius = radius
-        nextPosition = position
-        nextRotation = rotation
-        nextRadius = radius
+    init(_ components: Components) {
+        prev = components
+        next = components
+        components.validate()
     }
 
-    func tickLocation() {
-        position = nextPosition
-        rotation = nextRotation
-        radius = nextRadius
-        world?.loadAround(pos: position)
+    func tick() {
+        prev = next
     }
 }

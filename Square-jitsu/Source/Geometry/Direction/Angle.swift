@@ -9,6 +9,22 @@ struct Angle: Equatable, Hashable, Codable {
     static let zero: Angle = Angle(radians: 0 as Float)
     static let right: Angle = Angle(radians: Float.pi)
 
+    static func +(lhs: Angle, rhs: Angle) -> Angle {
+        Angle(radians: lhs.radians + rhs.radians)
+    }
+
+    static func -(lhs: Angle, rhs: Angle) -> Angle {
+        Angle(radians: lhs.radians - rhs.radians)
+    }
+
+    static func *(lhs: Angle, scale: CGFloat) -> Angle {
+        Angle(radians: lhs.radians * Float(scale))
+    }
+
+    static func /(lhs: Angle, scale: CGFloat) -> Angle {
+        Angle(radians: lhs.radians / Float(scale))
+    }
+
     let radians: Float
 
     init(radians: CGFloat) {
@@ -25,6 +41,6 @@ struct Angle: Equatable, Hashable, Codable {
     }
 
     func round(by unit: Angle) -> Angle {
-        return Angle(round(radius / unit.radias) * unit.radians)
+        return Angle(round(radians / unit.radians) * unit.radians)
     }
 }

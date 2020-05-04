@@ -15,10 +15,10 @@ func TileMetadataForTileOf(type: TileBigType) -> TileMetadata? {
     case .air, .background, .solid, .ice:
         return nil
     case .shurikenSpawn:
-        <#code#>
+        return ShurikenMetadata()
     case .enemySpawn:
-        <#code#>
+        return EnemyMetadata()
     case .playerSpawn:
-        <#code#>
+        return PlayerMetadata()
     }
 }

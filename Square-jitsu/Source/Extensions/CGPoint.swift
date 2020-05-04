@@ -22,7 +22,7 @@ extension CGPoint {
         CGPoint(x: lhs.x / scale, y: lhs.y / scale)
     }
 
-    static func dot(lhs: CGPoint, rhs: CGPoint) -> CGFloat {
+    static func dot(_ lhs: CGPoint, _ rhs: CGPoint) -> CGFloat {
         (lhs.x * rhs.x) + (lhs.y * rhs.y)
     }
 
@@ -39,6 +39,6 @@ extension CGPoint {
     }
 
     var normalized: CGPoint {
-        return magnitude < CGFloat(Constants.epsilon) ? CGPoint.zero : self / magnitude
+        magnitude < CGFloat(Constants.epsilon) ? CGPoint.zero : self / magnitude
     }
 }

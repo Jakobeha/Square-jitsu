@@ -11,6 +11,10 @@ enum Side: Int {
     case west
     case south
 
+    var toSet: SideSet {
+        SideSet(rawValue: 1 << UInt8(rawValue))
+    }
+
     var offset: RelativePos {
         switch self {
         case .east:

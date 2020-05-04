@@ -6,14 +6,18 @@
 import Foundation
 
 struct SideSet: OptionSet {
-    static let east: CornerSet = CornerSet(rawValue: 1 << 0)
-    static let north: CornerSet = CornerSet(rawValue: 1 << 1)
-    static let west: CornerSet = CornerSet(rawValue: 1 << 2)
-    static let south: CornerSet = CornerSet(rawValue: 1 << 3)
+    static let east: SideSet = SideSet(rawValue: 1 << 0)
+    static let north: SideSet = SideSet(rawValue: 1 << 1)
+    static let west: SideSet = SideSet(rawValue: 1 << 2)
+    static let south: SideSet = SideSet(rawValue: 1 << 3)
 
     let rawValue: UInt8
 
-    var toSet: SideSet {
-        SideSet(rawValue: 1 << UInt8(rawValue))
+    var hasHorizontal: Bool {
+        contains(SideSet.east) || contains(SideSet.west)
+    }
+
+    var hasVertical: Bool {
+        contains(SideSet.north) || contains(SideSet.south)
     }
 }

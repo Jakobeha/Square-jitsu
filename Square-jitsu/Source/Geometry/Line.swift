@@ -53,21 +53,27 @@ struct Line {
         }
     }
 
-    func xAt(y: CGFloat) -> CGFloat {
+    func tAt(x: CGFloat) -> CGFloat {
+        assert(x >= bounds.minY && x <= bounds.maxY)
+        return (x - start.x) / (end.x - start.x)
+    }
+
+    func tAt(y: CGFloat) -> CGFloat {
         assert(y >= bounds.minY && y <= bounds.maxY)
-        let lerp = (y - start.y) / (end.y - start.y)
-        return lerp(t: lerp)
+        return (y - start.y) / (end.y - start.y)
     }
 
     func yAt(x: CGFloat) -> CGFloat {
-        assert(x >= bounds.minY && x <= bounds.maxY)
-        let lerp = (x - start.x) / (end.x - start.x)
-        return lerp(t: lerp)
+        lerp(t: tAt(x: x)).y
+    }
+
+    func xAt(y: CGFloat) -> CGFloat {
+        lerp(t: tAt(y: y)).x
     }
 
     /// Returns the point the given fraction along the path from start to end (e.g. t: 0 = start, t: 1 = end)
-    func lerp(t lerp: CGFloat) -> CGFloat {
-        CGFloat.lerp(start: start.x, end: end.x, t: lerp)
+    func lerp(t lerp: CGFloat) -> CGPoint {
+        CGPoint.lerp(start: start, end: end, t: lerp)
     }
 
     func getClosestFractionTo(point: CGPoint) -> CGFloat {

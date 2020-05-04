@@ -76,19 +76,9 @@ class World {
     }
 
     private func tickEntities() {
-        for entity in entities {
-            if let entity = entity as? DynamicEntity {
-                entity.tickVelocity()
-            }
-        }
-        for entity in entities {
-            if let entity = entity as? CollidingEntity {
-                entity.tickPhysics()
-            }
-        }
-        for entity in entities {
-            entity.tickLocation()
-        }
+        MovementSystem.tick(world: self)
+        CollisionSystem.tick(world: self)
+        LocationSystem.tick(world: self)
     }
     // endregion
 
