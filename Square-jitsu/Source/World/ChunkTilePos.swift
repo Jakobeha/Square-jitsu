@@ -13,6 +13,10 @@ struct ChunkTilePos: Equatable, Hashable {
     let x: Int
     let y: Int
 
+    var cgPoint: CGPoint {
+        CGPoint(x: CGFloat(x), y: CGFloat(y))
+    }
+
     init(x: Int, y: Int) {
         assert(x > 0 && x < Chunk.widthHeight && y > 0 && y < Chunk.widthHeight)
         self.x = x

@@ -16,10 +16,10 @@ class MovementSystem: System {
             }
         }
         if (entity.prev.dynC != nil) {
-            entity.next.dynC!.velocity.y -= entity.prev.dynC!.gravity * Time.fixedDeltaTime
+            entity.next.dynC!.velocity.y -= entity.prev.dynC!.gravity * entity.world!.settings.fixedDeltaTime
 
-            entity.next.locC!.position += entity.prev.dynC!.velocity * Time.fixedDeltaTime
-            entity.next.locC!.rotation += entity.prev.dynC!.angularVelocity * Time.fixedDeltaTime
+            entity.next.locC!.position += entity.prev.dynC!.velocity * entity.world!.settings.fixedDeltaTime
+            entity.next.locC!.rotation += entity.prev.dynC!.angularVelocity * entity.world!.settings.fixedDeltaTime
         }
     }
 }

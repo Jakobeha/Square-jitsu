@@ -7,7 +7,7 @@ import Foundation
 
 class LocationSystem: System {
     static func tick(entity: Entity) {
-        if (entity.prev.locC != nil && entity.world != nil) {
+        if (entity.prev.locC != nil) {
             entity.world!.loadAround(pos: entity.prev.locC!.position)
         }
     }

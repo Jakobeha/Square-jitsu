@@ -7,12 +7,23 @@ import SpriteKit
 
 class World {
     private let loader: WorldLoader
+    let settings: Settings
     private var chunks: [WorldChunkPos : Chunk] = [:]
 
     private(set) var entities: [Entity] = []
 
-    init(loader: WorldLoader) {
+    private let _willUnloadChunk: Publisher<(pos: WorldChunkPos, chunk: ChunkObservable)> = Publisher()
+    private let _willLoadChunk: Publisher<(pos: WorldChunkPos, chunk: ChunkObservable)> = Publisher()
+    private let _willAddEntity: Publisher<Entity> = Publisher()
+    private let _willRemoveEntity: Publisher<Entity> = Publisher()
+    var willUnloadChunk: Observable<(pos: WorldChunkPos, chunk: ChunkObservable)> { Observable(publisher: _willUnloadChunk) }
+    var willLoadChunk: Observable<(pos: WorldChunkPos, chunk: ChunkObservable)> { Observable(publisher: _willLoadChunk) }
+    var willAddEntity: Observable<Entity> { Observable(publisher: _willAddEntity) }
+    var willRemoveEntity: Observable<Entity> { Observable(publisher: _willRemoveEntity) }
+
+    init(loader: WorldLoader, settings: Settings) {
         self.loader = loader
+        self.settings = settings
     }
 
     // region loading
@@ -29,8 +40,17 @@ class World {
 
     func load(pos: WorldChunkPos) {
         if chunks[pos] != nil {
-            chunks[pos] = loader.loadChunk(pos: pos)
+            let chunk = loader.loadChunk(pos: pos)
+            _willLoadChunk.publish((pos: pos, chunk: chunk))
+            chunks[pos] = chunk
         }
+    }
+
+    func unload(pos: WorldChunkPos) {
+        assert(chunks[pos] != nil)
+        let chunk = chunks[pos]!
+        _willUnloadChunk.publish((pos: pos, chunk: chunk))
+        chunks[pos] = nil
     }
     // endregion
 
@@ -67,11 +87,13 @@ class World {
         assert(entity.world === nil, "entity is already added to a world")
         entity.world = self
         entity.worldIndex = entities.count
+        _willAddEntity.publish(entity)
         entities.append(entity)
     }
 
     private func removeNow(entity: Entity) {
         assert(entity.world === self, "entity isn't in this world")
+        _willRemoveEntity.publish(entity)
         entity.world = nil
     }
 

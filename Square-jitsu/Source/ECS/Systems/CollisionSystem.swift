@@ -7,18 +7,16 @@ import SpriteKit
 
 class CollisionSystem: System {
     static func tick(entity: Entity) {
-        if (entity.world != nil) {
-            if (handlesTileCollisions(entity: entity)) {
-                handleTileCollisions(entity: entity)
-            }
-            if (handlesEntityCollisions(entity: entity)) {
-                handleEntityCollisions(entity: entity)
-            }
+        if (handlesTileCollisions(entity: entity)) {
+            handleTileCollisions(entity: entity)
+        }
+        if (handlesEntityCollisions(entity: entity)) {
+            handleEntityCollisions(entity: entity)
         }
     }
 
     private static func handleTileCollisions(entity: Entity) {
-        assert(entity.world != nil && handlesTileCollisions(entity: entity))
+        assert(handlesTileCollisions(entity: entity))
         let trajectoryNextFrame = getTrajectoryNextFrame(entity: entity)
         for tilePosition in trajectoryNextFrame.capsuleCastTilePositions(capsuleRadius: entity.prev.locC!.radius) {
             let tiles = entity.world![tilePosition]
@@ -32,7 +30,7 @@ class CollisionSystem: System {
     }
 
     private static func handleEntityCollisions(entity: Entity) {
-        assert(entity.world != nil && handlesEntityCollisions(entity: entity))
+        assert(handlesEntityCollisions(entity: entity))
         let trajectoryNextFrame = getTrajectoryNextFrame(entity: entity)
         let entityCollisions = entity.world!.entities.compactMap { otherEntity in
             let radiusForIntersection = entity.prev.locC!.radius + otherEntity.prev.locC!.radius

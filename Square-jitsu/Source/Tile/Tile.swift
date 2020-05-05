@@ -9,8 +9,6 @@ struct Tile: Equatable {
     static let air: Tile = Tile(type: TileType.air, id: TileId.anonymous)
     static let basicSolid: Tile = Tile(type: TileType.basicSolid, id: TileId.anonymous)
 
-    static let widthHeight: CGFloat = 48
-
     let type: TileType
     let id: TileId
 }

@@ -5,18 +5,23 @@
 
 import Foundation
 
-class Chunk {
+class Chunk: ChunkObservable {
     static let widthHeight: Int = 64
     static let numLayers: Int = 2
 
-    private var tiles: [[[Tile]]] = [[[Tile]]](repeating: [[Tile]](repeating: [Tile](repeating: Tile.air, count: numLayers), count: widthHeight), count: widthHeight)
+    private var tiles: ChunkMatrix<Tile> = ChunkMatrix(Tile.air)
     private var tileMetadatas: [TileMetadata] = []
+
+    private let _willRemoveTile: Publisher<(pos: ChunkTilePos, layer: Int, tile: Tile)> = Publisher()
+    private let _willPlaceTile: Publisher<(pos: ChunkTilePos, layer: Int, tile: Tile)> = Publisher()
+    var willRemoveTile: Observable<(pos: ChunkTilePos, layer: Int, tile: Tile)> { Observable(publisher: _willRemoveTile) }
+    var willPlaceTile: Observable<(pos: ChunkTilePos, layer: Int, tile: Tile)> { Observable(publisher: _willPlaceTile) }
 
     init() {
     }
 
     subscript(_ pos: ChunkTilePos) -> [Tile] {
-        tiles[pos.x][pos.y]
+        tiles[pos]
     }
 
     /// Places the tile, removing any non-overlapping tiles
@@ -28,16 +33,20 @@ class Chunk {
 
     func removeTiles(pos: ChunkTilePos) {
         let tilesAtPos = self[pos]
+
+        for layer in 0..<Chunk.numLayers {
+            let tile = tilesAtPos[layer]
+            _willRemoveTile.publish((pos: pos, layer: layer, tile: tile))
+        }
+
         for tile in tilesAtPos {
             if (!tile.id.isAnonymous) {
                 tileMetadatas.remove(at: tile.id.index)
             }
         }
 
-        // Move later tiles down, so the last layers are the empty ones
-        for layer in 0..<Chunk.numLayers {
-            tiles[pos.x][pos.y][layer] = Tile.air
-        }
+
+        tiles.removeAll(at: pos)
     }
 
     private func removeNonOverlappingTiles(pos: ChunkTilePos, type: TileType) {
@@ -53,15 +62,14 @@ class Chunk {
     private func removeTile(pos: ChunkTilePos, layer: Int) {
         let tilesAtPos = self[pos]
         let tile = tilesAtPos[layer]
+
+        _willRemoveTile.publish((pos: pos, layer: layer, tile: tile))
+
         if (!tile.id.isAnonymous) {
             tileMetadatas.remove(at: tile.id.index)
         }
 
-        // Move later tiles down, so the last layers are the empty ones
-        for nextLayer in layer..<(Chunk.numLayers - 1) {
-            tiles[pos.x][pos.y][nextLayer] = tilesAtPos[nextLayer + 1]
-        }
-        tiles[pos.x][pos.y][Chunk.numLayers - 1] = Tile.air
+        tiles.remove(at: pos, layer: layer)
     }
 
     private func placeTile(pos: ChunkTilePos, type: TileType) {
@@ -79,11 +87,14 @@ class Chunk {
         }
 
         let tile = Tile(type: type, id: id)
-        tiles[pos.x][pos.y][layer] = tile
+
+        _willPlaceTile.publish((pos: pos, layer: layer, tile: tile))
+
+        tiles[pos][layer] = tile
     }
 
     private func getNextFreeLayerAt(pos: ChunkTilePos) -> Int? {
-        let tilesAtPos = tiles[pos.x][pos.y]
+        let tilesAtPos = tiles[pos]
         var guess = 0
         while (tilesAtPos[guess] != Tile.air) {
             guess += 1
