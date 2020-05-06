@@ -19,6 +19,11 @@ class Entity {
         }
     }
 
+    static func newForSpawnTile(type: TileType) -> Entity {
+        // TODO: Actually create entity according to tile type
+        Entity(Entity.Components(locC: nil, dynC: nil, docC: nil, phyC: nil))
+    }
+
     private(set) var prev: Components
     var next: Components
 

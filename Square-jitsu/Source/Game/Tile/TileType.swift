@@ -16,8 +16,4 @@ struct TileType: Equatable {
 
     let bigType: TileBigType
     let smallType: TileSmallType
-
-    static func typesCanOverlap(_ lhs: TileType, _ rhs: TileType) -> Bool {
-        fatalError("typesCanOverlap(_:_:) has not been implemented")
-    }
 }

@@ -6,7 +6,13 @@
 import Foundation
 
 protocol TileMetadata: Codable {
-    func onLoad(world: World, pos: WorldTilePos)
+    /// This is guaranteed to be called before all other on... handlers
+    func onFirstLoad(world: World, pos: WorldTilePos3D)
+    func onLoad(world: World, pos: WorldTilePos3D)
+    func onUnload(world: World, pos: WorldTilePos3D)
+    func onCreate(world: World, pos: WorldTilePos3D)
+    func onDestroy(world: World, pos: WorldTilePos3D)
+    func tick(world: World, pos: WorldTilePos3D)
 }
 
 /// Tile is anonymous iff nil
@@ -14,11 +20,9 @@ func TileMetadataForTileOf(type: TileBigType) -> TileMetadata? {
     switch (type) {
     case .air, .background, .solid, .ice:
         return nil
-    case .shurikenSpawn:
-        return ShurikenMetadata()
-    case .enemySpawn:
-        return EnemyMetadata()
+    case .shurikenSpawn, .enemySpawn:
+        return SingleSpawnMetadata()
     case .playerSpawn:
-        return PlayerMetadata()
+        return PlayerSpawnMetadata()
     }
 }

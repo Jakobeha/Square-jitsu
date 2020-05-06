@@ -12,6 +12,7 @@ class World {
     var readonlyChunks: [WorldChunkPos : ReadonlyChunk] {
         chunks.mapValues { $0 as ReadonlyChunk }
     }
+    private var chunkPositionsLoadedBefore: Set<WorldChunkPos> = Set()
 
     private(set) var entities: [Entity] = []
 
@@ -46,7 +47,7 @@ class World {
     private func loadPlayer() {
         load(pos: loader.playerSpawnChunkPos)
         // TODO: Make this more graceful, throw a WorldCorruptionError, so loading bad worlds can't crash the game
-        assert(_player != nil, "player spawn not in chunk pos, or player spawn is didn't spawn player")
+        assert(_player != nil, "player spawn not in chunk pos, or player spawn didn't spawn player")
     }
 
     // region loading
@@ -62,10 +63,21 @@ class World {
     }
 
     func load(pos: WorldChunkPos) {
-        if chunks[pos] != nil {
+        if chunks[pos] == nil {
+            // Actually load
             let chunk = loader.loadChunk(pos: pos)
             _willLoadChunk.publish((pos: pos, chunk: chunk))
             chunks[pos] = chunk
+
+            // Notify metadata
+            if (!chunkPositionsLoadedBefore.contains(pos)) {
+                notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onFirstLoad }
+            }
+            notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onLoad }
+
+
+            // Remember we loaded this
+            chunkPositionsLoadedBefore.insert(pos)
         }
     }
 
@@ -74,11 +86,24 @@ class World {
         let chunk = chunks[pos]!
         _willUnloadChunk.publish((pos: pos, chunk: chunk))
         chunks[pos] = nil
+
+        // Notify metadata
+        notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onUnload }
+    }
+
+    private func notifyAllMetadataInChunk(pos: WorldChunkPos, chunk: Chunk, getNotifyFunction: (TileMetadata) -> (World, WorldTilePos3D) -> ()) {
+        for metadataAndPos in chunk.tileMetadatas {
+            let metadata = metadataAndPos.metadata
+            let pos = WorldTilePos3D(worldChunkPos: pos, chunkTilePos: metadataAndPos.chunkPos, layer: metadataAndPos.layer)
+            let notifyThisMetadata = getNotifyFunction(metadata)
+            notifyThisMetadata(self, pos)
+        }
     }
     // endregion
 
     func tick() {
         runActions()
+        tickMetadatas()
         tickEntities()
     }
 
@@ -88,20 +113,58 @@ class World {
         return chunk[pos.chunkTilePos]
     }
 
-    /// Places the tile, removing any non-overlapping tiles
-    func forcePlaceTile(pos: WorldTilePos, type: TileType) {
-        let chunk = getChunkAt(pos: pos.worldChunkPos)
-        return chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type)
+    subscript(_ pos3D: WorldTilePos3D) -> Tile {
+        self[pos3D.pos][pos3D.layer]
     }
 
-    func removeTiles(pos: WorldTilePos) {
+    /// Places the tile, removing any non-overlapping tiles
+    /// Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
+    /// places the tile, while "place" may mean it was loaded
+    func forceCreateTile(pos: WorldTilePos, type: TileType) -> Tile {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
-        return chunk.removeTiles(pos: pos.chunkTilePos)
+        let (tile, layer) = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type)
+        // Notify metadata
+        if let metadata = chunk.getTileMetadataFor(tile: tile)?.metadata {
+            metadata.onCreate(world: self, pos: WorldTilePos3D(pos: pos, layer: layer))
+        }
+        return tile
+    }
+
+    /// Note: "destroy" is distinguished from "remove" are different in that "destroy" means e.g. the user explicitly
+    /// deletes the tile, while "remove" may mean it was unloaded
+    func destroyTiles(pos: WorldTilePos) {
+        let chunk = getChunkAt(pos: pos.worldChunkPos)
+        let removedTiles = chunk[pos.chunkTilePos]
+        chunk.removeTiles(pos: pos.chunkTilePos)
+        // Notify metadata
+        for (layer, tile) in removedTiles.enumerated() {
+            if let metadata = chunk.getTileMetadataFor(tile: tile)?.metadata {
+                metadata.onDestroy(world: self, pos: WorldTilePos3D(pos: pos, layer: layer))
+            }
+        }
     }
 
     private func getChunkAt(pos: WorldChunkPos) -> Chunk {
         load(pos: pos)
         return chunks[pos]!
+    }
+    // endregion
+
+    // region metadatas
+    private func tickMetadatas() {
+        for (pos, metadata) in getLoadedMetadatas() {
+            metadata.tick(world: self, pos: pos)
+        }
+    }
+
+    private func getLoadedMetadatas() -> [(pos: WorldTilePos3D, metadata: TileMetadata)] {
+        chunks.flatMap { (worldChunkPos, chunk) in
+            chunk.tileMetadatas.map { metadataAndPosition in
+                let metadata = metadataAndPosition.metadata
+                let pos = WorldTilePos3D(worldChunkPos: worldChunkPos, chunkTilePos: metadataAndPosition.chunkPos, layer: metadataAndPosition.layer)
+                return (pos: pos, metadata: metadata)
+            }
+        }
     }
     // endregion
 

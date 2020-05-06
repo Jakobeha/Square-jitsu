@@ -26,7 +26,7 @@ struct ChunkTilePos: Equatable, Hashable, CaseIterable {
     }
 
     init(x: Int, y: Int) {
-        assert(x > 0 && x < Chunk.widthHeight && y > 0 && y < Chunk.widthHeight)
+        assert(x >= 0 && x < Chunk.widthHeight && y >= 0 && y < Chunk.widthHeight)
         self.x = x
         self.y = y
     }

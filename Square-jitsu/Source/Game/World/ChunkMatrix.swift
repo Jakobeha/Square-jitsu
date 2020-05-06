@@ -16,11 +16,13 @@ struct ChunkMatrix<Value: HasDefault> {
         backing[pos.x][pos.y]
     }
 
-    mutating func insert(_ item: Value, at pos: ChunkTilePos) {
+    /// Returns the layer the item was inserted at
+    mutating func insert(_ item: Value, at pos: ChunkTilePos) -> Int {
         let layer = getNextFreeLayerAt(pos: pos) ?? {
             fatalError("can't place tile because this position is occupied")
         }()
         backing[pos.x][pos.y][layer] = item
+        return layer
     }
 
     mutating func removeAll(at pos: ChunkTilePos) {
@@ -42,7 +44,7 @@ struct ChunkMatrix<Value: HasDefault> {
     func getNextFreeLayerAt(pos: ChunkTilePos) -> Int? {
         let valuesAtPos = backing[pos.x][pos.y]
         var guess = 0
-        while (valuesAtPos[guess].isDefault) {
+        while (!valuesAtPos[guess].isDefault) {
             guess += 1
             if (guess == valuesAtPos.count) {
                 return nil

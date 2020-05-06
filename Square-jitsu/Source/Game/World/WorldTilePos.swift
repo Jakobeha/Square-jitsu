@@ -35,4 +35,16 @@ struct WorldTilePos: Equatable, Hashable {
             self + corner.offset
         }
     }
+
+    init(worldChunkPos: WorldChunkPos, chunkTilePos: ChunkTilePos) {
+        self.init(
+                x: (worldChunkPos.x * Chunk.widthHeight) + chunkTilePos.x,
+                y: (worldChunkPos.y * Chunk.widthHeight) + chunkTilePos.y
+        )
+    }
+
+    init(x: Int, y: Int) {
+        self.x = x
+        self.y = y
+    }
 }

@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum TileBigType: UInt8 {
+enum TileBigType: UInt32 {
     case air
     case background
     case solid
@@ -14,4 +14,21 @@ enum TileBigType: UInt8 {
     case shurikenSpawn
     case enemySpawn
     case playerSpawn
+
+    var layer: TileLayer {
+        switch self {
+        case .air:
+            return TileLayer.air
+        case .background:
+            return TileLayer.background
+        case .solid, .ice:
+            return TileLayer.foreground
+        case .shurikenSpawn, .enemySpawn, .playerSpawn:
+            return TileLayer.spawn
+        }
+    }
+
+    static func typesCanOverlap(_ lhs: TileBigType, _ rhs: TileBigType) -> Bool {
+        TileLayer.layersCanOverlap(lhs.layer, rhs.layer)
+    }
 }

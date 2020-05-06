@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum TileSmallType: UInt8 {
+enum TileSmallType: UInt16 {
     case _0
 
     static let air: TileSmallType = ._0
