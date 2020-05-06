@@ -38,6 +38,7 @@
 		603727338DBAC686B956D941 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722995456B1959BEBF402 /* View.swift */; };
 		60372786285BD054C6241A10 /* ChunkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372372C8C6F8044942C5DD /* ChunkView.swift */; };
 		6037279DA25FB1A1C32CA8C3 /* Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372D7F7A5B342C08A7C630 /* Publisher.swift */; };
+		603727B040686985805F6CCF /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = 60372AB920AD7926222FB919 /* Resources */; };
 		603727BED938A552AF43FF2D /* MovingComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722BBFF197F422108635C /* MovingComponent.swift */; };
 		603727E797D30C1070912880 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372CAF8C4CD3A3F0C18B5B /* Dictionary.swift */; };
 		603727ED4FBFC4FFBC33AD45 /* StaticTileTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372BA5B3D93AD90F692624 /* StaticTileTemplate.swift */; };
@@ -50,8 +51,9 @@
 		60372911DAC441DD6A10559B /* FixedUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372B848C62B50F19E2A43D /* FixedUpdater.swift */; };
 		6037298C3276BAF0CD7CBCC2 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722B5B2A99FF176875C6C /* Chunk.swift */; };
 		60372992AD1C7F717B5B4EA9 /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037202092A585319A6389BC /* TileView.swift */; };
+		60372A449C3296D1A86EA5AB /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = 6037286E3A0D5B3FD02DC097 /* Resources */; };
 		60372AE90D5211BF33A045B6 /* LocationComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603728ABFDD7DE0ABDF697FC /* LocationComponent.swift */; };
-		60372AF70D69C8CF21D3BA39 /* ReadonlyChunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037261E692E12FACA86C3D9 /* ReadonlyChunk.swift */; };
+		60372AF70D69C8CF21D3BA39 /* ChunkObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037261E692E12FACA86C3D9 /* ChunkObservable.swift */; };
 		60372AF7D6E7D8008E6661A8 /* CGPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372A70EAB3F8CC4BADC36D /* CGPoint.swift */; };
 		60372BCA9D5B050BF4D7663A /* CGSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603723A74864BBCB2355887F /* CGSize.swift */; };
 		60372BCD414CE2376CBD7BCE /* SideSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372B6EADAA22B93A11AEC2 /* SideSet.swift */; };
@@ -120,7 +122,7 @@
 		6037257B2CA60E40782FD161 /* WorldView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorldView.swift; sourceTree = "<group>"; };
 		6037258A83C086CE17FC8696 /* TileTypeMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileTypeMap.swift; sourceTree = "<group>"; };
 		6037260087AD070442393B87 /* Square_jitsuUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Square_jitsuUITests.swift; sourceTree = "<group>"; };
-		6037261E692E12FACA86C3D9 /* ReadonlyChunk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadonlyChunk.swift; sourceTree = "<group>"; };
+		6037261E692E12FACA86C3D9 /* ChunkObservable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkObservable.swift; sourceTree = "<group>"; };
 		6037263A1644D352F65BEE68 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6037263EFB615B07FCEA2915 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		6037266B9C9B9031878FF6ED /* PhysicsComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhysicsComponent.swift; sourceTree = "<group>"; };
@@ -392,7 +394,7 @@
 				60372C75B7404CD3AADCC77A /* RelativePos.swift */,
 				603729D266E508421F2C97DF /* WorldLoader.swift */,
 				60372BC00CD91D7983BFE0DA /* DummyWorldLoader.swift */,
-				6037261E692E12FACA86C3D9 /* ReadonlyChunk.swift */,
+				6037261E692E12FACA86C3D9 /* ChunkObservable.swift */,
 				60372986A96CE7A3D783AE46 /* ChunkMatrix.swift */,
 			);
 			path = World;
@@ -532,6 +534,8 @@
 				60372F39BF1F217F91DE5885 /* Assets.xcassets in Resources */,
 				60372CDD02C0A8324A69A253 /* LaunchScreen.storyboard in Resources */,
 				60372342ADB20DA673105FDE /* Main.storyboard in Resources */,
+				60372A449C3296D1A86EA5AB /* Resources in Resources */,
+				603727B040686985805F6CCF /* Resources in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,7 +586,7 @@
 				603721A38933735C194C0934 /* RelativePos.swift in Sources */,
 				603720E6A5314424D69B299C /* WorldLoader.swift in Sources */,
 				60372F51314F727BE6E87762 /* DummyWorldLoader.swift in Sources */,
-				60372AF70D69C8CF21D3BA39 /* ReadonlyChunk.swift in Sources */,
+				60372AF70D69C8CF21D3BA39 /* ChunkObservable.swift in Sources */,
 				603724EDF0404D24F438ECB0 /* ChunkMatrix.swift in Sources */,
 				6037268742F999E9E7BB6411 /* TileType.swift in Sources */,
 				60372D8DCE62C825351080B3 /* TileSmallType.swift in Sources */,
@@ -732,7 +736,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 5HTYFH877E;
 				INFOPLIST_FILE = "Square-jitsu/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "jakobeha.Square-jitsu";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -774,7 +777,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 5HTYFH877E;
 				INFOPLIST_FILE = "Square-jitsu/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "jakobeha.Square-jitsu";
 				PRODUCT_NAME = "$(TARGET_NAME)";
