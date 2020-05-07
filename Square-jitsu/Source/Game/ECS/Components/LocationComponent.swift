@@ -7,6 +7,6 @@ import SpriteKit
 
 struct LocationComponent {
     var position: CGPoint
-    var rotation: Angle
-    var radius: CGFloat
+    var rotation: Angle = Angle.zero
+    var radius: CGFloat = 0.5
 }

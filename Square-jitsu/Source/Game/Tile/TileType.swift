@@ -10,9 +10,9 @@ struct TileType: Equatable, HasDefault {
     static let basicBackground: TileType = TileType(bigType: TileBigType.solid)
     static let basicSolid: TileType = TileType(bigType: TileBigType.solid)
     static let basicIce: TileType = TileType(bigType: TileBigType.ice)
-    static let basicShurikenSpawn: TileType = TileType(bigType: TileBigType.shurikenSpawn)
-    static let basicEnemySpawn: TileType = TileType(bigType: TileBigType.enemySpawn)
     static let playerSpawn: TileType = TileType(bigType: TileBigType.playerSpawn)
+    static let shurikenSpawn: TileType = TileType(bigType: TileBigType.shurikenSpawn)
+    static let enemySpawn: TileType = TileType(bigType: TileBigType.enemySpawn)
 
     static let defaultValue: TileType = air
 
@@ -22,7 +22,7 @@ struct TileType: Equatable, HasDefault {
 
     var isDefault: Bool { self == TileType.defaultValue }
 
-    init(bigType: TileBigType, smallType: TileSmallType = TileSmallType._0, orientation: TileOrientation = TileOrientation.none) {
+    init(bigType: TileBigType, smallType: TileSmallType = TileSmallType(0), orientation: TileOrientation = TileOrientation.none) {
         self.bigType = bigType
         self.smallType = smallType
         self.orientation = orientation

@@ -9,14 +9,14 @@
 import SpriteKit
 
 class WorldController {
-    private struct WorldModelView {
+    struct WorldModelView {
         let world: World
         let worldView: WorldView
     }
 
     private let parent: SKNode
     private let updater: FixedUpdater = FixedUpdater()
-    private var loaded: WorldModelView? = nil
+    private(set) var loaded: WorldModelView? = nil
 
     init(parent: SKNode) {
         self.parent = parent
@@ -28,16 +28,16 @@ class WorldController {
     }
 
     func load(world: World) {
-        loaded?.worldView.remove()
+        loaded?.worldView.removeFromParent()
 
         let worldView = WorldView(world: world)
-        worldView.place(parent: parent)
+        worldView.placeIn(parent: parent)
         loaded = WorldModelView(world: world, worldView: worldView)
         updater.fixedDeltaTime = world.settings.fixedDeltaTime
     }
 
     func unload() {
-        loaded?.worldView.remove()
+        loaded?.worldView.removeFromParent()
 
         loaded = nil
         updater.fixedDeltaTime = CGFloat.nan

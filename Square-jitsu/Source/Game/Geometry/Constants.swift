@@ -3,8 +3,9 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 class Constants {
-    static let epsilon: Float = 0.01
+    static let epsilon: Float = 0.0001
+    static let cgEpsilon: CGFloat = CGFloat(epsilon)
 }

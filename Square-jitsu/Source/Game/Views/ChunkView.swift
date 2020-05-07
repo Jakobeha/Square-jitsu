@@ -14,8 +14,8 @@ class ChunkView: NodeView {
         super.init(node: SKNode())
 
         placeExistingTiles(chunk: chunk)
-        chunk.willPlaceTile.subscribe(observer: self, handler: placeTileView)
-        chunk.willRemoveTile.subscribe(observer: self, handler: removeTileView)
+        chunk.didPlaceTile.subscribe(observer: self, handler: placeTileView)
+        chunk.didRemoveTile.subscribe(observer: self, handler: removeTileView)
     }
 
     required init?(coder: NSCoder) {
@@ -33,13 +33,13 @@ class ChunkView: NodeView {
 
     func placeTileView(tilePos: ChunkTilePos, tileType: TileType) {
         let tileView = TileView(world: world, chunkPos: tilePos, tileType: tileType)
-        tileView.place(parent: self.node)
+        tileView.placeIn(parent: self.node)
         let _ = self.tileViews.insert(tileView, at: tilePos)
     }
 
     func removeTileView(tilePos: ChunkTilePos3D, tileType: TileType) {
         let tileView = self.tileViews[tilePos]!
-        tileView.remove()
+        tileView.removeFromParent()
         self.tileViews.remove(at: tilePos)
     }
 }

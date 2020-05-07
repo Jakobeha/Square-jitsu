@@ -27,15 +27,20 @@ class World {
             _player = newValue
         }
     }
+    /// We put this in the world so it (i.e. what the player sees) is defined as part of the game
+    /// ... and also because it's easy
+    private(set) var playerCamera: PlayerCamera = PlayerCamera()
 
-    private let _willUnloadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
-    private let _willLoadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
-    private let _willAddEntity: Publisher<Entity> = Publisher()
-    private let _willRemoveEntity: Publisher<Entity> = Publisher()
-    var willUnloadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { Observable(publisher: _willUnloadChunk) }
-    var willLoadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { Observable(publisher: _willLoadChunk) }
-    var willAddEntity: Observable<Entity> { Observable(publisher: _willAddEntity) }
-    var willRemoveEntity: Observable<Entity> { Observable(publisher: _willRemoveEntity) }
+    private let _didUnloadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
+    private let _didLoadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
+    private let _didAddEntity: Publisher<Entity> = Publisher()
+    private let _didRemoveEntity: Publisher<Entity> = Publisher()
+    private let _didTick: Publisher<()> = Publisher()
+    var didUnloadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { Observable(publisher: _didUnloadChunk) }
+    var didLoadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { Observable(publisher: _didLoadChunk) }
+    var didAddEntity: Observable<Entity> { Observable(publisher: _didAddEntity) }
+    var didRemoveEntity: Observable<Entity> { Observable(publisher: _didRemoveEntity) }
+    var didTick: Observable<()> { Observable(publisher: _didTick) }
 
     init(loader: WorldLoader, settings: Settings) {
         self.loader = loader
@@ -56,39 +61,55 @@ class World {
     }
 
     func loadAround(pos: WorldTilePos) {
-        load(pos: pos.worldChunkPos)
-        for chunkPos in pos.worldChunkPos.adjacents.values {
+        loadAround(pos: pos.worldChunkPos)
+    }
+
+    func loadAround(pos: WorldChunkPos) {
+        load(pos: pos)
+        for chunkPos in pos.adjacents.values {
             load(pos: chunkPos)
         }
+    }
+
+    func load(pos: CGPoint) {
+        load(pos: WorldTilePos.closestTo(pos: pos))
+    }
+
+    func load(pos: WorldTilePos) {
+        load(pos: pos.worldChunkPos)
     }
 
     func load(pos: WorldChunkPos) {
         if chunks[pos] == nil {
             // Actually load
             let chunk = loader.loadChunk(pos: pos)
-            _willLoadChunk.publish((pos: pos, chunk: chunk))
             chunks[pos] = chunk
 
+            // Remember we loaded this
+            let loadedBefore = chunkPositionsLoadedBefore.contains(pos)
+            chunkPositionsLoadedBefore.insert(pos)
+
             // Notify metadata
-            if (!chunkPositionsLoadedBefore.contains(pos)) {
+            if (!loadedBefore) {
                 notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onFirstLoad }
             }
             notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onLoad }
 
-
-            // Remember we loaded this
-            chunkPositionsLoadedBefore.insert(pos)
+            // Notify observers
+            _didLoadChunk.publish((pos: pos, chunk: chunk))
         }
     }
 
     func unload(pos: WorldChunkPos) {
         assert(chunks[pos] != nil)
         let chunk = chunks[pos]!
-        _willUnloadChunk.publish((pos: pos, chunk: chunk))
         chunks[pos] = nil
 
         // Notify metadata
         notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onUnload }
+
+        // Notify observers
+        _didUnloadChunk.publish((pos: pos, chunk: chunk))
     }
 
     private func notifyAllMetadataInChunk(pos: WorldChunkPos, chunk: Chunk, getNotifyFunction: (TileMetadata) -> (World, WorldTilePos3D) -> ()) {
@@ -101,9 +122,12 @@ class World {
     // endregion
 
     func tick() {
+        // Tick the camera before entities because we want it to see the previous position
+        playerCamera.tick(world: self)
         runActions()
         tickMetadatas()
         tickEntities()
+        _didTick.publish()
     }
 
     // region tile access
@@ -177,20 +201,45 @@ class World {
 
     // region entities
     private func addNow(entity: Entity) {
+        // Set entity world
         assert(entity.world === nil, "entity is already added to a world")
         entity.world = self
         entity.worldIndex = entities.count
-        _willAddEntity.publish(entity)
+
+        // Add to list
         entities.append(entity)
+
+        // Notify observers
+        _didAddEntity.publish(entity)
     }
 
     private func removeNow(entity: Entity) {
+
+        // Set entity world
         assert(entity.world === self, "entity isn't in this world")
-        _willRemoveEntity.publish(entity)
         entity.world = nil
+
+        // Update others' world indices
+        for entityAfterIndex in (entity.worldIndex + 1)..<entities.count {
+            let entityAfter = entities[entityAfterIndex]
+            entityAfter.worldIndex -= 1
+        }
+
+        // Remove from list
+        entities.remove(at: entity.worldIndex)
+
+        // Notify observers
+        _didRemoveEntity.publish(entity)
     }
 
     private func tickEntities() {
+        tickSystems()
+        for entity in entities {
+            entity.tick()
+        }
+    }
+
+    private func tickSystems() {
         MovementSystem.tick(world: self)
         CollisionSystem.tick(world: self)
         LocationSystem.tick(world: self)

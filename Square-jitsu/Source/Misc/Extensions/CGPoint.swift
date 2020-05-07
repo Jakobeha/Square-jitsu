@@ -6,6 +6,10 @@
 import SpriteKit
 
 extension CGPoint {
+    static prefix func -(point: CGPoint) -> CGPoint {
+        CGPoint(x: -point.x, y: -point.y)
+    }
+
     static func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
         CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }
@@ -59,6 +63,6 @@ extension CGPoint {
     }
 
     var normalized: CGPoint {
-        magnitude < CGFloat(Constants.epsilon) ? CGPoint.zero : self / magnitude
+        magnitude < Constants.cgEpsilon ? CGPoint.zero : self / magnitude
     }
 }

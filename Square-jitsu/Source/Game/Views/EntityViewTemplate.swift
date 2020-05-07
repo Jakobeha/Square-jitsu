@@ -5,6 +5,6 @@
 
 import SpriteKit
 
-protocol TileTemplate {
-    func generateNode(settings: Settings) -> SKNode
+protocol EntityViewTemplate {
+    func generateNode(entity: Entity) -> SKNode
 }

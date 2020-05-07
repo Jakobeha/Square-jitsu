@@ -32,43 +32,75 @@ struct Line {
         return CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
 
-    var vector: CGPoint {
+    var offset: CGPoint {
         end - start
     }
 
     var length: CGFloat {
-        vector.magnitude
+        offset.magnitude
     }
 
     var slope: Slope {
-        if (vector.magnitude < CGFloat(Constants.epsilon)) {
+        if (offset.magnitude < Constants.cgEpsilon) {
             return .thisIsAPoint(this: self.start)
         } else {
-            let yDivX = vector.y / vector.x
+            let yDivX = offset.y / offset.x
             if (yDivX.magnitude > 1) {
-                return .moreVertical(xDivY: vector.x / vector.y)
+                return .moreVertical(xDivY: offset.x / offset.y)
             } else {
-                return .moreHorizontal(yDivX: vector.y / vector.x)
+                return .moreHorizontal(yDivX: offset.y / offset.x)
             }
         }
     }
 
-    func tAt(x: CGFloat) -> CGFloat {
-        assert(x >= bounds.minY && x <= bounds.maxY)
-        return (x - start.x) / (end.x - start.x)
+    func tAt(x: CGFloat) -> CGFloat? {
+        if x >= bounds.minX && x <= bounds.maxX {
+            return unclampedTAt(x: x)
+        } else {
+            return nil
+        }
     }
 
-    func tAt(y: CGFloat) -> CGFloat {
-        assert(y >= bounds.minY && y <= bounds.maxY)
-        return (y - start.y) / (end.y - start.y)
+    func tAt(y: CGFloat) -> CGFloat? {
+        if y >= bounds.minY && y <= bounds.maxY {
+            return unclampedTAt(y: y)
+        } else {
+            return nil
+        }
     }
 
-    func yAt(x: CGFloat) -> CGFloat {
-        lerp(t: tAt(x: x)).y
+    func unclampedTAt(x: CGFloat) -> CGFloat {
+        (x - start.x) / (end.x - start.x)
     }
 
-    func xAt(y: CGFloat) -> CGFloat {
-        lerp(t: tAt(y: y)).x
+    func unclampedTAt(y: CGFloat) -> CGFloat {
+        (y - start.y) / (end.y - start.y)
+    }
+
+    func yAt(x: CGFloat) -> CGFloat? {
+        if x >= bounds.minX && x <= bounds.maxX {
+            return unclampedYAt(x: x)
+        } else {
+            return nil
+        }
+    }
+
+    func xAt(y: CGFloat) -> CGFloat? {
+        if y >= bounds.minY && y <= bounds.maxY {
+            return unclampedXAt(y: y)
+        } else {
+            return nil
+        }
+    }
+
+    func unclampedYAt(x: CGFloat) -> CGFloat {
+        let t = unclampedTAt(x: x)
+        return lerp(t: t).y
+    }
+
+    func unclampedXAt(y: CGFloat) -> CGFloat {
+        let t = unclampedTAt(y: y)
+        return lerp(t: t).x
     }
 
     /// Returns the point the given fraction along the path from start to end (e.g. t: 0 = start, t: 1 = end)
@@ -77,13 +109,19 @@ struct Line {
     }
 
     func getClosestFractionTo(point: CGPoint) -> CGFloat {
-        if (length < CGFloat(Constants.epsilon)) {
+        if (length < Constants.cgEpsilon) {
             return 0
         } else {
             let offset = point - start
-            let offsetProjectionLength = CGPoint.dot(offset, vector.normalized)
+            let offsetProjectionLength = CGPoint.dot(offset, offset.normalized)
             return offsetProjectionLength / length
         }
+    }
+
+
+    func extendedBackwardsBy(magnitude: CGFloat) -> Line {
+        let backwardsOffset = offset.normalized * -magnitude
+        return Line(start: start + backwardsOffset, end: end)
     }
 
     /// Returns the tiles intersected by an object of radius moving along this line,
@@ -105,12 +143,12 @@ struct Line {
             let maxX = Int(ceil(bounds.maxX + capsuleRadius))
             let slopeExtension = yDivX / 2
             let safeCapsuleRadius = capsuleRadius + slopeExtension
-            let xs = start.x > end.x ? minX...maxX : maxX...minX
+            let xs = start.x > end.x ? FBRange(maxX, minX) : FBRange(minX, maxX)
             return xs.flatMap { x -> [WorldTilePos] in
-                let yOnSelf = yAt(x: CGFloat(x))
+                let yOnSelf = unclampedYAt(x: CGFloat(x))
                 let minY = Int(floor(yOnSelf - safeCapsuleRadius))
                 let maxY = Int(ceil(yOnSelf + safeCapsuleRadius))
-                let ys = start.y > end.y ? minY...maxY : maxY...minY
+                let ys = start.y > end.y ? FBRange(maxY, minY) : FBRange(minY, maxY)
                 return ys.map { y in
                     WorldTilePos(x: x, y: y)
                 }
@@ -120,12 +158,12 @@ struct Line {
             let maxY = Int(ceil(bounds.maxY + capsuleRadius))
             let slopeExtension = xDivY / 2
             let safeCapsuleRadius = capsuleRadius + slopeExtension
-            let ys = start.y > end.y ? minY...maxY : maxY...minY
+            let ys = start.y > end.y ? FBRange(maxY, minY) : FBRange(minY, maxY)
             return ys.flatMap { y -> [WorldTilePos] in
-                let yOnSelf = xAt(y: CGFloat(y))
-                let minX = Int(floor(yOnSelf - safeCapsuleRadius))
-                let maxX = Int(ceil(yOnSelf + safeCapsuleRadius))
-                let xs = start.x > end.x ? minX...maxX : maxX...minX
+                let xOnSelf = unclampedXAt(y: CGFloat(y))
+                let minX = Int(floor(xOnSelf - safeCapsuleRadius))
+                let maxX = Int(ceil(xOnSelf + safeCapsuleRadius))
+                let xs = start.x > end.x ? FBRange(maxX, minX) : FBRange(minX, maxX)
                 return xs.map { x in
                     WorldTilePos(x: x, y: y)
                 }

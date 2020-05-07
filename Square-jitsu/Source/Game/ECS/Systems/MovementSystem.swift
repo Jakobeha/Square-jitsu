@@ -16,10 +16,15 @@ class MovementSystem: System {
             }
         }
         if (entity.prev.dynC != nil) {
-            entity.next.dynC!.velocity.y -= entity.prev.dynC!.gravity * entity.world!.settings.fixedDeltaTime
-
+            if (shouldApplyGravityTo(entity: entity)) {
+                entity.next.dynC!.velocity.y -= entity.prev.dynC!.gravity * entity.world!.settings.fixedDeltaTime
+            }
             entity.next.locC!.position += entity.prev.dynC!.velocity * entity.world!.settings.fixedDeltaTime
             entity.next.locC!.rotation += entity.prev.dynC!.angularVelocity * entity.world!.settings.fixedDeltaTime
         }
+    }
+
+    private static func shouldApplyGravityTo(entity: Entity) -> Bool {
+        entity.prev.phyC == nil || !entity.prev.phyC!.hasAdjacents
     }
 }

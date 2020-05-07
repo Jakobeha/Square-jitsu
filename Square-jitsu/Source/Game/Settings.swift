@@ -9,15 +9,14 @@ import SpriteKit
 class Settings {
     let fixedDeltaTime: CGFloat = 1.0 / 60
 
+    let cameraSpeed: CGFloat = 1.0 / 16
+
     let tileViewWidthHeight: CGFloat = 48
-    let tileViewConfigs: TileTypeMap<TileTemplate> = TileTypeMap([
-        TileBigType.background:[
-            TileSmallType.backgroundBasic:StaticTileTemplate(textureName: "TestBackground")
-        ],TileBigType.solid:[
-            TileSmallType.solidBasic:StaticTileTemplate(textureName: "TestSolid")
-        ],
-        TileBigType.playerSpawn:[
-            TileSmallType.playerSpawn:StaticTileTemplate(textureName: "Player")
-        ]
+    let tileViewConfigs: TileTypeMap<TileViewTemplate> = TileTypeMap([
+        TileBigType.background:[StaticTileViewTemplate(textureName: "TestBackground")],
+        TileBigType.solid:[StaticTileViewTemplate(textureName: "TestSolid")]
+    ])
+    let entityViewConfigs: TileTypeMap<EntityViewTemplate> = TileTypeMap([
+        TileBigType.playerSpawn:[StaticEntityViewTemplate(textureName: "Player")]
     ])
 }

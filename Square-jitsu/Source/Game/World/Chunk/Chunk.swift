@@ -12,10 +12,10 @@ class Chunk: ReadonlyChunk {
     private var tiles: ChunkMatrix<TileType> = ChunkMatrix()
     private(set) var tileMetadatas: [ChunkTilePos3D:TileMetadata] = [:]
 
-    private let _willRemoveTile: Publisher<(pos: ChunkTilePos3D, tileType: TileType)> = Publisher()
-    private let _willPlaceTile: Publisher<(pos: ChunkTilePos, tileType: TileType)> = Publisher()
-    var willRemoveTile: Observable<(pos: ChunkTilePos3D, tileType: TileType)> { Observable(publisher: _willRemoveTile) }
-    var willPlaceTile: Observable<(pos: ChunkTilePos, tileType: TileType)> { Observable(publisher: _willPlaceTile) }
+    private let _didRemoveTile: Publisher<(pos: ChunkTilePos3D, tileType: TileType)> = Publisher()
+    private let _didPlaceTile: Publisher<(pos: ChunkTilePos, tileType: TileType)> = Publisher()
+    var didRemoveTile: Observable<(pos: ChunkTilePos3D, tileType: TileType)> { Observable(publisher: _didRemoveTile) }
+    var didPlaceTile: Observable<(pos: ChunkTilePos, tileType: TileType)> { Observable(publisher: _didPlaceTile) }
 
     init() {
     }
@@ -51,13 +51,6 @@ class Chunk: ReadonlyChunk {
     func removeTiles(pos: ChunkTilePos) {
         let tilesAtPos = self[pos]
 
-        // Notify observers
-        for layer in (0..<Chunk.numLayers).reversed() {
-            let tileType = tilesAtPos[layer]
-            let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
-            _willRemoveTile.publish((pos: pos3D, tileType: tileType))
-        }
-
         // Remove metadatas
         for layer in 0..<Chunk.numLayers {
             let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
@@ -66,6 +59,13 @@ class Chunk: ReadonlyChunk {
 
         // Remove tiles
         tiles.removeAll(at: pos)
+
+        // Notify observers
+        for layer in (0..<Chunk.numLayers).reversed() {
+            let tileType = tilesAtPos[layer]
+            let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
+            _didRemoveTile.publish((pos: pos3D, tileType: tileType))
+        }
     }
 
     private func removeNonOverlappingTiles(pos: ChunkTilePos, type: TileType) {
@@ -82,14 +82,14 @@ class Chunk: ReadonlyChunk {
     private func removeTile(pos: ChunkTilePos3D) {
         let tileType = self[pos]
 
-        // Notify observers
-        _willRemoveTile.publish((pos: pos, tileType: tileType))
-
         // Remove metadata
         tileMetadatas[pos] = nil
 
         // Remove tile
         tiles.remove(at: pos)
+
+        // Notify observers
+        _didRemoveTile.publish((pos: pos, tileType: tileType))
     }
 
     /// - Returns: The layer of the tile which was placed
@@ -98,12 +98,14 @@ class Chunk: ReadonlyChunk {
         let metadata = TileMetadataForTileOf(type: type.bigType)
 
         // Place tile and add metadata
-        _willPlaceTile.publish((pos: pos, tileType: type))
         let layer = tiles.insert(type, at: pos)
         if let metadata = metadata {
             let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
             tileMetadatas[pos3D] = metadata
         }
+
+        // Notify observers
+        _didPlaceTile.publish((pos: pos, tileType: type))
 
         return layer
     }

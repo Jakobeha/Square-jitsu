@@ -3,13 +3,17 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
-enum TileLayer {
+enum TileLayer: Int {
     case air
     case background
     case foreground
-    case spawn
+    case entity
+
+    var zPosition: CGFloat {
+        CGFloat(rawValue)
+    }
 
     static func layersCanOverlap(_ lhs: TileLayer, _ rhs: TileLayer) -> Bool {
         switch (lhs, rhs) {
@@ -19,13 +23,13 @@ enum TileLayer {
             return false
         case (.background, .foreground), (.foreground, .background):
             return false
-        case (.background, .spawn), (.spawn, .background):
+        case (.background, .entity), (.entity, .background):
             return true
         case (.foreground, .foreground):
             return false
-        case (.foreground, .spawn), (.spawn, .foreground):
+        case (.foreground, .entity), (.entity, .foreground):
             return false
-        case (.spawn, .spawn):
+        case (.entity, .entity):
             return false
         }
     }

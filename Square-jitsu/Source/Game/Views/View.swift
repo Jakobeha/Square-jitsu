@@ -9,12 +9,12 @@ class View {
     /// Used as a sanity check
     private var isPlaced: Bool = false
 
-    func place(parent: SKNode) {
+    func placeIn(parent: SKNode) {
         assert(!isPlaced, "already placed")
         isPlaced = true
     }
 
-    func remove() {
+    func removeFromParent() {
         assert(isPlaced, "not placed")
         isPlaced = false
     }

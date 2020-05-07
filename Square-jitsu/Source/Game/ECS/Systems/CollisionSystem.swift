@@ -7,11 +7,18 @@ import SpriteKit
 
 class CollisionSystem: System {
     static func tick(entity: Entity) {
+        resetCollisions(entity: entity)
         if (handlesTileCollisions(entity: entity)) {
             handleTileCollisions(entity: entity)
         }
         if (handlesEntityCollisions(entity: entity)) {
             handleEntityCollisions(entity: entity)
+        }
+    }
+
+    private static func resetCollisions(entity: Entity) {
+        if (entity.next.phyC != nil) {
+            entity.next.phyC!.reset()
         }
     }
 
@@ -23,7 +30,9 @@ class CollisionSystem: System {
             for tileType in tileTypes {
                 if (entityCollidesWith(tileType: tileType)) {
                     handleCollisionWith(tileType: tileType, tilePosition: tilePosition, forEntity: entity)
-                    return // blocked by other collisions
+                    if (entityBlockedFromFurtherCollisions(entity: entity)) {
+                        return // blocked by other collisions
+                    }
                 }
             }
         }
@@ -67,6 +76,7 @@ class CollisionSystem: System {
     private static func handleCollisionWith(tileType: TileType, tilePosition: WorldTilePos, forEntity entity: Entity) {
         if (entity.prev.docC != nil) {
             entity.world!.remove(entity: entity)
+            entity.next.docC!.isRemoved = true
         }
         if (entity.prev.phyC != nil) {
             let trajectoryNextFrame = getTrajectoryNextFrame(entity: entity)
@@ -74,8 +84,9 @@ class CollisionSystem: System {
             let xIsLeft = trajectoryNextFrame.start.x < trajectoryNextFrame.end.x
             let yIsBottom = trajectoryNextFrame.start.y < trajectoryNextFrame.end.y
             // Determine if we hit from the x axis or y axis.
-            let outwardsX = (xIsLeft ? -0.5 : 0.5) as CGFloat
-            let outwardsY = (yIsBottom ? -0.5 : 0.5) as CGFloat
+            let radiusSum = 0.5 + entity.prev.locC!.radius
+            let outwardsX = radiusSum * (xIsLeft ? -1 : 1) as CGFloat
+            let outwardsY = radiusSum * (yIsBottom ? -1 : 1) as CGFloat
             let xBarrier = tilePosition.cgPoint.x + outwardsX
             let yBarrier = tilePosition.cgPoint.y + outwardsY
             let hitAxis = calculateCollidedAxis(
@@ -94,14 +105,14 @@ class CollisionSystem: System {
                     // Add side, move out of solid, cancel velocity
                     let side = xIsLeft ? SideSet.west : SideSet.east
                     entity.next.phyC!.adjacentSides.insert(side)
-                    entity.next.locC!.position.x = xBarrier + outwardsX
+                    entity.next.locC!.position.x = xBarrier
                     entity.next.dynC!.velocity.x = 0
                 case .vertical:
                     // We hit from the y axis
                     // Add side, move out of solid, cancel velocity
                     let side = yIsBottom ? SideSet.south : SideSet.north
                     entity.next.phyC!.adjacentSides.insert(side)
-                    entity.next.locC!.position.y = yBarrier + outwardsY
+                    entity.next.locC!.position.y = yBarrier
                     entity.next.dynC!.velocity.y = 0
                 }
                 entity.next.phyC!.adjacentPositions.append(tilePosition)
@@ -114,21 +125,33 @@ class CollisionSystem: System {
         }
     }
 
+    private static func entityBlockedFromFurtherCollisions(entity: Entity) -> Bool {
+        (entity.next.docC != nil && entity.next.docC!.isRemoved) ||
+                (entity.next.phyC != nil && entity.next.phyC!.adjacentAxes == AxisSet.both)
+    }
+
     private static func calculateCollidedAxis(trajectoryNextFrame: Line, xIsLeft: Bool, yIsBottom: Bool, xBarrier: CGFloat, yBarrier: CGFloat, tilePosition: WorldTilePos, forEntity entity: Entity) -> Axis? {
         let trajectoryNextFrame = getTrajectoryNextFrame(entity: entity)
         let timeToXBarrier = trajectoryNextFrame.tAt(x: xBarrier)
         let timeToYBarrier = trajectoryNextFrame.tAt(y: yBarrier)
+        let neverHitXBarrier = timeToXBarrier == nil
+        let neverHitYBarrier = timeToYBarrier == nil
         let xSide = xIsLeft ? Side.west : Side.east
         let ySide = yIsBottom ? Side.south : Side.north
         let adjacentXPosition = tilePosition + xSide.offset
         let adjacentYPosition = tilePosition + ySide.offset
         let adjacentXIsBlocked = entity.world![adjacentXPosition].contains(where: entityCollidesWith)
         let adjacentYIsBlocked = entity.world![adjacentYPosition].contains(where: entityCollidesWith)
-        switch (adjacentXIsBlocked, adjacentYIsBlocked) {
+        let adjacentAxes = entity.next.phyC!.adjacentAxes
+        let collidedWithXEarlierInTrajectory = adjacentAxes.contains(AxisSet.horizontal)
+        let collidedWithYEarlierInTrajectory = adjacentAxes.contains(AxisSet.vertical)
+        let xIsImpossible = collidedWithXEarlierInTrajectory || adjacentXIsBlocked || neverHitXBarrier
+        let yIsImpossible = collidedWithYEarlierInTrajectory || adjacentYIsBlocked || neverHitYBarrier
+        switch (xIsImpossible, yIsImpossible) {
         case (false, false):
             // If we hit a corner it's technically ambiguous.
             // We choose whichever axis is hit first and ignore the other
-            return (timeToXBarrier < timeToYBarrier) ? .horizontal : .vertical
+            return (timeToXBarrier! < timeToYBarrier!) ? .horizontal : .vertical
         case (true, false):
             return .vertical
         case (false, true):
@@ -151,6 +174,7 @@ class CollisionSystem: System {
     }
 
     private static func getTrajectoryNextFrame(entity: Entity) -> Line {
-        Line(start: entity.prev.locC!.position, end: entity.next.locC!.position)
+        // We extend backwards so that the entity can exit if it slightly clips into a solid due to rounding issues
+        Line(start: entity.prev.locC!.position, end: entity.next.locC!.position).extendedBackwardsBy(magnitude: entity.prev.locC!.radius)
     }
 }

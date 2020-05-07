@@ -6,8 +6,8 @@
 import Foundation
 
 protocol ReadonlyChunk {
-    var willRemoveTile: Observable<(pos: ChunkTilePos3D, tileType: TileType)> { get }
-    var willPlaceTile: Observable<(pos: ChunkTilePos, tileType: TileType)> { get }
+    var didRemoveTile: Observable<(pos: ChunkTilePos3D, tileType: TileType)> { get }
+    var didPlaceTile: Observable<(pos: ChunkTilePos, tileType: TileType)> { get }
 
     subscript(_ pos: ChunkTilePos) -> [TileType] { get }
 }

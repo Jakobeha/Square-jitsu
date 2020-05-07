@@ -10,7 +10,7 @@ class PlayerSpawnMetadata: EmptyTileMetadata {
         let myTileType = world[pos]
         // TODO: Fail gracefully
         assert(myTileType.bigType == TileBigType.playerSpawn, "player spawn metadata must be on player spawn tile")
-        let player = Entity.newForSpawnTile(type: myTileType)
+        let player = Entity.newForSpawnTile(type: myTileType, pos: pos)
         world.add(entity: player)
         world.player = player
     }

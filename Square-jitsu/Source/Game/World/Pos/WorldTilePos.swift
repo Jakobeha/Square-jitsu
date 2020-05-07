@@ -17,13 +17,12 @@ struct WorldTilePos: Equatable, Hashable {
     let x: Int
     let y: Int
 
-    // TODO: Validate / and % as used here don't create overlaps
     var worldChunkPos: WorldChunkPos {
-        WorldChunkPos(x: x / Chunk.widthHeight, y: y / Chunk.widthHeight)
+        WorldChunkPos(x: x.floorQuotient(dividingBy: Chunk.widthHeight), y: y.floorQuotient(dividingBy: Chunk.widthHeight))
     }
 
     var chunkTilePos: ChunkTilePos {
-        ChunkTilePos(x: x % Chunk.widthHeight, y: y % Chunk.widthHeight)
+        ChunkTilePos(x: x.positiveRemainder(dividingBy: Chunk.widthHeight), y: y.positiveRemainder(dividingBy: Chunk.widthHeight))
     }
 
     var cgPoint: CGPoint {

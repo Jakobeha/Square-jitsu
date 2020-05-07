@@ -32,3 +32,9 @@ class Publisher<Event> {
         }
     }
 }
+
+extension Publisher where Event == () {
+    func publish() {
+        publish(())
+    }
+}

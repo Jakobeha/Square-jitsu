@@ -11,9 +11,9 @@ enum TileBigType: UInt16 {
     case solid
     case ice
 
+    case playerSpawn
     case shurikenSpawn
     case enemySpawn
-    case playerSpawn
 
     var layer: TileLayer {
         switch self {
@@ -24,7 +24,7 @@ enum TileBigType: UInt16 {
         case .solid, .ice:
             return TileLayer.foreground
         case .shurikenSpawn, .enemySpawn, .playerSpawn:
-            return TileLayer.spawn
+            return TileLayer.entity
         }
     }
 

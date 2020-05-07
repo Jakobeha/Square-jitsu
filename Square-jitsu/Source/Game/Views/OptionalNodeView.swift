@@ -5,21 +5,23 @@
 
 import SpriteKit
 
-class NodeView: View {
-    let node: SKNode
+class OptionalNodeView: View {
+    let node: SKNode?
 
-    init(node: SKNode) {
+    init(node: SKNode?) {
         self.node = node
         super.init()
     }
 
     override func placeIn(parent: SKNode) {
         super.placeIn(parent: parent)
-        parent.addChild(node)
+        if let node = node {
+            parent.addChild(node)
+        }
     }
 
     override func removeFromParent() {
         super.removeFromParent()
-        node.removeFromParent()
+        node?.removeFromParent()
     }
 }

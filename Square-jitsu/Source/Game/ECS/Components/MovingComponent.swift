@@ -9,6 +9,6 @@ struct MovingComponent {
     /// It isn't that much
     var gravity: CGFloat = 0.25
 
-    var velocity: CGPoint
-    var angularVelocity: Angle
+    var velocity: CGPoint = CGPoint.zero
+    var angularVelocity: Angle = Angle.zero
 }

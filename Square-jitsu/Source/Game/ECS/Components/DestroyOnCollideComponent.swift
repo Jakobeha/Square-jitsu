@@ -5,4 +5,6 @@
 
 import Foundation
 
-struct DestroyOnCollideComponent {}
+struct DestroyOnCollideComponent {
+    var isRemoved: Bool = false
+}

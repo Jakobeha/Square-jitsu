@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct StaticTileTemplate: TileTemplate {
+struct StaticEntityViewTemplate: EntityViewTemplate {
     private let texture: SKTexture
 
     init(textureName: String) {
@@ -16,7 +16,7 @@ struct StaticTileTemplate: TileTemplate {
         self.texture = texture
     }
 
-    func generateNode(settings: Settings) -> SKNode {
-        SKSpriteNode(texture: texture, size: CGSize.square(sideLength: settings.tileViewWidthHeight))
+    func generateNode(entity: Entity) -> SKNode {
+        SKSpriteNode(texture: texture)
     }
 }

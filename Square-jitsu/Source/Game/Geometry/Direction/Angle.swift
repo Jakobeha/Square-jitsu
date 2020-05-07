@@ -9,6 +9,10 @@ struct Angle: Equatable, Hashable, Codable {
     static let zero: Angle = Angle(radians: 0 as Float)
     static let right: Angle = Angle(radians: Float.pi)
 
+    static prefix func -(angle: Angle) -> Angle {
+        Angle(radians: -angle.radians)
+    }
+
     static func +(lhs: Angle, rhs: Angle) -> Angle {
         Angle(radians: lhs.radians + rhs.radians)
     }

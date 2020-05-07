@@ -14,4 +14,25 @@ struct PhysicsComponent {
     var adjacentSides: SideSet = []
     var adjacentPositions: [WorldTilePos] = []
     var overlappingEntities: [Entity] = []
+
+    var hasAdjacents: Bool {
+        adjacentSides != []
+    }
+
+    var adjacentAxes: AxisSet {
+        var axes = AxisSet()
+        if (adjacentSides.hasHorizontal) {
+            axes.insert(.horizontal)
+        }
+        if (adjacentSides.hasVertical) {
+            axes.insert(.vertical)
+        }
+        return axes
+    }
+
+    mutating func reset() {
+        adjacentSides = []
+        adjacentPositions = []
+        overlappingEntities = []
+    }
 }

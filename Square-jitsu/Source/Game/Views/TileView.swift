@@ -5,26 +5,13 @@
 
 import SpriteKit
 
-class TileView: View {
-    private let node: SKNode?
-
+class TileView: OptionalNodeView {
     init(world: World, chunkPos: ChunkTilePos, tileType: TileType) {
         let template = world.settings.tileViewConfigs[tileType]
-        node = template?.generateNode(settings: world.settings)
+        super.init(node: template?.generateNode(world: world, chunkPos: chunkPos, tileType: tileType))
         if let node = node {
             node.position = chunkPos.cgPoint * world.settings.tileViewWidthHeight
+            node.zPosition = tileType.bigType.layer.zPosition
         }
-    }
-
-    override func place(parent: SKNode) {
-        super.place(parent: parent)
-        if let node = node {
-            parent.addChild(node)
-        }
-    }
-
-    override func remove() {
-        super.remove()
-        node?.removeFromParent()
     }
 }

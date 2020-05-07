@@ -30,10 +30,10 @@ class DummyWorldLoader : WorldLoader {
                 chunk.forcePlaceTile(pos: pos, type: TileType.basicBackground)
             }
         }
-        chunk.forcePlaceTile(pos: ChunkTilePos(x: 17, y: 2), type: TileType.basicEnemySpawn)
-        chunk.forcePlaceTile(pos: ChunkTilePos(x: 20, y: 7), type: TileType.basicShurikenSpawn)
+        chunk.forcePlaceTile(pos: ChunkTilePos(x: 17, y: 2), type: TileType.enemySpawn)
+        chunk.forcePlaceTile(pos: ChunkTilePos(x: 20, y: 7), type: TileType.shurikenSpawn)
         if pos == playerSpawnChunkPos {
-            chunk.forcePlaceTile(pos: ChunkTilePos(x: 12, y: 2), type: TileType.playerSpawn)
+            chunk.forcePlaceTile(pos: ChunkTilePos(x: 6, y: 4), type: TileType.playerSpawn)
         }
         return chunk
     }

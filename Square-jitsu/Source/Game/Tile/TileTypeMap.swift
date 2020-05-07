@@ -6,26 +6,33 @@
 import Foundation
 
 struct TileTypeMap<Value> {
-    private var backing: [TileBigType:[TileSmallType:Value]]
+    private var backing: [TileBigType:[Value?]]
 
     init() {
         self.init([:])
     }
 
-    init(_ backing: [TileBigType: [TileSmallType: Value]]) {
+    init(_ backing: [TileBigType:[Value?]]) {
         self.backing = backing
     }
 
     subscript(type: TileType) -> Value? {
         get {
-            backing[type.bigType]?[type.smallType]
+            backing[type.bigType]?[Int(type.smallType.value)]
         }
         set {
             // inserts an empty map if setting empty to nil but who cares?
-            if (backing[type.bigType] == nil) {
-                backing[type.bigType] = [:]
+            var valuesAtBigType = backing[type.bigType] ?? []
+            let index = Int(type.smallType.value)
+            while (valuesAtBigType.count < index) {
+                valuesAtBigType.append(nil)
             }
-            backing[type.bigType]![type.smallType] = newValue
+            if (valuesAtBigType.count == index) {
+                valuesAtBigType.append(newValue)
+            } else {
+                valuesAtBigType[index] = newValue
+            }
+            backing[type.bigType] = valuesAtBigType
         }
     }
 }
