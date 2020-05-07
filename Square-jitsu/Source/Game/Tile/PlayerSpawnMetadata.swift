@@ -7,8 +7,10 @@ import Foundation
 
 class PlayerSpawnMetadata: EmptyTileMetadata {
     override func onFirstLoad(world: World, pos: WorldTilePos3D) {
-        let myTile = world[pos]
-        let player = Entity.newForSpawnTile(type: myTile.type)
+        let myTileType = world[pos]
+        // TODO: Fail gracefully
+        assert(myTileType.bigType == TileBigType.playerSpawn, "player spawn metadata must be on player spawn tile")
+        let player = Entity.newForSpawnTile(type: myTileType)
         world.add(entity: player)
         world.player = player
     }

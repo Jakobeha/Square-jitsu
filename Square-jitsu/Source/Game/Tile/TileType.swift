@@ -5,15 +5,26 @@
 
 import Foundation
 
-struct TileType: Equatable {
-    static let air: TileType = TileType(bigType: TileBigType.air, smallType: TileSmallType.air)
-    static let basicBackground: TileType = TileType(bigType: TileBigType.solid, smallType: TileSmallType.backgroundBasic)
-    static let basicSolid: TileType = TileType(bigType: TileBigType.solid, smallType: TileSmallType.solidBasic)
-    static let basicIce: TileType = TileType(bigType: TileBigType.ice, smallType: TileSmallType.iceBasic)
-    static let basicShurikenSpawn: TileType = TileType(bigType: TileBigType.shurikenSpawn, smallType: TileSmallType.shurikenSpawnBasic)
-    static let basicEnemySpawn: TileType = TileType(bigType: TileBigType.enemySpawn, smallType: TileSmallType.enemySpawnBasic)
-    static let playerSpawn: TileType = TileType(bigType: TileBigType.playerSpawn, smallType: TileSmallType.playerSpawn)
+struct TileType: Equatable, HasDefault {
+    static let air: TileType = TileType(bigType: TileBigType.air)
+    static let basicBackground: TileType = TileType(bigType: TileBigType.solid)
+    static let basicSolid: TileType = TileType(bigType: TileBigType.solid)
+    static let basicIce: TileType = TileType(bigType: TileBigType.ice)
+    static let basicShurikenSpawn: TileType = TileType(bigType: TileBigType.shurikenSpawn)
+    static let basicEnemySpawn: TileType = TileType(bigType: TileBigType.enemySpawn)
+    static let playerSpawn: TileType = TileType(bigType: TileBigType.playerSpawn)
+
+    static let defaultValue: TileType = air
 
     let bigType: TileBigType
     let smallType: TileSmallType
+    let orientation: TileOrientation
+
+    var isDefault: Bool { self == TileType.defaultValue }
+
+    init(bigType: TileBigType, smallType: TileSmallType = TileSmallType._0, orientation: TileOrientation = TileOrientation.none) {
+        self.bigType = bigType
+        self.smallType = smallType
+        self.orientation = orientation
+    }
 }

@@ -15,6 +15,19 @@ enum Side: Int {
         SideSet(rawValue: 1 << UInt8(rawValue))
     }
 
+    var toCorner: Corner {
+        switch self {
+        case .east:
+            return .east
+        case .north:
+            return .north
+        case .west:
+            return .west
+        case .south:
+            return .south
+        }
+    }
+
     var offset: RelativePos {
         switch self {
         case .east:

@@ -5,8 +5,7 @@
 
 import Foundation
 
-struct TileMetadataAndPos {
-    let metadata: TileMetadata
-    let chunkPos: ChunkTilePos
-    let layer: Int
+enum Axis {
+    case horizontal
+    case vertical
 }

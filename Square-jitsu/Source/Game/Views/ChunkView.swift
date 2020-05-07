@@ -5,15 +5,13 @@
 
 import SpriteKit
 
-class ChunkView: View {
+class ChunkView: NodeView {
     private var tileViews: ChunkMatrix<TileView?> = ChunkMatrix()
     private let world: World
 
-    private let node: SKNode = SKNode()
-
     init(world: World, pos: WorldChunkPos, chunk: ReadonlyChunk) {
         self.world = world
-        super.init()
+        super.init(node: SKNode())
 
         placeExistingTiles(chunk: chunk)
         chunk.willPlaceTile.subscribe(observer: self, handler: placeTileView)
@@ -27,21 +25,21 @@ class ChunkView: View {
     private func placeExistingTiles(chunk: ReadonlyChunk) {
         for tilePos in ChunkTilePos.allCases {
             let tilesAtPos = chunk[tilePos]
-            for tile in tilesAtPos {
-                placeTileView(tilePos: tilePos, tile: tile)
+            for tileType in tilesAtPos {
+                placeTileView(tilePos: tilePos, tileType: tileType)
             }
         }
     }
 
-    func placeTileView(tilePos: ChunkTilePos, tile: Tile) {
-        let tileView = TileView(world: world, chunkPos: tilePos, tile: tile)
+    func placeTileView(tilePos: ChunkTilePos, tileType: TileType) {
+        let tileView = TileView(world: world, chunkPos: tilePos, tileType: tileType)
         tileView.place(parent: self.node)
-        self.tileViews.insert(tileView, at: tilePos)
+        let _ = self.tileViews.insert(tileView, at: tilePos)
     }
 
-    func removeTileView(tilePos: ChunkTilePos, layer: Int, tile: Tile) {
-        let tileView = self.tileViews[tilePos][layer]!
+    func removeTileView(tilePos: ChunkTilePos3D, tileType: TileType) {
+        let tileView = self.tileViews[tilePos]!
         tileView.remove()
-        self.tileViews.remove(at: tilePos, layer: layer)
+        self.tileViews.remove(at: tilePos)
     }
 }

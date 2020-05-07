@@ -92,11 +92,10 @@ class World {
     }
 
     private func notifyAllMetadataInChunk(pos: WorldChunkPos, chunk: Chunk, getNotifyFunction: (TileMetadata) -> (World, WorldTilePos3D) -> ()) {
-        for metadataAndPos in chunk.tileMetadatas {
-            let metadata = metadataAndPos.metadata
-            let pos = WorldTilePos3D(worldChunkPos: pos, chunkTilePos: metadataAndPos.chunkPos, layer: metadataAndPos.layer)
+        for (chunkPos3D, metadata) in chunk.tileMetadatas {
+            let pos3D = WorldTilePos3D(worldChunkPos: pos, chunkTilePos3D: chunkPos3D)
             let notifyThisMetadata = getNotifyFunction(metadata)
-            notifyThisMetadata(self, pos)
+            notifyThisMetadata(self, pos3D)
         }
     }
     // endregion
@@ -108,39 +107,48 @@ class World {
     }
 
     // region tile access
-    subscript(_ pos: WorldTilePos) -> [Tile] {
+    subscript(_ pos: WorldTilePos) -> [TileType] {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
         return chunk[pos.chunkTilePos]
     }
 
-    subscript(_ pos3D: WorldTilePos3D) -> Tile {
+    subscript(_ pos3D: WorldTilePos3D) -> TileType {
         self[pos3D.pos][pos3D.layer]
     }
 
     /// Places the tile, removing any non-overlapping tiles
-    /// Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
-    /// places the tile, while "place" may mean it was loaded
-    func forceCreateTile(pos: WorldTilePos, type: TileType) -> Tile {
+    /// - Returns: The layer of the tile which was placed
+    /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
+    ///   places the tile, while "place" may mean it was loaded
+    func forceCreateTile(pos: WorldTilePos, type: TileType) -> Int {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
-        let (tile, layer) = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type)
+        let layer = chunk.forcePlaceTileAndReturnLayer(pos: pos.chunkTilePos, type: type)
+        let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
         // Notify metadata
-        if let metadata = chunk.getTileMetadataFor(tile: tile)?.metadata {
-            metadata.onCreate(world: self, pos: WorldTilePos3D(pos: pos, layer: layer))
+        if let metadata = chunk.tileMetadatas[chunkPos3D] {
+            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+            metadata.onCreate(world: self, pos: pos3D)
         }
-        return tile
+        return layer
     }
 
     /// Note: "destroy" is distinguished from "remove" are different in that "destroy" means e.g. the user explicitly
     /// deletes the tile, while "remove" may mean it was unloaded
     func destroyTiles(pos: WorldTilePos) {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
-        let removedTiles = chunk[pos.chunkTilePos]
+        let tileMetadatas: [(layer: Int, metadata: TileMetadata)] = (0..<Chunk.numLayers).compactMap { layer in
+            let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
+            if let metadata = chunk.tileMetadatas[chunkPos3D] {
+                return (layer: layer, metadata: metadata)
+            } else {
+                return nil
+            }
+        }
         chunk.removeTiles(pos: pos.chunkTilePos)
         // Notify metadata
-        for (layer, tile) in removedTiles.enumerated() {
-            if let metadata = chunk.getTileMetadataFor(tile: tile)?.metadata {
-                metadata.onDestroy(world: self, pos: WorldTilePos3D(pos: pos, layer: layer))
-            }
+        for (layer, metadata) in tileMetadatas {
+            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+            metadata.onDestroy(world: self, pos: pos3D)
         }
     }
 
@@ -159,9 +167,8 @@ class World {
 
     private func getLoadedMetadatas() -> [(pos: WorldTilePos3D, metadata: TileMetadata)] {
         chunks.flatMap { (worldChunkPos, chunk) in
-            chunk.tileMetadatas.map { metadataAndPosition in
-                let metadata = metadataAndPosition.metadata
-                let pos = WorldTilePos3D(worldChunkPos: worldChunkPos, chunkTilePos: metadataAndPosition.chunkPos, layer: metadataAndPosition.layer)
+            chunk.tileMetadatas.map { (chunkPos3D, metadata) in
+                let pos = WorldTilePos3D(worldChunkPos: worldChunkPos, chunkTilePos3D: chunkPos3D)
                 return (pos: pos, metadata: metadata)
             }
         }

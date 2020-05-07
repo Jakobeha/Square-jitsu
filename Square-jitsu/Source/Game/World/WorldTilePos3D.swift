@@ -9,6 +9,10 @@ struct WorldTilePos3D {
     let pos: WorldTilePos
     let layer: Int
 
+    init(worldChunkPos: WorldChunkPos, chunkTilePos3D: ChunkTilePos3D) {
+        self.init(worldChunkPos: worldChunkPos, chunkTilePos: chunkTilePos3D.pos, layer: chunkTilePos3D.layer)
+    }
+
     init(worldChunkPos: WorldChunkPos, chunkTilePos: ChunkTilePos, layer: Int) {
         self.init(pos: WorldTilePos(worldChunkPos: worldChunkPos, chunkTilePos: chunkTilePos), layer: layer)
     }

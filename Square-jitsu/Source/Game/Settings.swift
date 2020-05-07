@@ -9,7 +9,7 @@ import SpriteKit
 class Settings {
     let fixedDeltaTime: CGFloat = 1.0 / 60
 
-    let tileViewWidthHeight: CGFloat = 96
+    let tileViewWidthHeight: CGFloat = 48
     let tileViewConfigs: TileTypeMap<TileTemplate> = TileTypeMap([
         TileBigType.background:[
             TileSmallType.backgroundBasic:StaticTileTemplate(textureName: "TestBackground")

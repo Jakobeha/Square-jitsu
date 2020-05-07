@@ -8,8 +8,8 @@ import SpriteKit
 class TileView: View {
     private let node: SKNode?
 
-    init(world: World, chunkPos: ChunkTilePos, tile: Tile) {
-        let template = world.settings.tileViewConfigs[tile.type]
+    init(world: World, chunkPos: ChunkTilePos, tileType: TileType) {
+        let template = world.settings.tileViewConfigs[tileType]
         node = template?.generateNode(settings: world.settings)
         if let node = node {
             node.position = chunkPos.cgPoint * world.settings.tileViewWidthHeight

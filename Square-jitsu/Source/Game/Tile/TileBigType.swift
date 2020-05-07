@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum TileBigType: UInt32 {
+enum TileBigType: UInt16 {
     case air
     case background
     case solid

@@ -15,7 +15,6 @@ protocol TileMetadata: Codable {
     func tick(world: World, pos: WorldTilePos3D)
 }
 
-/// Tile is anonymous iff nil
 func TileMetadataForTileOf(type: TileBigType) -> TileMetadata? {
     switch (type) {
     case .air, .background, .solid, .ice:

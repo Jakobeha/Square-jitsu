@@ -16,7 +16,11 @@ struct ChunkMatrix<Value: HasDefault> {
         backing[pos.x][pos.y]
     }
 
-    /// Returns the layer the item was inserted at
+    subscript(_ pos3D: ChunkTilePos3D) -> Value {
+        self[pos3D.pos][pos3D.layer]
+    }
+
+    /// - Returns: The layer where the item was inserted
     mutating func insert(_ item: Value, at pos: ChunkTilePos) -> Int {
         let layer = getNextFreeLayerAt(pos: pos) ?? {
             fatalError("can't place tile because this position is occupied")
@@ -32,10 +36,11 @@ struct ChunkMatrix<Value: HasDefault> {
         }
     }
 
-    mutating func remove(at pos: ChunkTilePos, layer: Int) {
+    mutating func remove(at pos3D: ChunkTilePos3D) {
+        let pos = pos3D.pos
         let valuesAtPos = backing[pos.x][pos.y]
         // Move later tiles down, so the last layers are the empty ones
-        for nextLayer in layer..<(Chunk.numLayers - 1) {
+        for nextLayer in pos3D.layer..<(Chunk.numLayers - 1) {
             backing[pos.x][pos.y][nextLayer] = valuesAtPos[nextLayer + 1]
         }
         backing[pos.x][pos.y][Chunk.numLayers - 1] = Value.defaultValue

@@ -14,10 +14,12 @@ class WorldController {
         let worldView: WorldView
     }
 
-    private var loaded: WorldModelView? = nil
+    private let parent: SKNode
     private let updater: FixedUpdater = FixedUpdater()
+    private var loaded: WorldModelView? = nil
 
-    init() {
+    init(parent: SKNode) {
+        self.parent = parent
         updater.onTick = tick
     }
 
@@ -29,6 +31,7 @@ class WorldController {
         loaded?.worldView.remove()
 
         let worldView = WorldView(world: world)
+        worldView.place(parent: parent)
         loaded = WorldModelView(world: world, worldView: worldView)
         updater.fixedDeltaTime = world.settings.fixedDeltaTime
     }

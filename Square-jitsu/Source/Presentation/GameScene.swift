@@ -9,14 +9,15 @@
 import SpriteKit
 
 class GameScene: SKScene {
-    private let worldController: WorldController = WorldController()
+    private var worldController: WorldController?
 
     override func sceneDidLoad() {
         super.sceneDidLoad()
-        worldController.loadDummyWorld()
+        worldController = WorldController(parent: self)
+        worldController!.loadDummyWorld()
     }
 
     override func update(_ currentTime: TimeInterval) {
-        worldController.update(currentTime)
+        worldController?.update(currentTime)
     }
 }

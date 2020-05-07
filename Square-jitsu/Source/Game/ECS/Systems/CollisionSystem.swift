@@ -19,10 +19,10 @@ class CollisionSystem: System {
         assert(handlesTileCollisions(entity: entity))
         let trajectoryNextFrame = getTrajectoryNextFrame(entity: entity)
         for tilePosition in trajectoryNextFrame.capsuleCastTilePositions(capsuleRadius: entity.prev.locC!.radius) {
-            let tiles = entity.world![tilePosition]
-            for tile in tiles {
-                if (entitiesCollideWith(tile: tile)) {
-                    handleCollisionWith(tile: tile, tilePosition: tilePosition, forEntity: entity)
+            let tileTypes = entity.world![tilePosition]
+            for tileType in tileTypes {
+                if (entityCollidesWith(tileType: tileType)) {
+                    handleCollisionWith(tileType: tileType, tilePosition: tilePosition, forEntity: entity)
                     return // blocked by other collisions
                 }
             }
@@ -47,8 +47,8 @@ class CollisionSystem: System {
         }
     }
 
-    private static func entitiesCollideWith(tile: Tile) -> Bool {
-        switch tile.type.bigType {
+    private static func entityCollidesWith(tileType: TileType) -> Bool {
+        switch tileType.bigType {
         case .solid, .ice:
             return true
         case .air, .background, .shurikenSpawn, .enemySpawn, .playerSpawn:
@@ -64,7 +64,7 @@ class CollisionSystem: System {
         entity.prev.docC != nil || entity.prev.phyC != nil
     }
 
-    private static func handleCollisionWith(tile: Tile, tilePosition: WorldTilePos, forEntity entity: Entity) {
+    private static func handleCollisionWith(tileType: TileType, tilePosition: WorldTilePos, forEntity entity: Entity) {
         if (entity.prev.docC != nil) {
             entity.world!.remove(entity: entity)
         }
@@ -74,32 +74,68 @@ class CollisionSystem: System {
             let xIsLeft = trajectoryNextFrame.start.x < trajectoryNextFrame.end.x
             let yIsBottom = trajectoryNextFrame.start.y < trajectoryNextFrame.end.y
             // Determine if we hit from the x axis or y axis.
-            // If we hit a corner it's tehnically ambiguous.
-            // We choose whichever axis is hit first and ignore the other
             let outwardsX = (xIsLeft ? -0.5 : 0.5) as CGFloat
             let outwardsY = (yIsBottom ? -0.5 : 0.5) as CGFloat
             let xBarrier = tilePosition.cgPoint.x + outwardsX
             let yBarrier = tilePosition.cgPoint.y + outwardsY
-            let timeToXBarrier = trajectoryNextFrame.tAt(x: xBarrier)
-            let timeToYBarrier = trajectoryNextFrame.tAt(y: yBarrier)
-            if (timeToXBarrier < timeToYBarrier) {
-                // We hit from the x axis
-                let side = xIsLeft ? SideSet.west : SideSet.east
-                // Add side, move out of solid, cancel velocity
-                entity.next.phyC!.adjacentSides.insert(side)
-                entity.next.locC!.position.x = xBarrier + outwardsX
-                entity.next.dynC!.velocity.x = 0
-            } else {
-                // We hit from the y axis
-                let side = yIsBottom ? SideSet.south : SideSet.north
-                // Add side, move out of solid, cancel velocity
-                entity.next.phyC!.adjacentSides.insert(side)
-                entity.next.locC!.position.y = yBarrier + outwardsY
-                entity.next.dynC!.velocity.y = 0
+            let hitAxis = calculateCollidedAxis(
+                    trajectoryNextFrame: trajectoryNextFrame,
+                    xIsLeft: xIsLeft,
+                    yIsBottom: yIsBottom,
+                    xBarrier: xBarrier,
+                    yBarrier: yBarrier,
+                    tilePosition: tilePosition,
+                    forEntity: entity
+            )
+            if let hitAxis = hitAxis {
+                switch hitAxis {
+                case .horizontal:
+                    // We hit from the x axis
+                    // Add side, move out of solid, cancel velocity
+                    let side = xIsLeft ? SideSet.west : SideSet.east
+                    entity.next.phyC!.adjacentSides.insert(side)
+                    entity.next.locC!.position.x = xBarrier + outwardsX
+                    entity.next.dynC!.velocity.x = 0
+                case .vertical:
+                    // We hit from the y axis
+                    // Add side, move out of solid, cancel velocity
+                    let side = yIsBottom ? SideSet.south : SideSet.north
+                    entity.next.phyC!.adjacentSides.insert(side)
+                    entity.next.locC!.position.y = yBarrier + outwardsY
+                    entity.next.dynC!.velocity.y = 0
+                }
+                entity.next.phyC!.adjacentPositions.append(tilePosition)
+                // Rotate out, cancel angular velocity
+                // (even if we didn't actually collide, we should've collided with something else,
+                //  so this will happen anyways)
+                entity.next.locC!.rotation = entity.next.locC!.rotation.round(by: Angle.right)
+                entity.next.dynC!.angularVelocity = Angle.zero
             }
-            // Rotate out, cancel angular velocity
-            entity.next.locC!.rotation = entity.next.locC!.rotation.round(by: Angle.right)
-            entity.next.dynC!.angularVelocity = Angle.zero
+        }
+    }
+
+    private static func calculateCollidedAxis(trajectoryNextFrame: Line, xIsLeft: Bool, yIsBottom: Bool, xBarrier: CGFloat, yBarrier: CGFloat, tilePosition: WorldTilePos, forEntity entity: Entity) -> Axis? {
+        let trajectoryNextFrame = getTrajectoryNextFrame(entity: entity)
+        let timeToXBarrier = trajectoryNextFrame.tAt(x: xBarrier)
+        let timeToYBarrier = trajectoryNextFrame.tAt(y: yBarrier)
+        let xSide = xIsLeft ? Side.west : Side.east
+        let ySide = yIsBottom ? Side.south : Side.north
+        let adjacentXPosition = tilePosition + xSide.offset
+        let adjacentYPosition = tilePosition + ySide.offset
+        let adjacentXIsBlocked = entity.world![adjacentXPosition].contains(where: entityCollidesWith)
+        let adjacentYIsBlocked = entity.world![adjacentYPosition].contains(where: entityCollidesWith)
+        switch (adjacentXIsBlocked, adjacentYIsBlocked) {
+        case (false, false):
+            // If we hit a corner it's technically ambiguous.
+            // We choose whichever axis is hit first and ignore the other
+            return (timeToXBarrier < timeToYBarrier) ? .horizontal : .vertical
+        case (true, false):
+            return .vertical
+        case (false, true):
+            return .horizontal
+        case (true, true):
+            // This is inside of a corner (unless physics is broken) so we didn't actually hit it
+            return nil
         }
     }
 

@@ -5,15 +5,13 @@
 
 import SpriteKit
 
-class WorldView: View {
+class WorldView: NodeView {
     private var chunkViews: [WorldChunkPos:ChunkView] = [:]
     private let world: World
 
-    private let node: SKNode = SKNode()
-
     init(world: World) {
         self.world = world
-        super.init()
+        super.init(node: SKNode())
 
         placeExistingChunks()
         world.willLoadChunk.subscribe(observer: self, handler: placeChunkView)
