@@ -31,7 +31,7 @@ struct PhysicsComponent {
         return axes
     }
 
-    var isOnSolid: Bool {
+    var isOnNonIceSolid: Bool {
         overlappingTypes.contains(bigType: TileBigType.solid)
     }
 

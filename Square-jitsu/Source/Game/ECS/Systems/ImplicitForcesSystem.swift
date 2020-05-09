@@ -14,7 +14,7 @@ struct ImplicitForcesSystem: System {
 
     func tick() {
         if entity.prev.phyC != nil {
-            if entity.prev.phyC!.overlappingTypes.contains(bigType: TileBigType.solid) {
+            if entity.prev.phyC!.isOnNonIceSolid {
                 if entity.prev.phyC!.adjacentSides.hasHorizontal {
                     entity.next.dynC!.velocity.x *= 1 - entity.prev.phyC!.solidFriction
                 }

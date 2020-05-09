@@ -17,6 +17,9 @@ struct CollisionSystem: System {
         if handlesTileCollisions {
             handleTileCollisions()
         }
+        if handlesNearTileCollisions {
+            handleNearTileCollisions()
+        }
         if handlesEntityCollisions {
             handleEntityCollisions()
         }
@@ -25,6 +28,9 @@ struct CollisionSystem: System {
     private func resetCollisions() {
         if entity.next.phyC != nil {
             entity.next.phyC!.reset()
+        }
+        if entity.next.ntlC != nil {
+            entity.next.ntlC!.reset()
         }
     }
 
@@ -36,6 +42,21 @@ struct CollisionSystem: System {
                 handleCollisionWith(tileType: tileType, tilePosition: tilePosition)
                 if (entityBlockedFromFurtherCollisions) {
                     return // blocked by other collisions
+                }
+            }
+        }
+    }
+
+    private mutating func handleNearTileCollisions() {
+        assert(handlesNearTileCollisions)
+        let nearRadius = entity.prev.locC!.radius + entity.prev.ntlC!.nearRadiusExtra
+        let maxTileDistance = nearRadius + 0.5
+        for tilePosition in nearTrajectoryNextFrame.capsuleCastTilePositions(capsuleRadius: nearRadius) {
+            let tileDistance = (entity.next.locC!.position - tilePosition.cgPoint).magnitude
+            if tileDistance <= maxTileDistance {
+                let tileTypes = world[tilePosition]
+                for tileType in tileTypes {
+                    handleNearCollisionWith(tileType: tileType, tilePosition: tilePosition)
                 }
             }
         }
@@ -62,6 +83,10 @@ struct CollisionSystem: System {
         entity.prev.docC != nil || entity.prev.phyC != nil
     }
 
+    private var handlesNearTileCollisions: Bool {
+        entity.prev.ntlC != nil
+    }
+
     private var handlesEntityCollisions: Bool {
         entity.prev.docC != nil || entity.prev.phyC != nil
     }
@@ -73,6 +98,11 @@ struct CollisionSystem: System {
         if tileType.isSolid {
             handleSolidCollisionWith(tileType: tileType, tilePosition: tilePosition)
         }
+    }
+
+    private mutating func handleNearCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
+        assert(entity.prev.ntlC != nil)
+        entity.next.ntlC!.nearTypes.insert(tileType)
     }
 
     private mutating func handleSolidCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
@@ -217,5 +247,10 @@ struct CollisionSystem: System {
     private lazy var trajectoryNextFrame: Line =
         // We extend backwards so that the entity can exit if it slightly clips into a solid due to rounding issues
         Line(start: entity.prev.locC!.position, end: entity.next.locC!.position).extendedBackwardsBy(magnitude: entity.prev.locC!.radius)
+
+    // Similar definition as trajectoryNextFrame but it's calculated after next entity position might change
+    private lazy var nearTrajectoryNextFrame: Line =
+        // We extend backwards so that the entity can exit if it slightly clips into a solid due to rounding issues
+        Line(start: entity.prev.locC!.position, end: entity.next.locC!.position).extendedBackwardsBy(magnitude: entity.prev.locC!.radius + entity.prev.ntlC!.nearRadiusExtra)
 
 }

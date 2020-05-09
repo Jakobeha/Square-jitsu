@@ -59,6 +59,7 @@
 		603724BCCC2D2BE0C8391711 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037290076A7ABE8B66636FF /* Camera.swift */; };
 		603724DDF73A4098A7B98F8D /* SJState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037286154E91BC767594FA2 /* SJState.swift */; };
 		603724E24E1675E9D076B5CD /* Background_0111.png in Resources */ = {isa = PBXBuildFile; fileRef = 6037288FEA244D0DB09391F4 /* Background_0111.png */; };
+		6037251907FC713E88450917 /* NearTileComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037242B48B54C5C58549A87 /* NearTileComponent.swift */; };
 		6037254159C16AFD17E8FB23 /* WorldSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037219B5A9B83EBE2F0CFF4 /* WorldSettings.swift */; };
 		60372546F7BE2C18AA607449 /* UITouch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037210A03568113E6631B85 /* UITouch.swift */; };
 		603725AA48D8FCF630F11FFD /* Solid_00011101.png in Resources */ = {isa = PBXBuildFile; fileRef = 603724FDCE9126BCD6DF97C7 /* Solid_00011101.png */; };
@@ -225,6 +226,7 @@
 		603723EB298C8C4C31775F9C /* ChunkTilePos3D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkTilePos3D.swift; sourceTree = "<group>"; };
 		603723F36745B606E1740CAD /* TouchTracker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchTracker.swift; sourceTree = "<group>"; };
 		603724270DDD60A7019C2C1C /* Solid_00011100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Solid_00011100.png; sourceTree = "<group>"; };
+		6037242B48B54C5C58549A87 /* NearTileComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NearTileComponent.swift; sourceTree = "<group>"; };
 		60372436CF4F912E3CFF2A33 /* Generate8Atlases.mjs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.mjs; path = Generate8Atlases.mjs; sourceTree = "<group>"; };
 		60372467372F33A2ED3D68E2 /* ChunkTilePos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkTilePos.swift; sourceTree = "<group>"; };
 		60372491D8BF933E1A31C3FE /* Solid_01110000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Solid_01110000.png; sourceTree = "<group>"; };
@@ -600,6 +602,7 @@
 				60372ED70BDEA4289BCA6D6F /* NinjaComponent.swift */,
 				603720FEFB406C7F05327E6C /* HealthComponent.swift */,
 				603727E4B6D2FF1AFD0BB622 /* ImplicitForcesComponent.swift */,
+				6037242B48B54C5C58549A87 /* NearTileComponent.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1041,6 +1044,7 @@
 				60372D5E558ED2BE5027E2C0 /* UserSettings.swift in Sources */,
 				60372546F7BE2C18AA607449 /* UITouch.swift in Sources */,
 				60372710CBC876809B6C9B4B /* UnclampedAngle.swift in Sources */,
+				6037251907FC713E88450917 /* NearTileComponent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

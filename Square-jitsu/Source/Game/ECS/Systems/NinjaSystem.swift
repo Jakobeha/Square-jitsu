@@ -21,7 +21,7 @@ struct NinjaSystem: System {
                 tryToJump(direction: direction)
                 entity.next.nijC!.jumpState = .idle
             }
-            if entity.prev.phyC!.isOnSolid {
+            if entity.prev.phyC!.isOnNonIceSolid {
                 // Also we can jump this frame, so don't worry that this affects the next frame
                 entity.next.nijC!.backgroundTypesUsed.removeAll()
             }
@@ -42,14 +42,14 @@ struct NinjaSystem: System {
         )
         entity.next.dynC!.angularVelocity += entity.prev.nijC!.jumpAngularVelocity
         // Technically this is cleared somewhere else if on solid anyways...
-        if !entity.prev.phyC!.isOnSolid {
+        if !entity.prev.phyC!.isOnNonIceSolid {
             entity.next.nijC!.backgroundTypesUsed.formUnion(overlappingBackgroundTypes)
         }
     }
 
     var canJump: Bool {
-        assert(entity.prev.nijC != nil && entity.prev.phyC != nil)
-        return entity.prev.phyC!.isOnSolid || isOnUnusedBackground
+        assert(entity.prev.nijC != nil && entity.prev.ntlC != nil && entity.prev.phyC != nil)
+        return (entity.prev.ntlC!.isNearNonIceSolid && !entity.prev.ntlC!.isNearToxicSolid) || entity.prev.phyC!.isOnNonIceSolid || isOnUnusedBackground
     }
 
     var isOnUnusedBackground: Bool {

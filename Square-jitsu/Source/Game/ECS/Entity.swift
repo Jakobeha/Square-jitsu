@@ -12,6 +12,7 @@ class Entity: EqualityIsIdentity {
         var imfC: ImplicitForcesComponent? = nil
         var docC: DestroyOnCollideComponent? = nil
         var phyC: PhysicsComponent? = nil
+        var ntlC: NearTileComponent? = nil
         var helC: HealthComponent? = nil
         var nijC: NinjaComponent? = nil
 
@@ -20,7 +21,8 @@ class Entity: EqualityIsIdentity {
             assert(imfC == nil || (dynC != nil && locC != nil))
             assert(docC == nil || (dynC != nil && locC != nil))
             assert(phyC == nil || (dynC != nil && locC != nil))
-            assert(nijC == nil || (helC != nil && phyC != nil && dynC != nil && locC != nil))
+            assert(ntlC == nil || (phyC != nil && dynC != nil && locC != nil))
+            assert(nijC == nil || (helC != nil && ntlC != nil && phyC != nil && dynC != nil && locC != nil))
         }
     }
 
@@ -32,6 +34,7 @@ class Entity: EqualityIsIdentity {
                     dynC: MovingComponent(),
                     imfC: ImplicitForcesComponent(),
                     phyC: PhysicsComponent(),
+                    ntlC: NearTileComponent(),
                     helC: HealthComponent(),
                     nijC: NinjaComponent()
             ))
