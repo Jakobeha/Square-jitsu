@@ -21,7 +21,7 @@ class DummyWorldLoader : WorldLoader {
             }
         }
         for y in 1..<10 {
-            let pos = ChunkTilePos(x: 9, y: y)
+            let pos = ChunkTilePos(x: 3, y: y)
             chunk.forcePlaceTile(pos: pos, type: TileType.basicIce)
         }
         for x in 22..<30 {

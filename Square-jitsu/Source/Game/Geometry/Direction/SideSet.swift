@@ -11,6 +11,8 @@ struct SideSet: OptionSet {
     static let west: SideSet = SideSet(rawValue: 1 << 2)
     static let south: SideSet = SideSet(rawValue: 1 << 3)
 
+    static let all: SideSet = [.east, .north, .west, .south]
+
     let rawValue: UInt8
 
     var hasHorizontal: Bool {

@@ -8,8 +8,21 @@ import SpriteKit
 enum TileLayer: Int {
     case air
     case background
-    case foreground
+    case solid
     case entity
+
+    var toSet: TileLayerSet {
+        switch self {
+        case .air:
+            return TileLayerSet.air
+        case .background:
+            return TileLayerSet.background
+        case .solid:
+            return TileLayerSet.solid
+        case .entity:
+            return TileLayerSet.entity
+        }
+    }
 
     var zPosition: CGFloat {
         CGFloat(rawValue)
@@ -21,13 +34,13 @@ enum TileLayer: Int {
             return true
         case (.background, .background):
             return false
-        case (.background, .foreground), (.foreground, .background):
+        case (.background, .solid), (.solid, .background):
             return false
         case (.background, .entity), (.entity, .background):
             return true
-        case (.foreground, .foreground):
+        case (.solid, .solid):
             return false
-        case (.foreground, .entity), (.entity, .foreground):
+        case (.solid, .entity), (.entity, .solid):
             return false
         case (.entity, .entity):
             return false

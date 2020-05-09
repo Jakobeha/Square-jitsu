@@ -22,7 +22,7 @@ enum TileBigType: UInt16 {
         case .background:
             return TileLayer.background
         case .solid, .ice:
-            return TileLayer.foreground
+            return TileLayer.solid
         case .shurikenSpawn, .enemySpawn, .playerSpawn:
             return TileLayer.entity
         }

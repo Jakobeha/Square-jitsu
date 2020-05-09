@@ -7,7 +7,7 @@ import SpriteKit
 
 class World {
     private let loader: WorldLoader
-    let settings: Settings
+    let settings: WorldSettings
     private var chunks: [WorldChunkPos : Chunk] = [:]
     var readonlyChunks: [WorldChunkPos : ReadonlyChunk] {
         chunks.mapValues { $0 as ReadonlyChunk }
@@ -15,6 +15,12 @@ class World {
     private var chunkPositionsLoadedBefore: Set<WorldChunkPos> = Set()
 
     private(set) var entities: [Entity] = []
+
+    var speed: CGFloat = 1 {
+        didSet {
+            _didChangeSpeed.publish()
+        }
+    }
 
     private var _player: Entity? = nil
     var player: Entity {
@@ -29,22 +35,27 @@ class World {
     }
     /// We put this in the world so it (i.e. what the player sees) is defined as part of the game
     /// ... and also because it's easy
-    private(set) var playerCamera: PlayerCamera = PlayerCamera()
+    let playerCamera: PlayerCamera = PlayerCamera()
+    let playerInput: PlayerInput
 
     private let _didUnloadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
     private let _didLoadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
     private let _didAddEntity: Publisher<Entity> = Publisher()
     private let _didRemoveEntity: Publisher<Entity> = Publisher()
+    private let _didChangeSpeed: Publisher<()> = Publisher()
     private let _didTick: Publisher<()> = Publisher()
     var didUnloadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { Observable(publisher: _didUnloadChunk) }
     var didLoadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { Observable(publisher: _didLoadChunk) }
     var didAddEntity: Observable<Entity> { Observable(publisher: _didAddEntity) }
     var didRemoveEntity: Observable<Entity> { Observable(publisher: _didRemoveEntity) }
+    var didChangeSpeed: Observable<()> { Observable(publisher: _didChangeSpeed) }
     var didTick: Observable<()> { Observable(publisher: _didTick) }
 
-    init(loader: WorldLoader, settings: Settings) {
+    init(loader: WorldLoader, settings: WorldSettings, userSettings: UserSettings) {
         self.loader = loader
         self.settings = settings
+
+        self.playerInput = PlayerInput(userSettings: userSettings)
 
         loadPlayer()
     }
@@ -122,6 +133,7 @@ class World {
     // endregion
 
     func tick() {
+        playerInput.tick(world: self)
         // Tick the camera before entities because we want it to see the previous position
         playerCamera.tick(world: self)
         runActions()
@@ -240,9 +252,14 @@ class World {
     }
 
     private func tickSystems() {
+        NinjaSystem.tick(world: self)
+        ImplicitForcesSystem.tick(world: self)
+        // Must be after ImplicitForcesSystem and NinjaSystem
         MovementSystem.tick(world: self)
+        // Must be after MovementSystem
         CollisionSystem.tick(world: self)
-        LocationSystem.tick(world: self)
+        // Must be last
+        LoadPositionSystem.tick(world: self)
     }
     // endregion
 

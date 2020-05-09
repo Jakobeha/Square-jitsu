@@ -10,7 +10,7 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameViewController: UIViewController {
+class SJViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -22,7 +22,7 @@ class GameViewController: UIViewController {
         view.showsNodeCount = true
 
         // Create the scene
-        let scene = GameScene(size: view.bounds.size)
+        let scene = SJScene(size: view.bounds.size)
         scene.scaleMode = .resizeFill
 
         // Present the scene

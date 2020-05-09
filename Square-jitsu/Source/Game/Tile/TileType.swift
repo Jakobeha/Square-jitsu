@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct TileType: Equatable, HasDefault {
+struct TileType: Equatable, Hashable, HasDefault {
     static let air: TileType = TileType(bigType: TileBigType.air)
     static let basicBackground: TileType = TileType(bigType: TileBigType.solid)
     static let basicSolid: TileType = TileType(bigType: TileBigType.solid)
@@ -21,6 +21,11 @@ struct TileType: Equatable, HasDefault {
     let orientation: TileOrientation
 
     var isDefault: Bool { self == TileType.defaultValue }
+
+    // Don't change without changing TileTypeSet
+    var isSolid: Bool {
+        bigType.layer == TileLayer.solid
+    }
 
     init(bigType: TileBigType, smallType: TileSmallType = TileSmallType(0), orientation: TileOrientation = TileOrientation.none) {
         self.bigType = bigType

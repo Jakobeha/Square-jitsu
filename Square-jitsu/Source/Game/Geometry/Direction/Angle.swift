@@ -7,7 +7,7 @@ import SpriteKit
 
 struct Angle: Equatable, Hashable, Codable {
     static let zero: Angle = Angle(radians: 0 as Float)
-    static let right: Angle = Angle(radians: Float.pi)
+    static let right: Angle = Angle(radians: Float.pi / 2)
 
     static prefix func -(angle: Angle) -> Angle {
         Angle(radians: -angle.radians)
@@ -33,7 +33,7 @@ struct Angle: Equatable, Hashable, Codable {
         Angle(radians: lhs.radians * Float(scale))
     }
 
-    static func *(lhs: inout Angle, scale: CGFloat) {
+    static func *=(lhs: inout Angle, scale: CGFloat) {
         lhs = lhs * scale
     }
 
@@ -41,22 +41,36 @@ struct Angle: Equatable, Hashable, Codable {
         Angle(radians: lhs.radians / Float(scale))
     }
 
-    static func /(lhs: inout Angle, scale: CGFloat) {
+    static func /=(lhs: inout Angle, scale: CGFloat) {
         lhs = lhs / scale
     }
 
     private static func normalize(radians: Float) -> Float {
+        assert(!radians.isNaN && !radians.isInfinite, "sanity check failed")
         var radians = radians
         radians = fmodf(radians, Float.pi * 2)
-        // TODO: ensure this is how fmod works
-        assert(radians >= 0 && radians <= Float.pi * 2)
+        if (radians < Float.pi) {
+            radians += Float.pi * 2
+        }
         if (radians > Float.pi) {
-            radians = (Float.pi * 2) - radians
+            radians -= Float.pi * 2
         }
         return radians
     }
 
     let radians: Float
+
+    var toUnclamped: UnclampedAngle { UnclampedAngle(radians: radians) }
+
+    /// Cosine
+    var xOnUnitCircle: CGFloat {
+        CGFloat(cos(radians))
+    }
+
+    /// Sine
+    var yOnUnitCircle: CGFloat {
+        CGFloat(sin(radians))
+    }
 
     init(radians: CGFloat) {
         self.init(radians: Float(radians))

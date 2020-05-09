@@ -5,14 +5,23 @@
 
 import Foundation
 
+/// The system itself is the class.
+/// We use a "System" instance for each entity to reduce boilerplate
 protocol System {
-    static func tick(entity: Entity)
+    var entity: Entity { get }
+
+    init(entity: Entity)
+
+    mutating func tick()
 }
 
 extension System {
     static func tick(world: World) {
         for entity in world.entities {
-            tick(entity: entity)
+            var system = Self(entity: entity)
+            system.tick()
         }
     }
+
+    var world: World { entity.world! }
 }

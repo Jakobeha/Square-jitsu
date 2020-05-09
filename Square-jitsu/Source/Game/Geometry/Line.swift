@@ -41,7 +41,7 @@ struct Line {
     }
 
     var slope: Slope {
-        if (offset.magnitude < Constants.cgEpsilon) {
+        if (offset.magnitude < CGFloat.epsilon) {
             return .thisIsAPoint(this: self.start)
         } else {
             let yDivX = offset.y / offset.x
@@ -109,7 +109,7 @@ struct Line {
     }
 
     func getClosestFractionTo(point: CGPoint) -> CGFloat {
-        if (length < Constants.cgEpsilon) {
+        if (length < CGFloat.epsilon) {
             return 0
         } else {
             let offset = point - start
@@ -127,42 +127,43 @@ struct Line {
     /// Returns the tiles intersected by an object of radius moving along this line,
     /// ordered so that the first tiles are at the line's start and the last are at its end
     func capsuleCastTilePositions(capsuleRadius: CGFloat) -> [WorldTilePos] {
+        let assumedCapsuleRadius = capsuleRadius + CGFloat.epsilon
         switch slope {
         case .thisIsAPoint(let this):
-            let minX = Int(floor(this.x - capsuleRadius))
-            let maxX = Int(ceil(this.x + capsuleRadius))
-            let minY = Int(floor(this.y - capsuleRadius))
-            let maxY = Int(ceil(this.y + capsuleRadius))
+            let minX = Int(round(this.x - assumedCapsuleRadius))
+            let maxX = Int(round(this.x + assumedCapsuleRadius))
+            let minY = Int(round(this.y - assumedCapsuleRadius))
+            let maxY = Int(round(this.y + assumedCapsuleRadius))
             return (minX...maxX).flatMap { x in
                 (minY...maxY).map { y in
                     WorldTilePos(x: x, y: y)
                 }
             }
         case .moreHorizontal(let yDivX):
-            let minX = Int(floor(bounds.minX - capsuleRadius))
-            let maxX = Int(ceil(bounds.maxX + capsuleRadius))
-            let slopeExtension = yDivX / 2
-            let safeCapsuleRadius = capsuleRadius + slopeExtension
+            let minX = Int(round(start.x > end.x ? end.x - assumedCapsuleRadius : start.x))
+            let maxX = Int(round(start.x > end.x ? start.x : end.x + assumedCapsuleRadius))
+            let slopeExtension = abs(yDivX / 2)
+            let safeCapsuleRadius = assumedCapsuleRadius + slopeExtension
             let xs = start.x > end.x ? FBRange(maxX, minX) : FBRange(minX, maxX)
             return xs.flatMap { x -> [WorldTilePos] in
                 let yOnSelf = unclampedYAt(x: CGFloat(x))
-                let minY = Int(floor(yOnSelf - safeCapsuleRadius))
-                let maxY = Int(ceil(yOnSelf + safeCapsuleRadius))
+                let minY = Int(round(yOnSelf - safeCapsuleRadius))
+                let maxY = Int(round(yOnSelf + safeCapsuleRadius))
                 let ys = start.y > end.y ? FBRange(maxY, minY) : FBRange(minY, maxY)
                 return ys.map { y in
                     WorldTilePos(x: x, y: y)
                 }
             }
         case .moreVertical(let xDivY):
-            let minY = Int(floor(bounds.minY - capsuleRadius))
-            let maxY = Int(ceil(bounds.maxY + capsuleRadius))
-            let slopeExtension = xDivY / 2
-            let safeCapsuleRadius = capsuleRadius + slopeExtension
+            let minY = Int(round(start.y > end.y ? end.y - assumedCapsuleRadius : start.y))
+            let maxY = Int(round(start.y > end.y ? start.y : end.y + assumedCapsuleRadius))
+            let slopeExtension = abs(xDivY / 2)
+            let safeCapsuleRadius = assumedCapsuleRadius + slopeExtension
             let ys = start.y > end.y ? FBRange(maxY, minY) : FBRange(minY, maxY)
             return ys.flatMap { y -> [WorldTilePos] in
                 let xOnSelf = unclampedXAt(y: CGFloat(y))
-                let minX = Int(floor(xOnSelf - safeCapsuleRadius))
-                let maxX = Int(ceil(xOnSelf + safeCapsuleRadius))
+                let minX = Int(round(xOnSelf - safeCapsuleRadius))
+                let maxX = Int(round(xOnSelf + safeCapsuleRadius))
                 let xs = start.x > end.x ? FBRange(maxX, minX) : FBRange(minX, maxX)
                 return xs.map { x in
                     WorldTilePos(x: x, y: y)

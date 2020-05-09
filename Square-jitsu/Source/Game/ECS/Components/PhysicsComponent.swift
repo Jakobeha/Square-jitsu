@@ -9,11 +9,12 @@ import SpriteKit
 /// and other physics entity collisions by pushing the other entity back
 struct PhysicsComponent {
     var mass: CGFloat = 1
-    var friction: CGFloat = 0.25
+    var solidFriction: CGFloat = 1.0 / 16
 
     var adjacentSides: SideSet = []
     var adjacentPositions: [WorldTilePos] = []
-    var overlappingEntities: [Entity] = []
+    var overlappingTypes: TileTypeSet = TileTypeSet()
+    var overlappingEntities: Set<Entity> = []
 
     var hasAdjacents: Bool {
         adjacentSides != []
@@ -30,9 +31,14 @@ struct PhysicsComponent {
         return axes
     }
 
+    var isOnSolid: Bool {
+        overlappingTypes.contains(bigType: TileBigType.solid)
+    }
+
     mutating func reset() {
         adjacentSides = []
-        adjacentPositions = []
-        overlappingEntities = []
+        adjacentPositions.removeAll()
+        overlappingTypes.removeAll()
+        overlappingEntities.removeAll()
     }
 }

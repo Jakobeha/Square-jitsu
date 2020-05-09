@@ -5,17 +5,22 @@
 
 import SpriteKit
 
-class Entity {
+class Entity: EqualityIsIdentity {
     struct Components {
-        var locC: LocationComponent?
-        var dynC: MovingComponent?
-        var docC: DestroyOnCollideComponent?
-        var phyC: PhysicsComponent?
+        var locC: LocationComponent? = nil
+        var dynC: MovingComponent? = nil
+        var imfC: ImplicitForcesComponent? = nil
+        var docC: DestroyOnCollideComponent? = nil
+        var phyC: PhysicsComponent? = nil
+        var helC: HealthComponent? = nil
+        var nijC: NinjaComponent? = nil
 
         func validate() {
             assert(dynC == nil || (locC != nil))
-            assert(docC == nil || (locC != nil && dynC != nil))
-            assert(phyC == nil || (locC != nil && dynC != nil))
+            assert(imfC == nil || (dynC != nil && locC != nil))
+            assert(docC == nil || (dynC != nil && locC != nil))
+            assert(phyC == nil || (dynC != nil && locC != nil))
+            assert(nijC == nil || (helC != nil && phyC != nil && dynC != nil && locC != nil))
         }
     }
 
@@ -25,21 +30,22 @@ class Entity {
             return Entity(type: type, components: Components(
                     locC: LocationComponent(position: pos.pos.cgPoint),
                     dynC: MovingComponent(),
-                    docC: nil,
-                    phyC: PhysicsComponent()
+                    imfC: ImplicitForcesComponent(),
+                    phyC: PhysicsComponent(),
+                    helC: HealthComponent(),
+                    nijC: NinjaComponent()
             ))
         case .shurikenSpawn:
             return Entity(type: type, components: Components(
                     locC: LocationComponent(position: pos.pos.cgPoint),
-                    dynC: MovingComponent(gravity: 0),
-                    docC: nil,
-                    phyC: PhysicsComponent(friction: 0)
+                    dynC: MovingComponent(),
+                    phyC: PhysicsComponent(solidFriction: 0)
             ))
         case .enemySpawn:
             return Entity(type: type, components: Components(
                     locC: LocationComponent(position: pos.pos.cgPoint),
                     dynC: MovingComponent(),
-                    docC: nil,
+                    imfC: ImplicitForcesComponent(),
                     phyC: PhysicsComponent()
             ))
         default:

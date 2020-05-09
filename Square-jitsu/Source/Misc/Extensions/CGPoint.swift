@@ -54,6 +54,13 @@ extension CGPoint {
         ((end - start) * t) + start
     }
 
+    init(magnitude: CGFloat, directionFromOrigin: Angle) {
+        self.init(
+            x: directionFromOrigin.xOnUnitCircle * magnitude,
+            y: directionFromOrigin.yOnUnitCircle * magnitude
+        )
+    }
+
     var magnitude: CGFloat {
         hypot(x, y)
     }
@@ -63,6 +70,6 @@ extension CGPoint {
     }
 
     var normalized: CGPoint {
-        magnitude < Constants.cgEpsilon ? CGPoint.zero : self / magnitude
+        magnitude < CGFloat.epsilon ? CGPoint.zero : self / magnitude
     }
 }
