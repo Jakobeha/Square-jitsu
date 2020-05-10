@@ -13,11 +13,21 @@ struct ChunkMatrix<Value: HasDefault> {
     }
 
     subscript(_ pos: ChunkTilePos) -> [Value] {
-        backing[pos.x][pos.y]
+        get {
+            backing[pos.x][pos.y]
+        }
+        set {
+            backing[pos.x][pos.y] = newValue
+        }
     }
 
     subscript(_ pos3D: ChunkTilePos3D) -> Value {
-        self[pos3D.pos][pos3D.layer]
+        get {
+            self[pos3D.pos][pos3D.layer]
+        }
+        set {
+            self[pos3D.pos][pos3D.layer] = newValue
+        }
     }
 
     /// - Returns: The layer where the item was inserted
@@ -38,12 +48,7 @@ struct ChunkMatrix<Value: HasDefault> {
 
     mutating func remove(at pos3D: ChunkTilePos3D) {
         let pos = pos3D.pos
-        let valuesAtPos = backing[pos.x][pos.y]
-        // Move later tiles down, so the last layers are the empty ones
-        for nextLayer in pos3D.layer..<(Chunk.numLayers - 1) {
-            backing[pos.x][pos.y][nextLayer] = valuesAtPos[nextLayer + 1]
-        }
-        backing[pos.x][pos.y][Chunk.numLayers - 1] = Value.defaultValue
+        backing[pos.x][pos.y][pos3D.layer] = Value.defaultValue
     }
 
     func getNextFreeLayerAt(pos: ChunkTilePos) -> Int? {

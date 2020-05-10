@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct CornerSet: OptionSet {
+struct CornerSet: OptionSet, Equatable, Hashable {
     static let east: CornerSet = CornerSet(rawValue: 1 << 0)
     static let northEast: CornerSet = CornerSet(rawValue: 1 << 1)
     static let north: CornerSet = CornerSet(rawValue: 1 << 2)

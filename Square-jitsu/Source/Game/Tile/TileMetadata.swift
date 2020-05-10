@@ -14,14 +14,3 @@ protocol TileMetadata: Codable {
     func onDestroy(world: World, pos: WorldTilePos3D)
     func tick(world: World, pos: WorldTilePos3D)
 }
-
-func TileMetadataForTileOf(type: TileBigType) -> TileMetadata? {
-    switch (type) {
-    case .air, .background, .solid, .ice:
-        return nil
-    case .shurikenSpawn, .enemySpawn:
-        return SingleSpawnMetadata()
-    case .playerSpawn:
-        return PlayerSpawnMetadata()
-    }
-}

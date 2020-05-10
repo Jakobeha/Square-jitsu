@@ -17,19 +17,19 @@ class TouchTracker {
     private let _didUpdateTouches: Publisher<()> = Publisher()
     var didUpdateTouches: Observable<()> { Observable(publisher: _didUpdateTouches) }
 
-    func touchesBegan(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKNode) {
+    func touchesBegan(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
         touchesUpdated(uiTouches, with: event, container: container)
     }
 
-    func touchesMoved(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKNode) {
+    func touchesMoved(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
         touchesUpdated(uiTouches, with: event, container: container)
     }
 
-    func touchesEnded(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKNode) {
+    func touchesEnded(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
         touchesUpdated(uiTouches, with: event, container: container)
     }
 
-    func touchesCancelled(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKNode) {
+    func touchesCancelled(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
         touchesUpdated(uiTouches, with: event, container: container)
     }
 
@@ -37,13 +37,13 @@ class TouchTracker {
         touches.removeAll()
     }
 
-    private func touchesUpdated(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKNode) {
+    private func touchesUpdated(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
         updateTouchesBeforeNotifyingObservers(uiTouches, with: event, container: container)
         _didUpdateTouches.publish()
         removeEndedTouches()
     }
 
-    private func updateTouchesBeforeNotifyingObservers(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKNode) {
+    private func updateTouchesBeforeNotifyingObservers(_ uiTouches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
         for uiTouch in uiTouches {
             switch uiTouch.phase {
             case .began, .regionEntered:
@@ -73,7 +73,7 @@ class TouchTracker {
         }
     }
 
-    private func addTouch(uiTouch: UITouch, container: SKNode) {
+    private func addTouch(uiTouch: UITouch, container: SKScene) {
         let touch = Touch(uiTouch: uiTouch, container: container)
         touches[uiTouch.id] = touch
     }

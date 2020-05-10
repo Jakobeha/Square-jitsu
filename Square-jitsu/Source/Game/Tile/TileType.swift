@@ -7,8 +7,10 @@ import Foundation
 
 struct TileType: Equatable, Hashable, HasDefault {
     static let air: TileType = TileType(bigType: TileBigType.air)
-    static let basicBackground: TileType = TileType(bigType: TileBigType.solid)
+    static let basicBackground: TileType = TileType(bigType: TileBigType.background)
+    static let basicOverlapSensitiveBackground: TileType = TileType(bigType: TileBigType.overlapSensitiveBackground)
     static let basicSolid: TileType = TileType(bigType: TileBigType.solid)
+    static let basicAdjacentSensitiveSolid: TileType = TileType(bigType: TileBigType.adjacentSensitiveSolid)
     static let basicIce: TileType = TileType(bigType: TileBigType.ice)
     static let playerSpawn: TileType = TileType(bigType: TileBigType.playerSpawn)
     static let shurikenSpawn: TileType = TileType(bigType: TileBigType.shurikenSpawn)
@@ -22,10 +24,7 @@ struct TileType: Equatable, Hashable, HasDefault {
 
     var isDefault: Bool { self == TileType.defaultValue }
 
-    // Don't change without changing TileTypeSet
-    var isSolid: Bool {
-        bigType.layer == TileLayer.solid
-    }
+    var isSolid: Bool { bigType.layer == TileLayer.solid || bigType.layer == TileLayer.iceSolid }
 
     init(bigType: TileBigType, smallType: TileSmallType = TileSmallType(0), orientation: TileOrientation = TileOrientation.none) {
         self.bigType = bigType

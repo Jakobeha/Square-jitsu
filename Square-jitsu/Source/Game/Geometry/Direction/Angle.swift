@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct Angle: Equatable, Hashable, Codable {
+struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
     static let zero: Angle = Angle(radians: 0 as Float)
     static let right: Angle = Angle(radians: Float.pi / 2)
 
@@ -60,6 +60,10 @@ struct Angle: Equatable, Hashable, Codable {
 
     let radians: Float
 
+    var degrees: Float {
+        radians * 180 / Float.pi
+    }
+
     var toUnclamped: UnclampedAngle { UnclampedAngle(radians: radians) }
 
     /// Cosine
@@ -72,8 +76,16 @@ struct Angle: Equatable, Hashable, Codable {
         CGFloat(sin(radians))
     }
 
+    init(_ unclamped: UnclampedAngle) {
+        self.init(radians: unclamped.radians)
+    }
+
     init(radians: CGFloat) {
         self.init(radians: Float(radians))
+    }
+
+    init(degrees: Float) {
+        self.init(radians: degrees * Float.pi / 180)
     }
 
     init(radians: Float) {
@@ -83,4 +95,14 @@ struct Angle: Equatable, Hashable, Codable {
     func round(by unit: Angle) -> Angle {
         Angle(radians: roundf(radians / unit.radians) * unit.radians)
     }
+
+    init?(_ description: String) {
+        if let unclamped = UnclampedAngle(description) {
+            self.init(unclamped)
+        } else {
+            return nil
+        }
+    }
+
+    var description: String { toUnclamped.description }
 }

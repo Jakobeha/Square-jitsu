@@ -44,15 +44,17 @@ class WorldView: NodeView {
     }
 
     func placeChunkView(pos: WorldChunkPos, chunk: ReadonlyChunk) {
+        assert(chunkViews[pos] == nil)
         let chunkView = ChunkView(world: world, pos: pos, chunk: chunk)
         chunkView.placeIn(parent: self.node)
-        self.chunkViews[pos] = chunkView
+        chunkViews[pos] = chunkView
     }
 
     func removeChunkView(pos: WorldChunkPos, chunk: ReadonlyChunk) {
-        let chunkView = self.chunkViews[pos]!
+        assert(chunkViews[pos] != nil)
+        let chunkView = chunkViews[pos]!
         chunkView.removeFromParent()
-        self.chunkViews[pos] = nil
+        chunkViews[pos] = nil
     }
 
     func placeEntityView(entity: Entity) {

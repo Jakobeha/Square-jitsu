@@ -12,10 +12,6 @@ struct NearTileComponent {
 
     var nearTypes: TileTypeSet = TileTypeSet()
 
-    var isNearNonIceSolid: Bool {
-        nearTypes.contains(bigType: TileBigType.solid)
-    }
-
     var isNearToxicSolid: Bool {
         // nearTypes.contains(bigType: TileBigType.toxic)
         false

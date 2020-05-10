@@ -37,6 +37,7 @@ class PlayerInput {
         }
     }
 
+    weak var world: World!
     private let userSettings: UserSettings
 
     let tracker: TouchTracker = TouchTracker()
@@ -45,13 +46,14 @@ class PlayerInput {
 
     init(userSettings: UserSettings) {
         self.userSettings = userSettings
+        tracker.didUpdateTouches.subscribe(observer: self, handler: tick)
     }
 
-    func tick(world: World) {
-        tickJumpInput(world: world)
+    func tick() {
+        tickJumpInput()
     }
 
-    func tickJumpInput(world: World) {
+    func tickJumpInput() {
         if jumpGesture != nil {
             if let jumpTouch = tracker.touches[jumpGesture!.touchId] {
                 jumpGesture!.tick(touch: jumpTouch, userSettings: userSettings, world: world)

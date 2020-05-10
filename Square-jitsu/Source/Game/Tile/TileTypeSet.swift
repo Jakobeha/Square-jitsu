@@ -7,7 +7,7 @@ import Foundation
 
 struct TileTypeSet {
     private var deconstructedTypeMap: [TileBigType:Set<TileSmallType>] = [:]
-    private var layers: TileLayerSet = []
+    private var typesPerLayer: [TileLayer:Set<TileType>] = [:]
 
     init() {}
 
@@ -20,11 +20,15 @@ struct TileTypeSet {
     }
 
     func contains(layer: TileLayer) -> Bool {
-        layers.contains(layer.toSet)
+        typesPerLayer[layer] != nil
     }
 
-    func smallTypesFor(bigType: TileBigType) -> Set<TileSmallType> {
+    subscript(bigType: TileBigType) -> Set<TileSmallType> {
         deconstructedTypeMap[bigType] ?? []
+    }
+
+    subscript(layer: TileLayer) -> Set<TileType> {
+        typesPerLayer[layer] ?? []
     }
 
     mutating func insert(_ type: TileType) {
@@ -32,11 +36,11 @@ struct TileTypeSet {
         typesForBigType.insert(type.smallType)
         deconstructedTypeMap[type.bigType] = typesForBigType
 
-        layers.insert(type.bigType.layer.toSet)
+        typesPerLayer.append(key: type.bigType.layer, type)
     }
 
     mutating func removeAll() {
         deconstructedTypeMap.removeAll()
-        layers = []
+        typesPerLayer.removeAll()
     }
 }

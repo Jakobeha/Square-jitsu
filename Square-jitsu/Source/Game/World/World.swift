@@ -55,7 +55,8 @@ class World {
         self.loader = loader
         self.settings = settings
 
-        self.playerInput = PlayerInput(userSettings: userSettings)
+        playerInput = PlayerInput(userSettings: userSettings)
+        playerInput.world = self
 
         loadPlayer()
     }
@@ -133,7 +134,6 @@ class World {
     // endregion
 
     func tick() {
-        playerInput.tick(world: self)
         // Tick the camera before entities because we want it to see the previous position
         playerCamera.tick(world: self)
         runActions()
@@ -149,7 +149,13 @@ class World {
     }
 
     subscript(_ pos3D: WorldTilePos3D) -> TileType {
-        self[pos3D.pos][pos3D.layer]
+        get {
+            self[pos3D.pos][pos3D.layer]
+        }
+        set {
+            let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
+            chunk[pos3D.chunkTilePos3D] = newValue
+        }
     }
 
     /// Places the tile, removing any non-overlapping tiles
@@ -258,6 +264,12 @@ class World {
         MovementSystem.tick(world: self)
         // Must be after MovementSystem
         CollisionSystem.tick(world: self)
+        // Must be after CollisionSystem
+        NearCollisionSystem.tick(world: self)
+        // Must be after CollisionSystem
+        OverlapSensitiveSystem.tick(world: self)
+        // Must be after CollisionSystem
+        AdjacentSensitiveSystem.tick(world: self)
         // Must be last
         LoadPositionSystem.tick(world: self)
     }

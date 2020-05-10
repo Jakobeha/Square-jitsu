@@ -15,5 +15,5 @@ struct NinjaComponent {
     var jumpAngularVelocity: UnclampedAngle = Angle.right.toUnclamped * 2
 
     var jumpState: JumpState = .idle
-    var backgroundTypesUsed: Set<TileSmallType> = []
+    var backgroundTypesUsed: Set<TileType> = []
 }

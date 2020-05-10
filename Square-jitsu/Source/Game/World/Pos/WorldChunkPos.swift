@@ -3,7 +3,7 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 struct WorldChunkPos: Equatable, Hashable {
     static func +(lhs: WorldChunkPos, offset: RelativePos) -> WorldChunkPos {
@@ -17,5 +17,13 @@ struct WorldChunkPos: Equatable, Hashable {
         Corner.allCases.associateWith { corner in
             self + corner.offset
         }
+    }
+
+    var originCgPoint: CGPoint {
+        CGPoint(x: CGFloat(x * Chunk.widthHeight), y: CGFloat(y * Chunk.widthHeight))
+    }
+
+    var cgBounds: CGRect {
+        CGRect(origin: originCgPoint, size: Chunk.cgSize)
     }
 }

@@ -17,9 +17,6 @@ struct CollisionSystem: System {
         if handlesTileCollisions {
             handleTileCollisions()
         }
-        if handlesNearTileCollisions {
-            handleNearTileCollisions()
-        }
         if handlesEntityCollisions {
             handleEntityCollisions()
         }
@@ -29,9 +26,6 @@ struct CollisionSystem: System {
         if entity.next.phyC != nil {
             entity.next.phyC!.reset()
         }
-        if entity.next.ntlC != nil {
-            entity.next.ntlC!.reset()
-        }
     }
 
     private mutating func handleTileCollisions() {
@@ -40,24 +34,9 @@ struct CollisionSystem: System {
             let tileTypes = world[tilePosition]
             for tileType in tileTypes {
                 handleCollisionWith(tileType: tileType, tilePosition: tilePosition)
-                if (entityBlockedFromFurtherCollisions) {
-                    return // blocked by other collisions
-                }
-            }
-        }
-    }
-
-    private mutating func handleNearTileCollisions() {
-        assert(handlesNearTileCollisions)
-        let nearRadius = entity.prev.locC!.radius + entity.prev.ntlC!.nearRadiusExtra
-        let maxTileDistance = nearRadius + 0.5
-        for tilePosition in nearTrajectoryNextFrame.capsuleCastTilePositions(capsuleRadius: nearRadius) {
-            let tileDistance = (entity.next.locC!.position - tilePosition.cgPoint).magnitude
-            if tileDistance <= maxTileDistance {
-                let tileTypes = world[tilePosition]
-                for tileType in tileTypes {
-                    handleNearCollisionWith(tileType: tileType, tilePosition: tilePosition)
-                }
+                //if (entityBlockedFromFurtherCollisions) {
+                //    return // blocked by other collisions
+                //}
             }
         }
     }
@@ -83,10 +62,6 @@ struct CollisionSystem: System {
         entity.prev.docC != nil || entity.prev.phyC != nil
     }
 
-    private var handlesNearTileCollisions: Bool {
-        entity.prev.ntlC != nil
-    }
-
     private var handlesEntityCollisions: Bool {
         entity.prev.docC != nil || entity.prev.phyC != nil
     }
@@ -94,15 +69,11 @@ struct CollisionSystem: System {
     private mutating func handleCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
         if entity.prev.phyC != nil {
             entity.next.phyC!.overlappingTypes.insert(tileType)
+            entity.next.phyC!.overlappingPositions.insert(tilePosition)
         }
         if tileType.isSolid {
             handleSolidCollisionWith(tileType: tileType, tilePosition: tilePosition)
         }
-    }
-
-    private mutating func handleNearCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
-        assert(entity.prev.ntlC != nil)
-        entity.next.ntlC!.nearTypes.insert(tileType)
     }
 
     private mutating func handleSolidCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
@@ -130,30 +101,31 @@ struct CollisionSystem: System {
             )
             if let hitAxis = hitAxis {
                 // Necessary so we don't override velocity - technically we collide this frame but we won't the next
+                var side: Side! = nil
                 var isLeaving = false
                 switch hitAxis {
                 case .horizontal:
                     // We hit from the x axis
                     // Add side, move out of solid, cancel velocity
-                    let side = xIsLeft ? SideSet.east : SideSet.west
-                    entity.next.phyC!.adjacentSides.insert(side)
+                    side = xIsLeft ? Side.east : Side.west
+                    entity.next.phyC!.adjacentSides.insert(side.toSet)
                     entity.next.locC!.position.x = xBarrier
-                    isLeaving = xIsLeft ? entity.next.dynC!.velocity.x < CGFloat.epsilon : entity.next.dynC!.velocity.x > -CGFloat.epsilon
+                    isLeaving = xIsLeft ? entity.next.dynC!.velocity.x < -CGFloat.epsilon : entity.next.dynC!.velocity.x > CGFloat.epsilon
                     if !isLeaving {
                         entity.next.dynC!.velocity.x = 0
                     }
                 case .vertical:
                     // We hit from the y axis
                     // Add side, move out of solid, cancel velocity
-                    let side = yIsBottom ? SideSet.north : SideSet.south
-                    entity.next.phyC!.adjacentSides.insert(side)
+                    side = yIsBottom ? Side.north : Side.south
+                    entity.next.phyC!.adjacentSides.insert(side.toSet)
                     entity.next.locC!.position.y = yBarrier
-                    isLeaving = yIsBottom ? entity.next.dynC!.velocity.y < CGFloat.epsilon : entity.next.dynC!.velocity.y > -CGFloat.epsilon
+                    isLeaving = yIsBottom ? entity.next.dynC!.velocity.y < -CGFloat.epsilon : entity.next.dynC!.velocity.y > CGFloat.epsilon
                     if !isLeaving {
                         entity.next.dynC!.velocity.y = 0
                     }
                 }
-                entity.next.phyC!.adjacentPositions.append(tilePosition)
+                entity.next.phyC!.adjacentPositions.append(key: side, tilePosition)
                 // Rotate out, cancel angular velocity
                 // (even if we didn't actually collide, we should've collided with something else,
                 //  so this will happen anyways)
@@ -163,15 +135,14 @@ struct CollisionSystem: System {
                 }
             } else if let parallelSide = calculateIfMovingExactlyParallelAlongSideOf(tilePosition: tilePosition, radiusSum: radiusSum) {
                 entity.next.phyC!.adjacentSides.insert(parallelSide.toSet)
-                entity.next.phyC!.adjacentPositions.append(tilePosition)
+                entity.next.phyC!.adjacentPositions.append(key: parallelSide, tilePosition)
                 entity.next.locC!.rotation = entity.next.locC!.rotation.round(by: Angle.right)
             }
         }
     }
 
     private var entityBlockedFromFurtherCollisions: Bool {
-        (entity.next.docC != nil && entity.next.docC!.isRemoved) ||
-                (entity.next.phyC != nil && entity.next.phyC!.adjacentAxes == AxisSet.both)
+        entity.next.docC != nil && entity.next.docC!.isRemoved
     }
 
     private func calculateCollidedAxis(trajectoryNextFrame: Line, xIsLeft: Bool, yIsBottom: Bool, xBarrier: CGFloat, yBarrier: CGFloat, tilePosition: WorldTilePos) -> Axis? {
@@ -185,9 +156,9 @@ struct CollisionSystem: System {
         let adjacentYPosition = tilePosition + ySide.offset
         let adjacentXIsBlocked = world[adjacentXPosition].contains { type in type.isSolid }
         let adjacentYIsBlocked = world[adjacentYPosition].contains { type in type.isSolid }
-        let adjacentAxes = entity.next.phyC!.adjacentAxes
-        let collidedWithXEarlierInTrajectory = adjacentAxes.contains(AxisSet.horizontal)
-        let collidedWithYEarlierInTrajectory = adjacentAxes.contains(AxisSet.vertical)
+        let adjacentSides = entity.next.phyC!.adjacentSides
+        let collidedWithXEarlierInTrajectory = adjacentSides.contains(xSide.toSet)
+        let collidedWithYEarlierInTrajectory = adjacentSides.contains(ySide.toSet)
         let xIsImpossible = collidedWithXEarlierInTrajectory || adjacentXIsBlocked || neverHitXBarrier
         let yIsImpossible = collidedWithYEarlierInTrajectory || adjacentYIsBlocked || neverHitYBarrier
         switch (xIsImpossible, yIsImpossible) {
@@ -246,11 +217,6 @@ struct CollisionSystem: System {
     // Has to be lazy otherwise we would throw on entities without a location component
     private lazy var trajectoryNextFrame: Line =
         // We extend backwards so that the entity can exit if it slightly clips into a solid due to rounding issues
-        Line(start: entity.prev.locC!.position, end: entity.next.locC!.position).extendedBackwardsBy(magnitude: entity.prev.locC!.radius)
-
-    // Similar definition as trajectoryNextFrame but it's calculated after next entity position might change
-    private lazy var nearTrajectoryNextFrame: Line =
-        // We extend backwards so that the entity can exit if it slightly clips into a solid due to rounding issues
-        Line(start: entity.prev.locC!.position, end: entity.next.locC!.position).extendedBackwardsBy(magnitude: entity.prev.locC!.radius + entity.prev.ntlC!.nearRadiusExtra)
+        Line(start: entity.prev.locC!.position, end: entity.next.locC!.position)
 
 }

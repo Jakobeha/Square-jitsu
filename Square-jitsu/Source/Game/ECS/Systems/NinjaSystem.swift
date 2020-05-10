@@ -21,7 +21,7 @@ struct NinjaSystem: System {
                 tryToJump(direction: direction)
                 entity.next.nijC!.jumpState = .idle
             }
-            if entity.prev.phyC!.isOnNonIceSolid {
+            if isNearOrOnSolid {
                 // Also we can jump this frame, so don't worry that this affects the next frame
                 entity.next.nijC!.backgroundTypesUsed.removeAll()
             }
@@ -31,6 +31,8 @@ struct NinjaSystem: System {
     func tryToJump(direction: Angle) {
         if canJump {
             jump(direction: direction)
+        } else {
+            print("Failed")
         }
     }
 
@@ -40,16 +42,28 @@ struct NinjaSystem: System {
             magnitude: entity.prev.nijC!.jumpSpeed,
             directionFromOrigin: direction
         )
-        entity.next.dynC!.angularVelocity += entity.prev.nijC!.jumpAngularVelocity
+        if isNearOrOnSolid {
+            // Since angular velocity would be 0 on solid,
+            // to prevent infinite angular velocity from jumping near the ground
+            entity.next.dynC!.angularVelocity = entity.prev.nijC!.jumpAngularVelocity
+        } else {
+            entity.next.dynC!.angularVelocity += entity.prev.nijC!.jumpAngularVelocity
+        }
         // Technically this is cleared somewhere else if on solid anyways...
-        if !entity.prev.phyC!.isOnNonIceSolid {
+        if !isNearOrOnSolid {
             entity.next.nijC!.backgroundTypesUsed.formUnion(overlappingBackgroundTypes)
         }
     }
 
     var canJump: Bool {
         assert(entity.prev.nijC != nil && entity.prev.ntlC != nil && entity.prev.phyC != nil)
-        return (entity.prev.ntlC!.isNearNonIceSolid && !entity.prev.ntlC!.isNearToxicSolid) || entity.prev.phyC!.isOnNonIceSolid || isOnUnusedBackground
+        return isNearOrOnSolid || isOnUnusedBackground
+    }
+
+    var isNearOrOnSolid: Bool {
+        let nearTypes = entity.prev.ntlC!.nearTypes
+        let onTypes = entity.prev.phyC!.overlappingTypes
+        return (nearTypes.contains(layer: TileLayer.solid) && !onTypes.contains(layer: TileLayer.toxic)) || onTypes.contains(layer: TileLayer.solid)
     }
 
     var isOnUnusedBackground: Bool {
@@ -57,7 +71,7 @@ struct NinjaSystem: System {
         return !overlappingBackgroundTypes.subtracting(usedBackgroundTypes).isEmpty
     }
 
-    var overlappingBackgroundTypes: Set<TileSmallType> {
-        entity.prev.phyC!.overlappingTypes.smallTypesFor(bigType: TileBigType.background)
+    var overlappingBackgroundTypes: Set<TileType> {
+        entity.prev.phyC!.overlappingTypes[TileLayer.background]
     }
 }

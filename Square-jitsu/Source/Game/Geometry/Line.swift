@@ -140,8 +140,8 @@ struct Line {
                 }
             }
         case .moreHorizontal(let yDivX):
-            let minX = Int(round(start.x > end.x ? end.x - assumedCapsuleRadius : start.x))
-            let maxX = Int(round(start.x > end.x ? start.x : end.x + assumedCapsuleRadius))
+            let minX = Int(round(bounds.minX - assumedCapsuleRadius))
+            let maxX = Int(round(bounds.maxX + assumedCapsuleRadius))
             let slopeExtension = abs(yDivX / 2)
             let safeCapsuleRadius = assumedCapsuleRadius + slopeExtension
             let xs = start.x > end.x ? FBRange(maxX, minX) : FBRange(minX, maxX)
@@ -155,8 +155,8 @@ struct Line {
                 }
             }
         case .moreVertical(let xDivY):
-            let minY = Int(round(start.y > end.y ? end.y - assumedCapsuleRadius : start.y))
-            let maxY = Int(round(start.y > end.y ? start.y : end.y + assumedCapsuleRadius))
+            let minY = Int(round(bounds.minY - assumedCapsuleRadius))
+            let maxY = Int(round(bounds.maxY + assumedCapsuleRadius))
             let slopeExtension = abs(xDivY / 2)
             let safeCapsuleRadius = assumedCapsuleRadius + slopeExtension
             let ys = start.y > end.y ? FBRange(maxY, minY) : FBRange(minY, maxY)

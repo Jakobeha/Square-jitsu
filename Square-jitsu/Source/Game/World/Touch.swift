@@ -13,10 +13,16 @@ struct Touch {
         let timestamp: TimeInterval
         let position: CGPoint
 
-        init(uiTouch: UITouch, container: SKNode) {
+        init(uiTouch: UITouch, container: SKScene) {
             timestamp = uiTouch.timestamp
-            position = uiTouch.location(in: container)
+            position = Touch.getPosition(uiTouch: uiTouch, container: container)
         }
+    }
+
+    static func getPosition(uiTouch: UITouch, container: SKScene) -> CGPoint {
+        var position = uiTouch.location(in: container.view!)
+        position.y *= -1
+        return position
     }
 
     let id: ObjectIdentifier
@@ -27,7 +33,7 @@ struct Touch {
     var currentState: TemporalState { priorStates.last! }
     var currentVelocity: CGPoint { getVelocity(usingPriorStates: ArraySlice(priorStates)) }
 
-    init(uiTouch: UITouch, container: SKNode) {
+    init(uiTouch: UITouch, container: SKScene) {
         assert(uiTouch.phase == .began, "Touch instance should be created with beginning touch")
         id = uiTouch.id
         startTimestamp = uiTouch.timestamp
@@ -81,9 +87,9 @@ struct Touch {
         return average
     }
 
-    mutating func updateFrom(uiTouch: UITouch, container: SKNode) {
+    mutating func updateFrom(uiTouch: UITouch, container: SKScene) {
         assert(uiTouch.id == id, "Touch instance doesn't have the same id as the UITouch it's being updated from")
-        while CGFloat(uiTouch.timestamp - priorStates.first!.timestamp) > Touch.maxPriorStateDurationRecorded {
+        while !priorStates.isEmpty && CGFloat(uiTouch.timestamp - priorStates.first!.timestamp) > Touch.maxPriorStateDurationRecorded {
             priorStates.remove(at: 0)
         }
         priorStates.append(TemporalState(uiTouch: uiTouch, container: container))

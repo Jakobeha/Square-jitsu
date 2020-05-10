@@ -13,11 +13,11 @@ class DummyWorldLoader : WorldLoader {
         for x in 0..<Chunk.widthHeight {
             for y in 0..<2 {
                 let pos = ChunkTilePos(x: x, y: y)
-                chunk.forcePlaceTile(pos: pos, type: TileType.basicSolid)
+                chunk.forcePlaceTile(pos: pos, type: TileType.basicAdjacentSensitiveSolid)
             }
             for y in 10..<11 {
                 let pos = ChunkTilePos(x: x, y: y)
-                chunk.forcePlaceTile(pos: pos, type: TileType.basicSolid)
+                chunk.forcePlaceTile(pos: pos, type: TileType.basicAdjacentSensitiveSolid)
             }
         }
         for y in 1..<10 {
@@ -27,8 +27,12 @@ class DummyWorldLoader : WorldLoader {
         for x in 22..<30 {
             for y in 2..<10 {
                 let pos = ChunkTilePos(x: x, y: y)
-                chunk.forcePlaceTile(pos: pos, type: TileType.basicBackground)
+                chunk.forcePlaceTile(pos: pos, type: TileType.basicOverlapSensitiveBackground)
             }
+        }
+        for y in 2..<10 {
+            let pos = ChunkTilePos(x: 30, y: y)
+            chunk.forcePlaceTile(pos: pos, type: TileType.basicAdjacentSensitiveSolid)
         }
         chunk.forcePlaceTile(pos: ChunkTilePos(x: 17, y: 2), type: TileType.enemySpawn)
         chunk.forcePlaceTile(pos: ChunkTilePos(x: 20, y: 7), type: TileType.shurikenSpawn)
