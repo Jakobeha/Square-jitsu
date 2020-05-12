@@ -14,20 +14,58 @@ class WorldSettings {
 
     let cameraSpeed: CGFloat = 1.0 / 16
 
+    let entitySpawnRadius: TileTypeMap<CGFloat> = TileTypeMap([
+        TileBigType.enemySpawn:[3]
+    ])
+
     let tileViewWidthHeight: CGFloat = 48
     let tileViewConfigs: TileTypeMap<TileViewTemplate> = TileTypeMap([
-        TileBigType.background:[StaticTileViewTemplate(textureName: "TestBackground")],
+        TileBigType.background:[
+            Adjacent4TileViewTemplate(baseName: "Background", adjoiningTypes: TileTypePred([
+                TileLayer.background,
+                TileLayer.solid
+            ]))
+        ],
         TileBigType.overlapSensitiveBackground:[
             StaticTileViewTemplate(textureName: "TestOffBackground"),
             StaticTileViewTemplate(textureName: "TestOnBackground")
         ],
-        TileBigType.solid:[StaticTileViewTemplate(textureName: "TestSolid")],
+        TileBigType.solid:[
+            Adjacent8TileViewTemplate(baseName: "Solid", adjoiningTypes: TileTypePred([
+                TileType.basicSolid,
+                TileType.basicIce
+            ]))
+        ],
         TileBigType.adjacentSensitiveSolid:[
             StaticTileViewTemplate(textureName: "TestOffSolid"),
             StaticTileViewTemplate(textureName: "TestOnSolid")
-        ]
+        ],
+        TileBigType.ice:[
+            Adjacent8TileViewTemplate(baseName: "Ice", adjoiningTypes: TileTypePred([
+                TileType.basicSolid,
+                TileType.basicIce
+            ]))
+        ],
+        TileBigType.shurikenSpawn:[StaticTileViewTemplate(textureName: "Shuriken")],
+        TileBigType.enemySpawn:[StaticTileViewTemplate(textureName: "Enemy")]
     ])
     let entityViewConfigs: TileTypeMap<EntityViewTemplate> = TileTypeMap([
-        TileBigType.playerSpawn:[StaticEntityViewTemplate(textureName: "Player")]
+        TileBigType.playerSpawn:[StaticEntityViewTemplate(textureName: "Player")],
+        TileBigType.shurikenSpawn:[StaticEntityViewTemplate(textureName: "Shuriken")],
+        TileBigType.enemySpawn:[StaticEntityViewTemplate(textureName: "Enemy")]
+    ])
+
+    let tileViewFadeDuration: TileTypeMap<TimeInterval> = TileTypeMap([
+        TileBigType.overlapSensitiveBackground:[0.5],
+        TileBigType.adjacentSensitiveSolid:[0.5]
+    ])
+
+    let entityViewFadeDuration: TileTypeMap<TimeInterval> = TileTypeMap([
+        TileBigType.shurikenSpawn:[1]
+    ])
+
+    let entityGrabColors: TileTypeMap<SKColor> = TileTypeMap([
+        TileBigType.playerSpawn:[SKColor(hue: 1.0 / 12, saturation: 1, brightness: 1, alpha: 1)],
+        TileBigType.enemySpawn:[SKColor(hue: 0, saturation: 1, brightness: 1, alpha: 1)]
     ])
 }

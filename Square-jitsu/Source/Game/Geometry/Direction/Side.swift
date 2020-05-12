@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum Side: Int {
+enum Side: Int, CaseIterable {
     case east
     case north
     case west

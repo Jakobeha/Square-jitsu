@@ -12,15 +12,21 @@ protocol System {
 
     init(entity: Entity)
 
+    static func preTick(world: World)
+
+    static func postTick(world: World)
+
     mutating func tick()
 }
 
 extension System {
     static func tick(world: World) {
+        preTick(world: world)
         for entity in world.entities {
             var system = Self(entity: entity)
             system.tick()
         }
+        postTick(world: world)
     }
 
     var world: World { entity.world! }

@@ -6,10 +6,11 @@
 import SpriteKit
 
 class Chunk: ReadonlyChunk {
-    static let widthHeight: Int = 64
+    static let widthHeight: Int = 32
     static let numLayers: Int = 2
 
-    static let cgSize: CGSize = CGSize.square(sideLength: CGFloat(Chunk.widthHeight))
+    static let cgSize: CGSize = CGSize.square(sideLength: CGFloat(widthHeight))
+    static let extraDistanceFromEntityToUnload: CGFloat = CGFloat(widthHeight) / 2
 
     private var tiles: ChunkMatrix<TileType> = ChunkMatrix()
     private(set) var tileMetadatas: [ChunkTilePos3D:TileMetadata] = [:]
@@ -31,9 +32,28 @@ class Chunk: ReadonlyChunk {
             tiles[pos3D]
         }
         set {
+            // Change value
             let oldType = self[pos3D]
             tiles[pos3D] = newValue
+            let metadataIsDifferent = oldType.bigType != newValue.bigType
+
+
+            // Remove metadata if necessary
+            if metadataIsDifferent {
+                tileMetadatas[pos3D] = nil
+            }
+
+            // Notify observers of removal
             _didRemoveTile.publish((pos3D: pos3D, oldType: oldType))
+
+            // Place metadata if necessary
+            if metadataIsDifferent {
+                if let newMetadata = newValue.bigType.newMetadata() {
+                    tileMetadatas[pos3D] = newMetadata
+                }
+            }
+
+            // Notify observers of placement
             _didPlaceTile.publish(pos3D)
         }
     }
@@ -104,13 +124,10 @@ class Chunk: ReadonlyChunk {
 
     /// - Returns: The layer of the tile which was placed
     private func placeTile(pos: ChunkTilePos, type: TileType) -> Int {
-        // Get tile and metadata
-        let metadata = type.bigType.newMetadata()
-
         // Place tile and add metadata
         let layer = tiles.insert(type, at: pos)
         let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
-        if let metadata = metadata {
+        if let metadata = type.bigType.newMetadata() {
             tileMetadatas[pos3D] = metadata
         }
 

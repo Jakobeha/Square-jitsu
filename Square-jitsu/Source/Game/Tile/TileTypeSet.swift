@@ -9,6 +9,10 @@ struct TileTypeSet {
     private var deconstructedTypeMap: [TileBigType:Set<TileSmallType>] = [:]
     private var typesPerLayer: [TileLayer:Set<TileType>] = [:]
 
+    var containsSolid: Bool {
+        contains(layer: TileLayer.solid) || contains(layer: TileLayer.iceSolid)
+    }
+
     init() {}
 
     func contains(type: TileType) -> Bool {

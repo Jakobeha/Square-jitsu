@@ -6,5 +6,5 @@
 import SpriteKit
 
 protocol TileViewTemplate {
-    func generateNode(world: World, chunkPos: ChunkTilePos, tileType: TileType) -> SKNode
+    func generateNode(world: World, pos: WorldTilePos, tileType: TileType) -> SKNode
 }

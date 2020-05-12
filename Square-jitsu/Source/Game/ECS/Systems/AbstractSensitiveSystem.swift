@@ -8,51 +8,50 @@ import SpriteKit
 protocol AbstractSensitiveSystem: System {
     static var sensitiveType: TileBigType { get }
 
-    var prevSensitivePositions: Set<WorldTilePos> { get }
-    var nextSensitivePositions: Set<WorldTilePos> { get }
+    static func getSensitivePositions(components: Entity.Components) -> Set<WorldTilePos>
 }
 
+fileprivate var AllPrevSensitivePositions: Set<WorldTilePos> = Set()
+fileprivate var AllNextSensitivePositions: Set<WorldTilePos> = Set()
+
 extension AbstractSensitiveSystem {
+    static func preTick(world: World) {
+        AllPrevSensitivePositions = Set()
+        AllNextSensitivePositions = Set()
+    }
+
     func tick() {
-        if entity.prev.phyC != nil {
-            turnOffNoLongerSensitiveTiles()
-            turnOnNewSensitiveTiles()
-        }
+        AllPrevSensitivePositions.formUnion(Self.getSensitivePositions(components: entity.prev))
+        AllNextSensitivePositions.formUnion(Self.getSensitivePositions(components: entity.next))
     }
 
-    func turnOffNoLongerSensitiveTiles() {
-        assert(entity.prev.phyC != nil)
+    static func postTick(world: World) {
+        turnOffNoLongerSensitiveTiles(world: world)
+        turnOnNewSensitiveTiles(world: world)
+    }
+
+    private static func turnOffNoLongerSensitiveTiles(world: World) {
+        let noLongerSensitivePositions = AllPrevSensitivePositions.subtracting(AllNextSensitivePositions)
         for position in noLongerSensitivePositions {
-            updateTileAt(position: position, isOn: false)
+            updateTileAt(world: world, position: position, isOn: false)
         }
     }
 
-    func turnOnNewSensitiveTiles() {
-        assert(entity.prev.phyC != nil)
+    private static func turnOnNewSensitiveTiles(world: World) {
+        let newSensitivePositions = AllNextSensitivePositions.subtracting(AllPrevSensitivePositions)
         for position in newSensitivePositions {
-            updateTileAt(position: position, isOn: true)
+            updateTileAt(world: world, position: position, isOn: true)
         }
     }
 
-    var noLongerSensitivePositions: Set<WorldTilePos> {
-        prevSensitivePositions.subtracting(nextSensitivePositions)
-    }
-
-    var newSensitivePositions: Set<WorldTilePos> {
-        nextSensitivePositions.subtracting(prevSensitivePositions)
-    }
-
-    func updateTileAt(position: WorldTilePos, isOn: Bool) {
+    private static func updateTileAt(world: World, position: WorldTilePos, isOn: Bool) {
         let tileTypes = world[position]
         for (layer, tileType) in tileTypes.enumerated() {
             if tileType.bigType == Self.sensitiveType {
-                let newTileType = TileType(
-                        bigType: tileType.bigType,
-                        smallType: tileType.smallType.with(isOn: isOn),
-                        orientation: tileType.orientation
-                )
                 let pos3D = WorldTilePos3D(pos: position, layer: layer)
-                world[pos3D] = newTileType
+                var newTileType = tileType
+                newTileType.smallType.isOn = isOn
+                world.set(pos3D: pos3D, to: newTileType, persistInGame: false)
             }
         }
     }

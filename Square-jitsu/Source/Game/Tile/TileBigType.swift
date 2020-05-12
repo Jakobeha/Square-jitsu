@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum TileBigType: UInt16 {
+enum TileBigType: UInt16, CaseIterable {
     case air
     case background
     case overlapSensitiveBackground
@@ -15,8 +15,8 @@ enum TileBigType: UInt16 {
     case ice
 
     case playerSpawn
-    case shurikenSpawn
     case enemySpawn
+    case shurikenSpawn
 
     static func typesCanOverlap(_ lhs: TileBigType, _ rhs: TileBigType) -> Bool {
         TileLayer.layersCanOverlap(lhs.layer, rhs.layer)
@@ -32,7 +32,7 @@ enum TileBigType: UInt16 {
             return TileLayer.solid
         case .ice:
             return TileLayer.iceSolid
-        case .shurikenSpawn, .enemySpawn, .playerSpawn:
+        case .playerSpawn, .enemySpawn, .shurikenSpawn:
             return TileLayer.entity
         }
     }
@@ -41,10 +41,12 @@ enum TileBigType: UInt16 {
         switch (self) {
         case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice:
             return nil
-        case .shurikenSpawn, .enemySpawn:
-            return SingleSpawnMetadata()
         case .playerSpawn:
             return PlayerSpawnMetadata()
+        case .enemySpawn:
+            return SingleSpawnInRadiusMetadata()
+        case .shurikenSpawn:
+            return SpawnOnGrabMetadata()
         }
     }
 }

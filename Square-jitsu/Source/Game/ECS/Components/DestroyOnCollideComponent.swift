@@ -6,5 +6,8 @@
 import Foundation
 
 struct DestroyOnCollideComponent {
+    var destroyOnEntityCollision: Bool
+    var destroyOnSolidCollision: Bool
+
     var isRemoved: Bool = false
 }

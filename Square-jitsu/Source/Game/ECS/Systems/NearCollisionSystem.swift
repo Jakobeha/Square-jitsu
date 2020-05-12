@@ -12,6 +12,10 @@ struct NearCollisionSystem: System {
         self.entity = entity
     }
 
+    static func preTick(world: World) {}
+
+    static func postTick(world: World) {}
+
     mutating func tick() {
         resetNearCollisions()
         if handlesNearTileCollisions {

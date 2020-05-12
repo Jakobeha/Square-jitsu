@@ -8,7 +8,7 @@ import Foundation
 struct TileOrientation: Equatable, Hashable {
     static let none = TileOrientation(rawValue: 0)
 
-    let rawValue: UInt8
+    var rawValue: UInt8
 
     var toSide: Side {
         Side(rawValue: Int(rawValue))!

@@ -8,13 +8,22 @@ import SpriteKit
 class World {
     private let loader: WorldLoader
     let settings: WorldSettings
+    /// Chunks which are only partially loaded.
+    /// Peek-loading does not trigger observers or create metadata,
+    /// and trying to access a tile in a peeked chunk will finish loading it
+    /// unless done via peek(pos: ...). These are necessary to access adjacent tile data
+    /// without preventing cascading loads
+    private var peekedChunks: [WorldChunkPos : Chunk] = [:]
     private var chunks: [WorldChunkPos : Chunk] = [:]
     var readonlyChunks: [WorldChunkPos : ReadonlyChunk] {
         chunks.mapValues { $0 as ReadonlyChunk }
     }
-    private var chunkPositionsLoadedBefore: Set<WorldChunkPos> = Set()
+    private var persistentChunkData: [WorldChunkPos:GamePersistentChunkData] = [:]
 
     private(set) var entities: [Entity] = []
+
+    /// Chunks whose bounds intersect this won't be unloaded
+    var boundingBoxToPreventUnload: CGRect = CGRect.null
 
     var speed: CGFloat = 1 {
         didSet {
@@ -93,16 +102,24 @@ class World {
 
     func load(pos: WorldChunkPos) {
         if chunks[pos] == nil {
-            // Actually load
-            let chunk = loader.loadChunk(pos: pos)
+            // Actually load, or used peeked chunk (and clear peeked)
+            print("Load \(pos)")
+            let chunk = peekedChunks[pos] ?? loader.loadChunk(pos: pos)
+            peekedChunks[pos] = nil
             chunks[pos] = chunk
 
-            // Remember we loaded this
-            let loadedBefore = chunkPositionsLoadedBefore.contains(pos)
-            chunkPositionsLoadedBefore.insert(pos)
+            // Remember whether we loaded this before, and the persistent data if so
+            let existingPersistentChunkData = persistentChunkData[pos]
+            let loadedBefore = existingPersistentChunkData != nil
+
+            // Apply persistent overwrites
+            if let prevPersistentChunk = existingPersistentChunkData {
+                prevPersistentChunk.apply(to: chunk)
+            }
 
             // Notify metadata
-            if (!loadedBefore) {
+            if !loadedBefore {
+                persistentChunkData[pos] = GamePersistentChunkData()
                 notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onFirstLoad }
             }
             notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onLoad }
@@ -112,16 +129,53 @@ class World {
         }
     }
 
+    func peekLoad(pos: WorldTilePos) -> Chunk {
+        peekLoad(pos: pos.worldChunkPos)
+    }
+
+    func peekLoad(pos: WorldChunkPos) -> Chunk {
+        // Try preloaded
+        if let chunk = chunks[pos] ?? peekedChunks[pos] {
+            return chunk
+        } else {
+            // Actually load
+            print("Peek \(pos)")
+            let chunk = loader.loadChunk(pos: pos)
+            peekedChunks[pos] = chunk
+            return chunk
+        }
+    }
+
+    func unloadUnnecessaryChunks() {
+        if !boundingBoxToPreventUnload.isNull {
+            var positionsToUnload: [WorldChunkPos] = []
+            for chunkPosition in chunks.keys {
+                let chunkBounds = chunkPosition.cgBounds
+                if !boundingBoxToPreventUnload.intersects(chunkBounds) {
+                    positionsToUnload.append(chunkPosition)
+                }
+            }
+            for positionToUnload in positionsToUnload {
+                unload(pos: positionToUnload)
+            }
+        }
+    }
+
     func unload(pos: WorldChunkPos) {
-        assert(chunks[pos] != nil)
-        let chunk = chunks[pos]!
-        chunks[pos] = nil
+        if chunks[pos] != nil {
+            print("Unload \(pos)")
+            let chunk = chunks[pos]!
+            chunks[pos] = nil
 
-        // Notify metadata
-        notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onUnload }
+            // Notify metadata
+            notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onUnload }
 
-        // Notify observers
-        _didUnloadChunk.publish((pos: pos, chunk: chunk))
+            // Notify observers
+            _didUnloadChunk.publish((pos: pos, chunk: chunk))
+        }
+        if peekedChunks[pos] != nil {
+            peekedChunks[pos] = nil
+        }
     }
 
     private func notifyAllMetadataInChunk(pos: WorldChunkPos, chunk: Chunk, getNotifyFunction: (TileMetadata) -> (World, WorldTilePos3D) -> ()) {
@@ -149,12 +203,23 @@ class World {
     }
 
     subscript(_ pos3D: WorldTilePos3D) -> TileType {
-        get {
-            self[pos3D.pos][pos3D.layer]
-        }
-        set {
-            let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
-            chunk[pos3D.chunkTilePos3D] = newValue
+        self[pos3D.pos][pos3D.layer]
+    }
+
+    func peek(pos: WorldTilePos) -> [TileType] {
+        let chunk = peekLoad(pos: pos.worldChunkPos)
+        return chunk[pos.chunkTilePos]
+    }
+
+    func peek(pos3D: WorldTilePos3D) -> TileType {
+        peek(pos: pos3D.pos)[pos3D.layer]
+    }
+
+    func set(pos3D: WorldTilePos3D, to newType: TileType, persistInGame: Bool) {
+        let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
+        chunk[pos3D.chunkTilePos3D] = newType
+        if persistInGame {
+            persistentChunkData[pos3D.pos.worldChunkPos]!.overwrittenTiles[pos3D.chunkTilePos3D] = newType
         }
     }
 
@@ -164,34 +229,14 @@ class World {
     ///   places the tile, while "place" may mean it was loaded
     func forceCreateTile(pos: WorldTilePos, type: TileType) -> Int {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
-        let layer = chunk.forcePlaceTileAndReturnLayer(pos: pos.chunkTilePos, type: type)
-        let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
-        // Notify metadata
-        if let metadata = chunk.tileMetadatas[chunkPos3D] {
-            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
-            metadata.onCreate(world: self, pos: pos3D)
-        }
-        return layer
+        return chunk.forcePlaceTileAndReturnLayer(pos: pos.chunkTilePos, type: type)
     }
 
     /// Note: "destroy" is distinguished from "remove" are different in that "destroy" means e.g. the user explicitly
     /// deletes the tile, while "remove" may mean it was unloaded
     func destroyTiles(pos: WorldTilePos) {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
-        let tileMetadatas: [(layer: Int, metadata: TileMetadata)] = (0..<Chunk.numLayers).compactMap { layer in
-            let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
-            if let metadata = chunk.tileMetadatas[chunkPos3D] {
-                return (layer: layer, metadata: metadata)
-            } else {
-                return nil
-            }
-        }
         chunk.removeTiles(pos: pos.chunkTilePos)
-        // Notify metadata
-        for (layer, metadata) in tileMetadatas {
-            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
-            metadata.onDestroy(world: self, pos: pos3D)
-        }
     }
 
     private func getChunkAt(pos: WorldChunkPos) -> Chunk {
@@ -270,6 +315,10 @@ class World {
         OverlapSensitiveSystem.tick(world: self)
         // Must be after CollisionSystem
         AdjacentSensitiveSystem.tick(world: self)
+        // Must be after CollisionSystem
+        GrabSystem.tick(world: self)
+        // Must be after CollisionSystem
+        DamageSystem.tick(world: self)
         // Must be last
         LoadPositionSystem.tick(world: self)
     }

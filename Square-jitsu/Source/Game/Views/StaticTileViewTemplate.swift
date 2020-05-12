@@ -16,7 +16,7 @@ struct StaticTileViewTemplate: TileViewTemplate {
         self.texture = texture
     }
 
-    func generateNode(world: World, chunkPos: ChunkTilePos, tileType: TileType) -> SKNode {
+    func generateNode(world: World, pos: WorldTilePos, tileType: TileType) -> SKNode {
         SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
 }

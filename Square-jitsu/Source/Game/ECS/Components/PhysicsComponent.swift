@@ -9,7 +9,6 @@ import SpriteKit
 /// and other physics entity collisions by pushing the other entity back
 struct PhysicsComponent {
     var mass: CGFloat = 1
-    var solidFriction: CGFloat = 1.0 / 4
 
     var adjacentSides: SideSet = []
     var adjacentPositions: [Side:Set<WorldTilePos>] = [:]

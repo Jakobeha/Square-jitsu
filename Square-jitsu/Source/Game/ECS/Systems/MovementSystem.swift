@@ -12,10 +12,18 @@ struct MovementSystem: System {
         self.entity = entity
     }
 
+    static func preTick(world: World) {}
+
+    static func postTick(world: World) {}
+
     func tick() {
-        if entity.prev.dynC != nil {
+        if entity.prev.dynC != nil && shouldMove {
             entity.next.locC!.position += entity.prev.dynC!.velocity * world.settings.fixedDeltaTime
             entity.next.locC!.rotation += entity.prev.dynC!.angularVelocity * world.settings.fixedDeltaTime
         }
+    }
+
+    private var shouldMove: Bool {
+        !(entity.prev.graC?.grabState.isGrabbed ?? false)
     }
 }

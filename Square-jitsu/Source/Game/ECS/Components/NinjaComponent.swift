@@ -12,7 +12,7 @@ struct NinjaComponent {
     }
 
     var jumpSpeed: CGFloat = 9
-    var jumpAngularVelocity: UnclampedAngle = Angle.right.toUnclamped * 2
+    var jumpAngularSpeed: UnclampedAngle = Angle.right.toUnclamped * 2
 
     var jumpState: JumpState = .idle
     var backgroundTypesUsed: Set<TileType> = []

@@ -12,6 +12,10 @@ struct CollisionSystem: System {
         self.entity = entity
     }
 
+    static func preTick(world: World) {}
+
+    static func postTick(world: World) {}
+
     mutating func tick() {
         resetCollisions()
         if handlesTileCollisions {
@@ -34,9 +38,9 @@ struct CollisionSystem: System {
             let tileTypes = world[tilePosition]
             for tileType in tileTypes {
                 handleCollisionWith(tileType: tileType, tilePosition: tilePosition)
-                //if (entityBlockedFromFurtherCollisions) {
-                //    return // blocked by other collisions
-                //}
+                if (entityBlockedFromFurtherCollisions) {
+                    return // blocked by other collisions
+                }
             }
         }
     }
@@ -54,16 +58,18 @@ struct CollisionSystem: System {
             }
         }.sorted { ($0 as (CGFloat, Entity)).0 < $1.0 }
         for (fractionUntilCollision, otherEntity) in entityCollisions {
-            handleCollisionWith(entity: otherEntity, fractionOnTrajectory: fractionUntilCollision)
+            if shouldCollideWith(entity: otherEntity) {
+                handleCollisionWith(entity: otherEntity, fractionOnTrajectory: fractionUntilCollision)
+            }
         }
     }
 
     private var handlesTileCollisions: Bool {
-        entity.prev.docC != nil || entity.prev.phyC != nil
+        (entity.prev.docC != nil || entity.prev.phyC != nil) && !(entity.prev.graC?.grabState.isGrabbed ?? false)
     }
 
     private var handlesEntityCollisions: Bool {
-        entity.prev.docC != nil || entity.prev.phyC != nil
+        (entity.prev.docC != nil || entity.prev.phyC != nil) && !(entity.prev.graC?.grabState.isGrabbed ?? false)
     }
 
     private mutating func handleCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
@@ -77,7 +83,7 @@ struct CollisionSystem: System {
     }
 
     private mutating func handleSolidCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
-        if entity.prev.docC != nil {
+        if entity.prev.docC?.destroyOnSolidCollision ?? false {
             world.remove(entity: entity)
             entity.next.docC!.isRemoved = true
         }
@@ -142,7 +148,7 @@ struct CollisionSystem: System {
     }
 
     private var entityBlockedFromFurtherCollisions: Bool {
-        entity.next.docC != nil && entity.next.docC!.isRemoved
+        entity.next.docC?.isRemoved ?? false
     }
 
     private func calculateCollidedAxis(trajectoryNextFrame: Line, xIsLeft: Bool, yIsBottom: Bool, xBarrier: CGFloat, yBarrier: CGFloat, tilePosition: WorldTilePos) -> Axis? {
@@ -182,7 +188,10 @@ struct CollisionSystem: System {
     private mutating func calculateIfMovingExactlyParallelAlongSideOf(tilePosition: WorldTilePos, radiusSum: CGFloat) -> Side? {
         let isExactlyHorizontal = abs(trajectoryNextFrame.offset.x) < CGFloat.epsilon
         let isExactlyVertical = abs(trajectoryNextFrame.offset.y) < CGFloat.epsilon
-        if isExactlyHorizontal {
+        if isExactlyHorizontal && isExactlyVertical {
+            // Is a corner
+            return nil
+        } else if isExactlyHorizontal {
             let left = tilePosition.cgPoint.x - radiusSum
             let right = tilePosition.cgPoint.x + radiusSum
             if abs(entity.prev.locC!.position.x - left) < CGFloat.epsilon {
@@ -203,9 +212,14 @@ struct CollisionSystem: System {
         return nil
     }
 
+    private func shouldCollideWith(entity otherEntity: Entity) -> Bool {
+        entity.prev.graC?.grabState.grabbedOrThrownBy != otherEntity
+    }
+
     private func handleCollisionWith(entity otherEntity: Entity, fractionOnTrajectory: CGFloat) {
-        if entity.prev.docC != nil {
+        if entity.prev.docC?.destroyOnEntityCollision ?? false {
             world.remove(entity: entity)
+            entity.next.docC!.isRemoved = true
         }
         if entity.prev.phyC != nil {
             entity.next.phyC!.overlappingEntities.insert(otherEntity)

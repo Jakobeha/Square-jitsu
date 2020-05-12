@@ -12,6 +12,10 @@ struct NinjaSystem: System {
         self.entity = entity
     }
 
+    static func preTick(world: World) {}
+
+    static func postTick(world: World) {}
+
     func tick() {
         if entity.prev.nijC != nil {
             switch entity.prev.nijC!.jumpState {
@@ -31,8 +35,6 @@ struct NinjaSystem: System {
     func tryToJump(direction: Angle) {
         if canJump {
             jump(direction: direction)
-        } else {
-            print("Failed")
         }
     }
 
@@ -45,9 +47,9 @@ struct NinjaSystem: System {
         if isNearOrOnSolid {
             // Since angular velocity would be 0 on solid,
             // to prevent infinite angular velocity from jumping near the ground
-            entity.next.dynC!.angularVelocity = entity.prev.nijC!.jumpAngularVelocity
+            entity.next.dynC!.angularVelocity = entity.prev.nijC!.jumpAngularSpeed
         } else {
-            entity.next.dynC!.angularVelocity += entity.prev.nijC!.jumpAngularVelocity
+            entity.next.dynC!.angularVelocity += entity.prev.nijC!.jumpAngularSpeed
         }
         // Technically this is cleared somewhere else if on solid anyways...
         if !isNearOrOnSolid {

@@ -29,10 +29,12 @@ struct WorldTilePos: Equatable, Hashable {
         CGPoint(x: CGFloat(x), y: CGFloat(y))
     }
 
-    var adjacents: [Corner : WorldTilePos] {
-        Corner.allCases.associateWith { corner in
-            self + corner.offset
-        }
+    var cornerAdjacents: DenseEnumMap<Corner, WorldTilePos> {
+        DenseEnumMap { corner in self + corner.offset }
+    }
+
+    var sideAdjacents: DenseEnumMap<Side, WorldTilePos> {
+        DenseEnumMap { side in self + side.offset }
     }
 
     init(worldChunkPos: WorldChunkPos, chunkTilePos: ChunkTilePos) {

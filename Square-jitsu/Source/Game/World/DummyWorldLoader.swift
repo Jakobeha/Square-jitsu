@@ -9,30 +9,35 @@ class DummyWorldLoader : WorldLoader {
     let playerSpawnChunkPos: WorldChunkPos = WorldChunkPos(x: 0, y: 0)
 
     func loadChunk(pos: WorldChunkPos) -> Chunk {
+        let solidType = pos.x % 2 == 0 ? TileType.basicSolid : TileType.basicAdjacentSensitiveSolid
+        let backgroundType = pos.y % 2 == 0 ? TileType.basicBackground : TileType.basicOverlapSensitiveBackground
+
         let chunk = Chunk()
         for x in 0..<Chunk.widthHeight {
-            for y in 0..<2 {
-                let pos = ChunkTilePos(x: x, y: y)
-                chunk.forcePlaceTile(pos: pos, type: TileType.basicAdjacentSensitiveSolid)
-            }
-            for y in 10..<11 {
-                let pos = ChunkTilePos(x: x, y: y)
-                chunk.forcePlaceTile(pos: pos, type: TileType.basicAdjacentSensitiveSolid)
+            if x != Chunk.widthHeight - 3 {
+                for y in 0..<2 {
+                    let pos = ChunkTilePos(x: x, y: y)
+                    chunk.forcePlaceTile(pos: pos, type: solidType)
+                }
+                for y in 10..<11 {
+                    let pos = ChunkTilePos(x: x, y: y)
+                    chunk.forcePlaceTile(pos: pos, type: solidType)
+                }
             }
         }
-        for y in 1..<10 {
+        for y in 5..<10 {
             let pos = ChunkTilePos(x: 3, y: y)
             chunk.forcePlaceTile(pos: pos, type: TileType.basicIce)
         }
-        for x in 22..<30 {
+        for x in 22..<28 {
             for y in 2..<10 {
                 let pos = ChunkTilePos(x: x, y: y)
-                chunk.forcePlaceTile(pos: pos, type: TileType.basicOverlapSensitiveBackground)
+                chunk.forcePlaceTile(pos: pos, type: backgroundType)
             }
         }
-        for y in 2..<10 {
-            let pos = ChunkTilePos(x: 30, y: y)
-            chunk.forcePlaceTile(pos: pos, type: TileType.basicAdjacentSensitiveSolid)
+        for y in 2..<5 {
+            let pos = ChunkTilePos(x: 28, y: y)
+            chunk.forcePlaceTile(pos: pos, type: solidType)
         }
         chunk.forcePlaceTile(pos: ChunkTilePos(x: 17, y: 2), type: TileType.enemySpawn)
         chunk.forcePlaceTile(pos: ChunkTilePos(x: 20, y: 7), type: TileType.shurikenSpawn)

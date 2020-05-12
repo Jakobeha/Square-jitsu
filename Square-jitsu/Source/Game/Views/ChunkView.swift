@@ -9,12 +9,14 @@ class ChunkView: NodeView {
     private var tileViews: ChunkMatrix<TileView?> = ChunkMatrix()
     private let world: World
     private let chunk: ReadonlyChunk
+    private let worldChunkPos: WorldChunkPos
 
     init(world: World, pos: WorldChunkPos, chunk: ReadonlyChunk) {
         self.world = world
         self.chunk = chunk
+        worldChunkPos = pos
         super.init(node: SKNode())
-        node.position = pos.originCgPoint * world.settings.tileViewWidthHeight
+        node.position = worldChunkPos.originCgPoint * world.settings.tileViewWidthHeight
 
         placeExistingTiles(chunk: chunk)
         chunk.didPlaceTile.subscribe(observer: self, handler: placeTileView)
@@ -27,16 +29,17 @@ class ChunkView: NodeView {
 
     private func placeExistingTiles(chunk: ReadonlyChunk) {
         for tilePos3D in ChunkTilePos3D.allCases {
-            placeTileView(tilePos3D: tilePos3D)
+            placeTileView(chunkTilePos3D: tilePos3D)
         }
     }
 
-    func placeTileView(tilePos3D: ChunkTilePos3D) {
-        assert(tileViews[tilePos3D] == nil)
-        let tileType = chunk[tilePos3D]
-        let tileView = TileView(world: world, chunkPos: tilePos3D.pos, tileType: tileType)
+    func placeTileView(chunkTilePos3D: ChunkTilePos3D) {
+        assert(tileViews[chunkTilePos3D] == nil)
+        let tileType = chunk[chunkTilePos3D]
+        let worldTilePos = WorldTilePos(worldChunkPos: worldChunkPos, chunkTilePos: chunkTilePos3D.pos)
+        let tileView = TileView(world: world, pos: worldTilePos, tileType: tileType)
         tileView.placeIn(parent: self.node)
-        tileViews[tilePos3D] = tileView
+        tileViews[chunkTilePos3D] = tileView
     }
 
     func removeTileView(tilePos3D: ChunkTilePos3D, oldType: TileType) {

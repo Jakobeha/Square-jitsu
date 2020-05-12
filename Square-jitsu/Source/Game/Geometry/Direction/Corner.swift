@@ -6,6 +6,8 @@
 import Foundation
 
 enum Corner: Int, CaseIterable {
+    static let numCorners: Int = 8
+
     case east
     case northEast
     case north

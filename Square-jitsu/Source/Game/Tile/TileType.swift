@@ -3,7 +3,7 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 struct TileType: Equatable, Hashable, HasDefault {
     static let air: TileType = TileType(bigType: TileBigType.air)
@@ -18,13 +18,20 @@ struct TileType: Equatable, Hashable, HasDefault {
 
     static let defaultValue: TileType = air
 
-    let bigType: TileBigType
-    let smallType: TileSmallType
-    let orientation: TileOrientation
+    static let fadingZPositionOffset: CGFloat = 0.5 / CGFloat(TileBigType.allCases.count)
+
+    var bigType: TileBigType
+    var smallType: TileSmallType
+    var orientation: TileOrientation
 
     var isDefault: Bool { self == TileType.defaultValue }
 
+    /// - Note: If you change this, also change TileTypeSet.containsSolid
     var isSolid: Bool { bigType.layer == TileLayer.solid || bigType.layer == TileLayer.iceSolid }
+
+    var entityZPosition: CGFloat {
+        bigType.layer.zPosition + (CGFloat(bigType.rawValue) / CGFloat(TileBigType.allCases.count))
+    }
 
     init(bigType: TileBigType, smallType: TileSmallType = TileSmallType(0), orientation: TileOrientation = TileOrientation.none) {
         self.bigType = bigType

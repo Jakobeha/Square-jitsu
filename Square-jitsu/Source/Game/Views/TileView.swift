@@ -6,12 +6,32 @@
 import SpriteKit
 
 class TileView: OptionalNodeView {
-    init(world: World, chunkPos: ChunkTilePos, tileType: TileType) {
+    private let world: World
+    private let tileType: TileType
+
+    private var settings: WorldSettings { world.settings }
+
+    init(world: World, pos: WorldTilePos, tileType: TileType) {
+        self.world = world
+        self.tileType = tileType
         let template = world.settings.tileViewConfigs[tileType]
-        super.init(node: template?.generateNode(world: world, chunkPos: chunkPos, tileType: tileType))
+        super.init(node: template?.generateNode(world: world, pos: pos, tileType: tileType))
         if let node = node {
-            node.position = chunkPos.cgPoint * world.settings.tileViewWidthHeight
+            // Uses chunk position because this node is a child of the chunk's node
+            let chunkPos = pos.chunkTilePos
+            node.position = chunkPos.cgPoint * settings.tileViewWidthHeight
             node.zPosition = tileType.bigType.layer.zPosition
+        }
+    }
+
+    override func removeFromParent() {
+        if let fadeDuration = settings.entityViewFadeDuration[tileType] {
+            node?.zPosition += TileType.fadingZPositionOffset
+            node?.run(SKAction.fadeOut(withDuration: fadeDuration)) {
+                super.removeFromParent()
+            }
+        } else {
+            super.removeFromParent()
         }
     }
 }
