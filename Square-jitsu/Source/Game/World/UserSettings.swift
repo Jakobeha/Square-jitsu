@@ -7,6 +7,6 @@ import SpriteKit
 
 /// This is a mutable class, values are subject to change mid-game
 class UserSettings {
-    var minGestureSpeedToJump: CGFloat = 36
-    var minGestureDistanceToJump: CGFloat = 72
+    var minPrimarySwipeSpeed: CGFloat = 36
+    var minPrimarySwipeDistance: CGFloat = 72
 }

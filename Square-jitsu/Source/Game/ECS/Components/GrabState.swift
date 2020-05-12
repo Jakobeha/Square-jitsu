@@ -29,6 +29,15 @@ enum GrabState: Equatable {
         }
     }
 
+    var isThrown: Bool {
+        switch self {
+        case .thrown(thrower: _):
+            return true
+        case .idle, .grabbed(grabber: _):
+            return false
+        }
+    }
+
     var grabbedOrThrownBy: Entity? {
         switch self {
         case .idle:

@@ -58,6 +58,17 @@ class Chunk: ReadonlyChunk {
         }
     }
 
+    func getMetadatasAt(pos: ChunkTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
+        (0..<Chunk.numLayers).compactMap { layer in
+            let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
+            if let tileMetadata = tileMetadatas[pos3D]  {
+                return (layer: layer, tileMetadata: tileMetadata)
+            } else {
+                return nil
+            }
+        }
+    }
+
     /// Places the tile, removing any non-overlapping tiles
     /// - Returns: The layer of the tile which was placed
     /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly

@@ -18,7 +18,7 @@ struct TileTypeMap<Value> {
 
     subscript(type: TileType) -> Value? {
         get {
-            backing[type.bigType]?[Int(type.smallType.value)]
+            backing[type.bigType]?.getIfPresent(at: Int(type.smallType.value)) ?? nil
         }
         set {
             // inserts an empty map if setting empty to nil but who cares?

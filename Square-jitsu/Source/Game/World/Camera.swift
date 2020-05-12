@@ -13,7 +13,7 @@ protocol Camera {
 
 extension Camera {
     func applyTo(cameraNode: SKCameraNode, settings: WorldSettings) {
-        cameraNode.position = position * settings.tileViewWidthHeight
+        cameraNode.position = (position * settings.tileViewWidthHeight).rounded
         cameraNode.zRotation = CGFloat(rotation.radians)
         cameraNode.setScale(scale)
     }

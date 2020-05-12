@@ -25,7 +25,7 @@ class TileView: OptionalNodeView {
     }
 
     override func removeFromParent() {
-        if let fadeDuration = settings.entityViewFadeDuration[tileType] {
+        if let fadeDuration = settings.tileViewFadeDuration[tileType] {
             node?.zPosition += TileType.fadingZPositionOffset
             node?.run(SKAction.fadeOut(withDuration: fadeDuration)) {
                 super.removeFromParent()

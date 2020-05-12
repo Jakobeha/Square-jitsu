@@ -9,6 +9,7 @@ import SpriteKit
 struct ToxicComponent {
     var damage: CGFloat = 0.25
     var safeTypes: Set<TileType> = []
+    var onlyToxicIfThrown: Bool = false
 
     var safeEntities: Set<EntityRef> = []
 }

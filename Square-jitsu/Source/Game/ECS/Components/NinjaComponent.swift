@@ -6,14 +6,9 @@
 import SpriteKit
 
 struct NinjaComponent {
-    enum JumpState: Equatable {
-        case idle
-        case tryingToJump(direction: Angle)
-    }
-
     var jumpSpeed: CGFloat = 9
     var jumpAngularSpeed: UnclampedAngle = Angle.right.toUnclamped * 2
 
-    var jumpState: JumpState = .idle
+    var actionState: NinjaActionState = .idle
     var backgroundTypesUsed: Set<TileType> = []
 }

@@ -80,4 +80,8 @@ extension CGPoint {
     var normalized: CGPoint {
         magnitude < CGFloat.epsilon ? CGPoint.zero : self / magnitude
     }
+
+    var rounded: CGPoint {
+        CGPoint(x: round(x), y: round(y))
+    }
 }

@@ -29,8 +29,8 @@ class DummyWorldLoader : WorldLoader {
             let pos = ChunkTilePos(x: 3, y: y)
             chunk.forcePlaceTile(pos: pos, type: TileType.basicIce)
         }
-        for x in 22..<28 {
-            for y in 2..<10 {
+        for x in 19..<28 {
+            for y in (29 - x)..<10 {
                 let pos = ChunkTilePos(x: x, y: y)
                 chunk.forcePlaceTile(pos: pos, type: backgroundType)
             }
@@ -40,7 +40,7 @@ class DummyWorldLoader : WorldLoader {
             chunk.forcePlaceTile(pos: pos, type: solidType)
         }
         chunk.forcePlaceTile(pos: ChunkTilePos(x: 17, y: 2), type: TileType.enemySpawn)
-        chunk.forcePlaceTile(pos: ChunkTilePos(x: 20, y: 7), type: TileType.shurikenSpawn)
+        chunk.forcePlaceTile(pos: ChunkTilePos(x: 12, y: 7), type: TileType.shurikenSpawn)
         if pos == playerSpawnChunkPos {
             chunk.forcePlaceTile(pos: ChunkTilePos(x: 6, y: 4), type: TileType.playerSpawn)
         }

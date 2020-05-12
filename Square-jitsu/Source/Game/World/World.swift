@@ -223,6 +223,16 @@ class World {
         }
     }
 
+    func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
+        let chunk = getChunkAt(pos: pos.worldChunkPos)
+        return chunk.getMetadatasAt(pos: pos.chunkTilePos)
+    }
+
+    func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
+        let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
+        return chunk.tileMetadatas[pos3D.chunkTilePos3D]
+    }
+
     /// Places the tile, removing any non-overlapping tiles
     /// - Returns: The layer of the tile which was placed
     /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly

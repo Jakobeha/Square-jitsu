@@ -69,9 +69,11 @@ struct GrabSystem: System {
         assert(
                 grabbingEntity.next.griC != nil &&
                 grabbedEntity.next.graC != nil &&
-                canGrab(grabbingEntity: grabbingEntity, grabbedEntity: grabbedEntity)
+                canGrab(grabbingEntity: grabbingEntity, grabbedType: grabbedEntity.type)
         )
-
+        if !canGrab(grabbingEntity: grabbingEntity, grabbedEntity: grabbedEntity) {
+            Logger.warn("Entity \(grabbingEntity) will grab \(grabbedEntity) but it's not supposed to - the settings are off")
+        }
         let grabbingEntityRef = EntityRef(grabbingEntity)
         let grabbedEntityRef = EntityRef(grabbedEntity)
         if !grabbingEntity.prev.griC!.grabbed.contains(grabbedEntityRef) {

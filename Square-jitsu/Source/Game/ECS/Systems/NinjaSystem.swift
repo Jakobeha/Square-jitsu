@@ -18,12 +18,12 @@ struct NinjaSystem: System {
 
     func tick() {
         if entity.prev.nijC != nil {
-            switch entity.prev.nijC!.jumpState {
+            switch entity.prev.nijC!.actionState {
             case .idle:
                 break
-            case .tryingToJump(let direction):
-                tryToJump(direction: direction)
-                entity.next.nijC!.jumpState = .idle
+            case .doPrimary(let direction):
+                doPrimary(direction: direction)
+                entity.next.nijC!.actionState = .idle
             }
             if isNearOrOnSolid {
                 // Also we can jump this frame, so don't worry that this affects the next frame
@@ -32,9 +32,14 @@ struct NinjaSystem: System {
         }
     }
 
-    func tryToJump(direction: Angle) {
-        if canJump {
+    func doPrimary(direction: Angle) {
+        switch primaryAction {
+        case .none:
+            break
+        case .jump:
             jump(direction: direction)
+        case .throw:
+            GrabSystem.throwNext(throwingEntity: entity, throwDirection: direction)
         }
     }
 
@@ -57,15 +62,27 @@ struct NinjaSystem: System {
         }
     }
 
-    var canJump: Bool {
+    var primaryAction: NinjaPrimaryAction {
         assert(entity.prev.nijC != nil && entity.prev.ntlC != nil && entity.prev.phyC != nil)
-        return isNearOrOnSolid || isOnUnusedBackground
+        if isNearOrOnSolid {
+            return .jump
+        } else if canThrow {
+            return .throw
+        } else if isOnUnusedBackground {
+            return .jump
+        } else {
+            return .none
+        }
     }
 
     var isNearOrOnSolid: Bool {
         let nearTypes = entity.prev.ntlC!.nearTypes
         let onTypes = entity.prev.phyC!.overlappingTypes
         return (nearTypes.contains(layer: TileLayer.solid) && !onTypes.contains(layer: TileLayer.toxic)) || onTypes.contains(layer: TileLayer.solid)
+    }
+
+    var canThrow: Bool {
+        !(entity.next.griC?.grabbed.isEmpty ?? true)
     }
 
     var isOnUnusedBackground: Bool {

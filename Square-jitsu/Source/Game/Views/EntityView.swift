@@ -8,13 +8,13 @@ import SpriteKit
 class EntityView: OptionalNodeView {
     private let entity: Entity
 
-    private var settings: WorldSettings {
-        entity.world!.settings
-    }
+    // Saved so it can be used when the entity is removed
+    private let settings: WorldSettings
 
     init(entity: Entity) {
         self.entity = entity
-        let template = entity.world!.settings.entityViewConfigs[entity.type]
+        self.settings = entity.world!.settings
+        let template = settings.entityViewConfigs[entity.type]
         super.init(node: template?.generateNode(entity: entity))
         if let node = node {
             node.zPosition = entity.type.entityZPosition

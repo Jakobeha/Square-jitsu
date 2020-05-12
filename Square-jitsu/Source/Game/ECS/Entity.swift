@@ -57,7 +57,9 @@ class Entity: EqualityIsIdentity {
                     ),
                     phyC: PhysicsComponent(),
                     graC: GrabbableComponent(thrownSpeedMultiplier: 2),
-                    toxC: ToxicComponent()
+                    toxC: ToxicComponent(
+                            onlyToxicIfThrown: true
+                    )
             ))
         case .enemySpawn:
             return Entity(type: type, components: Components(

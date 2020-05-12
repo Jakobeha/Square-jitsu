@@ -6,7 +6,7 @@
 import SpriteKit
 
 class PlayerInput {
-    private struct JumpGesture {
+    private struct PrimarySwipe {
         let touchId: ObjectIdentifier
         private var wasPerformed: Bool = false
 
@@ -16,23 +16,23 @@ class PlayerInput {
 
         mutating func tick(touch: Touch, userSettings: UserSettings, world: World) {
             assert(touch.id == touchId)
-            // Once a jump gesture was performed it's only saved to prevent the touch from being reused
+            // Once a swipe was performed it's only saved to prevent the touch from being reused
             if !wasPerformed {
-                if touch.currentVelocity.magnitude >= userSettings.minGestureSpeedToJump {
-                    let stateAtEndOfJumpGesture = touch.currentState
-                    let stateAtStartOfJumpGesture = touch.getLatestStateWhenVelocityWas(atMost: userSettings.minGestureSpeedToJump) ?? touch.priorStates.first!
-                    let jumpGestureOffset = stateAtEndOfJumpGesture.position - stateAtStartOfJumpGesture.position
-                    let jumpGestureDistance = jumpGestureOffset.magnitude
-                    if jumpGestureDistance >= userSettings.minGestureDistanceToJump {
-                        let jumpGestureDirection = jumpGestureOffset.directionFromOrigin
-                        perform(direction: jumpGestureDirection, world: world)
+                if touch.currentVelocity.magnitude >= userSettings.minPrimarySwipeSpeed {
+                    let stateAtEndOfPrimarySwipe = touch.currentState
+                    let stateAtStartOfPrimarySwipe = touch.getLatestStateWhenVelocityWas(atMost: userSettings.minPrimarySwipeSpeed) ?? touch.priorStates.first!
+                    let primarySwipeOffset = stateAtEndOfPrimarySwipe.position - stateAtStartOfPrimarySwipe.position
+                    let primarySwipeDistance = primarySwipeOffset.magnitude
+                    if primarySwipeDistance >= userSettings.minPrimarySwipeDistance {
+                        let primarySwipeDirection = primarySwipeOffset.directionFromOrigin
+                        perform(direction: primarySwipeDirection, world: world)
                     }
                 }
             }
         }
 
         private mutating func perform(direction: Angle, world: World) {
-            world.player.next.nijC!.jumpState = .tryingToJump(direction: direction)
+            world.player.next.nijC!.actionState = .doPrimary(direction: direction)
             wasPerformed = true
         }
     }
@@ -42,7 +42,7 @@ class PlayerInput {
 
     let tracker: TouchTracker = TouchTracker()
 
-    private var jumpGesture: JumpGesture? = nil
+    private var primarySwipe: PrimarySwipe? = nil
 
     init(userSettings: UserSettings) {
         self.userSettings = userSettings
@@ -50,20 +50,20 @@ class PlayerInput {
     }
 
     func tick() {
-        tickJumpInput()
+        tickPrimary()
     }
 
-    func tickJumpInput() {
-        if jumpGesture != nil {
-            if let jumpTouch = tracker.touches[jumpGesture!.touchId] {
-                jumpGesture!.tick(touch: jumpTouch, userSettings: userSettings, world: world)
+    func tickPrimary() {
+        if primarySwipe != nil {
+            if let primaryTouch = tracker.touches[primarySwipe!.touchId] {
+                primarySwipe!.tick(touch: primaryTouch, userSettings: userSettings, world: world)
             } else {
-                jumpGesture = nil
+                primarySwipe = nil
             }
             // If there are more inputs this would be earliestTouch(where: <not used by other input>)
-        } else if let jumpTouch = tracker.earliestTouch {
-            jumpGesture = JumpGesture(touchId: jumpTouch.id)
-            jumpGesture!.tick(touch: jumpTouch, userSettings: userSettings, world: world)
+        } else if let primaryTouch = tracker.earliestTouch {
+            primarySwipe = PrimarySwipe(touchId: primaryTouch.id)
+            primarySwipe!.tick(touch: primaryTouch, userSettings: userSettings, world: world)
         }
     }
 }

@@ -21,10 +21,11 @@ class WorldSettings {
     let tileViewWidthHeight: CGFloat = 48
     let tileViewConfigs: TileTypeMap<TileViewTemplate> = TileTypeMap([
         TileBigType.background:[
-            Adjacent4TileViewTemplate(baseName: "Background", adjoiningTypes: TileTypePred([
-                TileLayer.background,
-                TileLayer.solid
-            ]))
+            Adjacent4TileViewTemplate(
+                    baseName: "Background", 
+                    adjoiningTypes: TileTypePred([TileLayer.background]),
+                    semiAdjoiningTypes: TileTypePred([TileLayer.background, TileLayer.solid])
+            )
         ],
         TileBigType.overlapSensitiveBackground:[
             StaticTileViewTemplate(textureName: "TestOffBackground"),
@@ -56,12 +57,14 @@ class WorldSettings {
     ])
 
     let tileViewFadeDuration: TileTypeMap<TimeInterval> = TileTypeMap([
-        TileBigType.overlapSensitiveBackground:[0.5],
-        TileBigType.adjacentSensitiveSolid:[0.5]
+        TileBigType.overlapSensitiveBackground:[nil, 0.5],
+        TileBigType.adjacentSensitiveSolid:[nil, 0.5]
     ])
 
     let entityViewFadeDuration: TileTypeMap<TimeInterval> = TileTypeMap([
-        TileBigType.shurikenSpawn:[1]
+        TileBigType.shurikenSpawn:[1],
+        TileBigType.enemySpawn:[1],
+        TileBigType.playerSpawn:[1]
     ])
 
     let entityGrabColors: TileTypeMap<SKColor> = TileTypeMap([
