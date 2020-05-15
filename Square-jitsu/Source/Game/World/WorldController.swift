@@ -27,7 +27,7 @@ class WorldController {
     }
 
     func loadDummyWorld() {
-        load(world: World(loader: DummyWorldLoader(), settings: WorldSettings(), userSettings: userSettings))
+        load(world: World(loader: DummyWorldLoader(), settings: WorldSettings.default, userSettings: userSettings))
     }
 
     func load(world: World) {

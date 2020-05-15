@@ -18,7 +18,7 @@ class SpawnOnGrabMetadata: EmptyTileMetadata {
 
     private func spawn(world: World, pos: WorldTilePos3D) -> Entity {
         let myTileType = world[pos]
-        let entity = Entity.newForSpawnTile(type: myTileType, pos: pos)
+        let entity = Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
         world.add(entity: entity)
 
         world.set(pos3D: pos, to: TileType.air, persistInGame: true)

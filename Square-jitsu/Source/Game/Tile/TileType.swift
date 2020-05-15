@@ -5,16 +5,16 @@
 
 import SpriteKit
 
-struct TileType: Equatable, Hashable, HasDefault {
+struct TileType: Equatable, Hashable, Codable, HasDefault, LosslessStringConvertible {
     static let air: TileType = TileType(bigType: TileBigType.air)
     static let basicBackground: TileType = TileType(bigType: TileBigType.background)
     static let basicOverlapSensitiveBackground: TileType = TileType(bigType: TileBigType.overlapSensitiveBackground)
     static let basicSolid: TileType = TileType(bigType: TileBigType.solid)
     static let basicAdjacentSensitiveSolid: TileType = TileType(bigType: TileBigType.adjacentSensitiveSolid)
     static let basicIce: TileType = TileType(bigType: TileBigType.ice)
-    static let playerSpawn: TileType = TileType(bigType: TileBigType.playerSpawn)
-    static let shurikenSpawn: TileType = TileType(bigType: TileBigType.shurikenSpawn)
-    static let enemySpawn: TileType = TileType(bigType: TileBigType.enemySpawn)
+    static let playerSpawn: TileType = TileType(bigType: TileBigType.player)
+    static let shurikenSpawn: TileType = TileType(bigType: TileBigType.shuriken)
+    static let enemySpawn: TileType = TileType(bigType: TileBigType.enemy)
 
     static let defaultValue: TileType = air
 
@@ -37,5 +37,63 @@ struct TileType: Equatable, Hashable, HasDefault {
         self.bigType = bigType
         self.smallType = smallType
         self.orientation = orientation
+    }
+
+    init?(_ description: String) {
+        let components = description.split(separator: "/")
+        if components.count < 1 {
+            return nil
+        }
+
+        guard let bigType = TileBigType(String(components[0])) else {
+            return nil
+        }
+
+        guard let smallType = components.count < 2 ? TileSmallType(0) : TileSmallType(String(components[1])) else {
+            return nil
+        }
+
+        guard let orientation = components.count < 3 ? TileOrientation.none : TileOrientation(String(components[1])) else {
+            return nil
+        }
+
+        if components.count > 3 {
+            return nil
+        }
+
+        self = TileType(bigType: bigType, smallType: smallType, orientation: orientation)
+    }
+
+    var descriptionDifferentFromBigType: String {
+        if orientation != TileOrientation.none {
+            return "\(bigType)/\(smallType)\(orientation)"
+        } else {
+            return "\(bigType)/\(smallType)"
+        }
+    }
+
+    var description: String {
+        if orientation != TileOrientation.none {
+            return "\(bigType)/\(smallType)\(orientation)"
+        } else if smallType != TileSmallType(0) {
+            return "\(bigType)/\(smallType)"
+        } else {
+            return bigType.description
+        }
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let asString = try container.decode(String.self)
+        if let tileType = TileType(asString) {
+            self.init(bigType: tileType.bigType, smallType: tileType.smallType, orientation: tileType.orientation)
+        } else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Tile type must be of the form 'word', 'word/#', or 'word/#/#'")
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(description)
     }
 }

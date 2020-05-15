@@ -7,8 +7,8 @@ import SpriteKit
 
 /// An entity with this component which will react to tile collisions by sticking to the wall,
 /// and other physics entity collisions by pushing the other entity back
-struct PhysicsComponent {
-    var mass: CGFloat = 1
+struct PhysicsComponent: SettingCodableByCodable, Codable {
+    var mass: CGFloat
 
     var adjacentSides: SideSet = []
     var adjacentPositions: [Side:Set<WorldTilePos>] = [:]
@@ -37,5 +37,9 @@ struct PhysicsComponent {
         overlappingTypes.removeAll()
         overlappingPositions.removeAll()
         overlappingEntities.removeAll()
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case mass
     }
 }

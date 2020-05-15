@@ -5,10 +5,15 @@
 
 import SpriteKit
 
-struct NinjaComponent {
-    var jumpSpeed: CGFloat = 9
-    var jumpAngularSpeed: UnclampedAngle = Angle.right.toUnclamped * 2
+struct NinjaComponent: SettingCodableByCodable, Codable {
+    var jumpSpeed: CGFloat
+    var jumpAngularSpeed: UnclampedAngle
 
     var actionState: NinjaActionState = .idle
     var backgroundTypesUsed: Set<TileType> = []
+
+    enum CodingKeys: String, CodingKey {
+        case jumpSpeed
+        case jumpAngularSpeed
+    }
 }

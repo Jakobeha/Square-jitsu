@@ -5,10 +5,10 @@
 
 import SpriteKit
 
-struct LocationComponent {
-    var position: CGPoint
-    var rotation: Angle = Angle.zero
-    var radius: CGFloat = 0.5
+struct LocationComponent: SettingCodableByCodable, Codable {
+    var position: CGPoint = CGPoint.nan
+    var rotation: Angle
+    var radius: CGFloat
 
     var bounds: CGRect {
         CGRect(
@@ -22,5 +22,10 @@ struct LocationComponent {
     /// Distance from the furthest point on this entity (assuming it's a circle) to the given point
     func distance(to point: CGPoint) -> CGFloat {
         max(0, (position - point).magnitude - radius)
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case rotation
+        case radius
     }
 }

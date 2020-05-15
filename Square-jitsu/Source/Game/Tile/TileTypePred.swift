@@ -10,10 +10,10 @@ import Foundation
 struct TileTypePred {
     static let all: TileTypePred = TileTypePred(containsAll: true)
 
-    private let containedTypes: Set<TileType>
-    private let containedBigTypes: Set<TileBigType>
-    private let containedLayers: Set<TileLayer>
-    private let containsAll: Bool
+    var containedTypes: Set<TileType>
+    var containedBigTypes: Set<TileBigType>
+    var containedLayers: Set<TileLayer>
+    var containsAll: Bool
 
     init() {
         self.init([])

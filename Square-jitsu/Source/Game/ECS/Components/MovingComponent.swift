@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct MovingComponent {
+struct MovingComponent: SettingCodableByCodable, Codable {
     var velocity: CGPoint = CGPoint.zero
     var angularVelocity: UnclampedAngle = Angle.zero.toUnclamped
 }

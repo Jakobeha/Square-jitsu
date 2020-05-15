@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct TileSmallType: Equatable, Hashable {
+struct TileSmallType: Equatable, Hashable, LosslessStringConvertible {
     var value: UInt8
 
     var isOn: Bool {
@@ -24,4 +24,14 @@ struct TileSmallType: Equatable, Hashable {
     init(_ value: UInt8) {
         self.value = value
     }
+
+    init?(_ description: String) {
+        if let value = UInt8(description) {
+            self.init(value)
+        } else {
+            return nil
+        }
+    }
+
+    var description: String { value.description }
 }

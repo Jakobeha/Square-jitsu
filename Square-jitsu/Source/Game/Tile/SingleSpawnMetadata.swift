@@ -8,7 +8,7 @@ import Foundation
 class SingleSpawnMetadata: EmptyTileMetadata {
     override func onFirstLoad(world: World, pos: WorldTilePos3D) {
         let myTileType = world[pos]
-        let entity = Entity.newForSpawnTile(type: myTileType, pos: pos)
+        let entity = Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
         world.add(entity: entity)
     }
 }

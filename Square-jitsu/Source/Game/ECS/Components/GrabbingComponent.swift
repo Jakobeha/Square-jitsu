@@ -5,12 +5,19 @@
 
 import SpriteKit
 
-struct GrabbingComponent {
-    var grabbableTypes: Set<TileBigType> = [.shurikenSpawn]
-    var grabOffset: CGPoint = CGPoint(x: 0.25, y: -0.25)
-    var throwSpeed: CGFloat = 4.5
-    var throwAngularSpeed: UnclampedAngle = Angle.right.toUnclamped
+struct GrabbingComponent: SettingCodableByCodable, Codable {
+    var grabbableTypes: Set<TileBigType>
+    var grabOffset: CGPoint
+    var throwSpeed: CGFloat
+    var throwAngularSpeed: UnclampedAngle
 
     /// Order matters because first grabbed is first thrown
     var grabbed: [EntityRef] = []
+
+    enum CodingKeys: String, CodingKey {
+        case grabbableTypes
+        case grabOffset
+        case throwSpeed
+        case throwAngularSpeed
+    }
 }

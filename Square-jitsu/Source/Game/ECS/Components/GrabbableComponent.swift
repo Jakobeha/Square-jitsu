@@ -5,8 +5,12 @@
 
 import SpriteKit
 
-struct GrabbableComponent {
-    var thrownSpeedMultiplier: CGFloat = 1
+struct GrabbableComponent: SettingCodableByCodable, Codable {
+    var thrownSpeedMultiplier: CGFloat
 
     var grabState: GrabState = GrabState.idle
+
+    enum CodingKeys: String, CodingKey {
+        case thrownSpeedMultiplier
+    }
 }

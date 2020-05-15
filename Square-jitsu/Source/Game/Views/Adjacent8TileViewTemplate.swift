@@ -5,7 +5,9 @@
 
 import SpriteKit
 
-class Adjacent8TileViewTemplate: TileViewTemplate {
+final class Adjacent8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
+    typealias AsSetting = StructSetting<Adjacent8TileViewTemplate>
+
     static func getCoalescedForSharedTexture(cornerSet: CornerSet) -> CornerSet {
         var coalescedSet = cornerSet
         if !cornerSet.contains(.east) {
@@ -23,20 +25,21 @@ class Adjacent8TileViewTemplate: TileViewTemplate {
         return coalescedSet
     }
 
-    static func getTextureName(baseName: String, cornerSet: CornerSet) -> String {
+    static func getTexture(base: TextureSet, cornerSet: CornerSet) -> SKTexture {
         let cornerSetDescription = cornerSet.toBitString
-        return "\(baseName)_\(cornerSetDescription)"
+        return base[cornerSetDescription]
     }
 
-    private let textures: DenseEnumMap<CornerSet, SKTexture>
-    private let adjoiningTypes: TileTypePred
+    let base: TextureSet
+    let adjoiningTypes: TileTypePred
 
-    init(baseName: String, adjoiningTypes: TileTypePred) {
-        textures = DenseEnumMap { cornerSet in
-            let coalescedSet = Adjacent8TileViewTemplate.getCoalescedForSharedTexture(cornerSet: cornerSet)
-            let textureName = Adjacent8TileViewTemplate.getTextureName(baseName: baseName, cornerSet: coalescedSet)
-            return SKTexture(imageNamed: textureName)
-        }
+    private lazy var textures: DenseEnumMap<CornerSet, SKTexture> = DenseEnumMap { cornerSet in
+        let coalescedSet = Adjacent8TileViewTemplate.getCoalescedForSharedTexture(cornerSet: cornerSet)
+        return Adjacent8TileViewTemplate.getTexture(base: base, cornerSet: coalescedSet)
+    }
+
+    init(base: TextureSet, adjoiningTypes: TileTypePred) {
+        self.base = base
         self.adjoiningTypes = adjoiningTypes
     }
 
@@ -46,5 +49,12 @@ class Adjacent8TileViewTemplate: TileViewTemplate {
         })
         let texture = textures[adjoiningCorners]
         return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+    }
+
+    static func newSetting() -> AsSetting {
+        StructSetting([
+            "textureBase": TextureSetSetting(),
+            "adjoiningTypes": TileTypePredSetting()
+        ], allowedExtraFields: ["type"])
     }
 }

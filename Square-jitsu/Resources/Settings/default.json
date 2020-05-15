@@ -1,0 +1,196 @@
+{
+  "tileViewTemplates": {
+    "background": [
+      {
+        "type": "adjacent4",
+        "textureBase": "Background",
+        "adjoiningTypes": [
+          "background"
+        ],
+        "semiAdjoiningTypes": [
+          "background",
+          "solid"
+        ]
+      }
+    ],
+    "overlapSensitiveBackground": [
+      {
+        "type": "static",
+        "texture": "TestOffBackground"
+      },
+      {
+        "type": "static",
+        "texture": "TestOnBackground"
+      }
+    ],
+    "solid": [
+      {
+        "type": "adjacent8",
+        "textureBase": "Solid",
+        "adjoiningTypes": [
+          "solid/0",
+          "ice/0"
+        ]
+      }
+    ],
+    "adjacentSensitiveSolid": [
+      {
+        "type": "static",
+        "texture": "TestOffSolid"
+      },
+      {
+        "type": "static",
+        "texture": "TestOnSolid"
+      }
+    ],
+    "ice": [
+      {
+        "type": "adjacent8",
+        "textureBase": "Ice",
+        "adjoiningTypes": [
+          "solid/0",
+          "ice/0"
+        ]
+      }
+    ],
+    "shuriken": [
+      {
+        "type": "static",
+        "texture": "Shuriken"
+      }
+    ],
+    "enemy": [
+      {
+        "type": "static",
+        "texture": "Enemy"
+      }
+    ]
+  },
+  "entityViewTemplates": {
+    "player": [
+      {
+        "type": "static",
+        "texture": "Player"
+      }
+    ],
+    "shuriken": [
+      {
+        "type": "static",
+        "texture": "Shuriken"
+      }
+    ],
+    "enemy": [
+      {
+        "type": "static",
+        "texture": "Enemy"
+      }
+    ]
+  },
+  "tileViewFadeDurations": {
+    "overlapSensitiveBackground": [
+      null,
+      0.5
+    ],
+    "adjacentSensitiveSolid": [
+      null,
+      0.5
+    ]
+  },
+  "entityViewFadeDurations": {
+    "player": [
+      1
+    ],
+    "enemy": [
+      1
+    ],
+    "shurkien": [
+      1
+    ]
+  },
+  "entityGrabColors": {
+    "player": [{
+      "hue": 0.08333333333,
+      "saturation": 1,
+      "brightness": 1,
+      "alpha": 1
+    }],
+    "enemy": [{
+      "hue": 0,
+      "saturation": 1,
+      "brightness": 1,
+      "alpha": 1
+    }]
+  },
+  "tileDescriptions": {
+    "air": [""],
+    "background": ["Default"],
+    "overlapSensitiveBackground": ["Default-Off", "Default-On"],
+    "solid": ["Default"],
+    "adjacentSensitiveSolid": ["Default-Off", "Default-On"],
+    "ice": ["Default"],
+    "player": [""],
+    "enemy": ["Default"],
+    "shuriken": ["Default"],
+    "turret": ["Default"]
+  },
+  "entityData": {
+    "player": {
+      "locC": {"radius": 0.5},
+      "larC": {},
+      "dynC": {},
+      "imfC": {
+        "gravity": 0.25,
+        "minSpeedOnIce": 2,
+        "solidFriction": 0.015625,
+        "aerialAngularFriction": 0.02083333333
+      },
+      "phyC": {
+        "mass": 1
+      },
+      "ntlC": {
+        "nearRadiusExtra": 0.5
+      },
+      "griC": {
+        "grabbableTypes": [
+          "shuriken"
+        ],
+        "grabOffset": {
+          "x": 0.25,
+          "y": -0.25
+        },
+        "throwSpeed": 4.5,
+        "throwAngularSpeed": "90°"
+      },
+      "helC": {
+        "maxHealth": 1
+      },
+      "nijC": {
+        "jumpSpeed": 9,
+        "jumpAngularSpeed": "180°"
+      }
+    },
+    "shuriken": {
+      "locC": {"radius": 0.5},
+      "dynC": {},
+      "docC": {"destroyOnEntityCollision": false, "destroyOnSolidCollision": true},
+      "phyC": {"mass": 1},
+      "graC": {"thrownSpeedMultiplier": 2},
+      "toxC": {"damage": 0.25, "safeTypes": [], "onlyToxicIfThrown": true}
+    },
+    "enemy": {
+      "locC": {"radius": 0.5},
+      "dynC": {},
+      "imfC": {
+        "gravity": 0.25,
+        "minSpeedOnIce": 2,
+        "solidFriction": 0.015625,
+        "aerialAngularFriction": 0.02083333333
+      },
+      "phyC": {"mass": 1},
+      "helC": {"maxHealth": 1}
+    }
+  },
+  "entitySpawnRadius": {
+    "enemy": 3
+  }
+}

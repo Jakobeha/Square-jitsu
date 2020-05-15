@@ -5,4 +5,4 @@
 
 import Foundation
 
-struct LoadAroundComponent {}
+struct LoadAroundComponent: SettingCodableByCodable, Codable {}

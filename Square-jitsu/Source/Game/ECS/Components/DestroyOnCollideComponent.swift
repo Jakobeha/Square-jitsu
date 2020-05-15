@@ -5,9 +5,14 @@
 
 import Foundation
 
-struct DestroyOnCollideComponent {
+struct DestroyOnCollideComponent: SettingCodableByCodable, Codable {
     var destroyOnEntityCollision: Bool
     var destroyOnSolidCollision: Bool
 
     var isRemoved: Bool = false
+
+    enum CodingKeys: String, CodingKey {
+        case destroyOnEntityCollision
+        case destroyOnSolidCollision
+    }
 }

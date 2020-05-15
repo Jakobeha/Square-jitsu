@@ -86,4 +86,19 @@ struct UnclampedAngle: Equatable, Hashable, Codable, LosslessStringConvertible {
     }
 
     var description: String { "\(degrees)°" }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let asString = try container.decode(String.self)
+        if let angle = UnclampedAngle(asString) {
+            self.init(radians: angle.radians)
+        } else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "must be of the form ###°")
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(description)
+    }
 }

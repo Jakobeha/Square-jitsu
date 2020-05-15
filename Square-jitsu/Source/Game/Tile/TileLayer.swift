@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-enum TileLayer: Int {
+enum TileLayer: Int, CaseIterable, Codable {
     case air
 
     case background
@@ -16,6 +16,8 @@ enum TileLayer: Int {
     case toxic
 
     case entity
+
+    // --- Pattern matching below
 
     var toSet: TileLayerSet {
         switch self {
@@ -41,10 +43,6 @@ enum TileLayer: Int {
         case .air, .background, .toxic, .entity:
             return false
         }
-    }
-
-    var zPosition: CGFloat {
-        CGFloat(rawValue)
     }
 
     static func layersCanOverlap(_ lhs: TileLayer, _ rhs: TileLayer) -> Bool {
@@ -75,6 +73,26 @@ enum TileLayer: Int {
             return false
         case (.entity, .entity):
             return false
+        }
+    }
+
+    // -- End pattern matching
+
+    var zPosition: CGFloat {
+        CGFloat(rawValue)
+    }
+
+    var description: String { String(describing: self) }
+
+    private static let layersByName: [String:TileLayer] = [String:TileLayer](
+            uniqueKeysWithValues: allCases.map { layer in (key: layer.description, value: layer) }
+    )
+
+    init?(_ description: String) {
+        if let layer = TileLayer.layersByName[description] {
+            self = layer
+        } else {
+            return nil
         }
     }
 }

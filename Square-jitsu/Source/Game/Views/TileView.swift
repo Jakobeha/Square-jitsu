@@ -14,7 +14,7 @@ class TileView: OptionalNodeView {
     init(world: World, pos: WorldTilePos, tileType: TileType) {
         self.world = world
         self.tileType = tileType
-        let template = world.settings.tileViewConfigs[tileType]
+        let template = world.settings.tileViewTemplates[tileType]
         super.init(node: template?.generateNode(world: world, pos: pos, tileType: tileType))
         if let node = node {
             // Uses chunk position because this node is a child of the chunk's node
@@ -25,7 +25,7 @@ class TileView: OptionalNodeView {
     }
 
     override func removeFromParent() {
-        if let fadeDuration = settings.tileViewFadeDuration[tileType] {
+        if let fadeDuration = settings.tileViewFadeDurations[tileType] {
             node?.zPosition += TileType.fadingZPositionOffset
             node?.run(SKAction.fadeOut(withDuration: fadeDuration)) {
                 super.removeFromParent()

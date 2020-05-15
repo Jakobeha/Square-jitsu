@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct TileOrientation: Equatable, Hashable {
+struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
     static let none = TileOrientation(rawValue: 0)
 
     var rawValue: UInt8
@@ -29,4 +29,14 @@ struct TileOrientation: Equatable, Hashable {
     init(rawValue: UInt8) {
         self.rawValue = rawValue
     }
+
+    init?(_ description: String) {
+        if let value = UInt8(description) {
+            self.init(rawValue: value)
+        } else {
+            return nil
+        }
+    }
+
+    var description: String { rawValue.description }
 }

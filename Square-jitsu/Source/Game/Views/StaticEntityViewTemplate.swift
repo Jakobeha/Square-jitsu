@@ -5,18 +5,18 @@
 
 import SpriteKit
 
-struct StaticEntityViewTemplate: EntityViewTemplate {
-    private let texture: SKTexture
+struct StaticEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
+    typealias AsSetting = StructSetting<StaticEntityViewTemplate>
 
-    init(textureName: String) {
-        self.init(texture: SKTexture(imageNamed: textureName))
-    }
-
-    init(texture: SKTexture) {
-        self.texture = texture
-    }
+    let texture: SKTexture
 
     func generateNode(entity: Entity) -> SKNode {
         SKSpriteNode(texture: texture)
+    }
+
+    static func newSetting() -> AsSetting {
+        StructSetting([
+            "texture": TextureSetting()
+        ], allowedExtraFields: ["type"])
     }
 }

@@ -6,8 +6,8 @@
 import Foundation
 
 extension Dictionary {
-    func mapValues<Value2>(_ transform: (Value) throws -> Value2) rethrows -> [Key:Value2] {
-        [Key:Value2](uniqueKeysWithValues: try map { (key, value) in (key, try transform(value)) })
+    func mapKeys<Key2>(_ transform: (Key) throws -> Key2) rethrows -> [Key2:Value] {
+        [Key2:Value](uniqueKeysWithValues: try map { (key, value) in (try transform(key), value) })
     }
 
     mutating func getOrInsert(_ key: Key, getDefault: () throws -> Value) rethrows -> Value {

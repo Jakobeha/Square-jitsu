@@ -6,9 +6,9 @@
 import SpriteKit
 
 /// Records tiles near an entity but not adjacent or collided
-struct NearTileComponent {
+struct NearTileComponent: SettingCodableByCodable, Codable {
     /// The radius around the entity where near tiles will be detected
-    var nearRadiusExtra: CGFloat = 0.5
+    var nearRadiusExtra: CGFloat
 
     var nearTypes: TileTypeSet = TileTypeSet()
 
@@ -19,5 +19,9 @@ struct NearTileComponent {
 
     mutating func reset() {
         nearTypes.removeAll()
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case nearRadiusExtra
     }
 }

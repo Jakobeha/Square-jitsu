@@ -1,0 +1,27 @@
+// Modified from https://raw.githubusercontent.com/krzysztofzablocki/Sourcery/master/Templates/Templates/AutoCodable.swifttemplate
+import SpriteKit
+<%
+func toString(_ literal: String) -> String {
+    return "\"" + literal + "\""
+}
+-%>
+<%_ for type in types.all
+          where (type.implements["SettingCodable"] != nil &&
+                 type.typealiases["AsSetting"]?.typeName.generic?.name == "StructSetting")  {
+    let variables = type.storedVariables.filter({ $0.defaultValue == nil }) -%>
+extension <%= type.name %> {
+    static <%= type.accessLevel %> func decode(from setting: StructSetting<<%= type.name %>>) -> <%= type.name %> {
+        self.init(
+        <%_ for variable in variables { -%>
+            <%= variable.name %>: setting.fieldSettings[<%= toString(variable.name) %>]!.decodeDynamically()<%_ if variable != variables.last { %>,<%_ } %>
+        <%_ } -%>
+        )
+    }
+
+    <%= type.accessLevel %> func encode(to setting: StructSetting<<%= type.name %>>) {
+        <%_ for variable in variables { -%>
+        self.<%= variable.name %>.encodeDynamically(to: setting.fieldSettings[<%= toString(variable.name) %>]!)
+        <%_ } -%>
+    }
+}
+<% } -%>

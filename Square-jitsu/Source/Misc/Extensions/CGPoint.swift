@@ -6,6 +6,8 @@
 import SpriteKit
 
 extension CGPoint {
+    static let nan: CGPoint = CGPoint(x: CGFloat.nan, y: CGFloat.nan)
+
     static prefix func -(point: CGPoint) -> CGPoint {
         CGPoint(x: -point.x, y: -point.y)
     }

@@ -14,7 +14,7 @@ class EntityView: OptionalNodeView {
     init(entity: Entity) {
         self.entity = entity
         self.settings = entity.world!.settings
-        let template = settings.entityViewConfigs[entity.type]
+        let template = settings.entityViewTemplates[entity.type]
         super.init(node: template?.generateNode(entity: entity))
         if let node = node {
             node.zPosition = entity.type.entityZPosition
@@ -45,7 +45,7 @@ class EntityView: OptionalNodeView {
     }
 
     override func removeFromParent() {
-        if let fadeDuration = settings.entityViewFadeDuration[entity.type] {
+        if let fadeDuration = settings.entityViewFadeDurations[entity.type] {
             node?.zPosition += TileType.fadingZPositionOffset
             node?.run(SKAction.fadeOut(withDuration: fadeDuration)) {
                 super.removeFromParent()

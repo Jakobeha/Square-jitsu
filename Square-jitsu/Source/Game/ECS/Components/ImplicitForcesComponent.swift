@@ -5,11 +5,18 @@
 
 import SpriteKit
 
-struct ImplicitForcesComponent {
+struct ImplicitForcesComponent: SettingCodableByCodable, Codable {
     /// It isn't that much
-    var gravity: CGFloat = 0.25
+    var gravity: CGFloat
     /// Prevents soft-lock for player and also helps them move other entities along ice
-    var minSpeedOnIce: CGFloat = 2
-    var solidFriction: CGFloat = 1.0 / 64
-    var aerialAngularFriction: CGFloat = 1.0 / 48
+    var minSpeedOnIce: CGFloat
+    var solidFriction: CGFloat
+    var aerialAngularFriction: CGFloat
+
+    enum CodingKeys: String, CodingKey {
+        case gravity
+        case minSpeedOnIce
+        case solidFriction
+        case aerialAngularFriction
+    }
 }

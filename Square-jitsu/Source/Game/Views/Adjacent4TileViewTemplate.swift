@@ -5,7 +5,9 @@
 
 import SpriteKit
 
-class Adjacent4TileViewTemplate: TileViewTemplate {
+final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
+    typealias AsSetting = StructSetting<Adjacent4TileViewTemplate>
+
     static func getCoalescedForSharedTexture(sideSet: SideSet) -> SideSet {
         if sideSet.contains([.east, .west]) || sideSet.contains([.north, .south]) {
             return SideSet.all
@@ -28,32 +30,33 @@ class Adjacent4TileViewTemplate: TileViewTemplate {
         }
     }
 
-    static func getTextureName(baseName: String, sideSet: SideSet) -> String {
+    static func getTexture(base: TextureSet, sideSet: SideSet) -> SKTexture {
         let sideSetDescription = sideSet.toBitString
-        return "\(baseName)_\(sideSetDescription)"
+        return base[sideSetDescription]
     }
 
-    private let textures: DenseEnumMap<SideSet, SKTexture>
-    private let alwaysAdjoiningTypes: TileTypePred
-    private let semiAdjoiningTypes: TileTypePred
+    let base: TextureSet
+    let adjoiningTypes: TileTypePred
+    let semiAdjoiningTypes: TileTypePred
+    
+    private lazy var textures: DenseEnumMap<SideSet, SKTexture> = DenseEnumMap { sideSet in
+        let coalescedSet = Adjacent4TileViewTemplate.getCoalescedForSharedTexture(sideSet: sideSet)
+        return Adjacent4TileViewTemplate.getTexture(base: base, sideSet: coalescedSet)
+    }
 
     /// - Parameters:
-    ///   - baseName: Base texture name
+    ///   - base: Texture set with all textures
     ///   - adjoiningTypes: Will always be considered adjoining sides
     ///   - semiAdjoiningTypes: Will not adjoin in certain combinations - specifically, 3 consecutive semi-adjoining sides will be treated as 2 only adjoining sides
-    init(baseName: String, adjoiningTypes: TileTypePred, semiAdjoiningTypes: TileTypePred) {
-        textures = DenseEnumMap { sideSet in
-            let coalescedSet = Adjacent4TileViewTemplate.getCoalescedForSharedTexture(sideSet: sideSet)
-            let textureName = Adjacent4TileViewTemplate.getTextureName(baseName: baseName, sideSet: coalescedSet)
-            return SKTexture(imageNamed: textureName)
-        }
-        self.alwaysAdjoiningTypes = adjoiningTypes
+    init(base: TextureSet, adjoiningTypes: TileTypePred, semiAdjoiningTypes: TileTypePred) {
+        self.base = base
+        self.adjoiningTypes = adjoiningTypes
         self.semiAdjoiningTypes = semiAdjoiningTypes
     }
 
     func generateNode(world: World, pos: WorldTilePos, tileType: TileType) -> SKNode {
         let alwaysAdjoiningSides = SideSet(pos.sideAdjacents.mapValues { adjacentPos in
-            alwaysAdjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
+            adjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })
         let semiAdjoiningSides = SideSet(pos.sideAdjacents.mapValues { adjacentPos in
             semiAdjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
@@ -61,5 +64,13 @@ class Adjacent4TileViewTemplate: TileViewTemplate {
         let adjoiningSides = alwaysAdjoiningSides.union(Adjacent4TileViewTemplate.resolve(semiAdjoiningSides: semiAdjoiningSides))
         let texture = textures[adjoiningSides]
         return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+    }
+
+    static func newSetting() -> AsSetting {
+        StructSetting([
+            "textureBase": TextureSetSetting(),
+            "adjoiningTypes": TileTypePredSetting(),
+            "semiAdjoiningTypes": TileTypePredSetting()
+        ], allowedExtraFields: ["type"])
     }
 }

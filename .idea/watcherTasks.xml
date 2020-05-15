@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectTasksOptions">
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="--sources &quot;$ProjectFileDir$/Square-jitsu/Source&quot; --templates &quot;$ProjectFileDir$/Square-jitsu/SourceryTemplates&quot; --output &quot;$ProjectFileDir$/Square-jitsu/SourceryGenerated&quot;" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="NEVER" />
+      <option name="fileExtension" value="Sourcery Stencil templates" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="Sourcery Stencil watcher" />
+      <option name="output" value="$ProjectFileDir$/SourceryGenerated" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="/usr/local/bin/sourcery" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="All Places" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="$ProjectFileDir$" />
+      <envs />
+    </TaskOptions>
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="--sources &quot;$ProjectFileDir$/Square-jitsu/Source&quot; --templates &quot;$ProjectFileDir$/Square-jitsu/SourceryTemplates&quot; --output &quot;$ProjectFileDir$/Square-jitsu/SourceryGenerated&quot;" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="NEVER" />
+      <option name="fileExtension" value="Sourcery EJS and Swift templates" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="Sourcery EJS and Swift watcher" />
+      <option name="output" value="$ProjectFileDir$/SourceryGenerated" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="/usr/local/bin/sourcery" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="All Places" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="$ProjectFileDir$" />
+      <envs />
+    </TaskOptions>
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="--sources &quot;$ProjectFileDir$/Square-jitsu/Source&quot; --templates &quot;$ProjectFileDir$/Square-jitsu/SourceryTemplates&quot; --output &quot;$ProjectFileDir$/Square-jitsu/SourceryGenerated&quot;" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="NEVER" />
+      <option name="fileExtension" value="swift" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="Sourcery Swift watcher" />
+      <option name="output" value="$ProjectFileDir$/SourceryGenerated" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="/usr/local/bin/sourcery" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="All Places" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="" />
+      <envs />
+    </TaskOptions>
+  </component>
+</project>
