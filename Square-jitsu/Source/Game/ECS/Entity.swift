@@ -9,21 +9,21 @@ class Entity: EqualityIsIdentity {
     struct Components: SingleSettingCodable {
         typealias AsSetting = StructSetting<Entity.Components>
 
-        var locC: LocationComponent? = nil
-        var larC: LoadAroundComponent? = nil
-        var dynC: MovingComponent? = nil
-        var imfC: ImplicitForcesComponent? = nil
-        var docC: DestroyOnCollideComponent? = nil
-        var phyC: PhysicsComponent? = nil
-        var ntlC: NearTileComponent? = nil
-        var griC: GrabbingComponent? = nil
-        var graC: GrabbableComponent? = nil
-        var helC: HealthComponent? = nil
-        var toxC: ToxicComponent? = nil
-        var nijC: NinjaComponent? = nil
+        var locC: LocationComponent?
+        var larC: LoadAroundComponent?
+        var dynC: MovingComponent?
+        var imfC: ImplicitForcesComponent?
+        var docC: DestroyOnCollideComponent?
+        var phyC: PhysicsComponent?
+        var ntlC: NearTileComponent?
+        var griC: GrabbingComponent?
+        var graC: GrabbableComponent?
+        var helC: HealthComponent?
+        var toxC: ToxicComponent?
+        var nijC: NinjaComponent?
 
         static func newSetting() -> AsSetting {
-            StructSetting([
+            StructSetting(requiredFields: [:], optionalFields: [
                 "locC": CodableStructSetting<LocationComponent>(),
                 "larC": CodableStructSetting<LoadAroundComponent>(),
                 "dynC": CodableStructSetting<MovingComponent>(),

@@ -55,7 +55,7 @@ struct GrabSystem: System {
     }
 
     static func canGrab(grabbingEntity: Entity, grabbedEntity: Entity) -> Bool {
-        canGrab(grabbingEntity: grabbingEntity, grabbedType: grabbingEntity.type) &&
+        canGrab(grabbingEntity: grabbingEntity, grabbedType: grabbedEntity.type) &&
         !(grabbedEntity.next.graC?.grabState.isGrabbed ?? false) &&
         !DamageSystem.isToxic(toxicEntity: grabbedEntity, damagedEntity: grabbingEntity)
     }

@@ -6,11 +6,11 @@
 import Foundation
 
 class TileViewTemplateSetting: UnionSetting {
-    static var options: [UnionSettingOption] = [
-        UnionSettingOption(SettingOptionRecognizerByName("static"), StaticTileViewTemplate.newSetting()),
-        UnionSettingOption(SettingOptionRecognizerByName("adjacent4"), Adjacent4TileViewTemplate.newSetting()),
-        UnionSettingOption(SettingOptionRecognizerByName("adjacent8"), Adjacent8TileViewTemplate.newSetting())
+    static var options: [USOGenerator] = [
+        USOGenerator(SettingOptionRecognizerByName("static"), StaticTileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("adjacent4"), Adjacent4TileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("adjacent8"), Adjacent8TileViewTemplate.newSetting)
     ]
 
-    init() { super.init(options: TileViewTemplateSetting.options) }
+    init() { super.init(options: TileViewTemplateSetting.options.map { $0.newOption() }) }
 }

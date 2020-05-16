@@ -30,16 +30,16 @@ final class Adjacent8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         return base[cornerSetDescription]
     }
 
-    let base: TextureSet
+    let textureBase: TextureSet
     let adjoiningTypes: TileTypePred
 
     private lazy var textures: DenseEnumMap<CornerSet, SKTexture> = DenseEnumMap { cornerSet in
         let coalescedSet = Adjacent8TileViewTemplate.getCoalescedForSharedTexture(cornerSet: cornerSet)
-        return Adjacent8TileViewTemplate.getTexture(base: base, cornerSet: coalescedSet)
+        return Adjacent8TileViewTemplate.getTexture(base: textureBase, cornerSet: coalescedSet)
     }
 
-    init(base: TextureSet, adjoiningTypes: TileTypePred) {
-        self.base = base
+    init(textureBase: TextureSet, adjoiningTypes: TileTypePred) {
+        self.textureBase = textureBase
         self.adjoiningTypes = adjoiningTypes
     }
 
@@ -52,9 +52,9 @@ final class Adjacent8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     }
 
     static func newSetting() -> AsSetting {
-        StructSetting([
+        StructSetting(requiredFields: [
             "textureBase": TextureSetSetting(),
             "adjoiningTypes": TileTypePredSetting()
-        ], allowedExtraFields: ["type"])
+        ], optionalFields: [:], allowedExtraFields: ["type"])
     }
 }

@@ -8,4 +8,6 @@ import SpriteKit
 struct MovingComponent: SettingCodableByCodable, Codable {
     var velocity: CGPoint = CGPoint.zero
     var angularVelocity: UnclampedAngle = Angle.zero.toUnclamped
+
+    enum CodingKeys: CodingKey {}
 }

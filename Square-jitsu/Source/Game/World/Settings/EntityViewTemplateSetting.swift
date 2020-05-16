@@ -6,9 +6,9 @@
 import Foundation
 
 class EntityViewTemplateSetting: UnionSetting {
-    static var options: [UnionSettingOption] = [
-        UnionSettingOption(SettingOptionRecognizerByName("static"), StaticEntityViewTemplate.newSetting())
+    static var options: [USOGenerator] = [
+        USOGenerator(SettingOptionRecognizerByName("static"), StaticEntityViewTemplate.newSetting)
     ]
 
-    init() { super.init(options: EntityViewTemplateSetting.options) }
+    init() { super.init(options: EntityViewTemplateSetting.options.map { $0.newOption() }) }
 }

@@ -47,7 +47,7 @@ struct DamageSystem: System {
         damagedEntity.prev.helC != nil &&
         !toxicEntity.prev.toxC!.safeTypes.contains(damagedEntity.type) &&
         !toxicEntity.prev.toxC!.safeEntities.contains(EntityRef(damagedEntity)) &&
-        !(toxicEntity.next.toxC!.onlyToxicIfThrown && (toxicEntity.next.graC?.grabState.isThrown ?? false)) &&
+        !(toxicEntity.next.toxC!.onlyToxicIfThrown && !(toxicEntity.next.graC?.grabState.isThrown ?? false)) &&
         toxicEntity.next.graC?.grabState.grabbedOrThrownBy != damagedEntity
     }
 

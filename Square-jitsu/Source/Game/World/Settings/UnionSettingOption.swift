@@ -9,7 +9,7 @@ struct UnionSettingOption {
     let recognizer: SettingOptionRecognizer
     let setting: SerialSetting
 
-    init(_ recognizer: SettingOptionRecognizer, _ setting: SerialSetting) {
+    init(recognizer: SettingOptionRecognizer, setting: SerialSetting) {
         self.recognizer = recognizer
         self.setting = setting
     }

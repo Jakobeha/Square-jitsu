@@ -71,11 +71,27 @@ enum TileBigType: UInt16, CaseIterable, Codable {
             uniqueKeysWithValues: allCases.map { bigType in (key: bigType.description, value: bigType) }
     )
 
+    // TODO: Remove this and go back to encoding / decoding as integer after switching component encoding / decoding to use settings
+
     init?(_ description: String) {
         if let bigType = TileBigType.typesByName[description] {
             self = bigType
         } else {
             return nil
         }
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let this = TileBigType(try container.decode(String.self)) {
+            self = this
+        } else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "String isn't a valid big-type")
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(description)
     }
 }

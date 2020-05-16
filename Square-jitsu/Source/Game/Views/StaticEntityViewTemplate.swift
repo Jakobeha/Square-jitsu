@@ -15,8 +15,8 @@ struct StaticEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
     }
 
     static func newSetting() -> AsSetting {
-        StructSetting([
+        StructSetting(requiredFields: [
             "texture": TextureSetting()
-        ], allowedExtraFields: ["type"])
+        ], optionalFields: [:], allowedExtraFields: ["type"])
     }
 }

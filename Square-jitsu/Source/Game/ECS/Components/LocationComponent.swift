@@ -7,7 +7,7 @@ import SpriteKit
 
 struct LocationComponent: SettingCodableByCodable, Codable {
     var position: CGPoint = CGPoint.nan
-    var rotation: Angle
+    var rotation: Angle = Angle.zero
     var radius: CGFloat
 
     var bounds: CGRect {
@@ -24,8 +24,9 @@ struct LocationComponent: SettingCodableByCodable, Codable {
         max(0, (position - point).magnitude - radius)
     }
 
+    // ---
+
     enum CodingKeys: String, CodingKey {
-        case rotation
         case radius
     }
 }

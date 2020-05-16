@@ -13,14 +13,14 @@ extension <%= type.name %> {
     static <%= type.accessLevel %> func decode(from setting: StructSetting<<%= type.name %>>) -> <%= type.name %> {
         self.init(
         <%_ for variable in variables { -%>
-            <%= variable.name %>: setting.fieldSettings[<%= toString(variable.name) %>]!.decodeDynamically()<%_ if variable != variables.last { %>,<%_ } %>
+            <%= variable.name %>: setting.usedFieldSettings[<%= toString(variable.name) %>]<%_ if variable.typeName.isOptional { %>?<%_ } else { %>!<%_ } %>.decodeDynamically()<%_ if variable != variables.last { %>,<%_ } %>
         <%_ } -%>
         )
     }
 
     <%= type.accessLevel %> func encode(to setting: StructSetting<<%= type.name %>>) {
         <%_ for variable in variables { -%>
-        self.<%= variable.name %>.encodeDynamically(to: setting.fieldSettings[<%= toString(variable.name) %>]!)
+        self.<%= variable.name %><%_ if variable.typeName.isOptional { %>?<%_ } %>.encodeDynamically(to: setting.allFieldSettings[<%= toString(variable.name) %>]!)
         <%_ } -%>
     }
 }

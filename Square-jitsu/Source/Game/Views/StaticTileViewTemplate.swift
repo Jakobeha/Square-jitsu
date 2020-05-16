@@ -15,8 +15,8 @@ struct StaticTileViewTemplate: TileViewTemplate, SingleSettingCodable {
     }
 
     static func newSetting() -> StructSetting<StaticTileViewTemplate> {
-        StructSetting([
+        StructSetting(requiredFields: [
             "texture": TextureSetting()
-        ], allowedExtraFields: ["type"])
+        ], optionalFields: [:], allowedExtraFields: ["type"])
     }
 }

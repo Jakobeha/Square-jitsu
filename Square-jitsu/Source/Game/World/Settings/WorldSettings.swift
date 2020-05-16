@@ -52,15 +52,15 @@ final class WorldSettings: SingleSettingCodable {
     }
 
     static func newSetting() -> StructSetting<WorldSettings> {
-        StructSetting([
+        StructSetting(requiredFields: [
             "tileViewTemplates": TileTypeMapSetting<TileViewTemplate> { TileViewTemplateSetting() },
-            "entityViewTemplates": TileTypeMapSetting { EntityViewTemplateSetting() },
-            "tileViewFadeDurations": TileTypeMapSetting { TimeRangeSetting(0...4) },
-            "entityViewFadeDurations": TileTypeMapSetting { TimeRangeSetting(0...4) },
-            "entityGrabColors": TileTypeMapSetting { ColorSetting() },
-            "tileDescriptions": TileTypeMapSetting { StringSetting() },
-            "entityData": TileTypeMapSetting { Entity.Components.newSetting() },
-            "entitySpawnRadius": TileTypeMapSetting { CGFloatRangeSetting(1...16) }
-        ])
+            "entityViewTemplates": TileTypeMapSetting<EntityViewTemplate> { EntityViewTemplateSetting() },
+            "tileViewFadeDurations": TileTypeMapSetting<TimeInterval> { TimeRangeSetting(0...4) },
+            "entityViewFadeDurations": TileTypeMapSetting<TimeInterval> { TimeRangeSetting(0...4) },
+            "entityGrabColors": TileTypeMapSetting<SKColor> { ColorSetting() },
+            "tileDescriptions": TileTypeMapSetting<String> { StringSetting() },
+            "entityData": TileTypeMapSetting<Entity.Components> { Entity.Components.newSetting() },
+            "entitySpawnRadius": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(1...16) }
+        ], optionalFields: [:])
     }
 }

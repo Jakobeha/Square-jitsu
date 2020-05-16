@@ -8,8 +8,8 @@
           "background"
         ],
         "semiAdjoiningTypes": [
-          "background",
-          "solid"
+          "Layer.background",
+          "Layer.solid"
         ]
       }
     ],
@@ -103,7 +103,7 @@
     "enemy": [
       1
     ],
-    "shurkien": [
+    "shuriken": [
       1
     ]
   },
@@ -134,7 +134,7 @@
     "turret": ["Default"]
   },
   "entityData": {
-    "player": {
+    "player": [{
       "locC": {"radius": 0.5},
       "larC": {},
       "dynC": {},
@@ -154,10 +154,7 @@
         "grabbableTypes": [
           "shuriken"
         ],
-        "grabOffset": {
-          "x": 0.25,
-          "y": -0.25
-        },
+        "grabOffset": [0.25, -0.25],
         "throwSpeed": 4.5,
         "throwAngularSpeed": "90°"
       },
@@ -168,16 +165,16 @@
         "jumpSpeed": 9,
         "jumpAngularSpeed": "180°"
       }
-    },
-    "shuriken": {
+    }],
+    "shuriken": [{
       "locC": {"radius": 0.5},
       "dynC": {},
       "docC": {"destroyOnEntityCollision": false, "destroyOnSolidCollision": true},
       "phyC": {"mass": 1},
       "graC": {"thrownSpeedMultiplier": 2},
       "toxC": {"damage": 0.25, "safeTypes": [], "onlyToxicIfThrown": true}
-    },
-    "enemy": {
+    }],
+    "enemy": [{
       "locC": {"radius": 0.5},
       "dynC": {},
       "imfC": {
@@ -188,9 +185,9 @@
       },
       "phyC": {"mass": 1},
       "helC": {"maxHealth": 1}
-    }
+    }]
   },
   "entitySpawnRadius": {
-    "enemy": 3
+    "enemy": [3]
   }
 }

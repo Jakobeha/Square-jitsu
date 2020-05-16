@@ -35,21 +35,21 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         return base[sideSetDescription]
     }
 
-    let base: TextureSet
+    let textureBase: TextureSet
     let adjoiningTypes: TileTypePred
     let semiAdjoiningTypes: TileTypePred
     
     private lazy var textures: DenseEnumMap<SideSet, SKTexture> = DenseEnumMap { sideSet in
         let coalescedSet = Adjacent4TileViewTemplate.getCoalescedForSharedTexture(sideSet: sideSet)
-        return Adjacent4TileViewTemplate.getTexture(base: base, sideSet: coalescedSet)
+        return Adjacent4TileViewTemplate.getTexture(base: textureBase, sideSet: coalescedSet)
     }
 
     /// - Parameters:
     ///   - base: Texture set with all textures
     ///   - adjoiningTypes: Will always be considered adjoining sides
     ///   - semiAdjoiningTypes: Will not adjoin in certain combinations - specifically, 3 consecutive semi-adjoining sides will be treated as 2 only adjoining sides
-    init(base: TextureSet, adjoiningTypes: TileTypePred, semiAdjoiningTypes: TileTypePred) {
-        self.base = base
+    init(textureBase: TextureSet, adjoiningTypes: TileTypePred, semiAdjoiningTypes: TileTypePred) {
+        self.textureBase = textureBase
         self.adjoiningTypes = adjoiningTypes
         self.semiAdjoiningTypes = semiAdjoiningTypes
     }
@@ -67,10 +67,10 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     }
 
     static func newSetting() -> AsSetting {
-        StructSetting([
+        StructSetting(requiredFields: [
             "textureBase": TextureSetSetting(),
             "adjoiningTypes": TileTypePredSetting(),
             "semiAdjoiningTypes": TileTypePredSetting()
-        ], allowedExtraFields: ["type"])
+        ], optionalFields: [:], allowedExtraFields: ["type"])
     }
 }

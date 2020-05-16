@@ -6,37 +6,61 @@
 import Foundation
 
 class StructSetting<Value: SettingCodable>: SerialSetting {
-    let fieldSettings: [String:SerialSetting]
+    private let requiredFieldSettings: [String:SerialSetting]
+    private let optionalFieldSettings: [String:SerialSetting]
+    let allFieldSettings: [String:SerialSetting]
     private let allowedExtraFields: Set<String>
     private let customValidator: ((StructSetting<Value>) throws -> ())?
 
+    private var usedOptionalFields: Set<String> = []
+    var usedFieldSettings: [String:SerialSetting]
+
     /// customValidator is a lambda partially because StructSetting is used by Sourcery generated code, also because it's easy
-    init(_ fields: [String:SerialSetting], allowedExtraFields: Set<String> = [], customValidator: ((StructSetting<Value>) throws -> ())? = nil) {
-        assert(!allowedExtraFields.contains(anyOf: fields.keys))
-        self.fieldSettings = fields
+    init(requiredFields: [String:SerialSetting], optionalFields: [String:SerialSetting], allowedExtraFields: Set<String> = [], customValidator: ((StructSetting<Value>) throws -> ())? = nil) {
+        assert(
+                !allowedExtraFields.contains(anyOf: requiredFields.keys) &&
+                !allowedExtraFields.contains(anyOf: optionalFields.keys) &&
+                !Set(requiredFields.keys).contains(anyOf: optionalFields.keys)
+        )
+        self.requiredFieldSettings = requiredFields
+        self.optionalFieldSettings = optionalFields
         self.allowedExtraFields = allowedExtraFields
         self.customValidator = customValidator
+        allFieldSettings = requiredFieldSettings.merging(optionalFieldSettings) { _, _ in fatalError("not possible") }
+        usedFieldSettings = requiredFields
     }
 
     func decodeWellFormed(from json: JSON) throws {
+        usedOptionalFields = []
+        usedFieldSettings = requiredFieldSettings
+
         let jsonDict = try json.toDictionary()
 
         // Throw on missing / extra fields
-        let fieldSet = Set(fieldSettings.keys)
+        let requiredFieldSet = Set(requiredFieldSettings.keys)
         let jsonDictSet = Set(jsonDict.keys)
-        let missingFields = fieldSet.subtracting(jsonDictSet)
+        let missingFields = requiredFieldSet.subtracting(jsonDictSet)
         if !missingFields.isEmpty {
             throw DecodeSettingError.missingFields(missingFields)
         }
-        let extraFields = Set(jsonDictSet).subtracting(fieldSet).subtracting(allowedExtraFields)
+        let extraFields = Set(jsonDictSet).subtracting(requiredFieldSet).subtracting(optionalFieldSettings.keys).subtracting(allowedExtraFields)
         if !extraFields.isEmpty {
             throw DecodeSettingError.extraFields(extraFields)
         }
 
         // Decode field settings
-        for (fieldName, field) in jsonDict {
-            if !allowedExtraFields.contains(fieldName) {
-                let fieldSetting = fieldSettings[fieldName]!
+        for (fieldName, fieldSetting) in requiredFieldSettings {
+            let field = jsonDict[fieldName]!
+            do {
+                try fieldSetting.decodeWellFormed(from: field)
+            } catch {
+                throw DecodeSettingError.badField(fieldName: fieldName, error: error)
+            }
+        }
+        for (fieldName, fieldSetting) in optionalFieldSettings {
+            if let field = jsonDict[fieldName] {
+                usedOptionalFields.appendOrInsert(fieldName)
+                usedFieldSettings[fieldName] = fieldSetting
                 do {
                     try fieldSetting.decodeWellFormed(from: field)
                 } catch {
@@ -47,13 +71,16 @@ class StructSetting<Value: SettingCodable>: SerialSetting {
     }
 
     func encodeWellFormed() throws -> JSON {
-        JSON(try fieldSettings.mapValues { fieldSetting in
+        JSON(try usedFieldSettings.mapValues { fieldSetting in
             try fieldSetting.encodeWellFormed()
         })
     }
 
     func validate() throws {
-        for fieldSetting in fieldSettings.values {
+        for fieldSetting in requiredFieldSettings.values {
+            try fieldSetting.validate()
+        }
+        for fieldSetting in optionalFieldSettings.values {
             try fieldSetting.validate()
         }
         try customValidator?(self)
