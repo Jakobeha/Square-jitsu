@@ -58,6 +58,14 @@ struct UnclampedAngle: Equatable, Hashable, Codable, LosslessStringConvertible {
         lhs.radians /= Float(scale)
     }
 
+    static func >(lhs: UnclampedAngle, rhs: UnclampedAngle) -> Bool {
+        lhs.radians > rhs.radians
+    }
+
+    static func <(lhs: UnclampedAngle, rhs: UnclampedAngle) -> Bool {
+        lhs.radians < rhs.radians
+    }
+
     var radians: Float
 
     var degrees: Float {

@@ -13,7 +13,7 @@ class TimeRangeSetting: SerialSetting {
 
     init(_ range: ClosedRange<TimeInterval>) {
         self.range = range
-        value = TimeInterval.nan
+        value = range.lowerBound
     }
 
     func decodeWellFormed(from json: JSON) throws {

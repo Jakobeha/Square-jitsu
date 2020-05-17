@@ -13,15 +13,14 @@ class Chunk: ReadonlyChunk {
     static let extraDistanceFromEntityToUnload: CGFloat = CGFloat(widthHeight) / 2
 
     private var tiles: ChunkMatrix<TileType> = ChunkMatrix()
-    private(set) var tileMetadatas: [ChunkTilePos3D:TileMetadata] = [:]
+    var tileMetadatas: [ChunkTilePos3D:TileMetadata] = [:]
 
     private let _didRemoveTile: Publisher<(pos3D: ChunkTilePos3D, oldType: TileType)> = Publisher()
     private let _didPlaceTile: Publisher<ChunkTilePos3D> = Publisher()
     var didRemoveTile: Observable<(pos3D: ChunkTilePos3D, oldType: TileType)> { Observable(publisher: _didRemoveTile) }
     var didPlaceTile: Observable<ChunkTilePos3D> { Observable(publisher: _didPlaceTile) }
 
-    init() {
-    }
+    init() {}
 
     subscript(_ pos: ChunkTilePos) -> [TileType] {
         tiles[pos]
@@ -36,7 +35,6 @@ class Chunk: ReadonlyChunk {
             let oldType = self[pos3D]
             tiles[pos3D] = newValue
             let metadataIsDifferent = oldType.bigType != newValue.bigType
-
 
             // Remove metadata if necessary
             if metadataIsDifferent {

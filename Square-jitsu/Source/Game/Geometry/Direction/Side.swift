@@ -3,7 +3,7 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 enum Side: Int, CaseIterable {
     case east
@@ -28,6 +28,15 @@ enum Side: Int, CaseIterable {
         }
     }
 
+    var axis: Axis {
+        switch self {
+        case .east, .west:
+            return .horizontal
+        case .north, .south:
+            return .vertical
+        }
+    }
+
     var offset: RelativePos {
         switch self {
         case .east:
@@ -39,5 +48,9 @@ enum Side: Int, CaseIterable {
         case .south:
             return RelativePos(x: 0, y: -1)
         }
+    }
+
+    var angle: Angle {
+        Angle.right * CGFloat(rawValue)
     }
 }

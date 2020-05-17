@@ -29,6 +29,8 @@ final class WorldSettings: SingleSettingCodable {
     // Display info
     var tileViewTemplates: TileTypeMap<TileViewTemplate>
     var entityViewTemplates: TileTypeMap<EntityViewTemplate>
+    var rotateTileViewBasedOnOrientation: TileTypeMap<Bool>
+    var entityViewScaleModes: TileTypeMap<ScaleMode>
     var tileViewFadeDurations: TileTypeMap<TimeInterval>
     var entityViewFadeDurations: TileTypeMap<TimeInterval>
     var entityGrabColors: TileTypeMap<SKColor>
@@ -40,9 +42,11 @@ final class WorldSettings: SingleSettingCodable {
 
     typealias AsSetting = StructSetting<WorldSettings>
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
+        self.rotateTileViewBasedOnOrientation = rotateTileViewBasedOnOrientation
+        self.entityViewScaleModes = entityViewScaleModes
         self.tileViewFadeDurations = tileViewFadeDurations
         self.entityViewFadeDurations = entityViewFadeDurations
         self.entityGrabColors = entityGrabColors
@@ -55,6 +59,8 @@ final class WorldSettings: SingleSettingCodable {
         StructSetting(requiredFields: [
             "tileViewTemplates": TileTypeMapSetting<TileViewTemplate> { TileViewTemplateSetting() },
             "entityViewTemplates": TileTypeMapSetting<EntityViewTemplate> { EntityViewTemplateSetting() },
+            "rotateTileViewBasedOnOrientation": TileTypeMapSetting<Bool> { BoolSetting() },
+            "entityViewScaleModes": TileTypeMapSetting<ScaleMode> { ScaleMode.newSetting() },
             "tileViewFadeDurations": TileTypeMapSetting<TimeInterval> { TimeRangeSetting(0...4) },
             "entityViewFadeDurations": TileTypeMapSetting<TimeInterval> { TimeRangeSetting(0...4) },
             "entityGrabColors": TileTypeMapSetting<SKColor> { ColorSetting() },

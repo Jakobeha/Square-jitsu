@@ -119,10 +119,11 @@ class World {
 
             // Notify metadata
             if !loadedBefore {
-                persistentChunkData[pos] = GamePersistentChunkData()
+                let persistentDataForChunk = GamePersistentChunkData()
+                persistentDataForChunk.overwrittenTileMetadatas = chunk.tileMetadatas
+                persistentChunkData[pos] = persistentDataForChunk
                 notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onFirstLoad }
             }
-            notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onLoad }
 
             // Notify observers
             _didLoadChunk.publish((pos: pos, chunk: chunk))
@@ -166,9 +167,6 @@ class World {
             print("Unload \(pos)")
             let chunk = chunks[pos]!
             chunks[pos] = nil
-
-            // Notify metadata
-            notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onUnload }
 
             // Notify observers
             _didUnloadChunk.publish((pos: pos, chunk: chunk))
@@ -217,9 +215,12 @@ class World {
 
     func set(pos3D: WorldTilePos3D, to newType: TileType, persistInGame: Bool) {
         let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
-        chunk[pos3D.chunkTilePos3D] = newType
+        let chunkPos3D = pos3D.chunkTilePos3D
+        chunk[chunkPos3D] = newType
         if persistInGame {
-            persistentChunkData[pos3D.pos.worldChunkPos]!.overwrittenTiles[pos3D.chunkTilePos3D] = newType
+            let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
+            persistentDataForChunk.overwrittenTiles[chunkPos3D] = newType
+            persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = chunk.tileMetadatas[chunkPos3D]
         }
     }
 
@@ -326,6 +327,8 @@ class World {
         // Must be after CollisionSystem
         AdjacentSensitiveSystem.tick(world: self)
         // Must be after CollisionSystem
+        TurretSystem.tick(world: self)
+        // Must be after CollisionSystem
         GrabSystem.tick(world: self)
         // Must be after CollisionSystem
         DamageSystem.tick(world: self)
@@ -339,11 +342,14 @@ class World {
     private var entitiesToRemove: [Entity] = []
 
     func add(entity: Entity) {
+        assert(!entitiesToAdd.contains(entity))
         entitiesToAdd.append(entity)
     }
 
     func remove(entity: Entity) {
-        entitiesToRemove.append(entity)
+        if !entitiesToRemove.contains(entity) {
+            entitiesToRemove.append(entity)
+        }
     }
 
     private func runActions() {

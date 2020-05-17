@@ -7,11 +7,15 @@ import Foundation
 
 enum DecodeSettingError: Error, CustomStringConvertible {
     case wrongType(expected: Any.Type, actual: Type)
+    case wrongTypeOfMany(anyExpected: [Any.Type], actual: Type)
     case wrongKeys(required: Set<String>, optional: Set<String>, actual: Set<String>)
     case outOfRange(minDesc: String, maxDesc: String)
     case missingFields(Set<String>)
     case extraFields(Set<String>)
+    case missingTypeField
+    case badElement(index: Int, error: Error)
     case badField(fieldName: String, error: Error)
+    case badComplexEnumField(caseName: String, fieldName: String, error: Error)
     case badTypeMapEntry(bigTypeKey: TileBigType, smallTypeKey: TileSmallType, error: Error)
     case noOptionsMatch
     case invalidOption(myOption: String, validOptions: [String])
@@ -33,6 +37,9 @@ enum DecodeSettingError: Error, CustomStringConvertible {
         switch self {
         case .wrongType(let expected, let actual):
             return "Wrong type: expected \(expected) got \(actual)"
+        case .wrongTypeOfMany(let anyExpected, let actual):
+            let expectedDescription = anyExpected.map { type in String(describing: type) }.joined(separator: " or ")
+            return "Wrong type: expected \(expectedDescription) got \(actual)"
         case .wrongKeys(let required, let optional, let actual):
             if optional.isEmpty {
                 return "Wrong keys: expected \(required.joined(separator: ", ")) got \(actual.joined(separator: ", "))"
@@ -45,8 +52,14 @@ enum DecodeSettingError: Error, CustomStringConvertible {
             return "Missing fields in structure: \(missingFields)"
         case .extraFields(let extraFields):
             return "Extra fields in structure: \(extraFields)"
+        case .missingTypeField:
+            return "Missing type field to distinguish complex enum"
+        case .badElement(let index, let error):
+            return "At index \(index) - \(error)"
         case .badField(let fieldName, let error):
             return "In \(fieldName) - \(error)"
+        case .badComplexEnumField(let caseName, let fieldName, let error):
+            return "In case \(caseName) field \(fieldName) - \(error)"
         case .badTypeMapEntry(let bigTypeKey, let smallTypeKey, let error):
             return "For type \(bigTypeKey)/\(smallTypeKey) - \(error)"
         case .invalidOption(let myOption, let validOptions):

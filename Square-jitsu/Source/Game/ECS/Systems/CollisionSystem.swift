@@ -48,13 +48,18 @@ struct CollisionSystem: System {
     private mutating func handleEntityCollisions() {
         assert(handlesEntityCollisions)
         let entityCollisions = world.entities.compactMap { otherEntity in
-            let radiusForIntersection = entity.prev.locC!.radius + otherEntity.prev.locC!.radius
-            let fractionUntilCollision = trajectoryNextFrame.capsuleCastIntersection(capsuleRadius: radiusForIntersection, point: otherEntity.prev.locC!.position)
-            if fractionUntilCollision.isNaN {
-                // There was no collision (NaN)
+            if entity == otherEntity {
+                // Entity can't collide with itself
                 return nil
             } else {
-                return (fractionUntilCollision, otherEntity)
+                let radiusForIntersection = entity.next.locC!.radius + otherEntity.next.locC!.radius
+                let fractionUntilCollision = trajectoryNextFrame.capsuleCastIntersection(capsuleRadius: radiusForIntersection, point: otherEntity.next.locC!.position)
+                if fractionUntilCollision.isNaN {
+                    // There was no collision (NaN)
+                    return nil
+                } else {
+                    return (fractionUntilCollision, otherEntity)
+                }
             }
         }.sorted { ($0 as (CGFloat, Entity)).0 < $1.0 }
         for (fractionUntilCollision, otherEntity) in entityCollisions {
@@ -112,9 +117,28 @@ struct CollisionSystem: System {
             if calculateIfTileIsCorner(tilePosition: tilePosition, radiusSum: radiusSum) {
                 // Not a solid collision, prevent the other cases
             } else if let parallelSide = calculateIfMovingExactlyParallelAlongSideOf(tilePosition: tilePosition, radiusSum: radiusSum) {
+                // Fix entity position and velocity if it's slightly clipped or moving into tile
+                switch parallelSide {
+                case .east:
+                    //entity.next.locC!.position.x = min(entity.next.locC!.position.x, outwardsX)
+                    entity.next.dynC!.velocity.x = min(entity.next.dynC!.velocity.x, 0)
+                case .north:
+                    //entity.next.locC!.position.y = min(entity.next.locC!.position.y, outwardsY)
+                    entity.next.dynC!.velocity.y = min(entity.next.dynC!.velocity.y, 0)
+                case .west:
+                    //entity.next.locC!.position.x = max(entity.next.locC!.position.x, outwardsX)
+                    entity.next.dynC!.velocity.x = max(entity.next.dynC!.velocity.x, 0)
+                case .south:
+                    //entity.next.locC!.position.y = max(entity.next.locC!.position.y, outwardsY)
+                    entity.next.dynC!.velocity.y = max(entity.next.dynC!.velocity.y, 0)
+                }
+
+                // Fix rotation
+                entity.next.locC!.rotation = entity.next.locC!.rotation.round(by: Angle.right)
+
+                // Add collision to state
                 entity.next.phyC!.adjacentSides.insert(parallelSide.toSet)
                 entity.next.phyC!.adjacentPositions.append(key: parallelSide, tilePosition)
-                entity.next.locC!.rotation = entity.next.locC!.rotation.round(by: Angle.right)
             } else if let hitAxis = calculateCollidedAxis(
                     trajectoryNextFrame: trajectoryNextFrame,
                     xIsLeft: xIsLeft,
@@ -251,7 +275,7 @@ struct CollisionSystem: System {
     }
 
     private func handleCollisionWith(entity otherEntity: Entity, fractionOnTrajectory: CGFloat) {
-        if entity.prev.docC?.destroyOnEntityCollision ?? false {
+        if destroyOnEntityCollisionWith(otherEntity: otherEntity) {
             world.remove(entity: entity)
             entity.next.docC!.isRemoved = true
         }
@@ -262,9 +286,14 @@ struct CollisionSystem: System {
         }
     }
 
+    private func destroyOnEntityCollisionWith(otherEntity: Entity) -> Bool {
+        entity.prev.docC != nil &&
+        entity.prev.docC!.destroyOnEntityCollision &&
+        !(entity.next.toxC?.safeEntities.contains(EntityRef(otherEntity)) ?? false)
+    }
+
     // Has to be lazy otherwise we would throw on entities without a location component
     private lazy var trajectoryNextFrame: Line =
-        // We extend backwards so that the entity can exit if it slightly clips into a solid due to rounding issues
         Line(start: entity.prev.locC!.position, end: entity.next.locC!.position)
 
 }

@@ -20,6 +20,7 @@ class Entity: EqualityIsIdentity {
         var graC: GrabbableComponent?
         var helC: HealthComponent?
         var toxC: ToxicComponent?
+        var turC: TurretComponent?
         var nijC: NinjaComponent?
 
         static func newSetting() -> AsSetting {
@@ -34,7 +35,8 @@ class Entity: EqualityIsIdentity {
                 "griC": CodableStructSetting<GrabbingComponent>(),
                 "graC": CodableStructSetting<GrabbableComponent>(),
                 "helC": CodableStructSetting<HealthComponent>(),
-                "toxC": CodableStructSetting<ToxicComponent>(),
+                "toxC": ToxicComponent.newSetting(),
+                "turC": TurretComponent.newSetting(),
                 "nijC": CodableStructSetting<NinjaComponent>()
             ], allowedExtraFields: []) { setting in
                 let components: Components = setting.decodeDynamically()
@@ -51,6 +53,7 @@ class Entity: EqualityIsIdentity {
             "ntlC": ["phyC", "dynC", "locC"],
             "griC": ["phyC", "dynC", "locC"],
             "graC": ["dynC", "locC"],
+            "turC": ["dynC", "locC"],
             "nijC": ["helC", "ntlC", "phyC", "dynC", "locC"]
         ]
 
@@ -76,10 +79,18 @@ class Entity: EqualityIsIdentity {
         }
     }
 
-    static func newForSpawnTile(type: TileType, pos: WorldTilePos3D, world: World) -> Entity {
+    @discardableResult static func newForSpawnTile(type: TileType, pos: WorldTilePos3D, world: World) -> Entity {
+        new(type: type, pos: pos.pos.cgPoint, world: world)
+    }
+
+    @discardableResult static func new(type: TileType, pos: CGPoint?, world: World) -> Entity {
         var components = world.settings.entityData[type]!
-        components.locC?.position = pos.pos.cgPoint
-        return Entity(type: type, components: components)
+        if let pos = pos {
+            components.locC?.position = pos
+        }
+        let entity = Entity(type: type, components: components)
+        world.add(entity: entity)
+        return entity
     }
 
     let type: TileType

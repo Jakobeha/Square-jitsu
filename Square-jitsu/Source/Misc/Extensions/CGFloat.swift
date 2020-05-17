@@ -11,4 +11,15 @@ extension CGFloat {
     static func lerp(start: CGFloat, end: CGFloat, t: CGFloat) -> CGFloat {
         (t * (end - start)) + start
     }
+
+    static func clamp(_ value: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
+        assert(min <= max)
+        if value < min {
+            return min
+        } else if value > max {
+            return max
+        } else {
+            return value
+        }
+    }
 }

@@ -36,6 +36,10 @@ extension JSON {
         try uInt8.orThrow { DecodeSettingError.wrongType(expected: UInt8.self, actual: self.type) }
     }
 
+    func toBoolean() throws -> Bool {
+        try bool.orThrow { DecodeSettingError.wrongType(expected: Bool.self, actual: self.type) }
+    }
+
     func toAngle() throws -> Angle {
         let angleAsString = try toString()
         if let angle = Angle(angleAsString) {

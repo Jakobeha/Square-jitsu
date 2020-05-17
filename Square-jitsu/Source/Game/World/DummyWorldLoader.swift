@@ -39,10 +39,12 @@ class DummyWorldLoader : WorldLoader {
             let pos = ChunkTilePos(x: 28, y: y)
             chunk.forcePlaceTile(pos: pos, type: solidType)
         }
-        chunk.forcePlaceTile(pos: ChunkTilePos(x: 17, y: 2), type: TileType.enemySpawn)
-        chunk.forcePlaceTile(pos: ChunkTilePos(x: 12, y: 7), type: TileType.shurikenSpawn)
+        chunk.forcePlaceTile(pos: ChunkTilePos(x: 17, y: 2), type: TileType.basicEnemy)
+        chunk.forcePlaceTile(pos: ChunkTilePos(x: 12, y: 7), type: TileType.basicShuriken)
+        chunk.forcePlaceTile(pos: ChunkTilePos(x: 9, y: 9), type: TileType.basicTurret(side: Side.north))
+        chunk.forcePlaceTile(pos: ChunkTilePos(x: 19, y: 9), type: TileType.burstTurret(side: Side.north))
         if pos == playerSpawnChunkPos {
-            chunk.forcePlaceTile(pos: ChunkTilePos(x: 6, y: 4), type: TileType.playerSpawn)
+            chunk.forcePlaceTile(pos: ChunkTilePos(x: 6, y: 2), type: TileType.player)
         }
         return chunk
     }

@@ -21,6 +21,9 @@ class TileView: OptionalNodeView {
             let chunkPos = pos.chunkTilePos
             node.position = chunkPos.cgPoint * settings.tileViewWidthHeight
             node.zPosition = tileType.bigType.layer.zPosition
+            if world.settings.rotateTileViewBasedOnOrientation[tileType] ?? false {
+                node.angle = tileType.orientation.toSide.angle
+            }
         }
     }
 

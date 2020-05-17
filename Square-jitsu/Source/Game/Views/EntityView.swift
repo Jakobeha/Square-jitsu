@@ -26,9 +26,10 @@ class EntityView: OptionalNodeView {
         if let node = node {
             if let locC = entity.next.locC {
                 node.position = locC.position * settings.tileViewWidthHeight
-                node.zRotation = CGFloat(locC.rotation.radians)
+                node.angle = locC.rotation
                 if let spriteNode = node as? SKSpriteNode {
-                    spriteNode.size = CGSize.square(sideLength: locC.radius * 2 * settings.tileViewWidthHeight)
+                    let scaleMode = settings.entityViewScaleModes[entity.type] ?? ScaleMode.ignoreAspect
+                    spriteNode.resizeTo(size: CGSize.square(sideLength: locC.radius * 2 * settings.tileViewWidthHeight), scaleMode: scaleMode)
                 }
             }
             if let graC = entity.next.graC {

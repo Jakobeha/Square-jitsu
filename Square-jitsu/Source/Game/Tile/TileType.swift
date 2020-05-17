@@ -12,9 +12,17 @@ struct TileType: Equatable, Hashable, Codable, HasDefault, LosslessStringConvert
     static let basicSolid: TileType = TileType(bigType: TileBigType.solid)
     static let basicAdjacentSensitiveSolid: TileType = TileType(bigType: TileBigType.adjacentSensitiveSolid)
     static let basicIce: TileType = TileType(bigType: TileBigType.ice)
-    static let playerSpawn: TileType = TileType(bigType: TileBigType.player)
-    static let shurikenSpawn: TileType = TileType(bigType: TileBigType.shuriken)
-    static let enemySpawn: TileType = TileType(bigType: TileBigType.enemy)
+    static let player: TileType = TileType(bigType: TileBigType.player)
+    static let basicEnemy: TileType = TileType(bigType: TileBigType.enemy)
+    static let basicShuriken: TileType = TileType(bigType: TileBigType.shuriken)
+
+    static func basicTurret(side: Side) -> TileType {
+        TileType(bigType: TileBigType.turret, smallType: TileSmallType(0), orientation: TileOrientation(side: side))
+    }
+
+    static func burstTurret(side: Side) -> TileType {
+        TileType(bigType: TileBigType.turret, smallType: TileSmallType(1), orientation: TileOrientation(side: side))
+    }
 
     static let defaultValue: TileType = air
 
@@ -74,7 +82,7 @@ struct TileType: Equatable, Hashable, Codable, HasDefault, LosslessStringConvert
 
     var description: String {
         if orientation != TileOrientation.none {
-            return "\(bigType)/\(smallType)\(orientation)"
+            return "\(bigType)/\(smallType)/\(orientation)"
         } else if smallType != TileSmallType(0) {
             return "\(bigType)/\(smallType)"
         } else {

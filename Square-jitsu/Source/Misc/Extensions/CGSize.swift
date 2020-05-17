@@ -29,4 +29,6 @@ extension CGSize {
     static func /(lhs: CGSize, scale: CGFloat) -> CGSize {
         CGSize(width: lhs.width / scale, height: lhs.height / scale)
     }
+
+    var aspectRatioYDivX: CGFloat { height / width }
 }

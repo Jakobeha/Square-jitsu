@@ -19,7 +19,7 @@ class UnionSetting: SerialSetting {
     init(options: [UnionSettingOption]) {
         assert(!options.isEmpty, "need at least one option")
         self.options = options
-        selectedOptionIndex = -1
+        selectedOptionIndex = 0
     }
 
     func decodeWellFormed(from json: JSON) throws {

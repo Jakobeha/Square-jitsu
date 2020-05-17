@@ -43,9 +43,13 @@ struct GrabSystem: System {
         case .idle:
             break
         case .grabbed(grabber: let grabberRef):
-            // Move with grabbing entity
-            let grabber = grabberRef.deref!
-            entity.next.locC!.position = grabber.next.locC!.position + grabber.next.griC!.grabOffset
+            if let grabber = grabberRef.deref {
+                // Move with grabbing entity
+                entity.next.locC!.position = grabber.next.locC!.position + grabber.next.griC!.grabOffset
+            } else {
+                // Grabber is dead so this is no longer grabbed
+                entity.next.graC!.grabState = .idle
+            }
         case .thrown(thrower: _):
             if entity.next.phyC?.overlappingTypes.containsSolid ?? false {
                 // End throw
@@ -72,7 +76,7 @@ struct GrabSystem: System {
                 canGrab(grabbingEntity: grabbingEntity, grabbedType: grabbedEntity.type)
         )
         if !canGrab(grabbingEntity: grabbingEntity, grabbedEntity: grabbedEntity) {
-            Logger.warn("Entity \(grabbingEntity) will grab \(grabbedEntity) but it's not supposed to - the settings are off")
+            Logger.warnSettingsAreInvalid("entity \(grabbingEntity) will grab \(grabbedEntity) but it's not supposed to")
         }
         let grabbingEntityRef = EntityRef(grabbingEntity)
         let grabbedEntityRef = EntityRef(grabbedEntity)

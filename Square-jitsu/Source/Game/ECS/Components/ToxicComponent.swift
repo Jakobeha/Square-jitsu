@@ -6,16 +6,28 @@
 import SpriteKit
 
 /// Damages health entities on collision unless grabbed / thrown / fired by them
-struct ToxicComponent: SettingCodableByCodable, Codable {
+struct ToxicComponent: SingleSettingCodable, Codable {
     var damage: CGFloat
     var safeTypes: Set<TileType>
     var onlyToxicIfThrown: Bool
 
     var safeEntities: Set<EntityRef> = []
 
+    // ---
+
     enum CodingKeys: String, CodingKey {
         case damage
         case safeTypes
         case onlyToxicIfThrown
+    }
+
+    typealias AsSetting = StructSetting<ToxicComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [
+            "damage": CGFloatRangeSetting(0...1),
+            "safeTypes": CollectionSetting<Set<TileType>> { TileTypeSetting() },
+            "onlyToxicIfThrown": BoolSetting()
+        ], optionalFields: [:])
     }
 }

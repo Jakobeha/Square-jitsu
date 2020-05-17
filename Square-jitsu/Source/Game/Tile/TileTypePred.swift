@@ -7,7 +7,7 @@ import Foundation
 
 /// "Predicate" as in this may be generically constructed to contain all tiles e.g. of a particular big type or layer,
 /// where a TileTypeSet must specify all of the specific types
-struct TileTypePred {
+struct TileTypePred: Codable {
     static let all: TileTypePred = TileTypePred(containsAll: true)
 
     var containedTypes: Set<TileType>

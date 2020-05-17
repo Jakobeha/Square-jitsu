@@ -53,16 +53,26 @@
         ]
       }
     ],
+    "enemy": [
+      {
+        "type": "static",
+        "texture": "Enemy"
+      }
+    ],
     "shuriken": [
       {
         "type": "static",
         "texture": "Shuriken"
       }
     ],
-    "enemy": [
+    "turret": [
       {
         "type": "static",
-        "texture": "Enemy"
+        "texture": "TurretAnchor"
+      },
+      {
+        "type": "static",
+        "texture": "TurretAnchor"
       }
     ]
   },
@@ -84,6 +94,38 @@
         "type": "static",
         "texture": "Enemy"
       }
+    ],
+    "projectile": [
+      {
+        "type": "static",
+        "texture": "Projectile"
+      },
+      {
+        "type": "static",
+        "texture": "Projectile"
+      }
+    ],
+    "turret": [
+      {
+        "type": "static",
+        "texture": "BasicTurret"
+      },
+      {
+        "type": "static",
+        "texture": "BurstTurret"
+      }
+    ]
+  },
+  "rotateTileViewBasedOnOrientation": {
+    "turret": [
+      true,
+      true
+    ]
+  },
+  "entityViewScaleModes": {
+    "projectile": [
+      "aspectFill",
+      "aspectFill"
     ]
   },
   "tileViewFadeDurations": {
@@ -104,6 +146,10 @@
       1
     ],
     "shuriken": [
+      1
+    ],
+    "turret": [
+      1,
       1
     ]
   },
@@ -166,14 +212,6 @@
         "jumpAngularSpeed": "180°"
       }
     }],
-    "shuriken": [{
-      "locC": {"radius": 0.5},
-      "dynC": {},
-      "docC": {"destroyOnEntityCollision": false, "destroyOnSolidCollision": true},
-      "phyC": {"mass": 1},
-      "graC": {"thrownSpeedMultiplier": 2},
-      "toxC": {"damage": 0.25, "safeTypes": [], "onlyToxicIfThrown": true}
-    }],
     "enemy": [{
       "locC": {"radius": 0.5},
       "dynC": {},
@@ -185,7 +223,71 @@
       },
       "phyC": {"mass": 1},
       "helC": {"maxHealth": 1}
-    }]
+    }],
+    "shuriken": [{
+      "locC": {"radius": 0.5},
+      "dynC": {},
+      "docC": {"destroyOnEntityCollision": false, "destroyOnSolidCollision": true},
+      "phyC": {"mass": 1},
+      "graC": {"thrownSpeedMultiplier": 2},
+      "toxC": {"damage": 0.25, "safeTypes": [], "onlyToxicIfThrown": true}
+    }],
+    "projectile": [
+      {
+        "locC": {"radius": 0.0833},
+        "dynC": {},
+        "docC": {"destroyOnEntityCollision": true, "destroyOnSolidCollision": true},
+        "toxC": {"damage": 0.125, "safeTypes": [], "onlyToxicIfThrown": false}
+      },
+      {
+        "locC": {"radius": 0.0833},
+        "dynC": {},
+        "docC": {"destroyOnEntityCollision": true, "destroyOnSolidCollision": true},
+        "toxC": {"damage": 0.125, "safeTypes": [], "onlyToxicIfThrown": false}
+      }
+    ],
+    "turret": [
+      {
+        "locC": {"radius": 0.5},
+        "dynC": {},
+        "turC": {
+          "rotationPattern": {
+            "type": "rotateAtSpeed",
+            "speed": "72°"
+          },
+          "whoToTarget": ["player"],
+          "whenToFire": "fireOnSeek",
+          "howToFire": {
+            "type": "consistent",
+            "projectileSpeed": 12,
+            "delay": 0.333
+          },
+          "whatToFire": "projectile",
+          "delayWhenTargetFoundBeforeFire": 1
+        }
+      },
+      {
+        "locC": {"radius": 0.5},
+        "dynC": {},
+        "turC": {
+          "rotationPattern": {
+            "type": "rotateAtSpeed",
+            "speed": "72°"
+          },
+          "whoToTarget": ["player"],
+          "whenToFire": "fireOnSeek",
+          "howToFire": {
+            "type": "burst",
+            "projectileSpeed": 12,
+            "delayBetweenBursts": 0.75,
+            "numShotsInBurst": 3,
+            "delayInBurst": 0.167
+          },
+          "whatToFire": "projectile",
+          "delayWhenTargetFoundBeforeFire": 1
+        }
+      }
+    ]
   },
   "entitySpawnRadius": {
     "enemy": [3]

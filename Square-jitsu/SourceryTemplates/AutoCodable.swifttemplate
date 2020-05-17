@@ -1,3 +1,5 @@
+import SpriteKit
+
 // From https://raw.githubusercontent.com/krzysztofzablocki/Sourcery/master/Templates/Templates/AutoCodable.swifttemplate
 <%
 func capitalizedName(for variable: Variable) -> String {

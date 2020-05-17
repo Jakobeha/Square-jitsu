@@ -55,7 +55,6 @@ struct NearCollisionSystem: System {
 
     // Same definition as CollisionSystem#trajectoryNextFrame but it's calculated after next entity position might change
     private lazy var nearTrajectoryNextFrame: Line =
-        // We extend backwards so that the entity can exit if it slightly clips into a solid due to rounding issues
         Line(start: entity.prev.locC!.position, end: entity.next.locC!.position)
 
 }

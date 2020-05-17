@@ -14,6 +14,7 @@ class SingleSpawnInRadiusMetadata: EmptyTileMetadata {
             if let locC = entity.next.locC {
                 if locC.distance(to: pos.pos.cgPoint) < spawnRadius {
                     spawn(world: world, pos: pos)
+                    break
                 }
             }
         }
@@ -22,7 +23,6 @@ class SingleSpawnInRadiusMetadata: EmptyTileMetadata {
     private func spawn(world: World, pos: WorldTilePos3D) {
         let myTileType = world[pos]
         let entity = Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
-        world.add(entity: entity)
 
         world.set(pos3D: pos, to: TileType.air, persistInGame: true)
     }

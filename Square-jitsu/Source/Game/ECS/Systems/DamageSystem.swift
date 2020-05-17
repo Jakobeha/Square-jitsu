@@ -45,8 +45,8 @@ struct DamageSystem: System {
     static func isToxic(toxicEntity: Entity, damagedEntity: Entity) -> Bool {
         toxicEntity.prev.toxC != nil &&
         damagedEntity.prev.helC != nil &&
-        !toxicEntity.prev.toxC!.safeTypes.contains(damagedEntity.type) &&
-        !toxicEntity.prev.toxC!.safeEntities.contains(EntityRef(damagedEntity)) &&
+        !toxicEntity.next.toxC!.safeTypes.contains(damagedEntity.type) &&
+        !toxicEntity.next.toxC!.safeEntities.contains(EntityRef(damagedEntity)) &&
         !(toxicEntity.next.toxC!.onlyToxicIfThrown && !(toxicEntity.next.graC?.grabState.isThrown ?? false)) &&
         toxicEntity.next.graC?.grabState.grabbedOrThrownBy != damagedEntity
     }

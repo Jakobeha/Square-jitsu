@@ -60,11 +60,13 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
 
     let radians: Float
 
-    var degrees: Float {
-        radians * 180 / Float.pi
-    }
+    var degrees: Float { radians * 180 / Float.pi }
 
     var toUnclamped: UnclampedAngle { UnclampedAngle(radians: radians) }
+
+    var absolute: Angle { Angle(radians: abs(radians)) }
+
+    var isCounterClockwise: Bool { radians > 0 }
 
     /// Cosine
     var xOnUnitCircle: CGFloat {

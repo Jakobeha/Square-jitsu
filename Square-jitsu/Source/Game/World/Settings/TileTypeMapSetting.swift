@@ -67,22 +67,33 @@ class TileTypeMapSetting<Value>: SerialSetting {
     }
 
     func encodeWellFormed() throws -> JSON {
-        JSON(try backing.mapKeys { type in type.description }.mapValues { valueSettings in
-            JSON(try valueSettings.map { valueSetting in
+        JSON(try backing.mapToDict { (bigType, valueSettings) in
+            let valueJsons = JSON(try valueSettings.enumerated().map { (smallTypeIndex, valueSetting) in
                 if let valueSetting = valueSetting {
-                    return try valueSetting.encodeWellFormed()
+                    do {
+                        return try valueSetting.encodeWellFormed()
+                    } catch {
+                        let smallType = TileSmallType(UInt8(smallTypeIndex))
+                        throw DecodeSettingError.badTypeMapEntry(bigTypeKey: bigType, smallTypeKey: smallType, error: error)
+                    }
                 } else {
                     return JSON.null
                 }
             } as [JSON])
+            return (key: bigType.description, value: valueJsons)
         } as [String:JSON])
     }
 
     func validate() throws {
-        for valueSettings in backing.values {
-            for valueSetting in valueSettings {
+        for (bigType, valueSettings) in backing {
+            for (smallTypeIndex, valueSetting) in valueSettings.enumerated() {
                 if let valueSetting = valueSetting {
-                    try valueSetting.validate()
+                    do {
+                        try valueSetting.validate()
+                    } catch {
+                        let smallType = TileSmallType(UInt8(smallTypeIndex))
+                        throw DecodeSettingError.badTypeMapEntry(bigTypeKey: bigType, smallTypeKey: smallType, error: error)
+                    }
                 }
             }
         }

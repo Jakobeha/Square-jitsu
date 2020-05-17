@@ -7,7 +7,7 @@ func toString(_ literal: String) -> String {
 -%>
 <%_ for type in types.all
           where (type.implements["SettingCodable"] != nil &&
-                 type.typealiases["AsSetting"]?.typeName.generic?.name == "StructSetting")  {
+                 type.typealiases["AsSetting"]?.typeName.generic?.name == "StructSetting") {
     let variables = type.storedVariables.filter({ $0.defaultValue == nil }) -%>
 extension <%= type.name %> {
     static <%= type.accessLevel %> func decode(from setting: StructSetting<<%= type.name %>>) -> <%= type.name %> {
@@ -22,6 +22,43 @@ extension <%= type.name %> {
         <%_ for variable in variables { -%>
         self.<%= variable.name %><%_ if variable.typeName.isOptional { %>?<%_ } %>.encodeDynamically(to: setting.allFieldSettings[<%= toString(variable.name) %>]!)
         <%_ } -%>
+    }
+}
+<% } -%>
+<%_ for type in types.all
+          where (type.implements["SettingCodable"] != nil &&
+                 type.typealiases["AsSetting"]?.typeName.generic?.name == "ComplexEnumSetting") {
+    let typeAsEnum = type as! Enum -%>
+extension <%= type.name %> {
+    static <%= type.accessLevel %> func decode(from setting: ComplexEnumSetting<<%= type.name %>>) -> <%= type.name %> {
+        switch setting.selectedCase {
+        <%_ for aCase in typeAsEnum.cases { -%>
+        case <%= toString(aCase.name) %>:
+            return <%= type.name %>.<%= aCase.name %><%_ if aCase.hasAssociatedValue { %>(
+            <%_ for associatedValue in aCase.associatedValues { -%>
+                <%= associatedValue.localName! %>: setting.selectedCaseFieldSettings[<%= toString(associatedValue.localName!) %>]<%_ if associatedValue.typeName.isOptional { %>?<%_ } else { %>!<%_ } %>.decodeDynamically()<%_ if associatedValue != aCase.associatedValues.last { %>,<%_ } %>
+            <%_ } -%>
+            )<%_ } %>
+        <%_ } -%>
+        default:
+            fatalError("Can't decode case with name because it doesn't exist: \(setting.selectedCase)")
+        }
+    }
+
+    <%= type.accessLevel %> func encode(to setting: ComplexEnumSetting<<%= type.name %>>) {
+        switch self {
+        <%_ for aCase in typeAsEnum.cases { -%>
+        <%_ if aCase.hasAssociatedValue { -%>
+        case .<%= aCase.name %>(<%_ for associatedValue in aCase.associatedValues { -%>let <%= associatedValue.localName! %><%_ if associatedValue != aCase.associatedValues.last { %>, <%_ } %><%_ } %>):
+            <%_ for associatedValue in aCase.associatedValues { -%>
+            <%= associatedValue.localName! %><%_ if associatedValue.typeName.isOptional { %>?<%_ } %>.encodeDynamically(to: setting.selectedCaseFieldSettings[<%= toString(associatedValue.localName!) %>]!)
+            <%_ } -%>
+        <%_ } else { -%>
+        case .<%= aCase.name %>:
+            break
+        <%_ } -%>
+        <%_ } -%>
+        }
     }
 }
 <% } -%>

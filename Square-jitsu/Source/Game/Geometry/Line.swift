@@ -114,7 +114,8 @@ struct Line {
         } else {
             let offset = point - start
             let offsetProjectionLength = CGPoint.dot(offset, offset.normalized)
-            return offsetProjectionLength / length
+            let unclampedFraction = offsetProjectionLength / length
+            return CGFloat.clamp(unclampedFraction, min: 0, max: 1)
         }
     }
 
@@ -178,7 +179,7 @@ struct Line {
         let closestToPointFraction = getClosestFractionTo(point: point)
         let closestToPoint = lerp(t: closestToPointFraction)
         let distanceFromPoint = (closestToPoint - point).magnitude
-        if (distanceFromPoint > capsuleRadius) {
+        if distanceFromPoint > capsuleRadius {
             return CGFloat.nan
         } else {
             return closestToPointFraction

@@ -13,7 +13,7 @@ class CGFloatRangeSetting: SerialSetting {
 
     init(_ range: ClosedRange<CGFloat>) {
         self.range = range
-        value = CGFloat.nan
+        value = range.lowerBound
     }
 
     func decodeWellFormed(from json: JSON) throws {

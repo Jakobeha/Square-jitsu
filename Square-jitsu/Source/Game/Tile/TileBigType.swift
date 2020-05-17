@@ -21,6 +21,7 @@ enum TileBigType: UInt16, CaseIterable, Codable {
     case player
     case enemy
     case shuriken
+    case projectile
 
     // Entity / tile hybrids (both tile and entity representations are used)
     case turret
@@ -30,23 +31,24 @@ enum TileBigType: UInt16, CaseIterable, Codable {
     var layer: TileLayer {
         switch self {
         case .air:
-            return TileLayer.air
+            return .air
         case .background, .overlapSensitiveBackground:
-            return TileLayer.background
+            return .background
         case .solid, .adjacentSensitiveSolid:
-            return TileLayer.solid
+            return .solid
         case .ice:
-            return TileLayer.iceSolid
-        case .player, .enemy, .shuriken:
-            return TileLayer.entity
-        case .turret:
-            return TileLayer.entity
+            return .iceSolid
+        case .player, .enemy, .shuriken, .projectile, .turret:
+            return .entity
         }
     }
 
     func newMetadata() -> TileMetadata? {
         switch self {
         case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice:
+            return nil
+        case .projectile:
+            // Not a tile
             return nil
         case .player:
             return PlayerSpawnMetadata()
@@ -55,7 +57,7 @@ enum TileBigType: UInt16, CaseIterable, Codable {
         case .shuriken:
             return SpawnOnGrabMetadata()
         case .turret:
-            fatalError("TODO implement")
+            return TurretMetadata()
         }
     }
 

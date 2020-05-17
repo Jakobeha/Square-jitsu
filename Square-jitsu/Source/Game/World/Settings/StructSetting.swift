@@ -77,11 +77,19 @@ class StructSetting<Value: SettingCodable>: SerialSetting {
     }
 
     func validate() throws {
-        for fieldSetting in requiredFieldSettings.values {
-            try fieldSetting.validate()
+        for (fieldName, fieldSetting) in requiredFieldSettings {
+            do {
+                try fieldSetting.validate()
+            } catch {
+                throw DecodeSettingError.badField(fieldName: fieldName, error: error)
+            }
         }
-        for fieldSetting in optionalFieldSettings.values {
-            try fieldSetting.validate()
+        for (fieldName, fieldSetting) in optionalFieldSettings {
+            do {
+                try fieldSetting.validate()
+            } catch {
+                throw DecodeSettingError.badField(fieldName: fieldName, error: error)
+            }
         }
         try customValidator?(self)
     }
