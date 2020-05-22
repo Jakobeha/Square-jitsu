@@ -24,6 +24,14 @@ struct TileType: Equatable, Hashable, Codable, HasDefault, LosslessStringConvert
         TileType(bigType: TileBigType.turret, smallType: TileSmallType(1), orientation: TileOrientation(side: side))
     }
 
+    static func indexOfHighestLayerIn(array: [TileType]) -> Int {
+        array.lastIndex(of: typeWithHighestLayerIn(array: array))!
+    }
+
+    private static func typeWithHighestLayerIn(array: [TileType]) -> TileType {
+        array.max { lhs, rhs in lhs.bigType.layer < rhs.bigType.layer }!
+    }
+
     static let defaultValue: TileType = air
 
     static let fadingZPositionOffset: CGFloat = 0.5 / CGFloat(TileBigType.allCases.count)

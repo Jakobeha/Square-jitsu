@@ -7,15 +7,17 @@ import SpriteKit
 
 class View {
     /// Used as a sanity check
-    private var isPlaced: Bool = false
+    private(set) weak var parent: SKNode? = nil
+
+    var hasParent: Bool { parent != nil }
 
     func placeIn(parent: SKNode) {
-        assert(!isPlaced, "already placed")
-        isPlaced = true
+        assert(!hasParent, "already placed")
+        self.parent = parent
     }
 
     func removeFromParent() {
-        assert(isPlaced, "not placed")
-        isPlaced = false
+        assert(hasParent, "not placed")
+        parent = nil
     }
 }

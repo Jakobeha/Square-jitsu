@@ -6,6 +6,7 @@
 import SpriteKit
 
 class TurretMetadata: EmptyTileMetadata {
+    var initialTurretDirectionRelativeToAnchor: Angle = -Angle.right
     private var spawned: Bool = false
 
     override func tick(world: World, pos: WorldTilePos3D) {
@@ -29,8 +30,27 @@ class TurretMetadata: EmptyTileMetadata {
 
     private func spawn(world: World, pos: WorldTilePos3D) {
         let myTileType = world[pos]
-        Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
+        let turretEntity = Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
+
+        let initialTurretDirection = myTileType.orientation.toSide.angle + initialTurretDirectionRelativeToAnchor
+        turretEntity.next.locC!.rotation = initialTurretDirection
 
         spawned = true
+    }
+
+    // ---
+
+    enum CodingKeys: CodingKey {
+        case initialTurretDirectionRelativeToAnchor
+    }
+
+    override func decode(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        initialTurretDirectionRelativeToAnchor = try container.decode(Angle.self, forKey: .initialTurretDirectionRelativeToAnchor)
+    }
+
+    override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(initialTurretDirectionRelativeToAnchor, forKey: .initialTurretDirectionRelativeToAnchor)
     }
 }

@@ -4,6 +4,14 @@
 // Modified from https://raw.githubusercontent.com/krzysztofzablocki/Sourcery/master/Templates/Templates/AutoCodable.swifttemplate
 import SpriteKit
 extension Adjacent4TileViewTemplate {
+    internal convenience init(from setting: StructSetting<Adjacent4TileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
+            adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically(),
+            semiAdjoiningTypes: setting.usedFieldSettings["semiAdjoiningTypes"]!.decodeDynamically()
+        )
+    }
+
     static internal func decode(from setting: StructSetting<Adjacent4TileViewTemplate>) -> Adjacent4TileViewTemplate {
         self.init(
             textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
@@ -19,6 +27,13 @@ extension Adjacent4TileViewTemplate {
     }
 }
 extension Adjacent8TileViewTemplate {
+    internal convenience init(from setting: StructSetting<Adjacent8TileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
+            adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically()
+        )
+    }
+
     static internal func decode(from setting: StructSetting<Adjacent8TileViewTemplate>) -> Adjacent8TileViewTemplate {
         self.init(
             textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
@@ -32,6 +47,24 @@ extension Adjacent8TileViewTemplate {
     }
 }
 extension Entity.Components {
+    internal init(from setting: StructSetting<Entity.Components>) {
+        self.init(
+            locC: setting.usedFieldSettings["locC"]?.decodeDynamically(),
+            larC: setting.usedFieldSettings["larC"]?.decodeDynamically(),
+            dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
+            imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
+            docC: setting.usedFieldSettings["docC"]?.decodeDynamically(),
+            phyC: setting.usedFieldSettings["phyC"]?.decodeDynamically(),
+            ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
+            griC: setting.usedFieldSettings["griC"]?.decodeDynamically(),
+            graC: setting.usedFieldSettings["graC"]?.decodeDynamically(),
+            helC: setting.usedFieldSettings["helC"]?.decodeDynamically(),
+            toxC: setting.usedFieldSettings["toxC"]?.decodeDynamically(),
+            turC: setting.usedFieldSettings["turC"]?.decodeDynamically(),
+            nijC: setting.usedFieldSettings["nijC"]?.decodeDynamically()
+        )
+    }
+
     static internal func decode(from setting: StructSetting<Entity.Components>) -> Entity.Components {
         self.init(
             locC: setting.usedFieldSettings["locC"]?.decodeDynamically(),
@@ -67,6 +100,12 @@ extension Entity.Components {
     }
 }
 extension StaticEntityViewTemplate {
+    internal init(from setting: StructSetting<StaticEntityViewTemplate>) {
+        self.init(
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
+        )
+    }
+
     static internal func decode(from setting: StructSetting<StaticEntityViewTemplate>) -> StaticEntityViewTemplate {
         self.init(
             texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
@@ -78,6 +117,12 @@ extension StaticEntityViewTemplate {
     }
 }
 extension StaticTileViewTemplate {
+    internal init(from setting: StructSetting<StaticTileViewTemplate>) {
+        self.init(
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
+        )
+    }
+
     static internal func decode(from setting: StructSetting<StaticTileViewTemplate>) -> StaticTileViewTemplate {
         self.init(
             texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
@@ -89,6 +134,14 @@ extension StaticTileViewTemplate {
     }
 }
 extension ToxicComponent {
+    internal init(from setting: StructSetting<ToxicComponent>) {
+        self.init(
+            damage: setting.usedFieldSettings["damage"]!.decodeDynamically(),
+            safeTypes: setting.usedFieldSettings["safeTypes"]!.decodeDynamically(),
+            onlyToxicIfThrown: setting.usedFieldSettings["onlyToxicIfThrown"]!.decodeDynamically()
+        )
+    }
+
     static internal func decode(from setting: StructSetting<ToxicComponent>) -> ToxicComponent {
         self.init(
             damage: setting.usedFieldSettings["damage"]!.decodeDynamically(),
@@ -104,6 +157,17 @@ extension ToxicComponent {
     }
 }
 extension TurretComponent {
+    internal init(from setting: StructSetting<TurretComponent>) {
+        self.init(
+            rotationPattern: setting.usedFieldSettings["rotationPattern"]!.decodeDynamically(),
+            whoToTarget: setting.usedFieldSettings["whoToTarget"]!.decodeDynamically(),
+            whenToFire: setting.usedFieldSettings["whenToFire"]!.decodeDynamically(),
+            howToFire: setting.usedFieldSettings["howToFire"]!.decodeDynamically(),
+            whatToFire: setting.usedFieldSettings["whatToFire"]!.decodeDynamically(),
+            delayWhenTargetFoundBeforeFire: setting.usedFieldSettings["delayWhenTargetFoundBeforeFire"]!.decodeDynamically()
+        )
+    }
+
     static internal func decode(from setting: StructSetting<TurretComponent>) -> TurretComponent {
         self.init(
             rotationPattern: setting.usedFieldSettings["rotationPattern"]!.decodeDynamically(),
@@ -125,6 +189,21 @@ extension TurretComponent {
     }
 }
 extension WorldSettings {
+    internal convenience init(from setting: StructSetting<WorldSettings>) {
+        self.init(
+            tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),
+            entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
+            rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
+            entityViewScaleModes: setting.usedFieldSettings["entityViewScaleModes"]!.decodeDynamically(),
+            tileViewFadeDurations: setting.usedFieldSettings["tileViewFadeDurations"]!.decodeDynamically(),
+            entityViewFadeDurations: setting.usedFieldSettings["entityViewFadeDurations"]!.decodeDynamically(),
+            entityGrabColors: setting.usedFieldSettings["entityGrabColors"]!.decodeDynamically(),
+            tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
+            entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
+            entitySpawnRadius: setting.usedFieldSettings["entitySpawnRadius"]!.decodeDynamically()
+        )
+    }
+
     static internal func decode(from setting: StructSetting<WorldSettings>) -> WorldSettings {
         self.init(
             tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),

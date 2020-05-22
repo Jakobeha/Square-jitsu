@@ -6,6 +6,8 @@
 import SpriteKit
 
 extension CGSize {
+    static var infinity: CGSize = square(sideLength: CGFloat.infinity)
+
     static func square(sideLength: CGFloat) -> CGSize {
         CGSize(width: sideLength, height: sideLength)
     }

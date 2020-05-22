@@ -5,7 +5,11 @@
 
 import Foundation
 
-struct WorldTilePos3D {
+struct WorldTilePos3D: Equatable, Hashable {
+    static func +(lhs: WorldTilePos3D, offset: RelativePos) -> WorldTilePos3D {
+        WorldTilePos3D(pos: lhs.pos + offset, layer: lhs.layer)
+    }
+
     let pos: WorldTilePos
     let layer: Int
 

@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct ChunkTilePos: Equatable, Hashable, CaseIterable {
+struct ChunkTilePos: Equatable, Hashable, Codable, CaseIterable {
     static let allCases: [ChunkTilePos] = {
         (0..<Chunk.widthHeight).flatMap { x in
             (0..<Chunk.widthHeight).map { y in

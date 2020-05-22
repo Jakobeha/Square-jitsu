@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-enum TileLayer: Int, CaseIterable, Codable {
+enum TileLayer: Int, Comparable, CaseIterable, Codable {
     case air
 
     case background
@@ -77,6 +77,11 @@ enum TileLayer: Int, CaseIterable, Codable {
     }
 
     // -- End pattern matching
+
+    /// Whether rhs tiles are on top of lhs tiles
+    static func <(lhs: TileLayer, rhs: TileLayer) -> Bool {
+        lhs.rawValue < rhs.rawValue
+    }
 
     var zPosition: CGFloat {
         CGFloat(rawValue)

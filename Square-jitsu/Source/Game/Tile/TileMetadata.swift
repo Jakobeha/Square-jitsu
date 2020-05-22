@@ -5,7 +5,7 @@
 
 import Foundation
 
-protocol TileMetadata: Codable {
+protocol TileMetadata: AliveCodable {
     /// This is guaranteed to be called before all other on... handlers
     func onFirstLoad(world: World, pos: WorldTilePos3D)
     func onEntityCollide(entity: Entity, pos: WorldTilePos3D)

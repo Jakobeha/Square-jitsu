@@ -12,9 +12,16 @@ protocol Camera {
 }
 
 extension Camera {
+    /// Applies the inverse of the camera's transform so that the node children in camera coordinates at (0, 0)
+    func inverseTransform(rootNode: SKNode, settings: WorldSettings) {
+        rootNode.position = (position * settings.tileViewWidthHeight / scale).rotateAroundCenter(by: -rotation)
+        rootNode.angle = -rotation
+        rootNode.setScale(1 / scale)
+    }
+
     func applyTo(cameraNode: SKCameraNode, settings: WorldSettings) {
         cameraNode.position = (position * settings.tileViewWidthHeight).rounded
-        cameraNode.zRotation = CGFloat(rotation.radians)
+        cameraNode.angle = rotation
         cameraNode.setScale(scale)
     }
 }

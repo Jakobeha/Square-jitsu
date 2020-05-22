@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-class World {
+class World: ReadonlyWorld {
     private let loader: WorldLoader
     let settings: WorldSettings
     /// Chunks which are only partially loaded.
@@ -60,6 +60,7 @@ class World {
     var didChangeSpeed: Observable<()> { Observable(publisher: _didChangeSpeed) }
     var didTick: Observable<()> { Observable(publisher: _didTick) }
 
+    // region init
     init(loader: WorldLoader, settings: WorldSettings, userSettings: UserSettings) {
         self.loader = loader
         self.settings = settings
@@ -75,6 +76,7 @@ class World {
         // TODO: Make this more graceful, throw a WorldCorruptionError, so loading bad worlds can't crash the game
         assert(_player != nil, "player spawn not in chunk pos, or player spawn didn't spawn player")
     }
+    //endregion
 
     // region loading
     func loadAround(pos: CGPoint) {
@@ -217,11 +219,12 @@ class World {
         let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
         let chunkPos3D = pos3D.chunkTilePos3D
         chunk[chunkPos3D] = newType
+
+        let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
         if persistInGame {
-            let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
             persistentDataForChunk.overwrittenTiles[chunkPos3D] = newType
-            persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = chunk.tileMetadatas[chunkPos3D]
         }
+        persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = chunk.tileMetadatas[chunkPos3D]
     }
 
     func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
@@ -238,9 +241,18 @@ class World {
     /// - Returns: The layer of the tile which was placed
     /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
     ///   places the tile, while "place" may mean it was loaded
-    func forceCreateTile(pos: WorldTilePos, type: TileType) -> Int {
+    @discardableResult func forceCreateTile(pos: WorldTilePos, type: TileType) -> Int {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
-        return chunk.forcePlaceTileAndReturnLayer(pos: pos.chunkTilePos, type: type)
+        let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type)
+
+        // Update metadata persistence
+        let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
+        for layer in 0..<Chunk.numLayers {
+            let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
+            persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = chunk.tileMetadatas[chunkPos3D]
+        }
+
+        return layer
     }
 
     /// Note: "destroy" is distinguished from "remove" are different in that "destroy" means e.g. the user explicitly
@@ -248,6 +260,13 @@ class World {
     func destroyTiles(pos: WorldTilePos) {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
         chunk.removeTiles(pos: pos.chunkTilePos)
+
+        // Update metadata persistence
+        let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
+        for layer in 0..<Chunk.numLayers {
+            let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
+            persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = nil
+        }
     }
 
     private func getChunkAt(pos: WorldChunkPos) -> Chunk {
@@ -255,6 +274,35 @@ class World {
         return chunks[pos]!
     }
     // endregion
+
+    //region advanced tile access
+    func adjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
+        let type = self[pos3D]
+        var positions3D: Set<WorldTilePos3D> = [pos3D]
+
+        var positions2DAtPrevDistance: Set<WorldTilePos> = [pos3D.pos]
+        var distance = 0
+        while !positions2DAtPrevDistance.isEmpty {
+            distance += 1
+            var positions2DAtNextDistance: Set<WorldTilePos> = []
+
+            for pos in WorldTilePos.sweepSquare(center: pos3D.pos, distance: distance) {
+                let typesAtPos = self[pos]
+                // Technically it doesn't matter whether we use firstIndex or lastIndex
+                if let indexOfSameTypeAtPos = typesAtPos.lastIndex(of: type) {
+                    // The world has a tile of the same type at this position - else it doesn't
+                    let pos3D = WorldTilePos3D(pos: pos, layer: indexOfSameTypeAtPos)
+                    positions2DAtNextDistance.insert(pos)
+                    positions3D.insert(pos3D)
+                }
+            }
+
+            positions2DAtPrevDistance = positions2DAtNextDistance
+        }
+
+        return positions3D
+    }
+    //endregion
 
     // region metadatas
     private func tickMetadatas() {

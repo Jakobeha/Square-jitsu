@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum SJState {
+enum EditorState {
     case playing
-    // case editing
+    case editing
 }

@@ -8,13 +8,7 @@
 
 import SpriteKit
 
-class SJScene: SKScene {
-    private var state: SJState = .playing {
-        didSet {
-            worldController?.isPaused = state == .playing
-        }
-    }
-
+class GameScene: SKScene {
     private let settings: UserSettings = UserSettings()
 
     private var worldController: WorldController? {
@@ -42,8 +36,7 @@ class SJScene: SKScene {
 
     override func update(_ currentTime: TimeInterval) {
         worldController?.update(currentTime)
-        switch state {
-        case .playing:
+        if !isPaused {
             if let loadedWorld = loadedWorld,
                let cameraNode = camera {
                 loadedWorld.playerCamera.applyTo(cameraNode: cameraNode, settings: loadedWorld.settings)
@@ -53,32 +46,28 @@ class SJScene: SKScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        switch state {
-        case .playing:
+        if !isPaused {
             loadedWorld?.playerInput.tracker.touchesBegan(touches, with: event, container: self)
         }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesMoved(touches, with: event)
-        switch state {
-        case .playing:
+        if !isPaused {
             loadedWorld?.playerInput.tracker.touchesMoved(touches, with: event, container: self)
         }
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
-        switch state {
-        case .playing:
+        if !isPaused {
             loadedWorld?.playerInput.tracker.touchesEnded(touches, with: event, container: self)
         }
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
-        switch state {
-        case .playing:
+        if !isPaused {
             loadedWorld?.playerInput.tracker.touchesCancelled(touches, with: event, container: self)
         }
     }

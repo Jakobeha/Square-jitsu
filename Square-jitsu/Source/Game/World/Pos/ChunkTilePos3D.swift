@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct ChunkTilePos3D: Equatable, Hashable, CaseIterable {
+struct ChunkTilePos3D: Equatable, Hashable, Codable, CaseIterable {
     let pos: ChunkTilePos
     let layer: Int
 

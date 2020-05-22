@@ -5,10 +5,10 @@
 
 import SpriteKit
 
-class NodeView: View {
-    let node: SKNode
+class NodeView<Node: SKNode>: View {
+    let node: Node
 
-    init(node: SKNode) {
+    init(node: Node) {
         self.node = node
         super.init()
     }

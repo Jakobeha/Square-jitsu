@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-class ChunkView: NodeView {
+class ChunkView: NodeView<SKNode> {
     private var tileViews: ChunkMatrix<TileView?> = ChunkMatrix()
     private let world: World
     private let chunk: ReadonlyChunk

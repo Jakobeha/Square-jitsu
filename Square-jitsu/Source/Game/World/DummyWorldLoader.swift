@@ -5,8 +5,8 @@
 
 import Foundation
 
-class DummyWorldLoader : WorldLoader {
-    let playerSpawnChunkPos: WorldChunkPos = WorldChunkPos(x: 0, y: 0)
+struct DummyWorldLoader : WorldLoader {
+    var playerSpawnChunkPos: WorldChunkPos { WorldChunkPos(x: 0, y: 0) }
 
     func loadChunk(pos: WorldChunkPos) -> Chunk {
         let solidType = pos.x % 2 == 0 ? TileType.basicSolid : TileType.basicAdjacentSensitiveSolid

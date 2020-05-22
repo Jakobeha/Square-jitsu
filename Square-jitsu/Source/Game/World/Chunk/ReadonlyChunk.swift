@@ -11,4 +11,7 @@ protocol ReadonlyChunk {
 
     subscript(_ pos: ChunkTilePos) -> [TileType] { get }
     subscript(_ pos: ChunkTilePos3D) -> TileType { get }
+
+    /// Places all tiles on the other chunk, overwriting its tiles
+    func placeOnTopOf(otherChunk: Chunk)
 }

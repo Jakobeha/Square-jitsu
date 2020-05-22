@@ -27,11 +27,15 @@ class WorldController {
     }
 
     func loadDummyWorld() {
-        load(world: World(loader: DummyWorldLoader(), settings: WorldSettings.default, userSettings: userSettings))
+        load(world: World(
+            loader: DummyWorldLoader(),
+            settings: WorldSettingsManager.default,
+            userSettings: userSettings
+        ))
     }
 
     func load(world: World) {
-        loaded?.worldView.removeFromParent()
+        unload()
 
         let worldView = WorldView(world: world)
         worldView.placeIn(parent: parent)

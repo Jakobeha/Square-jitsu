@@ -10,6 +10,14 @@ func toString(_ literal: String) -> String {
                  type.typealiases["AsSetting"]?.typeName.generic?.name == "StructSetting") {
     let variables = type.storedVariables.filter({ $0.defaultValue == nil }) -%>
 extension <%= type.name %> {
+    <%= type.accessLevel %> <%_ if type is Class { %> convenience<%_ } %> init(from setting: StructSetting<<%= type.name %>>) {
+        self.init(
+        <%_ for variable in variables { -%>
+            <%= variable.name %>: setting.usedFieldSettings[<%= toString(variable.name) %>]<%_ if variable.typeName.isOptional { %>?<%_ } else { %>!<%_ } %>.decodeDynamically()<%_ if variable != variables.last { %>,<%_ } %>
+        <%_ } -%>
+        )
+    }
+
     static <%= type.accessLevel %> func decode(from setting: StructSetting<<%= type.name %>>) -> <%= type.name %> {
         self.init(
         <%_ for variable in variables { -%>

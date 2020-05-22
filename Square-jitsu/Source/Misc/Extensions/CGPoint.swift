@@ -86,4 +86,8 @@ extension CGPoint {
     var rounded: CGPoint {
         CGPoint(x: round(x), y: round(y))
     }
+
+    func rotateAroundCenter(by rotation: Angle) -> CGPoint {
+        CGPoint(magnitude: magnitude, directionFromOrigin: directionFromOrigin + rotation)
+    }
 }

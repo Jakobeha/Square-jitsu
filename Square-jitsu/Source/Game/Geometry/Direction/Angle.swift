@@ -64,7 +64,12 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
 
     var toUnclamped: UnclampedAngle { UnclampedAngle(radians: radians) }
 
+    /// Flips the angle if it's between -180° and 0°
     var absolute: Angle { Angle(radians: abs(radians)) }
+
+    var positiveRadians: Float {
+        radians < 0 ? (Float.pi * 2) + radians : radians
+    }
 
     var isCounterClockwise: Bool { radians > 0 }
 

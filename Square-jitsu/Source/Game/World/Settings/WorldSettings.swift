@@ -7,17 +7,7 @@ import SpriteKit
 
 /// World-specific settings which are immutable
 /// (except for now the values are always the same. Maybe in the future they could be world specific...)
-final class WorldSettings: SingleSettingCodable {
-    static let `default`: WorldSettings = {
-        let defaultJsonUrl = Bundle.main.url(forResource: "default", withExtension: "json")!
-        let defaultJsonData = try! Data(contentsOf: defaultJsonUrl)
-        let defaultJson = try! JSON(data: defaultJsonData)
-
-        let worldSettingsSetting = WorldSettings.newSetting()
-        try! worldSettingsSetting.decode(from: defaultJson)
-        return WorldSettings.decode(from: worldSettingsSetting)
-    }()
-
+final class WorldSettings: SingleSettingCodable, Codable {
     // Global game constants which can't actually be changed
 
     // SpriteKit tries to run 60fps so we run 2x.
@@ -68,5 +58,24 @@ final class WorldSettings: SingleSettingCodable {
             "entityData": TileTypeMapSetting<Entity.Components> { Entity.Components.newSetting() },
             "entitySpawnRadius": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(1...16) }
         ], optionalFields: [:])
+    }
+
+    convenience init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let json = try container.decode(JSON.self)
+
+        let setting = WorldSettings.newSetting()
+        try setting.decode(from: json)
+        self.init(from: setting)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+
+        let worldSettingsSetting = WorldSettings.newSetting()
+        encode(to: worldSettingsSetting)
+        let json = try worldSettingsSetting.encodeWellFormed()
+
+        try container.encode(json)
     }
 }

@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-class WorldView: NodeView {
+class WorldView: NodeView<SKNode> {
     private var chunkViews: [WorldChunkPos:ChunkView] = [:]
     private var entityViews: [EntityView] = []
     private let world: World

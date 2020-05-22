@@ -22,7 +22,7 @@ class SingleSpawnInRadiusMetadata: EmptyTileMetadata {
 
     private func spawn(world: World, pos: WorldTilePos3D) {
         let myTileType = world[pos]
-        let entity = Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
+        Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
 
         world.set(pos3D: pos, to: TileType.air, persistInGame: true)
     }

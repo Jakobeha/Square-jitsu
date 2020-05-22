@@ -14,6 +14,10 @@ struct StaticTileViewTemplate: TileViewTemplate, SingleSettingCodable {
         SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
 
+    func generatePreviewNode(size: CGSize) -> SKNode {
+        SKSpriteNode(texture: texture, size: size)
+    }
+
     static func newSetting() -> StructSetting<StaticTileViewTemplate> {
         StructSetting(requiredFields: [
             "texture": TextureSetting()
