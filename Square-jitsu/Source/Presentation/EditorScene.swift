@@ -40,53 +40,21 @@ class EditorScene: SKScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        if let loadedEditor = loadedEditor {
-            switch loadedEditor.state {
-            case .playing:
-                loadedEditor.editableWorld.world.playerInput.tracker.touchesBegan(touches, with: event, container: self)
-            case .editing:
-                // TODO
-                break
-            }
-        }
+        loadedEditor?.touchesBegan(touches, with: event, container: self)
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesMoved(touches, with: event)
-        if let loadedEditor = loadedEditor {
-            switch loadedEditor.state {
-            case .playing:
-                loadedEditor.editableWorld.world.playerInput.tracker.touchesMoved(touches, with: event, container: self)
-            case .editing:
-                // TODO
-                break
-            }
-        }
+        loadedEditor?.touchesMoved(touches, with: event, container: self)
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
-        if let loadedEditor = loadedEditor {
-            switch loadedEditor.state {
-            case .playing:
-                loadedEditor.editableWorld.world.playerInput.tracker.touchesEnded(touches, with: event, container: self)
-            case .editing:
-                // TODO
-                break
-            }
-        }
+        loadedEditor?.touchesEnded(touches, with: event, container: self)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
-        if let loadedEditor = loadedEditor {
-            switch loadedEditor.state {
-            case .playing:
-                loadedEditor.editableWorld.world.playerInput.tracker.touchesCancelled(touches, with: event, container: self)
-            case .editing:
-                // TODO
-                break
-            }
-        }
+        loadedEditor?.touchesCancelled(touches, with: event, container: self)
     }
 }

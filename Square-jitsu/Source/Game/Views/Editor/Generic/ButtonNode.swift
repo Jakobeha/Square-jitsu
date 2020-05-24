@@ -33,24 +33,32 @@ class ButtonNode: SKNode {
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
         touchesMaybePressed()
+        if !isPressed {
+            super.touchesBegan(touches, with: event)
+        }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesMoved(touches, with: event)
         touchesMaybePressed()
+        if !isPressed {
+            super.touchesMoved(touches, with: event)
+        }
         touchesMaybeReleased(event: event!, wouldBeCancel: true)
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
+        if !isPressed {
+            super.touchesEnded(touches, with: event)
+        }
         touchesMaybeReleased(event: event!, wouldBeCancel: false)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if !isPressed {
+            touchesMaybeReleased(event: event!, wouldBeCancel: true)
+        }
         super.touchesEnded(touches, with: event)
-        touchesMaybeReleased(event: event!, wouldBeCancel: true)
     }
 
     private func touchesMaybePressed() {

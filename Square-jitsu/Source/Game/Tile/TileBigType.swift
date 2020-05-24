@@ -6,7 +6,7 @@
 import Foundation
 
 /// - Note: Try to put all pattern matching on TileBigType here, so it's easier to add new cases
-enum TileBigType: UInt16, CaseIterable, Codable {
+enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
     // Actual tiles
     case air
     case background

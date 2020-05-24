@@ -17,10 +17,16 @@ class TileButton: UXNodeView<ButtonNode>, UXView {
         didSet { borderNode.texture = borderNodeTexture }
     }
     var isEnabled: Bool {
-        didSet { tileNode.alpha = isEnabled ? 1 : Button.disabledForegroundAlpha }
+        didSet {
+            let previewNodeAlpha = isEnabled ? 1 : Button.disabledForegroundAlpha
+            tilePreviewNode?.alpha = previewNodeAlpha
+            entityPreviewNode?.alpha = previewNodeAlpha
+        }
     }
 
-    private let tileNode: SKNode
+    private let backgroundNode: SKSpriteNode
+    private let tilePreviewNode: SKNode?
+    private let entityPreviewNode: SKNode?
     private let borderNode: SKSpriteNode
 
     private var borderNodeTexture: SKTexture? {
@@ -38,12 +44,28 @@ class TileButton: UXNodeView<ButtonNode>, UXView {
     init(tileType: TileType, settings: WorldSettings, isEnabled: Bool = true, isSelected: Bool = false, action: @escaping () -> ()) {
         self.isEnabled = isEnabled
         self.isSelected = isSelected
-        tileNode = settings.tileViewTemplates[tileType]!.generatePreviewNode(size: ButtonSize.tile.cgSize)
+        backgroundNode = SKSpriteNode(texture: nil, color: SKColor.white, size: ButtonSize.tile.cgSize)
+        backgroundNode.anchorPoint = UXSpriteAnchor
+        backgroundNode.zPosition = 0
+        tilePreviewNode = settings.tileViewTemplates[tileType]?.generatePreviewNode(size: ButtonSize.tile.cgSize)
+        tilePreviewNode?.zPosition = 1
+        entityPreviewNode = settings.entityViewTemplates[tileType]?.generatePreviewNode(size: ButtonSize.tile.cgSize)
+        entityPreviewNode?.zPosition = 2
         borderNode = SKSpriteNode(texture: nil, size: ButtonSize.tile.cgSize)
+        borderNode.anchorPoint = UXSpriteAnchor
+        borderNode.zPosition = 3
         super.init(node: ButtonNode(
             size: ButtonSize.tile.cgSize,
             action: action
         ))
+        node.addChild(backgroundNode)
+        if let tilePreviewNode = tilePreviewNode {
+            node.addChild(tilePreviewNode)
+        }
+        if let entityPreviewNode = entityPreviewNode {
+            node.addChild(entityPreviewNode)
+        }
+        node.addChild(borderNode)
         node.onTouchDown = { self.isPressed = true }
         node.onTouchUp = { self.isPressed = false }
     }

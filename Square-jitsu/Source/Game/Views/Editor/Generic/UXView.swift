@@ -5,6 +5,8 @@
 
 import SpriteKit
 
+let UXSpriteAnchor: CGPoint = CGPoint(x: 0, y: 1)
+
 protocol UXView: View {
     var topLeft: CGPoint { get set }
     /// If either axis is infinity, that means we stretch as much as possible within the screen bounds

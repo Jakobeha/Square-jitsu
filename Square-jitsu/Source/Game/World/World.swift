@@ -276,6 +276,7 @@ class World: ReadonlyWorld {
     // endregion
 
     //region advanced tile access
+    /// Note: doesn't return nil for air
     func adjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
         let type = self[pos3D]
         var positions3D: Set<WorldTilePos3D> = [pos3D]

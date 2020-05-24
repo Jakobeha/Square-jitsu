@@ -291,5 +291,15 @@
   },
   "entitySpawnRadius": {
     "enemy": [3]
+  },
+  "selectableTypes": {
+    "background": [0],
+    "overlapSensitiveBackground": [0],
+    "solid": [0],
+    "adjacentSensitiveSolid": [0],
+    "ice": [0],
+    "enemy": [0],
+    "shuriken": [0],
+    "turret": [0, 1]
   }
 }

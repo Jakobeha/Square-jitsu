@@ -44,11 +44,17 @@ class Button: UXNodeView<ButtonNode>, UXView {
         self.isSelected = isSelected
         let texture = SKTexture(imageNamed: textureName)
         backgroundNode = SKSpriteNode(texture: Button.background, size: size.cgSize)
+        backgroundNode.anchorPoint = UXSpriteAnchor
+        backgroundNode.zPosition = 0
         foregroundNode = SKSpriteNode(texture: texture, size: size.cgSize)
+        foregroundNode.anchorPoint = UXSpriteAnchor
+        foregroundNode.zPosition = 1
         super.init(node: ButtonNode(
             size: buttonSize.cgSize,
             action: action
         ))
+        node.addChild(backgroundNode)
+        node.addChild(foregroundNode)
         node.onTouchDown = { self.isPressed = true }
         node.onTouchUp = { self.isPressed = false }
     }

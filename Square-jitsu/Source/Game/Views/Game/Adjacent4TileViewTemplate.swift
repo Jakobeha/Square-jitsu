@@ -68,7 +68,9 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
 
     func generatePreviewNode(size: CGSize) -> SKNode {
         let texture = textures[[]]
-        return SKSpriteNode(texture: texture, size: size)
+        let node = SKSpriteNode(texture: texture, size: size)
+        node.anchorPoint = UXSpriteAnchor
+        return node
     }
 
     static func newSetting() -> AsSetting {

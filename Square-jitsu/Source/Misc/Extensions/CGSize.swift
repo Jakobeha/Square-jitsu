@@ -6,7 +6,9 @@
 import SpriteKit
 
 extension CGSize {
-    static var infinity: CGSize = square(sideLength: CGFloat.infinity)
+    static let zero: CGSize = square(sideLength: 0)
+    static let unit: CGSize = square(sideLength: 1)
+    static let infinity: CGSize = square(sideLength: CGFloat.infinity)
 
     static func square(sideLength: CGFloat) -> CGSize {
         CGSize(width: sideLength, height: sideLength)
@@ -33,4 +35,8 @@ extension CGSize {
     }
 
     var aspectRatioYDivX: CGFloat { height / width }
+
+    var toPoint: CGPoint {
+        CGPoint(x: width, y: height)
+    }
 }

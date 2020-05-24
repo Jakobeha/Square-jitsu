@@ -14,6 +14,7 @@ enum DecodeSettingError: Error, CustomStringConvertible {
     case extraFields(Set<String>)
     case missingTypeField
     case badElement(index: Int, error: Error)
+    case badDictionaryValue(keyDescription: String, error: Error)
     case badField(fieldName: String, error: Error)
     case badComplexEnumField(caseName: String, fieldName: String, error: Error)
     case badTypeMapEntry(bigTypeKey: TileBigType, smallTypeKey: TileSmallType, error: Error)
@@ -56,6 +57,8 @@ enum DecodeSettingError: Error, CustomStringConvertible {
             return "Missing type field to distinguish complex enum"
         case .badElement(let index, let error):
             return "At index \(index) - \(error)"
+        case .badDictionaryValue(let keyDescription, let error):
+            return "For key \(keyDescription) - \(error)"
         case .badField(let fieldName, let error):
             return "In \(fieldName) - \(error)"
         case .badComplexEnumField(let caseName, let fieldName, let error):

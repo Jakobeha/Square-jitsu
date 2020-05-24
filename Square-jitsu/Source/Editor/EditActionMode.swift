@@ -16,9 +16,9 @@ enum EditActionMode {
 
     var requiresSelection: Bool {
         switch self {
-        case .place, .remove:
+        case .place, .remove, .select:
             return false
-        case .select, .move, .inspect:
+        case .move, .inspect:
             return true
         }
     }

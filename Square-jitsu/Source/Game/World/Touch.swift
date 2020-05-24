@@ -15,14 +15,8 @@ struct Touch {
 
         init(uiTouch: UITouch, container: SKScene) {
             timestamp = uiTouch.timestamp
-            position = Touch.getPosition(uiTouch: uiTouch, container: container)
+            position = TouchPos.getPosition(uiTouch: uiTouch, container: container)
         }
-    }
-
-    static func getPosition(uiTouch: UITouch, container: SKScene) -> CGPoint {
-        var position = uiTouch.location(in: container.view!)
-        position.y *= -1
-        return position
     }
 
     let id: ObjectIdentifier

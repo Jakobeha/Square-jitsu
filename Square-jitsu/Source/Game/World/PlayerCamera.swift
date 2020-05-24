@@ -6,10 +6,6 @@
 import SpriteKit
 
 class PlayerCamera: Camera {
-    private(set) var position: CGPoint = CGPoint.zero
-    private(set) var rotation: Angle = Angle.zero
-    private(set) var scale: CGFloat = 1
-
     func tick(world: World) {
         let settings = world.settings
         let player = world.player

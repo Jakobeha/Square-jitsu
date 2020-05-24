@@ -30,9 +30,12 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var entityData: TileTypeMap<Entity.Components>
     var entitySpawnRadius: TileTypeMap<CGFloat>
 
+    // Editor info
+    var selectableTypes: [TileBigType:[TileSmallType]]
+
     typealias AsSetting = StructSetting<WorldSettings>
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, selectableTypes: [TileBigType:[TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
         self.rotateTileViewBasedOnOrientation = rotateTileViewBasedOnOrientation
@@ -43,6 +46,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
         self.tileDescriptions = tileDescriptions
         self.entityData = entityData
         self.entitySpawnRadius = entitySpawnRadius
+        self.selectableTypes = selectableTypes
     }
 
     static func newSetting() -> StructSetting<WorldSettings> {
@@ -56,7 +60,8 @@ final class WorldSettings: SingleSettingCodable, Codable {
             "entityGrabColors": TileTypeMapSetting<SKColor> { ColorSetting() },
             "tileDescriptions": TileTypeMapSetting<String> { StringSetting() },
             "entityData": TileTypeMapSetting<Entity.Components> { Entity.Components.newSetting() },
-            "entitySpawnRadius": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(1...16) }
+            "entitySpawnRadius": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(1...16) },
+            "selectableTypes": DictionarySetting<TileBigType, [TileSmallType]> { CollectionSetting<[TileSmallType]> { TileSmallTypeSetting() } }
         ], optionalFields: [:])
     }
 

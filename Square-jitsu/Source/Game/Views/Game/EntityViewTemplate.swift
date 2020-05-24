@@ -7,4 +7,5 @@ import SpriteKit
 
 protocol EntityViewTemplate {
     func generateNode(entity: Entity) -> SKNode
+    func generatePreviewNode(size: CGSize) -> SKNode
 }

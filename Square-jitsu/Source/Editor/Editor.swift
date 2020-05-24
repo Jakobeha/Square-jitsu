@@ -3,28 +3,47 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 /// Editor model class
 class Editor: EditorToolsDelegate {
-    let tools: EditorTools = EditorTools()
     let editableWorld: EditableWorld
-    let editorCamera: FreeCamera = FreeCamera()
+    let tools: EditorTools
+    let editorCamera: Camera = Camera()
     var state: EditorState = .editing {
         didSet { _didChangeState.publish() }
     }
     let undoManager: UndoManager
 
+    var currentCamera: Camera {
+        switch state {
+        case .playing:
+            return editableWorld.world.playerCamera
+        case .editing:
+            return editorCamera
+        }
+    }
+
     private let _didChangeState: Publisher<()> = Publisher()
     var didChangeState: Observable<()> { Observable(publisher: _didChangeState) }
 
-    init(editableWorld: EditableWorld) {
+    /// Creates an editable world from the document and settings, and an editor for it
+    convenience init(worldDocument: WorldDocument, userSettings: UserSettings) throws {
+        let worldFile = try worldDocument.getFile()
+        let editableWorld = EditableWorld(worldFile: worldFile, userSettings: userSettings)
+
+        self.init(editableWorld: editableWorld, undoManager: worldDocument.undoManager)
+    }
+    
+    init(editableWorld: EditableWorld, undoManager: UndoManager) {
         self.editableWorld = editableWorld
-        self.undoManager = UndoManager()
+        tools = EditorTools(world: editableWorld.world)
+        self.undoManager = undoManager
+
         tools.delegate = self
-        tools.world = editableWorld.world
     }
 
+    //region actions
     func performMoveAction(selectedPositions: Set<WorldTilePos3D>, distanceMoved: RelativePos) {
         let positionsAfterMove = selectedPositions.map { selectedPosition in
             selectedPosition + distanceMoved
@@ -98,4 +117,43 @@ class Editor: EditorToolsDelegate {
             this.revertAction(originalTiles: nowOriginalTiles)
         }
     }
+    //endregion
+
+    //region touch forwarding
+    func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
+        switch state {
+        case .playing:
+            editableWorld.world.playerInput.tracker.touchesBegan(touches, with: event, container: container)
+        case .editing:
+            tools.touchesBegan(touches, with: event, camera: currentCamera, container: container)
+        }
+    }
+
+    func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
+        switch state {
+        case .playing:
+            editableWorld.world.playerInput.tracker.touchesMoved(touches, with: event, container: container)
+        case .editing:
+            tools.touchesMoved(touches, with: event, camera: currentCamera, container: container)
+        }
+    }
+
+    func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
+        switch state {
+        case .playing:
+            editableWorld.world.playerInput.tracker.touchesEnded(touches, with: event, container: container)
+        case .editing:
+            tools.touchesEnded(touches, with: event, camera: currentCamera, container: container)
+        }
+    }
+
+    func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
+        switch state {
+        case .playing:
+            editableWorld.world.playerInput.tracker.touchesCancelled(touches, with: event, container: container)
+        case .editing:
+            tools.touchesCancelled(touches, with: event, camera: currentCamera, container: container)
+        }
+    }
+    //endregion
 }

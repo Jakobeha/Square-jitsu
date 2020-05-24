@@ -21,6 +21,51 @@ struct WorldTilePos: Equatable, Hashable {
                 FBRange(center.y - distance + 1, -1).map { y in WorldTilePos(x: center.x + distance, y: y) }
     }
 
+    /// A path made up of squares covering each of the tiles, possibly optimized.
+    /// Returns nil if `positions` is empty
+    static func pathOfShapeMadeBy(positions: Set<WorldTilePos>) -> CGPath? {
+        if positions.isEmpty {
+            return nil
+        } else {
+            let path = CGMutablePath()
+
+            // TODO: Fancier path with no positions in-between
+            for position in positions {
+                path.addRect(position.cgBounds)
+            }
+
+            return path
+        }
+    }
+
+    private static func clustersFrom(positions: Set<WorldTilePos>) -> Set<Set<WorldTilePos>> {
+        var remainingPositions = positions
+        var clusters: Set<Set<WorldTilePos>> = []
+        while !remainingPositions.isEmpty {
+            var cluster: Set<WorldTilePos> = []
+
+            let sweepCenter = remainingPositions.removeFirst()
+            var curSweepDistance = 1
+            while true {
+                let nextSweep = sweepSquare(center: sweepCenter, distance: curSweepDistance).filter { position in
+                    remainingPositions.contains(position)
+                }
+
+                if nextSweep.isEmpty {
+                    break
+                }
+
+                remainingPositions.subtract(nextSweep)
+                cluster.formUnion(nextSweep)
+                curSweepDistance += 1
+            }
+
+            clusters.insert(cluster)
+        }
+
+        return clusters
+    }
+
     static func +(lhs: WorldTilePos, offset: RelativePos) -> WorldTilePos {
         WorldTilePos(x: lhs.x + offset.x, y: lhs.y + offset.y)
     }
@@ -42,6 +87,10 @@ struct WorldTilePos: Equatable, Hashable {
 
     var cgPoint: CGPoint {
         CGPoint(x: CGFloat(x), y: CGFloat(y))
+    }
+    
+    var cgBounds: CGRect {
+        CGRect(center: cgPoint, size: CGSize.unit)
     }
 
     var cornerAdjacents: DenseEnumMap<Corner, WorldTilePos> {

@@ -6,6 +6,19 @@
 import SpriteKit
 
 struct TouchPos {
-    var screenPos: CGPoint
-    var worldTilePos: WorldTilePos
+    static func getPosition(uiTouch: UITouch, container: SKScene) -> CGPoint {
+        var position = uiTouch.location(in: container.view!)
+        position.y *= -1
+        return position
+    }
+
+    let screenPos: CGPoint
+    let worldScreenPos: CGPoint
+    let worldTilePos: WorldTilePos
+
+    init(uiTouch: UITouch, camera: Camera, settings: WorldSettings, container: SKScene) {
+        screenPos = TouchPos.getPosition(uiTouch: uiTouch, container: container)
+        worldScreenPos = camera.transform(position: screenPos, settings: settings)
+        worldTilePos = WorldTilePos.closestTo(pos: worldScreenPos)
+    }
 }

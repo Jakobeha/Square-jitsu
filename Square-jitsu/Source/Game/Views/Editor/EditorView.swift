@@ -10,15 +10,17 @@ class EditorView: NodeView<SKNode> {
 
     private let worldCameraView: CameraView
 
-    init(editor: Editor) {
+    init(editor: Editor, sceneSize: CGSize) {
         self.editor = editor
+
         let editorToolsView = EditorToolsView(editor: editor)
+        let editorUiView = UXTopLevelView(child: editorToolsView, sceneSize: sceneSize)
 
         let worldView = WorldView(world: editor.editableWorld.world)
         worldCameraView = CameraView(camera: editor.editorCamera, child: worldView, settings: editor.editableWorld.world.settings)
 
         super.init(node: SKNode())
-        editorToolsView.placeIn(parent: node)
+        editorUiView.placeIn(parent: node)
         worldCameraView.placeIn(parent: node)
         // So that editor tools are on top of world
         worldCameraView.node.zPosition = -1
@@ -27,11 +29,6 @@ class EditorView: NodeView<SKNode> {
     }
 
     private func changeCamera() {
-        switch editor.state {
-        case .playing:
-            worldCameraView.camera = editor.editableWorld.world.playerCamera
-        case .editing:
-            worldCameraView.camera = editor.editorCamera
-        }
+        worldCameraView.camera = editor.currentCamera
     }
 }

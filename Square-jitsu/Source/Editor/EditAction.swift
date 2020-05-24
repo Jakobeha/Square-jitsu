@@ -31,15 +31,20 @@ enum EditAction {
     }
 
     var selectedPositions: Set<WorldTilePos3D> {
-        switch self {
-        case .place, .remove:
-            return []
-        case .select(let selectedPositions):
-            return selectedPositions
-        case .move(let selectedPositions, state: _):
-            return selectedPositions
-        case .inspect(let selectedPositions):
-            return selectedPositions
+        get {
+            switch self {
+            case .place, .remove:
+                return []
+            case .select(let selectedPositions):
+                return selectedPositions
+            case .move(let selectedPositions, state: _):
+                return selectedPositions
+            case .inspect(let selectedPositions):
+                return selectedPositions
+            }
+        }
+        set {
+            self = EditAction(mode: mode, selectedPositions: newValue)
         }
     }
 

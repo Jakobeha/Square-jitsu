@@ -17,36 +17,37 @@ class EditorController {
     }
 
     private static let testWorldFileName: String = "test"
-    private static let testWorldUrl: URL = Bundle.main.resourceURL!.appendingPathComponent("\(testWorldFileName).\(WorldFile.fileExtension)")
+    private static let testWorldUrl: URL = WorldFile.localUrl(baseName: testWorldFileName)
 
     private let userSettings: UserSettings
-    private let parent: SKNode
+    private let parent: SKScene
     private let updater: FixedUpdater = FixedUpdater()
     private(set) var loaded: EditorModelView? = nil
 
-    init(userSettings: UserSettings, parent: SKNode) {
+    init(userSettings: UserSettings, parent: SKScene) {
         self.userSettings = userSettings
         self.parent = parent
         updater.onTick = tick
     }
 
     func loadTestWorld() {
+        if !FileManager.default.fileExists(atPath: EditorController.testWorldUrl.path) {
+            FileManager.default.createFile(atPath: EditorController.testWorldUrl.path, contents: nil)
+        }
         try! load(worldUrl: EditorController.testWorldUrl)
     }
 
     func load(worldUrl: URL) throws {
-        try load(worldDocument: WorldDocument(fileURL: worldUrl))
+        let document = WorldDocument(fileURL: worldUrl)
+        document.open()
+        try load(worldDocument: document)
     }
 
     func load(worldDocument: WorldDocument) throws {
-        load(worldFile: try worldDocument.getFile())
-    }
-
-    func load(worldFile: WorldFile) {
         unload()
 
-        let editor = Editor(editableWorld: EditableWorld(worldFile: worldFile, userSettings: userSettings))
-        let editorView = EditorView(editor: editor)
+        let editor = try Editor(worldDocument: worldDocument, userSettings: userSettings)
+        let editorView = EditorView(editor: editor, sceneSize: parent.size)
         editorView.placeIn(parent: parent)
         loaded = EditorModelView(editor: editor, editorView: editorView)
 

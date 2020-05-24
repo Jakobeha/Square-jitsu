@@ -5,20 +5,22 @@
 
 import SpriteKit
 
-class NodeView<Node: SKNode>: View {
+class NodeView<Node: SKNode>: View, GenNodeView {
     let node: Node
+
+    final var node_gen: SKNode { node }
 
     init(node: Node) {
         self.node = node
         super.init()
     }
 
-    override func placeIn(parent: SKNode) {
+    final override func placeIn(parent: SKNode) {
         super.placeIn(parent: parent)
         parent.addChild(node)
     }
 
-    override func removeFromParent() {
+    final override func removeFromParent() {
         super.removeFromParent()
         node.removeFromParent()
     }

@@ -3,16 +3,29 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 class EditorTools {
-    private(set) var editSelectMode: EditSelectMode = .rect
-    private(set) var editSelection: EditSelection = EditSelection.none(mode: .rect)
-    var editAction: EditAction = .place
-    var tileMenu: TileMenu = TileMenu()
+    private(set) var editSelection: EditSelection = EditSelection.none(mode: .rect) {
+        didSet {
+            if oldValue.mode != editSelection.mode {
+                _didChangeEditSelectMode.publish()
+            }
+            _didChangeEditSelection.publish()
+        }
+    }
+    var editAction: EditAction = .place {
+        didSet {
+            if oldValue.mode != editAction.mode {
+                _didChangeEditActionMode.publish()
+            }
+            _didChangeEditAction.publish()
+        }
+    }
+    let tileMenu: TileMenu
     private var inspector: Inspector? = nil
     weak var delegate: EditorToolsDelegate? = nil
-    weak var world: ReadonlyWorld! = nil
+    let world: ReadonlyWorld
 
     var selectedTileType: TileType { tileMenu.selectedTileType }
     private var hasEditMoveState: Bool {
@@ -42,50 +55,123 @@ class EditorTools {
         }
     }
 
+    private let _didChangeEditSelectMode: Publisher<()> = Publisher()
+    private let _didChangeEditSelection: Publisher<()> = Publisher()
+    private let _didChangeEditActionMode: Publisher<()> = Publisher()
+    private let _didChangeEditAction: Publisher<()> = Publisher()
+    var didChangeEditSelectMode: Observable<()> { Observable(publisher: _didChangeEditSelectMode) }
+    var didChangeEditSelection: Observable<()> { Observable(publisher: _didChangeEditSelection) }
+    var didChangeEditActionMode: Observable<()> { Observable(publisher: _didChangeEditActionMode) }
+    var didChangeEditAction: Observable<()> { Observable(publisher: _didChangeEditAction) }
+
+    init(world: ReadonlyWorld) {
+        self.world = world
+        tileMenu = TileMenu(settings: world.settings)
+        tileMenu.didSelect.subscribe(observer: self) {
+            self.select(actionMode: .place)
+        }
+    }
+
     func select(selectMode: EditSelectMode) {
-        editSelectMode = selectMode
         editSelection = .none(mode: selectMode)
     }
 
     func select(actionMode: EditActionMode) {
+        if actionMode != .place {
+            tileMenu.openLayer = nil
+        }
+
         editAction = EditAction(mode: actionMode, selectedPositions: editAction.selectedPositions)
         editSelection = editSelection.endedOrCancelled
-        if editAction.mode == .inspect {
-            presentInspector()
+        performCurrentActionIfNecessaryOnSelect(selectedPositions: editAction.selectedPositions)
+    }
+    
+    //region touch input adapting
+    func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
+        if let touchPos = getTouchPos(touches: event?.allTouches, camera: camera, container: container) {
+            afterTouchDown(touchPos: touchPos)
+        } else {
+            afterCancel()
         }
     }
 
-    func afterTouchDown(touchPos: TouchPos, totalNumTouches: Int) {
+    func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
+        if let touchPos = getTouchPos(touches: event?.allTouches, camera: camera, container: container) {
+            afterTouchMove(touchPos: touchPos)
+        } else {
+            afterCancel()
+        }
+
+    }
+
+    func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
+        if let touchPos = getTouchPos(touches: event?.allTouches, camera: camera, container: container) {
+            afterTouchUp(touchPos: touchPos)
+        } else {
+            afterCancel()
+        }
+    }
+
+    func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
+        afterCancel()
+    }
+
+    /// If there is one touch, returns the corresponding TouchPos. Otherwise returns nil
+    private func getTouchPos(touches: Set<UITouch>?, camera: Camera, container: SKScene) -> TouchPos? {
+        if let touches = touches,
+           touches.count == 1 {
+            return TouchPos(uiTouch: touches.randomElement()!, camera: camera, settings: world.settings, container: container)
+        } else {
+            return nil
+        }
+    }
+    //endregion
+
+    //region touch handling
+    func afterTouchDown(touchPos: TouchPos) {
         if inspector != nil {
             dismissInspector()
+            editAction = .inspect(selectedPositions: [])
         }
 
-        if hasEditMoveState {
-            // Perform a move action (if totalNumTouches == 1)
-            editMoveState = totalNumTouches > 1 ? EditMoveState.notStarted : editMoveState.afterTouchDown(firstTouchPos: touchPos)
+        if editAction.mode.requiresSelection && editAction.selectedPositions.isEmpty {
+            // Move initiated with no selection, so we instant-select
+            let selectedPositions = editSelection.tryInstantSelect(touchPos: touchPos, world: world)
+            switch editAction.mode {
+            case .move:
+                // Perform a move with these tiles - select them and then perform a move
+                let nextEditMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
+                editAction = .move(selectedPositions: selectedPositions, state: nextEditMoveState)
+            case .inspect:
+                // Inspect these tiles
+                editAction = .inspect(selectedPositions: selectedPositions)
+            case .place, .remove, .select:
+                fatalError("unhandled move which requires selection: \(editAction.mode)")
+            }
         } else {
-            // Perform a select (or place or remove; if totalNumTouches == 1)
-            editSelection = totalNumTouches > 1 ? editSelection.endedOrCancelled : editSelection.afterTouchDown(firstTouchPos: touchPos)
+            if hasEditMoveState {
+                // Perform a move with the selected tiles
+                editMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
+            } else {
+                // Perform a select
+                editSelection = editSelection.afterTouchDown(firstTouchPos: touchPos)
+            }
         }
     }
 
-    func afterTouchMove(touchPos: TouchPos, totalNumTouches: Int) {
-        if totalNumTouches > 1 {
-            assert(editSelection.isNone && (!hasEditMoveState || !editMoveState.isStarted)) // also assume that there is no editMoveState
-        } else if hasEditMoveState && editMoveState.isStarted {
+    func afterTouchMove(touchPos: TouchPos) {
+        if hasEditMoveState && editMoveState.isStarted {
             editMoveState = editMoveState.afterTouchMove(nextTouchPos: touchPos)
         } else if !hasEditMoveState && !editSelection.isNone {
             editSelection = editSelection.afterTouchMove(nextTouchPos: touchPos)
         }
     }
 
-    func afterTouchUp(touchPos: TouchPos, totalNumTouches: Int) {
-        if totalNumTouches > 1 {
-            assert(editSelection.isNone && (!hasEditMoveState || !editMoveState.isStarted)) // also assume that there is no editMoveState
-        } else if hasEditMoveState && editMoveState.isStarted {
+    func afterTouchUp(touchPos: TouchPos) {
+        if hasEditMoveState && editMoveState.isStarted {
             let distanceMoved = editMoveState.distanceMovedAfterTouchUp(finalTouchPos: touchPos)
             delegate?.performMoveAction(selectedPositions: editAction.selectedPositions, distanceMoved: distanceMoved)
-            editMoveState = .notStarted
+            editAction = .move(selectedPositions: [], state: .notStarted)
         } else if !hasEditMoveState && !editSelection.isNone {
             let selectedPositions = editSelection.getSelectedPositionsAfterTouchUp(lastTouchPos: touchPos, world: world)
             performCurrentAction(selectedPositions: selectedPositions)
@@ -100,7 +186,9 @@ class EditorTools {
             editSelection = editSelection.endedOrCancelled
         }
     }
+    //endregion
 
+    //region actions
     func performCurrentAction(selectedPositions: Set<WorldTilePos3D>) {
         switch editAction {
         case .place:
@@ -115,12 +203,27 @@ class EditorTools {
         }
     }
 
-    func presentInspector() {
+    func performCurrentActionIfNecessaryOnSelect(selectedPositions: Set<WorldTilePos3D>) {
+        switch editAction.mode {
+        case .place:
+            delegate?.performPlaceAction(selectedPositions: selectedPositions, selectedTileType: selectedTileType)
+        case .remove:
+            delegate?.performRemoveAction(selectedPositions: selectedPositions)
+        case .inspect:
+            presentInspector(selectedPositions: selectedPositions)
+        case .move, .select:
+            // Not necessary on select
+            break
+        }
+    }
+
+    func presentInspector(selectedPositions: Set<WorldTilePos3D>) {
         assert(editAction.mode == EditActionMode.inspect)
-        inspector = Inspector(positions: editAction.selectedPositions, delegate: delegate, world: world)
+        inspector = Inspector(positions: selectedPositions, delegate: delegate, world: world)
     }
 
     func dismissInspector() {
         inspector = nil
     }
+    //endregion
 }

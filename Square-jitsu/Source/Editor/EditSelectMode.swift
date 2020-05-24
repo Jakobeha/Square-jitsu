@@ -9,5 +9,5 @@ enum EditSelectMode {
     case rect
     case precision
     case freeHand
-    case replace
+    case sameType
 }

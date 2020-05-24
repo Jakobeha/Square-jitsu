@@ -14,6 +14,12 @@ struct StaticEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
         SKSpriteNode(texture: texture)
     }
 
+    func generatePreviewNode(size: CGSize) -> SKNode {
+        let node = SKSpriteNode(texture: texture, size: size)
+        node.anchorPoint = UXSpriteAnchor
+        return node
+    }
+
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "texture": TextureSetting()
