@@ -10,4 +10,15 @@ enum EditSelectMode {
     case precision
     case freeHand
     case sameType
+
+    static let defaultInstantSelect: EditSelectMode = .sameType
+
+    var canInstantSelect: Bool {
+        switch self {
+        case .precision, .sameType:
+            return true
+        case .rect, .freeHand:
+            return false
+        }
+    }
 }

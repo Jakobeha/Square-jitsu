@@ -6,8 +6,16 @@
 import Foundation
 
 struct WorldTilePos3D: Equatable, Hashable {
+    static let zero: WorldTilePos3D = WorldTilePos3D(pos: WorldTilePos.zero, layer: 0)
+
     static func +(lhs: WorldTilePos3D, offset: RelativePos) -> WorldTilePos3D {
         WorldTilePos3D(pos: lhs.pos + offset, layer: lhs.layer)
+    }
+
+    static func groupByChunkPositions<TilePosCollection: Collection>(_ worldPositions: TilePosCollection) -> [WorldChunkPos:Set<ChunkTilePos3D>] where TilePosCollection.Element == WorldTilePos3D {
+        (Dictionary(grouping: worldPositions) { pos3D in pos3D.pos.worldChunkPos }).mapValues { positionsAtWorldChunkPos in
+            Set(positionsAtWorldChunkPos.map { pos3D in pos3D.chunkTilePos3D })
+        }
     }
 
     let pos: WorldTilePos

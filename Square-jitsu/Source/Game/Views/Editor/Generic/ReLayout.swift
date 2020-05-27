@@ -5,20 +5,18 @@
 
 import SpriteKit
 
-class ReLayout: UXWrapperView, UXView {
-    let width: CGFloat?
-    let height: CGFloat?
+struct ReLayout: UXView {
+    private var wrapped: UXView
+    private let width: CGFloat?
+    private let height: CGFloat?
 
     init(_ wrapped: UXView, width: CGFloat? = nil, height: CGFloat? = nil) {
+        self.wrapped = wrapped
         self.width = width
         self.height = height
-        super.init(wrapped)
     }
 
-    var topLeft: CGPoint {
-        get { wrapped.topLeft }
-        set { wrapped.topLeft = newValue }
-    }
+    var node: SKNode { wrapped.node }
 
     var size: CGSize {
         get {
@@ -31,5 +29,9 @@ class ReLayout: UXWrapperView, UXView {
             }
             return size
         }
+    }
+
+    mutating func set(sceneSize: CGSize) {
+        wrapped.set(sceneSize: sceneSize)
     }
 }

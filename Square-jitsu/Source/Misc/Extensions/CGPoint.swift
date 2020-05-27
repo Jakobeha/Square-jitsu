@@ -38,13 +38,27 @@ extension CGPoint {
         lhs.y -= rhs.y
     }
 
+    static func -=(lhs: inout CGPoint, rhs: CGSize) {
+        lhs.x -= rhs.width
+        lhs.y -= rhs.height
+    }
+
     static func *(lhs: CGPoint, scale: CGFloat) -> CGPoint {
         CGPoint(x: lhs.x * scale, y: lhs.y * scale)
+    }
+
+    static func *(lhs: CGPoint, scale: CGSize) -> CGPoint {
+        CGPoint(x: lhs.x * scale.width, y: lhs.y * scale.height)
     }
 
     static func *=(lhs: inout CGPoint, scale: CGFloat) {
         lhs.x *= scale
         lhs.y *= scale
+    }
+
+    static func *=(lhs: inout CGPoint, scale: CGSize) {
+        lhs.x *= scale.width
+        lhs.y *= scale.height
     }
 
     static func /(lhs: CGPoint, scale: CGFloat) -> CGPoint {
@@ -54,6 +68,15 @@ extension CGPoint {
     static func /=(lhs: inout CGPoint, scale: CGFloat) {
         lhs.x /= scale
         lhs.y /= scale
+    }
+
+    static func %(lhs: CGPoint, modulo: CGFloat) -> CGPoint {
+        CGPoint(x: lhs.x % modulo, y: lhs.y % modulo)
+    }
+
+    static func %=(lhs: inout CGPoint, modulo: CGFloat) {
+        lhs.x %= modulo
+        lhs.y %= modulo
     }
 
     static func dot(_ lhs: CGPoint, _ rhs: CGPoint) -> CGFloat {

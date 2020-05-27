@@ -15,8 +15,8 @@ class WorldFile: CustomStringConvertible {
         localFileDirectory.appendingPathComponent("\(baseName).\(fileExtension)")
     }
 
-    let url: URL
-    private let handle: FileHandle
+    var url: URL
+    private var handle: FileHandle
     private let isMutable: Bool
     private let dispatchQueue: DispatchQueue
     private var loaded: SerialWorld = SerialWorld()
@@ -58,8 +58,17 @@ class WorldFile: CustomStringConvertible {
         loadFromDisk()
     }
 
+    func set(url: URL) throws {
+        if self.url != url {
+            // TODO: Make sure we loaded everything once we incrementally load
+            self.url = url
+            try closeHandle()
+            handle = isMutable ? try FileHandle(forUpdating: url) : try FileHandle(forReadingFrom: url)
+        }
+    }
+
     func readChunkAt(pos: WorldChunkPos) -> ReadonlyChunk {
-        loaded.chunks[pos] ?? Chunk()
+        loaded.chunks[pos] ?? backgroundLoader.loadChunk(pos: pos)
     }
 
     subscript(pos3D: WorldTilePos3D) -> TileType {
@@ -104,6 +113,14 @@ class WorldFile: CustomStringConvertible {
         // In the future we would read loaded chunks first,
         // then read asynchronously and only block if an unloaded chunk is requested
         do {
+            try loadFromDiskSynchronously()
+        } catch {
+            raiseAsync(error: error)
+        }
+    }
+
+    private func loadFromDiskSynchronously() throws {
+        do {
             if #available(iOS 13.0, *) {
                 if let loadedData = try handle.readToEnd(),
                    !loadedData.isEmpty {
@@ -116,32 +133,49 @@ class WorldFile: CustomStringConvertible {
                 }
             }
         } catch {
-            _didGetError.publish(WorldFileSyncError(action: "reading", error: error))
+            throw WorldFileSyncError(action: "reading", error: error)
         }
     }
 
     func saveToDisk() {
+        dispatchQueue.async {
+            do {
+                try self.saveToDiskSynchronously()
+            } catch {
+                DispatchQueue.main.async {
+                    self.raiseAsync(error: error)
+                }
+            }
+        }
+    }
+
+    func saveToDiskSynchronously() throws {
         assert(isMutable, "mutable operation performed on immutable world file")
         do {
             let loadedData = try loaded.encode()
-            dispatchQueue.async {
-                do {
-                    if #available(iOS 13.0, *) {
-                        try self.handle.truncate(atOffset: 0)
-                        try self.handle.write(contentsOf: loadedData)
-                    } else {
-                        self.handle.truncateFile(atOffset: 0)
-                        self.handle.write(loadedData)
-                    }
-                } catch {
-                    DispatchQueue.main.async {
-                        self._didGetError.publish(WorldFileSyncError(action: "writing", error: error))
-                    }
-                }
+            if #available(iOS 13.0, *) {
+                try handle.truncate(atOffset: 0)
+                try handle.write(contentsOf: loadedData)
+            } else {
+                handle.truncateFile(atOffset: 0)
+                handle.write(loadedData)
             }
         } catch {
-            self._didGetError.publish(WorldFileSyncError(action: "writing", error: error))
+            throw WorldFileSyncError(action: "writing", error: error)
         }
+    }
+
+    private func closeHandle() throws {
+        if #available(iOS 13.0, *) {
+            try handle.close()
+        } else {
+            handle.closeFile()
+        }
+    }
+
+    private func raiseAsync(error: Error) {
+        Logger.warn("\(self) got error: \(error)")
+        _didGetError.publish(error)
     }
 
     var description: String {

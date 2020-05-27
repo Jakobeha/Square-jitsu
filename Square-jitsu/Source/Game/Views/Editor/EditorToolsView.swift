@@ -8,43 +8,54 @@ import SpriteKit
 class EditorToolsView: UXCompoundView {
     private let editor: Editor
 
-    private let editorToolsTopView: EditorToolsTopView
-    private let editorToolsSideView: EditorToolsSideView
     private let editSelectionView: EditSelectionView
+    private let actionView: EditorToolsActionView
+    private let selectModeView: EditorToolsSelectModeView
+    private let gameplayControlView: GameplayControlView
+    private let undoView: UndoView
+    private let gridView: GridView
 
-    init(editor: Editor) {
+    init(editor: Editor, sceneSize: CGSize) {
         self.editor = editor
-        editorToolsTopView = EditorToolsTopView(editorTools: editor.tools)
-        editorToolsSideView = EditorToolsSideView(editorTools: editor.tools, undoManager: editor.undoManager)
+
         editSelectionView = EditSelectionView(editor: editor)
+        actionView = EditorToolsActionView(editorTools: editor.tools, settings: editor.editableWorld.world.settings)
+        selectModeView = EditorToolsSelectModeView(editorTools: editor.tools)
+        gameplayControlView = GameplayControlView(editor: editor)
+        undoView = UndoView(undoManager: editor.undoManager)
+        gridView = GridView(camera: editor.editorCamera, settings: editor.editableWorld.world.settings)
+        super.init()
+
+        editor.didChangeState.subscribe(observer: self, handler: regenerateBody)
     }
     
     override func newBody() -> UXView {
         switch editor.state {
         case .playing:
-            return Button(textureName: "UI/Pause") {
-                self.editor.state = .editing
-                self.regenerateBody()
-            }
+            return gameplayControlView
         case .editing:
             return ZStack([
                 editSelectionView,
-                HStack([
-                    VStack([
-                        Button(textureName: "UI/Play") {
-                            self.editor.state = .playing
-                            self.regenerateBody()
-                        },
-                        editorToolsSideView,
-                        Button(textureName: "UI/Save", size: .small) { 
-                            self.editor.editableWorld.saveToDisk()
-                        },
-                        Button(textureName: "UI/Quit", size: .small) { 
-                            print("TODO") 
-                        }
+                VStack([
+                    HStack([
+                        gameplayControlView,
+                        VStack([
+                            actionView,
+                            selectModeView,
+                            undoView
+                        ])
                     ]),
-                    editorToolsTopView
-                ])
+                    Button(textureName: "UI/Settings", size: .small) {
+                        print("TODO")
+                    },
+                    Button(textureName: "UI/Save", size: .small) { 
+                        self.editor.editableWorld.saveToDisk()
+                    },
+                    Button(textureName: "UI/Quit", size: .small) { 
+                        print("TODO") 
+                    }
+                ]),
+                gridView
             ])
         }
     }

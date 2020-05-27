@@ -6,7 +6,7 @@
 import Foundation
 
 protocol EditorToolsDelegate: AnyObject {
-    func performPlaceAction(selectedPositions: Set<WorldTilePos3D>, selectedTileType: TileType)
+    func performPlaceAction(selectedPositions2D: Set<WorldTilePos>, selectedTileType: TileType)
     func performRemoveAction(selectedPositions: Set<WorldTilePos3D>)
     func performMoveAction(selectedPositions: Set<WorldTilePos3D>, distanceMoved: RelativePos)
 }

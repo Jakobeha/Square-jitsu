@@ -20,9 +20,10 @@ class WorldDocument: UIDocument {
         if _file == nil {
             Logger.warn("File written before loaded")
             _file = try WorldFile(url: url, isMutable: true)
+        } else {
+            try _file!.set(url: url)
         }
-        assert(_file!.url == url, "document's file not read from the url \(url)")
-        _file!.saveToDisk()
+        try _file!.saveToDiskSynchronously()
     }
 
     func getFile() throws -> WorldFile {

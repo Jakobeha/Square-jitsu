@@ -31,16 +31,30 @@ class EditorController {
     }
 
     func loadTestWorld() {
-        if !FileManager.default.fileExists(atPath: EditorController.testWorldUrl.path) {
-            FileManager.default.createFile(atPath: EditorController.testWorldUrl.path, contents: nil)
+        load(worldUrl: EditorController.testWorldUrl) { result in
+            switch result {
+            case .success(()):
+                Logger.log("Loaded test world")
+            case .failure(let error):
+                fatalError("Error loading test world: \(error)")
+            }
         }
-        try! load(worldUrl: EditorController.testWorldUrl)
     }
 
-    func load(worldUrl: URL) throws {
+    func load(worldUrl: URL, completionHandler: @escaping (Result<(), Error>) -> ()) {
         let document = WorldDocument(fileURL: worldUrl)
-        document.open()
-        try load(worldDocument: document)
+        document.open { succeeded in
+            if succeeded {
+                do {
+                    try self.load(worldDocument: document)
+                    completionHandler(.success(()))
+                } catch {
+                    completionHandler(.failure(error))
+                }
+            } else {
+                completionHandler(.failure(WorldFileSyncError(action: "reading", error: nil)))
+            }
+        }
     }
 
     func load(worldDocument: WorldDocument) throws {

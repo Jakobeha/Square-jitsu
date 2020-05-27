@@ -21,6 +21,7 @@ class EditableWorld {
         self.worldFile = worldFile
     }
 
+    //region tile access and mutation
     subscript(pos3D: WorldTilePos3D) -> TileType {
         get { world[pos3D] }
         set {
@@ -43,6 +44,7 @@ class EditableWorld {
         world.set(pos3D: pos3D, to: TileType.air, persistInGame: false)
         worldFile.destroyTile(pos3D: pos3D)
     }
+    //endregion
 
     func saveToDisk() {
         worldFile.saveToDisk()

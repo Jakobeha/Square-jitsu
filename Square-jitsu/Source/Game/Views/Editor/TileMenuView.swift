@@ -52,7 +52,9 @@ class TileMenuView: UXCompoundView {
 
     private func newSmallTypeView(openLayer: TileLayer) -> UXView {
         let types = tileMenu.smallSubmenuLayout![tileMenu.selectedBigType]!
-        let xOffsetInTiles = xOffsetInTilesForSmallTypeMenu(openLayer: openLayer)
+        let xOffsetInTiles =
+                xOffsetInTilesForBigTypeMenu(openLayer: openLayer) +
+                xOffsetInTilesForSmallTypeMenu(openLayer: openLayer)
         let xOffsetInPoints = CGFloat(xOffsetInTiles) * ButtonSize.tile.sideLength
         return RePosition(
             HStack(types.map { tileType in
@@ -66,14 +68,13 @@ class TileMenuView: UXCompoundView {
 
     private func xOffsetInTilesForBigTypeMenu(openLayer: TileLayer) -> Int {
         let types = tileMenu.bigSubmenuLayout[openLayer]!
-        let bigTypeIndex = [TileLayer](tileMenu.selectedTileTypesPerLayer.keys).firstIndex(of: openLayer)!
-        return min(0, bigTypeIndex - types.count)
+        let layerIndex = tileMenu.layerSubmenuLayout.firstIndex(of: openLayer)!
+        return max(0, layerIndex + 1 - types.count)
     }
 
     private func xOffsetInTilesForSmallTypeMenu(openLayer: TileLayer) -> Int {
-        let smallTypes = tileMenu.smallSubmenuLayout![tileMenu.selectedBigType]!
-        let bigTypes = tileMenu.bigSubmenuLayout[openLayer]!
-        let bigTypeIndex = bigTypes.firstIndex(of: tileMenu.selectedTileType)!
-        return min(0, bigTypeIndex - smallTypes.count)
+        let types = tileMenu.smallSubmenuLayout![tileMenu.selectedBigType]!
+        let bigTypeIndex = tileMenu.bigSubmenuLayout[openLayer]!.firstIndex(of: tileMenu.selectedTileType)!
+        return max(0, bigTypeIndex + 1 - types.count)
     }
 }

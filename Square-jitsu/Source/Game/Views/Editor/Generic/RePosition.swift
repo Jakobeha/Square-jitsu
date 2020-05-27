@@ -5,23 +5,27 @@
 
 import SpriteKit
 
-class RePosition: UXWrapperView, UXView {
+struct RePosition: UXView {
+    private var wrapped: UXView
+
     init(_ wrapped: UXView, left: CGFloat? = nil, top: CGFloat? = nil) {
-        super.init(wrapped)
+        self.wrapped = wrapped
+
         if let left = left {
-            wrapped.topLeft.x = left
+            topLeft.x = left
         }
         if let top = top {
-            wrapped.topLeft.y = top
+            topLeft.y = top
         }
     }
 
-    var topLeft: CGPoint {
-        get { wrapped.topLeft }
-        set { wrapped.topLeft = newValue }
-    }
+    var node: SKNode { wrapped.node }
 
     var size: CGSize {
         get { wrapped.size }
+    }
+
+    mutating func set(sceneSize: CGSize) {
+        wrapped.set(sceneSize: sceneSize)
     }
 }

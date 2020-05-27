@@ -5,11 +5,9 @@
 
 import SpriteKit
 
-class NodeView<Node: SKNode>: View, GenNodeView {
+class NodeView<Node: SKNode>: View {
     let node: Node
-
-    final var node_gen: SKNode { node }
-
+    
     init(node: Node) {
         self.node = node
         super.init()

@@ -14,5 +14,9 @@ class Logger {
         print("Warning: ", item)
     }
 
+    static func log(_ item: Any) {
+        print(item)
+    }
+
     private init() {}
 }

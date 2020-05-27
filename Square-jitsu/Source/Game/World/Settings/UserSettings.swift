@@ -9,4 +9,6 @@ import SpriteKit
 class UserSettings {
     var minPrimarySwipeSpeed: CGFloat = 36
     var minPrimarySwipeDistance: CGFloat = 72
+
+    var panMultiplierFromScreenOffsetToWorldOffset: CGFloat = 4
 }

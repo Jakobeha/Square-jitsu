@@ -53,6 +53,12 @@
         ]
       }
     ],
+    "player": [
+      {
+        "type": "static",
+        "texture": "Player"
+      }
+    ],
     "enemy": [
       {
         "type": "static",

@@ -17,6 +17,8 @@ struct DenseEnumMap<Key: CaseIterable & RawRepresentable, Value>: Sequence where
         Key.allCases.map { key in (key: key, value: self[key] ) }
     }
 
+    var values: [Value] { backing }
+
     subscript(key: Key) -> Value {
         get {
             backing[key.rawValue.toInt]

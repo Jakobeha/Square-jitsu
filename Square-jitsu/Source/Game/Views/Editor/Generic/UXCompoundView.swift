@@ -5,22 +5,18 @@
 
 import SpriteKit
 
-class UXCompoundView: View, UXView {
-    private var body: UXView! = nil {
-        didSet {
-            // Otherwise is first set
-            if oldValue != nil {
-                body.topLeft = oldValue.topLeft
-                if let oldParent = oldValue.parent {
-                    oldValue.removeFromParent()
-                    body.placeIn(parent: oldParent)
-                }
-            }
-        }
+class UXCompoundView: UXView {
+    private var body: UXView! = nil
+
+    final var node: SKNode { body.node }
+
+    final var size: CGSize { body.size }
+
+    private var sceneSize: CGSize = CGSize.zero {
+        didSet { body.set(sceneSize: sceneSize) }
     }
 
-    override init() {
-        super.init()
+    init() {
         body = newBody()
     }
 
@@ -28,26 +24,22 @@ class UXCompoundView: View, UXView {
         fatalError("newBody is abstract - must subclass and override")
     }
 
-    var topLeft: CGPoint {
-        get { body.topLeft }
-        set { body.topLeft = newValue }
-    }
-
-    var size: CGSize {
-        body.size
-    }
-
     final func regenerateBody() {
+        let oldTopLeft = body.topLeft
+        let oldZPosition = body.zPosition
+        let oldParent = body.node.parent
+
+        // body may already be set
+        body.set(parent: nil)
         body = newBody()
+
+        body.topLeft = oldTopLeft
+        body.zPosition = oldZPosition
+        body.set(parent: oldParent)
+        body.set(sceneSize: sceneSize)
     }
 
-    final override func placeIn(parent: SKNode) {
-        super.placeIn(parent: parent)
-        body.placeIn(parent: parent)
-    }
-
-    final override func removeFromParent() {
-        super.removeFromParent()
-        body.removeFromParent()
+    final func set(sceneSize: CGSize) {
+        self.sceneSize = sceneSize
     }
 }

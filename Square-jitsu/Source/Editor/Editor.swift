@@ -24,6 +24,8 @@ class Editor: EditorToolsDelegate {
         }
     }
 
+    var settings: WorldSettings { editableWorld.world.settings }
+
     private let _didChangeState: Publisher<()> = Publisher()
     var didChangeState: Observable<()> { Observable(publisher: _didChangeState) }
 
@@ -32,18 +34,18 @@ class Editor: EditorToolsDelegate {
         let worldFile = try worldDocument.getFile()
         let editableWorld = EditableWorld(worldFile: worldFile, userSettings: userSettings)
 
-        self.init(editableWorld: editableWorld, undoManager: worldDocument.undoManager)
+        self.init(editableWorld: editableWorld, undoManager: worldDocument.undoManager, userSettings: userSettings)
     }
     
-    init(editableWorld: EditableWorld, undoManager: UndoManager) {
+    init(editableWorld: EditableWorld, undoManager: UndoManager, userSettings: UserSettings) {
         self.editableWorld = editableWorld
-        tools = EditorTools(world: editableWorld.world)
+        tools = EditorTools(world: editableWorld.world, editorCamera: editorCamera, userSettings: userSettings)
         self.undoManager = undoManager
 
         tools.delegate = self
     }
 
-    //region actions
+    // region actions
     func performMoveAction(selectedPositions: Set<WorldTilePos3D>, distanceMoved: RelativePos) {
         let positionsAfterMove = selectedPositions.map { selectedPosition in
             selectedPosition + distanceMoved
@@ -73,13 +75,20 @@ class Editor: EditorToolsDelegate {
         }
     }
 
-    func performPlaceAction(selectedPositions: Set<WorldTilePos3D>, selectedTileType: TileType) {
-        let originalTiles = selectedPositions.map { position in
-            TileAtPosition(type: editableWorld[position], position: position)
+    func performPlaceAction(selectedPositions2D: Set<WorldTilePos>, selectedTileType: TileType) {
+        // Not all the original tiles will definitely be changed, since we use 2D positions,
+        // but all of them could be changed, so we reuse originalTiles
+        let possibleChangedPositions = selectedPositions2D.flatMap { pos2D in
+            (0..<Chunk.numLayers).map { layer in
+                WorldTilePos3D(pos: pos2D, layer: layer)
+            }
+        }
+        let originalTiles = possibleChangedPositions.map { pos3D in
+            TileAtPosition(type: editableWorld[pos3D], position: pos3D)
         }
 
-        for position in selectedPositions {
-            editableWorld[position] = selectedTileType
+        for position2D in selectedPositions2D {
+            editableWorld.forceCreateTile(pos: position2D, type: selectedTileType)
         }
 
         undoManager.registerUndo(withTarget: self) { this in
@@ -117,9 +126,9 @@ class Editor: EditorToolsDelegate {
             this.revertAction(originalTiles: nowOriginalTiles)
         }
     }
-    //endregion
+    // endregion
 
-    //region touch forwarding
+    // region touch forwarding
     func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
         switch state {
         case .playing:
@@ -155,5 +164,5 @@ class Editor: EditorToolsDelegate {
             tools.touchesCancelled(touches, with: event, camera: currentCamera, container: container)
         }
     }
-    //endregion
+    // endregion
 }

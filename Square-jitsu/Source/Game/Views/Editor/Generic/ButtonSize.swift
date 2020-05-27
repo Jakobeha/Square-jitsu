@@ -15,9 +15,9 @@ enum ButtonSize {
         case .medium:
             return 64
         case .small:
-            return 32
+            return 48
         case .tile:
-            return 32
+            return 48
         }
     }
 

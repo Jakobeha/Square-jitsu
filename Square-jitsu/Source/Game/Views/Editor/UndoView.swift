@@ -13,6 +13,30 @@ class UndoView: UXCompoundView {
 
     init(undoManager: UndoManager) {
         self.undoManager = undoManager
+        super.init()
+        // We use objc selectors so the observer is automatically removed when this is deallocated
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(regenerateBodyFromObjc),
+            name: .NSUndoManagerDidCloseUndoGroup,
+            object: self.undoManager
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(regenerateBodyFromObjc),
+            name: .NSUndoManagerDidUndoChange,
+            object: self.undoManager
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(regenerateBodyFromObjc),
+            name: .NSUndoManagerDidRedoChange,
+            object: self.undoManager
+        )
+    }
+
+    @objc private func regenerateBodyFromObjc() {
+        regenerateBody()
     }
 
     override func newBody() -> UXView {

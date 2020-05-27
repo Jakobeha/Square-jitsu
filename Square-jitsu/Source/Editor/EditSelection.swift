@@ -36,18 +36,18 @@ enum EditSelection {
         }
     }
 
-    func tryInstantSelect(touchPos: TouchPos, world: ReadonlyWorld) -> Set<WorldTilePos3D> {
-        EditSelection.tryInstantSelect(mode: mode, touchPos: touchPos, world: world)
+    func instantSelect(touchPos: TouchPos, world: ReadonlyWorld) -> Set<WorldTilePos3D> {
+        EditSelection.instantSelect(mode: mode, touchPos: touchPos, world: world)
     }
 
-    private static func tryInstantSelect(mode: EditSelectMode, touchPos: TouchPos, world: ReadonlyWorld) -> Set<WorldTilePos3D> {
+    private static func instantSelect(mode: EditSelectMode, touchPos: TouchPos, world: ReadonlyWorld) -> Set<WorldTilePos3D> {
         switch mode {
         case .precision:
             return precisionSelection(touchPos: touchPos, world: world)
         case .sameType:
             return sameTypeSelection(touchPos: touchPos, world: world)
         case .rect, .freeHand:
-            return []
+            fatalError("illegal state - tried to instant select but the select mode doesn't support it")
         }
     }
 
@@ -90,7 +90,7 @@ enum EditSelection {
         }
     }
 
-    func getSelectedPositionsAfterTouchUp(lastTouchPos: TouchPos, world: ReadonlyWorld) -> Set<WorldTilePos3D> {
+    func getSelectedPositionsWithTilesAfterTouchUp(lastTouchPos: TouchPos, world: ReadonlyWorld) -> Set<WorldTilePos3D> {
         let lastSelection = afterTouchMove(nextTouchPos: lastTouchPos)
         return lastSelection.getSelectedPositions(world: world)
     }
@@ -120,24 +120,20 @@ enum EditSelection {
                 let pos = WorldTilePos(x: x, y: y)
                 return (0..<Chunk.numLayers).map { layer in WorldTilePos3D(pos: pos, layer: layer) }
             }
-        }.filter { pos3D in world[pos3D] != TileType.air })
+        })
     }
 
     private static func precisionSelection(touchPos: TouchPos, world: ReadonlyWorld) -> Set<WorldTilePos3D> {
         let tilePos = touchPos.worldTilePos
         let tileLayer = TileType.indexOfHighestLayerIn(array: world[tilePos])
         let tilePos3D = WorldTilePos3D(pos: tilePos, layer: tileLayer)
-        if world[tilePos3D] == TileType.air {
-            return []
-        } else {
-            return [tilePos3D]
-        }
+        return [tilePos3D]
     }
 
     private static func freeHandSelection(selectedPositions: Set<WorldTilePos>, world: ReadonlyWorld) -> Set<WorldTilePos3D> {
         Set(selectedPositions.flatMap { pos in
             (0..<Chunk.numLayers).map { layer in WorldTilePos3D(pos: pos, layer: layer) }
-        }.filter { pos3D in world[pos3D] != TileType.air })
+        })
     }
 
     private static func sameTypeSelection(touchPos: TouchPos, world: ReadonlyWorld) -> Set<WorldTilePos3D> {
@@ -147,7 +143,7 @@ enum EditSelection {
         if world[tilePos3D] == TileType.air {
             return []
         } else {
-            return world.adjacentsWithSameTypeAsTileAt(pos3D: tilePos3D)
+            return world.sideAdjacentsWithSameTypeAsTileAt(pos3D: tilePos3D)
         }
     }
 }

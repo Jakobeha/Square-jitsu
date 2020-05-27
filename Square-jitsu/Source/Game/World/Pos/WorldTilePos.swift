@@ -6,6 +6,8 @@
 import SpriteKit
 
 struct WorldTilePos: Equatable, Hashable {
+    static let zero: WorldTilePos = WorldTilePos(x: 0, y: 0)
+
     static func closestTo(pos: CGPoint) -> WorldTilePos {
         WorldTilePos(x: Int(pos.x.rounded()), y: Int(pos.y.rounded()))
     }
@@ -22,8 +24,9 @@ struct WorldTilePos: Equatable, Hashable {
     }
 
     /// A path made up of squares covering each of the tiles, possibly optimized.
-    /// Returns nil if `positions` is empty
-    static func pathOfShapeMadeBy(positions: Set<WorldTilePos>) -> CGPath? {
+    /// Returns nil if `positions` is empty.
+    /// `scale` is provided because this is used for views that want paths in screen coordinates
+    static func pathOfShapeMadeBy(positions: Set<WorldTilePos>, scale: CGFloat, offset: CGPoint) -> CGPath? {
         if positions.isEmpty {
             return nil
         } else {
@@ -31,7 +34,7 @@ struct WorldTilePos: Equatable, Hashable {
 
             // TODO: Fancier path with no positions in-between
             for position in positions {
-                path.addRect(position.cgBounds)
+                path.addRect(position.cgBounds.offsetBy(vector: offset).scaleCoordsBy(scale: scale))
             }
 
             return path
@@ -64,6 +67,12 @@ struct WorldTilePos: Equatable, Hashable {
         }
 
         return clusters
+    }
+
+    static func groupByChunkPositions<TilePosCollection: Collection>(_ worldPositions: TilePosCollection) -> [WorldChunkPos:Set<ChunkTilePos>] where TilePosCollection.Element == WorldTilePos {
+        (Dictionary(grouping: worldPositions) { pos in pos.worldChunkPos }).mapValues { positionsAtWorldChunkPos in
+            Set(positionsAtWorldChunkPos.map { pos in pos.chunkTilePos })
+        }
     }
 
     static func +(lhs: WorldTilePos, offset: RelativePos) -> WorldTilePos {

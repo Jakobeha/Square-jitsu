@@ -14,14 +14,21 @@ class Chunk: ReadonlyChunk, Codable {
 
     private var tiles: ChunkMatrix<TileType> = ChunkMatrix()
     var tileMetadatas: [ChunkTilePos3D:TileMetadata] = [:]
+    private var hiddenTiles: Set<ChunkTilePos3D> = []
 
-    private let _didRemoveTile: Publisher<(pos3D: ChunkTilePos3D, oldType: TileType)> = Publisher()
-    private let _didPlaceTile: Publisher<ChunkTilePos3D> = Publisher()
-    var didRemoveTile: Observable<(pos3D: ChunkTilePos3D, oldType: TileType)> { Observable(publisher: _didRemoveTile) }
-    var didPlaceTile: Observable<ChunkTilePos3D> { Observable(publisher: _didPlaceTile) }
+    private let _didChangeTile: Publisher<(pos3D: ChunkTilePos3D, oldType: TileType)> = Publisher()
+    // Exposed for the world class, which signals events through the chunk for views
+    let _didAdjacentTileChange: Publisher<ChunkTilePos> = Publisher()
+    let _didHideTile: Publisher<ChunkTilePos3D> = Publisher()
+    let _didShowTile: Publisher<ChunkTilePos3D> = Publisher()
+    var didChangeTile: Observable<(pos3D: ChunkTilePos3D, oldType: TileType)> { Observable(publisher: _didChangeTile) }
+    var didAdjacentTileChange: Observable<ChunkTilePos> { Observable(publisher: _didAdjacentTileChange) }
+    var didHideTile: Observable<ChunkTilePos3D> { Observable(publisher: _didHideTile) }
+    var didShowTile: Observable<ChunkTilePos3D> { Observable(publisher: _didShowTile) }
 
     init() {}
 
+    // region basic tile access and mutation
     subscript(_ pos: ChunkTilePos) -> [TileType] {
         tiles[pos]
     }
@@ -41,9 +48,6 @@ class Chunk: ReadonlyChunk, Codable {
                 tileMetadatas[pos3D] = nil
             }
 
-            // Notify observers of removal
-            _didRemoveTile.publish((pos3D: pos3D, oldType: oldType))
-
             // Place metadata if necessary
             if metadataIsDifferent {
                 if let newMetadata = newValue.bigType.newMetadata() {
@@ -51,8 +55,8 @@ class Chunk: ReadonlyChunk, Codable {
                 }
             }
 
-            // Notify observers of placement
-            _didPlaceTile.publish(pos3D)
+            // Notify observers of change
+            _didChangeTile.publish((pos3D: pos3D, oldType: oldType))
         }
     }
 
@@ -63,19 +67,6 @@ class Chunk: ReadonlyChunk, Codable {
                 return (layer: layer, tileMetadata: tileMetadata)
             } else {
                 return nil
-            }
-        }
-    }
-
-    /// Places all tiles on the other chunk, overwriting its tiles
-    func placeOnTopOf(otherChunk: Chunk) {
-        for chunkTilePos in ChunkTilePos.allCases {
-            let tileTypes = self[chunkTilePos].filter { tileType in tileType != TileType.air }
-            for tileType in tileTypes {
-                otherChunk.removeNonOverlappingTiles(pos: chunkTilePos, type: tileType)
-            }
-            for tileType in tileTypes {
-                otherChunk.placeTile(pos: chunkTilePos, type: tileType)
             }
         }
     }
@@ -108,7 +99,7 @@ class Chunk: ReadonlyChunk, Codable {
         for layer in 0..<Chunk.numLayers {
             let oldType = tilesAtPos[layer]
             let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
-            _didRemoveTile.publish((pos3D: pos3D, oldType: oldType))
+            _didChangeTile.publish((pos3D: pos3D, oldType: oldType))
         }
     }
 
@@ -133,7 +124,7 @@ class Chunk: ReadonlyChunk, Codable {
         tiles.remove(at: pos3D)
 
         // Notify observers
-        _didRemoveTile.publish((pos3D: pos3D, oldType: tileType))
+        _didChangeTile.publish((pos3D: pos3D, oldType: tileType))
     }
 
     /// - Returns: The layer of the tile which was placed
@@ -146,13 +137,37 @@ class Chunk: ReadonlyChunk, Codable {
         }
 
         // Notify observers
-        _didPlaceTile.publish(pos3D)
+        _didChangeTile.publish((pos3D: pos3D, oldType: TileType.air))
 
         return layer
     }
+    // endregion
 
-    // ---
+    // region showing and hiding tiles
+    func hide(positions: Set<ChunkTilePos3D>) {
+        assert(hiddenTiles.intersection(positions).isEmpty, "tried to hide already hidden tiles (hiding tiles is strict because it's semi-internal)")
+        hiddenTiles.formUnion(positions)
+    }
 
+    func showHidden(positions: Set<ChunkTilePos3D>) {
+        assert(hiddenTiles.contains(allOf: positions), "tried to show not hidden tiles (hiding tiles is strict because it's semi-internal)")
+        hiddenTiles.subtract(positions)
+    }
+
+    func isTileHiddenAt(position: ChunkTilePos3D) -> Bool {
+        hiddenTiles.contains(position)
+    }
+    // endregion
+
+    func clone() -> Chunk {
+        let clone = Chunk()
+        clone.tiles = tiles
+        clone.tileMetadatas = tileMetadatas
+        clone.hiddenTiles = hiddenTiles
+        return clone
+    }
+
+    // region encoding and decoding
     enum CodingKeys: CodingKey {
         case tileData
         case tileMetadatas
@@ -228,4 +243,5 @@ class Chunk: ReadonlyChunk, Codable {
             }
         }
     }
+    // endregion
 }

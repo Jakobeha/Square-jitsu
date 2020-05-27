@@ -15,6 +15,7 @@ class WorldView: NodeView<SKNode> {
         super.init(node: SKNode())
 
         placeExisting()
+        world.didReset.subscribe(observer: self, handler: reSynchronize)
         world.didLoadChunk.subscribe(observer: self, handler: placeChunkView)
         world.didUnloadChunk.subscribe(observer: self, handler: removeChunkView)
         world.didAddEntity.subscribe(observer: self, handler: placeEntityView)
@@ -29,6 +30,22 @@ class WorldView: NodeView<SKNode> {
     private func placeExisting() {
         placeExistingChunks()
         placeExistingEntities()
+    }
+
+    private func reSynchronize() {
+        removeAllChildren()
+        placeExisting()
+    }
+
+    private func removeAllChildren() {
+        for chunkView in chunkViews.values {
+            chunkView.removeFromParent()
+        }
+        for entityView in entityViews {
+            entityView.removeFromParent()
+        }
+        chunkViews = [:]
+        entityViews = []
     }
 
     private func placeExistingChunks() {

@@ -11,5 +11,9 @@ protocol ReadonlyWorld: AnyObject {
     subscript(pos: WorldTilePos) -> [TileType] { get }
     subscript(pos3D: WorldTilePos3D) -> TileType { get }
 
-    func adjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D>
+    func sideAdjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D>
+
+    /// This is temporary because it's used by the editor and not guaranteed to actually hide the tile
+    func temporarilyHide(positions: Set<WorldTilePos3D>)
+    func showTemporarilyHidden(positions: Set<WorldTilePos3D>)
 }

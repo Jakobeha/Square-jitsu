@@ -15,10 +15,14 @@ class ButtonNode: SKNode {
     var onTouchUp: (() -> ())?
     private let action: () -> ()
 
+    var isEnabled: Bool = true
     private var isPressed: Bool = false
 
     var touchCaptureRect: CGRect {
-        CGRect(origin: CGPoint.zero, size: size).insetBy(sideLength: -ButtonNode.touchCaptureRectOutset)
+        var rect = CGRect(origin: CGPoint.zero, size: size).insetBy(sideLength: -ButtonNode.touchCaptureRectOutset)
+        // Invert y because this is UX coords
+        rect.origin.y = -rect.size.height - rect.origin.y
+        return rect
     }
 
     init(size: CGSize, action: @escaping () -> ()) {
@@ -41,40 +45,33 @@ class ButtonNode: SKNode {
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         touchesMaybePressed()
-        if !isPressed {
-            super.touchesMoved(touches, with: event)
-        }
         touchesMaybeReleased(event: event!, wouldBeCancel: true)
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if !isPressed {
-            super.touchesEnded(touches, with: event)
-        }
         touchesMaybeReleased(event: event!, wouldBeCancel: false)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if !isPressed {
-            touchesMaybeReleased(event: event!, wouldBeCancel: true)
-        }
-        super.touchesEnded(touches, with: event)
+        touchesMaybeReleased(event: event!, wouldBeCancel: true)
     }
 
     private func touchesMaybePressed() {
-        if !isPressed {
+        if !isPressed && isEnabled {
             isPressed = true
             onTouchDown?()
         }
     }
 
     private func touchesMaybeReleased(event: UIEvent, wouldBeCancel: Bool) {
-        let capturesATouch = event.allTouches!.contains(where: captures)
-        if !capturesATouch {
-            isPressed = false
-            onTouchUp?()
-            if !wouldBeCancel {
-                action()
+        if isPressed {
+            let capturesATouch = event.allTouches!.contains(where: captures)
+            if !capturesATouch {
+                isPressed = false
+                onTouchUp?()
+                if !wouldBeCancel {
+                    action()
+                }
             }
         }
     }

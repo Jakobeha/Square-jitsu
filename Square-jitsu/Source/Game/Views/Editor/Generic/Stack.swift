@@ -5,20 +5,26 @@
 
 import SpriteKit
 
-class Stack: UXNodeView<SKNode>, UXView {
-    private let children: [UXView]
+class Stack: UXView {
+    private var children: [UXView]
     private let width: CGFloat?
     private let height: CGFloat?
+
+    let node: SKNode = SKNode()
 
     init(_ children: [UXView], width: CGFloat? = nil, height: CGFloat? = nil, topLeft: CGPoint = CGPoint.zero) {
         self.children = children
         self.width = width
         self.height = height
 
-        super.init(node: SKNode())
-        self.topLeft = topLeft
+        // For some reason self.topLeft doesn't work
+        var position = topLeft
+        // Invert the y for UX manually (this is bad coding, duplication)
+        position.y = -position.y
+        node.position = position
+
         for child in children {
-            child.placeIn(parent: node)
+            child.set(parent: node)
         }
     }
 
@@ -27,5 +33,11 @@ class Stack: UXNodeView<SKNode>, UXView {
             width: width ?? children.map { $0.bounds.maxX }.max() ?? 0,
             height: height ?? children.map { $0.bounds.maxY }.max() ?? 0
         )
+    }
+
+    func set(sceneSize: CGSize) {
+        for index in children.indices {
+            children[index].set(sceneSize: sceneSize)
+        }
     }
 }

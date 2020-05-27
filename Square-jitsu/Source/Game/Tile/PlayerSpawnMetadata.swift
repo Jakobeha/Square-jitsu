@@ -6,11 +6,46 @@
 import Foundation
 
 class PlayerSpawnMetadata: EmptyTileMetadata {
+    private struct LoadInfo {
+        let playerSpawnWorld: World
+        let playerSpawnPos: WorldTilePos3D
+    }
+
+    /// Returns a metadata at (0, 0) for a world without a player metadata
+    static func dummyForInvalid(world: World) -> PlayerSpawnMetadata {
+        let metadata = PlayerSpawnMetadata()
+        metadata.loadInfo = LoadInfo(playerSpawnWorld: world, playerSpawnPos: WorldTilePos3D.zero)
+        return metadata
+    }
+
+    private var loadInfo: LoadInfo?
+
     override func onFirstLoad(world: World, pos: WorldTilePos3D) {
+        assert(loadInfo == nil)
+
+        // Avoid if the tile type is wrong
         let myTileType = world[pos]
-        // TODO: Fail gracefully
-        assert(myTileType.bigType == TileBigType.player, "player spawn metadata must be on player spawn tile")
-        let player = Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
-        world.player = player
+        if myTileType.bigType != TileBigType.player {
+            Logger.warn("player spawn metadata must be on player spawn tile, ignoring")
+            return
+        }
+        
+
+        // Assign to the world, and the world will spawn the player later
+        world.playerMetadata = self
+
+        // Assign load info for when the player will be spawned
+        loadInfo = LoadInfo(playerSpawnWorld: world, playerSpawnPos: pos)
+
+        // Remove so the player tile is no longer visible
+        world.set(pos3D: pos, to: TileType.air, persistInGame: true)
+
+    }
+
+    func spawnPlayer() -> Entity {
+        // Spawn the player
+        let pos = loadInfo!.playerSpawnPos
+        let world = loadInfo!.playerSpawnWorld
+        return Entity.newForSpawnTile(type: TileType.player, pos: pos, world: world)
     }
 }

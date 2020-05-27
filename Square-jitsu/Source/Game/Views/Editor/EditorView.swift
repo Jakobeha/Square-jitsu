@@ -13,17 +13,18 @@ class EditorView: NodeView<SKNode> {
     init(editor: Editor, sceneSize: CGSize) {
         self.editor = editor
 
-        let editorToolsView = EditorToolsView(editor: editor)
+        let editorToolsView = EditorToolsView(editor: editor, sceneSize: sceneSize)
         let editorUiView = UXTopLevelView(child: editorToolsView, sceneSize: sceneSize)
 
         let worldView = WorldView(world: editor.editableWorld.world)
-        worldCameraView = CameraView(camera: editor.editorCamera, child: worldView, settings: editor.editableWorld.world.settings)
+        worldCameraView = CameraView(camera: editor.currentCamera, child: worldView, sceneSize: sceneSize, settings: editor.editableWorld.world.settings)
 
         super.init(node: SKNode())
         editorUiView.placeIn(parent: node)
         worldCameraView.placeIn(parent: node)
         // So that editor tools are on top of world
-        worldCameraView.node.zPosition = -1
+        editorUiView.zPosition = TileType.zPositionUpperBound
+        worldCameraView.node.zPosition = 0
 
         editor.didChangeState.subscribe(observer: self, handler: changeCamera)
     }

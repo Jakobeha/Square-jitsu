@@ -7,9 +7,13 @@ import Foundation
 
 struct WorldFileSyncError: Error, CustomStringConvertible {
     let action: String
-    let error: Error
+    let error: Error?
 
     var description: String {
-        "I/O error when \(action) - \(error)"
+        if let error = error {
+            return "I/O error when \(action) - \(error)"
+        } else {
+            return "I/O error when \(action)"
+        }
     }
 }

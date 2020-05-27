@@ -19,8 +19,12 @@ class ChunkView: NodeView<SKNode> {
         node.position = worldChunkPos.originCgPoint * world.settings.tileViewWidthHeight
 
         placeExistingTiles(chunk: chunk)
-        chunk.didPlaceTile.subscribe(observer: self, handler: placeTileView)
-        chunk.didRemoveTile.subscribe(observer: self, handler: removeTileView)
+        chunk.didChangeTile.subscribe(observer: self) { chunkTilePos3D, oldType in
+            self.regenerateTileView(chunkTilePos3D: chunkTilePos3D)
+        }
+        chunk.didAdjacentTileChange.subscribe(observer: self, handler: regenerateTileViewsAt)
+        chunk.didHideTile.subscribe(observer: self, handler: hideTileAt)
+        chunk.didShowTile.subscribe(observer: self, handler: showTileAt)
     }
 
     required init?(coder: NSCoder) {
@@ -33,19 +37,45 @@ class ChunkView: NodeView<SKNode> {
         }
     }
 
-    func placeTileView(chunkTilePos3D: ChunkTilePos3D) {
+    private func regenerateTileViewsAt(chunkTilePos: ChunkTilePos) {
+        for layer in 0..<Chunk.numLayers {
+            let pos3D = ChunkTilePos3D(pos: chunkTilePos, layer: layer)
+            regenerateTileView(chunkTilePos3D: pos3D)
+        }
+    }
+
+    private func regenerateTileView(chunkTilePos3D: ChunkTilePos3D) {
+        removeTileView(chunkTilePos3D: chunkTilePos3D)
+        placeTileView(chunkTilePos3D: chunkTilePos3D)
+    }
+
+    private func placeTileView(chunkTilePos3D: ChunkTilePos3D) {
         assert(tileViews[chunkTilePos3D] == nil)
         let tileType = chunk[chunkTilePos3D]
         let worldTilePos = WorldTilePos(worldChunkPos: worldChunkPos, chunkTilePos: chunkTilePos3D.pos)
         let tileView = TileView(world: world, pos: worldTilePos, tileType: tileType)
-        tileView.placeIn(parent: self.node)
+        if !chunk.isTileHiddenAt(position: chunkTilePos3D) {
+            tileView.placeIn(parent: self.node)
+        }
         tileViews[chunkTilePos3D] = tileView
     }
 
-    func removeTileView(tilePos3D: ChunkTilePos3D, oldType: TileType) {
-        assert(tileViews[tilePos3D] != nil)
-        let tileView = tileViews[tilePos3D]!
+    private func removeTileView(chunkTilePos3D: ChunkTilePos3D) {
+        assert(tileViews[chunkTilePos3D] != nil)
+        let tileView = tileViews[chunkTilePos3D]!
+        if !chunk.isTileHiddenAt(position: chunkTilePos3D) {
+            tileView.removeFromParent()
+        }
+        tileViews[chunkTilePos3D] = nil
+    }
+
+    private func hideTileAt(chunkTilePos3D: ChunkTilePos3D) {
+        let tileView = tileViews[chunkTilePos3D]!
         tileView.removeFromParent()
-        tileViews[tilePos3D] = nil
+    }
+
+    private func showTileAt(chunkTilePos3D: ChunkTilePos3D) {
+        let tileView = tileViews[chunkTilePos3D]!
+        tileView.placeIn(parent: self.node)
     }
 }

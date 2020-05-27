@@ -10,6 +10,15 @@ extension CGRect {
         self.init(origin: center - (size / 2), size: size)
     }
 
+    /// Multiplies the origin and size
+    func scaleCoordsBy(scale: CGFloat) -> CGRect {
+        CGRect(origin: origin * scale, size: size * scale)
+    }
+
+    func offsetBy(vector: CGPoint) -> CGRect {
+        offsetBy(dx: vector.x, dy: vector.y)
+    }
+
     func insetBy(sideLength: CGFloat) -> CGRect {
         insetBy(dx: sideLength, dy: sideLength)
     }

@@ -5,39 +5,37 @@
 
 import SpriteKit
 
-class TileButton: UXNodeView<ButtonNode>, UXView {
+class TileButton: UXView {
     private static let pressedBorder: SKTexture = SKTexture(imageNamed: "UI/TileButtonPressedBorder")
     private static let selectedBorder: SKTexture = SKTexture(imageNamed: "UI/TileButtonSelectedBorder")
     private static let disabledAlpha: CGFloat = Button.disabledForegroundAlpha
 
-    private var isPressed: Bool = false {
-        didSet { borderNode.texture = borderNodeTexture }
-    }
-    private var isSelected: Bool {
-        didSet { borderNode.texture = borderNodeTexture }
-    }
-    var isEnabled: Bool {
-        didSet {
-            let previewNodeAlpha = isEnabled ? 1 : Button.disabledForegroundAlpha
-            tilePreviewNode?.alpha = previewNodeAlpha
-            entityPreviewNode?.alpha = previewNodeAlpha
-        }
-    }
-
-    private let backgroundNode: SKSpriteNode
-    private let tilePreviewNode: SKNode?
-    private let entityPreviewNode: SKNode?
-    private let borderNode: SKSpriteNode
-
-    private var borderNodeTexture: SKTexture? {
+    private static func borderNodeTexture(isPressed: Bool, isSelected: Bool) -> SKTexture? {
         if isPressed {
-            return TileButton.pressedBorder
+            return pressedBorder
         } else if isSelected {
-            return TileButton.selectedBorder
+            return selectedBorder
         } else {
             return nil
         }
     }
+
+    private var isPressed: Bool = false {
+        didSet { borderNode.texture = TileButton.borderNodeTexture(isPressed: isPressed, isSelected: isSelected) }
+    }
+    private var isSelected: Bool {
+        didSet { borderNode.texture = TileButton.borderNodeTexture(isPressed: isPressed, isSelected: isSelected) }
+    }
+    var isEnabled: Bool {
+        didSet { updateForIsEnabled() }
+    }
+
+    private let buttonNode: ButtonNode
+    private let backgroundNode: SKSpriteNode
+    private let tilePreviewNode: SKNode?
+    private let entityPreviewNode: SKNode?
+    private let borderNode: SKSpriteNode
+    var node: SKNode { buttonNode }
 
     var size: CGSize { ButtonSize.tile.cgSize }
 
@@ -51,22 +49,35 @@ class TileButton: UXNodeView<ButtonNode>, UXView {
         tilePreviewNode?.zPosition = 1
         entityPreviewNode = settings.entityViewTemplates[tileType]?.generatePreviewNode(size: ButtonSize.tile.cgSize)
         entityPreviewNode?.zPosition = 2
-        borderNode = SKSpriteNode(texture: nil, size: ButtonSize.tile.cgSize)
+        borderNode = SKSpriteNode(texture: TileButton.borderNodeTexture(isPressed: isPressed, isSelected: isSelected), size: ButtonSize.tile.cgSize)
         borderNode.anchorPoint = UXSpriteAnchor
         borderNode.zPosition = 3
-        super.init(node: ButtonNode(
+
+        buttonNode = ButtonNode(
             size: ButtonSize.tile.cgSize,
             action: action
-        ))
-        node.addChild(backgroundNode)
+        )
+        buttonNode.addChild(backgroundNode)
         if let tilePreviewNode = tilePreviewNode {
-            node.addChild(tilePreviewNode)
+            buttonNode.addChild(tilePreviewNode)
         }
         if let entityPreviewNode = entityPreviewNode {
-            node.addChild(entityPreviewNode)
+            buttonNode.addChild(entityPreviewNode)
         }
-        node.addChild(borderNode)
-        node.onTouchDown = { self.isPressed = true }
-        node.onTouchUp = { self.isPressed = false }
+        buttonNode.addChild(borderNode)
+        buttonNode.onTouchDown = { self.isPressed = true }
+        buttonNode.onTouchUp = { self.isPressed = false }
+
+        updateForIsEnabled()
     }
+    
+    private func updateForIsEnabled() {
+        buttonNode.isEnabled = isEnabled
+
+        let previewNodeAlpha = isEnabled ? 1 : Button.disabledForegroundAlpha
+        tilePreviewNode?.alpha = previewNodeAlpha
+        entityPreviewNode?.alpha = previewNodeAlpha
+    }
+
+    func set(sceneSize: CGSize) {}
 }

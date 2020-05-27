@@ -34,6 +34,8 @@ struct TileType: Equatable, Hashable, Codable, HasDefault, LosslessStringConvert
 
     static let defaultValue: TileType = air
 
+    /// All z-positions are less than this
+    static let zPositionUpperBound: CGFloat = CGFloat(TileLayer.allCases.count)
     static let fadingZPositionOffset: CGFloat = 0.5 / CGFloat(TileBigType.allCases.count)
 
     var bigType: TileBigType

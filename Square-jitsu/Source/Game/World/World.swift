@@ -31,28 +31,36 @@ class World: ReadonlyWorld {
         }
     }
 
+    private var _playerMetadata: PlayerSpawnMetadata? = nil
+    var playerMetadata: PlayerSpawnMetadata {
+        get { _playerMetadata! }
+        set {
+            if _playerMetadata != nil {
+                Logger.warn("player already loaded, one player spawn chunk per world, not setting this field")
+            } else {
+                _playerMetadata = newValue
+            }
+        }
+    }
     private var _player: Entity? = nil
     var player: Entity {
-        get {
             assert(_player != nil, "world isn't loaded yet, the player spawn chunk must be loaded, which loads the player spawn and sets the player entity")
             return _player!
-        }
-        set {
-            assert(_player == nil, "player already loaded, one player spawn chunk per world")
-            _player = newValue
-        }
     }
     /// We put this in the world so it (i.e. what the player sees) is defined as part of the game
     /// ... and also because it's easy
     let playerCamera: PlayerCamera = PlayerCamera()
     let playerInput: PlayerInput
 
+    private let _didReset: Publisher<()> = Publisher()
     private let _didUnloadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
     private let _didLoadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
     private let _didAddEntity: Publisher<Entity> = Publisher()
     private let _didRemoveEntity: Publisher<Entity> = Publisher()
     private let _didChangeSpeed: Publisher<()> = Publisher()
     private let _didTick: Publisher<()> = Publisher()
+    /// Other notifications won't be fired on reset, only this one
+    var didReset: Observable<()> { Observable(publisher: _didReset) }
     var didUnloadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { Observable(publisher: _didUnloadChunk) }
     var didLoadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { Observable(publisher: _didLoadChunk) }
     var didAddEntity: Observable<Entity> { Observable(publisher: _didAddEntity) }
@@ -73,8 +81,42 @@ class World: ReadonlyWorld {
 
     private func loadPlayer() {
         load(pos: loader.playerSpawnChunkPos)
-        // TODO: Make this more graceful, throw a WorldCorruptionError, so loading bad worlds can't crash the game
-        assert(_player != nil, "player spawn not in chunk pos, or player spawn didn't spawn player")
+        if _playerMetadata == nil {
+            Logger.warn("player spawn not in chunk pos, or player spawn didn't spawn player")
+            _playerMetadata = PlayerSpawnMetadata.dummyForInvalid(world: self)
+        }
+        _player = playerMetadata.spawnPlayer()
+        // This actually adds the player entity,
+        // otherwise the player isn't visible first frame,
+        // which is a problem since the editor initially loads the world paused
+        // and thus it won't be visible until the user changes the mode
+        tick()
+    }
+    //endregion
+
+    //region resetting
+    func reset() {
+        resetPlayer()
+        resetExceptForPlayer()
+    }
+
+    func resetExceptForPlayer() {
+        // Unload all chunks except for 
+        let playerSpawnChunk = getChunkAt(pos: loader.playerSpawnChunkPos)
+        let persistentPlayerSpawnChunkData = persistentChunkData[loader.playerSpawnChunkPos]!
+
+        peekedChunks = [:]
+        chunks = [loader.playerSpawnChunkPos:playerSpawnChunk]
+        persistentChunkData = [loader.playerSpawnChunkPos:persistentPlayerSpawnChunkData]
+        speed = 1
+        entitiesToAdd = []
+        entitiesToRemove = []
+        entities = [player]
+    }
+
+    func resetPlayer() {
+        remove(entity: player)
+        _player = playerMetadata.spawnPlayer()
     }
     //endregion
 
@@ -196,6 +238,7 @@ class World: ReadonlyWorld {
         _didTick.publish()
     }
 
+    // region tiles
     // region tile access
     subscript(_ pos: WorldTilePos) -> [TileType] {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
@@ -214,17 +257,23 @@ class World: ReadonlyWorld {
     func peek(pos3D: WorldTilePos3D) -> TileType {
         peek(pos: pos3D.pos)[pos3D.layer]
     }
+    // endregion
 
+    // region tile mutation
     func set(pos3D: WorldTilePos3D, to newType: TileType, persistInGame: Bool) {
+        // Set in chunk (actual read data)
         let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
         let chunkPos3D = pos3D.chunkTilePos3D
         chunk[chunkPos3D] = newType
 
+        // Set in persistent data
         let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
         if persistInGame {
             persistentDataForChunk.overwrittenTiles[chunkPos3D] = newType
         }
         persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = chunk.tileMetadatas[chunkPos3D]
+
+        notifyObserversOfAdjacentTileChanges(pos: pos3D.pos)
     }
 
     func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
@@ -252,6 +301,8 @@ class World: ReadonlyWorld {
             persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = chunk.tileMetadatas[chunkPos3D]
         }
 
+        notifyObserversOfAdjacentTileChanges(pos: pos)
+
         return layer
     }
 
@@ -267,6 +318,17 @@ class World: ReadonlyWorld {
             let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
             persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = nil
         }
+
+        notifyObserversOfAdjacentTileChanges(pos: pos)
+    }
+
+    private func notifyObserversOfAdjacentTileChanges(pos: WorldTilePos) {
+        // the observers are notified in the world because the adjacent tiles might be in another chunk than this tile,
+        // and in that case that chunk should notify
+        for adjacentPos in pos.cornerAdjacents.values {
+            let chunkWithAdjacentPos = getChunkAt(pos: adjacentPos.worldChunkPos)
+            chunkWithAdjacentPos._didAdjacentTileChange.publish(adjacentPos.chunkTilePos)
+        }
     }
 
     private func getChunkAt(pos: WorldChunkPos) -> Chunk {
@@ -275,26 +337,60 @@ class World: ReadonlyWorld {
     }
     // endregion
 
-    //region advanced tile access
+    // region advanced tile access
     /// Note: doesn't return nil for air
-    func adjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
+    func sideAdjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
         let type = self[pos3D]
-        var positions3D: Set<WorldTilePos3D> = [pos3D]
 
-        var positions2DAtPrevDistance: Set<WorldTilePos> = [pos3D.pos]
+        return getConnectedSideAdjacents(origin: pos3D) { testPos in
+            let typesAtPos = self[testPos]
+            // Technically it doesn't matter whether we use firstIndex or lastIndex
+            if let indexWithSameTypeAtPos = typesAtPos.lastIndex(of: type) {
+                return [indexWithSameTypeAtPos]
+            } else {
+                return []
+            }
+        }
+    }
+
+    // Return a set of all positions "connected" to the origin (including it), according to the predicate
+    private func getConnectedSideAdjacents(origin: WorldTilePos3D, getConnectedLayers: (WorldTilePos) -> [Int]) -> Set<WorldTilePos3D> {
+        var positions3D: Set<WorldTilePos3D> = [origin]
+
+        var positions2DAtPrevDistance: Set<WorldTilePos> = [origin.pos]
         var distance = 0
         while !positions2DAtPrevDistance.isEmpty {
             distance += 1
             var positions2DAtNextDistance: Set<WorldTilePos> = []
+            var maybeConnectedPositions2DAtNextDistance: Set<WorldTilePos> = []
+            var maybeConnectedPositions3D: Set<WorldTilePos3D> = []
 
-            for pos in WorldTilePos.sweepSquare(center: pos3D.pos, distance: distance) {
-                let typesAtPos = self[pos]
+            for pos in WorldTilePos.sweepSquare(center: origin.pos, distance: distance) {
                 // Technically it doesn't matter whether we use firstIndex or lastIndex
-                if let indexOfSameTypeAtPos = typesAtPos.lastIndex(of: type) {
+                let connectedLayers = getConnectedLayers(pos)
+                for layer in connectedLayers {
                     // The world has a tile of the same type at this position - else it doesn't
-                    let pos3D = WorldTilePos3D(pos: pos, layer: indexOfSameTypeAtPos)
-                    positions2DAtNextDistance.insert(pos)
-                    positions3D.insert(pos3D)
+                    let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+                    if positions2DAtPrevDistance.contains(anyOf: pos.sideAdjacents.values) {
+                        // The tile is connected to pos3D, add it.
+                        // Also all maybe positions are also connected, from transitivity
+                        positions2DAtNextDistance.insert(pos)
+                        positions3D.insert(pos3D)
+                        positions2DAtNextDistance.formUnion(maybeConnectedPositions2DAtNextDistance)
+                        maybeConnectedPositions3D.insert(pos3D)
+                        maybeConnectedPositions2DAtNextDistance.removeAll()
+                        maybeConnectedPositions3D.removeAll()
+                    } else {
+                        // The tile may not be connected, or maybe it will be connected to another connected tile at
+                        // this layer, and thus transitively connected
+                        maybeConnectedPositions2DAtNextDistance.insert(pos)
+                        maybeConnectedPositions3D.insert(pos3D)
+                    }
+                }
+                if !connectedLayers.isEmpty {
+                    // The maybe-connected tiles aren't actually connected
+                    maybeConnectedPositions2DAtNextDistance.removeAll()
+                    maybeConnectedPositions3D.removeAll()
                 }
             }
 
@@ -303,7 +399,25 @@ class World: ReadonlyWorld {
 
         return positions3D
     }
-    //endregion
+    // endregion
+
+    // region tile showing / hiding
+    func temporarilyHide(positions: Set<WorldTilePos3D>) {
+        let tilesInChunks = WorldTilePos3D.groupByChunkPositions(positions)
+        for (worldChunkPos, chunkTilePositions) in tilesInChunks {
+            let chunk = getChunkAt(pos: worldChunkPos)
+            chunk.hide(positions: chunkTilePositions)
+        }
+    }
+
+    func showTemporarilyHidden(positions: Set<WorldTilePos3D>) {
+        let tilesInChunks = WorldTilePos3D.groupByChunkPositions(positions)
+        for (worldChunkPos, chunkTilePositions) in tilesInChunks {
+            let chunk = getChunkAt(pos: worldChunkPos)
+            chunk.showHidden(positions: chunkTilePositions)
+        }
+    }
+    // endregion
 
     // region metadatas
     private func tickMetadatas() {
@@ -320,6 +434,7 @@ class World: ReadonlyWorld {
             }
         }
     }
+    // endregion
     // endregion
 
     // region entities

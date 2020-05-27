@@ -6,9 +6,15 @@
 import SpriteKit
 
 class Camera {
-    var position: CGPoint = CGPoint.zero
-    var rotation: Angle = Angle.zero
-    var scale: CGFloat = 1
+    var position: CGPoint = CGPoint.zero {
+        didSet { _didChange.publish() }
+    }
+    var rotation: Angle = Angle.zero {
+        didSet { _didChange.publish() }
+    }
+    var scale: CGFloat = 1 {
+        didSet { _didChange.publish() }
+    }
 
     private let _didChange: Publisher<()> = Publisher()
     var didChange: Observable<()> { Observable(publisher: _didChange) }
@@ -24,8 +30,15 @@ class Camera {
     }
 
     /// Applies the inverse of the camera's transform so that the node children in camera coordinates at (0, 0)
-    func inverseTransform(rootNode: SKNode, settings: WorldSettings) {
-        rootNode.position = inverseTransform(position: CGPoint.zero, settings: settings)
+    func inverseTransformUX(rootNode: SKNode, size: CGSize, settings: WorldSettings) {
+        let sizeOffset = CGPoint(x: size.width, y: -size.height)
+        rootNode.position = inverseTransform(position: CGPoint.zero, settings: settings) + (sizeOffset / 2)
+        rootNode.angle = -rotation
+        rootNode.setScale(1 / scale)    }
+
+        /// Applies the inverse of the camera's transform so that the node children in camera coordinates at (0, 0)
+    func inverseTransform(rootNode: SKNode, size: CGSize, settings: WorldSettings) {
+        rootNode.position = inverseTransform(position: CGPoint.zero, settings: settings) + (size / 2)
         rootNode.angle = -rotation
         rootNode.setScale(1 / scale)
     }

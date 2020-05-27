@@ -16,10 +16,6 @@ struct WorldLoaderFromFile: WorldLoader {
     }
     
     func loadChunk(pos: WorldChunkPos) -> Chunk {
-        let foregroundChunk = file.readChunkAt(pos: pos)
-        let backgroundChunk = file.backgroundLoader.loadChunk(pos: pos)
-        
-        foregroundChunk.placeOnTopOf(otherChunk: backgroundChunk)
-        return backgroundChunk
+        file.readChunkAt(pos: pos).clone()
     }
 }

@@ -8,6 +8,14 @@ import SpriteKit
 extension CGFloat {
     static let epsilon: CGFloat = 0.0001
 
+    static func %(lhs: CGFloat, modulo: CGFloat) -> CGFloat {
+        CGFloat(fmodf(Float(lhs), Float(modulo)))
+    }
+
+    static func %=(lhs: inout CGFloat, modulo: CGFloat) {
+        lhs = lhs % modulo
+    }
+
     static func lerp(start: CGFloat, end: CGFloat, t: CGFloat) -> CGFloat {
         (t * (end - start)) + start
     }
