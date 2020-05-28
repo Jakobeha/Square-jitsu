@@ -14,6 +14,7 @@ enum EditAction {
     case select(selectedPositions: Set<WorldTilePos3D>)
     case deselect(selectedPositions: Set<WorldTilePos3D>)
     case move(selectedPositions: Set<WorldTilePos3D>, state: EditMoveState)
+    case copy(selectedPositions: Set<WorldTilePos3D>, state: EditMoveState)
     case inspect(selectedPositions: Set<WorldTilePos3D>)
 
     var mode: EditActionMode {
@@ -26,8 +27,10 @@ enum EditAction {
             return .select
         case .deselect(selectedPositions: _):
             return .deselect
-        case .move(selectedPositions: _):
+        case .move(selectedPositions: _, state: _):
             return .move
+        case .copy(selectedPositions: _, state: _):
+            return .copy
         case .inspect(selectedPositions: _):
             return .inspect
         }
@@ -43,6 +46,8 @@ enum EditAction {
             case .deselect(let selectedPositions):
                 return selectedPositions
             case .move(let selectedPositions, state: _):
+                return selectedPositions
+            case .copy(let selectedPositions, state: _):
                 return selectedPositions
             case .inspect(let selectedPositions):
                 return selectedPositions
@@ -66,6 +71,8 @@ enum EditAction {
             self = .deselect(selectedPositions: selectedPositions)
         case .move:
             self = .move(selectedPositions: selectedPositions, state: EditMoveState.notStarted)
+        case .copy:
+            self = .copy(selectedPositions: selectedPositions, state: EditMoveState.notStarted)
         case .inspect:
             self = .inspect(selectedPositions: selectedPositions)
         }

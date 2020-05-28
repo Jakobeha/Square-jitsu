@@ -14,13 +14,12 @@ class EmptyTileMetadata: TileMetadata {
 
     // ---
 
-    enum CodingKeys: CodingKey {}
-
-    func decode(from decoder: Decoder) throws {
-        let _ = try decoder.container(keyedBy: CodingKeys.self)
+    func encodeToJson() throws -> JSON {
+        JSON([:])
     }
 
-    func encode(to encoder: Encoder) throws {
-        let _ = encoder.container(keyedBy: CodingKeys.self)
+    func decodeFrom(json: JSON) throws {
+        let jsonDict = try json.toDictionary()
+        try DecodeSettingError.assertKeysIn(dictionary: jsonDict, requiredKeys: [])
     }
 }

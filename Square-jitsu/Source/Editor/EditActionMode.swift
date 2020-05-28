@@ -13,20 +13,21 @@ enum EditActionMode {
     case select
     case deselect
     case move
+    case copy
     case inspect
 
     var requiresSelection: Bool {
         switch self {
         case .place, .remove, .select, .deselect, .inspect:
             return false
-        case .move:
+        case .move, .copy:
             return true
         }
     }
 
     var affectsSelection: Bool {
         switch self {
-        case .place, .remove, .move, .inspect:
+        case .place, .remove, .move, .copy, .inspect:
             return false
         case .select, .deselect:
             return true

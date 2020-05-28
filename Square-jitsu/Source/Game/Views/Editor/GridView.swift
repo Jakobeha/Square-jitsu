@@ -16,10 +16,7 @@ class GridView: UXView {
     var node: SKNode { gridNode }
 
     private var sceneSize: CGSize = CGSize.zero {
-        didSet {
-            updateGridPath()
-            updateNodePositionForCameraChange()
-        }
+        didSet { updateGridPath() }
     }
     var size: CGSize { sceneSize }
 
@@ -66,7 +63,7 @@ class GridView: UXView {
     }
 
     private func updateNodePositionForCameraChange() {
-        camera.inverseTransformUX(rootNode: gridNode, size: sceneSize, settings: settings)
+        camera.inverseTransformUX(rootNode: gridNode)
 
         // So grid appears infinite
         gridNode.position %= settings.tileViewWidthHeight

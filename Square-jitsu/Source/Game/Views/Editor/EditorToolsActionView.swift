@@ -10,6 +10,10 @@ class EditorToolsActionView: UXCompoundView {
 
     private let tileMenuView: TileMenuView
 
+    private var editActionMode: EditActionMode {
+        editorTools.editAction.mode
+    }
+
     private var hasSelection: Bool {
         !editorTools.editAction.selectedPositions.isEmpty
     }
@@ -27,51 +31,38 @@ class EditorToolsActionView: UXCompoundView {
 
     override func newBody() -> UXView {
         let instantActionIfSelectTintHue =
-                editorTools.editAction.mode.affectsSelection && hasSelection ?
+                editActionMode.affectsSelection && hasSelection ?
                 Button.instantActionButtonTintHue :
                 nil
         return HStack([
             Button(
                     textureName: "UI/RemoveTiles",
-                    isSelected: editorTools.editAction.mode == .remove,
+                    isSelected: editActionMode == .remove,
                     tintHue: instantActionIfSelectTintHue
             ) {
                 self.editorTools.select(actionMode: .remove)
             },
             Button(
-                    textureName: "UI/MoveTiles",
-                    isSelected: editorTools.editAction.mode == .move,
+                    textureName: editActionMode == .copy ? "UI/CopyTiles" : "UI/MoveTiles",
+                    rouletteNextItemTextureName: editActionMode == .copy ? "UI/MoveTiles" : "UI/CopyTiles",
+                    isSelected: editActionMode == .move || editActionMode == .copy,
                     tintHue: instantActionIfSelectTintHue
             ) {
-                if self.hasSelection && self.editorTools.editAction.mode == .move {
-                    // Does something different, because we are already in this mode, we clear the current selection
-                    self.editorTools.editAction.selectedPositions.removeAll()
-                } else {
-                    self.editorTools.select(actionMode: .move)
-                }
+                self.editorTools.select(actionMode: self.editActionMode == .move ? .copy : .move)
             },
             Button(
                     textureName: "UI/InspectTiles",
-                    isSelected: editorTools.editAction.mode == .inspect,
+                    isSelected: editActionMode == .inspect,
                     tintHue: instantActionIfSelectTintHue
             ) {
-                if self.hasSelection && self.editorTools.editAction.mode == .inspect {
-                    // Does something different, because we are already in this mode, we clear the current selection
-                    self.editorTools.editAction.selectedPositions.removeAll()
-                } else {
-                    self.editorTools.select(actionMode: .inspect)
-                }
+                self.editorTools.select(actionMode: .inspect)
             },
             Button(
-                    textureName: editorTools.editAction.mode == .select ? "UI/DeselectTiles" : "UI/SelectTiles",
-                    isSelected: editorTools.editAction.mode.affectsSelection,
-                    tintHue: Button.selectButtonTintHue
+                    textureName: editActionMode == .deselect ? "UI/DeselectTiles" : "UI/SelectTiles",
+                    rouletteNextItemTextureName: editActionMode == .deselect ? "UI/SelectTiles" : "UI/DeselectTiles",
+                    isSelected: editActionMode == .select || editActionMode == .deselect
             ) {
-                if self.editorTools.editAction.mode == .select {
-                   self.editorTools.select(actionMode: .deselect)
-                } else {
-                    self.editorTools.select(actionMode: .select)
-                }
+               self.editorTools.select(actionMode: self.editActionMode == .select ? .deselect : .select)
             },
             tileMenuView
         ])

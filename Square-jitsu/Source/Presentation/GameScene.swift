@@ -10,6 +10,9 @@ import SpriteKit
 
 class GameScene: SKScene {
     private let settings: UserSettings = UserSettings()
+    override var size: CGSize {
+        didSet { settings.screenSize = size }
+    }
 
     private var worldController: WorldController? {
         willSet {
@@ -25,8 +28,9 @@ class GameScene: SKScene {
 
     override func sceneDidLoad() {
         super.sceneDidLoad()
+        settings.screenSize = size
 
-        worldController = WorldController(userSettings: UserSettings(), parent: self)
+        worldController = WorldController(userSettings: settings, parent: self)
         worldController!.loadDummyWorld()
 
         let cameraNode = SKCameraNode()

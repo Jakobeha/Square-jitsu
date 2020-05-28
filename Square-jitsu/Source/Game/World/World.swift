@@ -44,7 +44,7 @@ class World: ReadonlyWorld {
     }
     /// We put this in the world so it (i.e. what the player sees) is defined as part of the game
     /// ... and also because it's easy
-    let playerCamera: PlayerCamera = PlayerCamera()
+    let playerCamera: PlayerCamera
     let playerInput: PlayerInput
 
     private let _didReset: Publisher<()> = Publisher()
@@ -68,7 +68,10 @@ class World: ReadonlyWorld {
         self.loader = loader
         self.settings = settings
 
+        playerCamera = PlayerCamera(userSettings: userSettings)
         playerInput = PlayerInput(userSettings: userSettings)
+
+        playerCamera.world = self
         playerInput.world = self
 
         loadPlayer()
@@ -104,16 +107,16 @@ class World: ReadonlyWorld {
         entitiesToRemove = []
         entities = [player]
         _didReset.publish()
-        tick()
+        runActions()
     }
 
     func resetPlayer() {
         // Otherwise player died so it's already removed
         if player.world === self {
-            removeNow(entity: player)
+            remove(entity: player)
         }
         _player = playerMetadata!.spawnPlayer()
-        tick() // Adds the player
+        runActions() // Adds the player
     }
     //endregion
 
@@ -130,6 +133,12 @@ class World: ReadonlyWorld {
         load(pos: pos)
         for chunkPos in pos.adjacents.values {
             load(pos: chunkPos)
+        }
+    }
+
+    func load(rect: CGRect) {
+        for corner in rect.corners {
+            load(pos: corner)
         }
     }
 
@@ -440,7 +449,7 @@ class World: ReadonlyWorld {
         }
     }
 
-    private func runActions() {
+    func runActions() {
         for entity in entitiesToAdd {
             addNow(entity: entity)
         }

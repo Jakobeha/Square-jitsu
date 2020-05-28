@@ -35,7 +35,7 @@ struct TouchPos {
 
     init(uiTouch: UITouch, camera: Camera, settings: WorldSettings, container: SKScene) {
         screenPos = TouchPos.getPosition(uiTouch: uiTouch, container: container)
-        worldScreenPos = camera.transform(position: screenPos, settings: settings)
+        worldScreenPos = camera.transform(position: screenPos)
         worldTilePos = WorldTilePos.closestTo(pos: worldScreenPos)
 
         let prevScreenPos = TouchPos.getPreviousPosition(uiTouch: uiTouch, container: container)

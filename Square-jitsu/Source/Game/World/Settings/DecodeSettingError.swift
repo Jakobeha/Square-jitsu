@@ -23,6 +23,7 @@ enum DecodeSettingError: Error, CustomStringConvertible {
     case notAnAngleInDegrees
     case badFormat(expectedDescription: String)
     case missingComponentDependencies(target: String, dependencies: [String])
+    case noMetadataAtPos(pos3D: ChunkTilePos3D)
 
     /// Throw a `DecodeSettingError` if the keys are wrong
     static func assertKeysIn(dictionary: [String:Any], requiredKeys: Set<String>, optionalKeys: Set<String> = []) throws {
@@ -76,6 +77,8 @@ enum DecodeSettingError: Error, CustomStringConvertible {
             return "String isn't a valid \(expectedDescription)"
         case .missingComponentDependencies(let target, let dependencies):
             return "Component \(target) missing dependencies: \(dependencies)"
+        case .noMetadataAtPos(let pos3D):
+            return "No metadata at \(pos3D)"
         }
     }
 }

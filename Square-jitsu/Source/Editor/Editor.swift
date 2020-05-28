@@ -9,7 +9,7 @@ import SpriteKit
 class Editor: EditorToolsDelegate {
     let editableWorld: EditableWorld
     let tools: EditorTools
-    let editorCamera: Camera = Camera()
+    let editorCamera: Camera
     var state: EditorState = .editing {
         didSet { _didChangeState.publish() }
     }
@@ -39,37 +39,45 @@ class Editor: EditorToolsDelegate {
     
     init(editableWorld: EditableWorld, undoManager: UndoManager, userSettings: UserSettings) {
         self.editableWorld = editableWorld
+        editorCamera = Camera(userSettings: userSettings)
         tools = EditorTools(world: editableWorld, editorCamera: editorCamera, userSettings: userSettings)
         self.undoManager = undoManager
-
+        
+        editorCamera.world = editableWorld.world
         tools.delegate = self
     }
 
     // region actions
-    func performMoveAction(selectedPositions: Set<WorldTilePos3D>, distanceMoved: RelativePos) {
-        let positionsAfterMove = selectedPositions.map { selectedPosition in
-            selectedPosition + distanceMoved
-        }
-        let allPositions = selectedPositions.union(positionsAfterMove)
+    func performMoveAction(selectedPositions: Set<WorldTilePos3D>, distanceMoved: RelativePos, isCopy: Bool) {
+        let positionsAfterMove = Set(selectedPositions.map { selectedPosition in
+            selectedPosition.pos + distanceMoved
+        })
+        let allLayersAtPositionsAfterMove = Set(positionsAfterMove.flatMap { pos in
+            (0..<Chunk.numLayers).map { layer in WorldTilePos3D(pos: pos, layer: layer) }
+        })
+        let affectedPositions = isCopy ? allLayersAtPositionsAfterMove : selectedPositions.union(allLayersAtPositionsAfterMove)
 
         let tilesToMove = selectedPositions.map { position in
             TileAtPosition(type: editableWorld[position], position: position)
         }
-        let originalTiles = allPositions.map { position in
+        let originalTiles = affectedPositions.map { position in
             TileAtPosition(type: editableWorld[position], position: position)
         }
 
-        for oldPosition in selectedPositions {
-            editableWorld[oldPosition] = TileType.air
+        if !isCopy {
+            for oldPosition in selectedPositions {
+                editableWorld[oldPosition] = TileType.air
+            }
         }
 
         for tileToMove in tilesToMove {
-            let newPosition = tileToMove.position + distanceMoved
+            let newPosition = tileToMove.position.pos + distanceMoved
             let typeToMove = tileToMove.type
 
-            editableWorld[newPosition] = typeToMove
+            editableWorld.forceCreateTile(pos: newPosition, type: typeToMove)
         }
 
+        didPerformAction()
         undoManager.registerUndo(withTarget: self) { this in
             this.revertAction(originalTiles: originalTiles)
         }
@@ -91,6 +99,7 @@ class Editor: EditorToolsDelegate {
             editableWorld.forceCreateTile(pos: position2D, type: selectedTileType)
         }
 
+        didPerformAction()
         undoManager.registerUndo(withTarget: self) { this in
             this.revertAction(originalTiles: originalTiles)
         }
@@ -105,6 +114,7 @@ class Editor: EditorToolsDelegate {
             editableWorld[position] = TileType.air
         }
 
+        didPerformAction()
         undoManager.registerUndo(withTarget: self) { this in
             this.revertAction(originalTiles: originalTiles)
         }
@@ -122,9 +132,14 @@ class Editor: EditorToolsDelegate {
             editableWorld[position] = type
         }
 
+        didPerformAction()
         undoManager.registerUndo(withTarget: self) { this in
             this.revertAction(originalTiles: nowOriginalTiles)
         }
+    }
+
+    private func didPerformAction() {
+        editableWorld.world.runActions()
     }
     // endregion
 

@@ -29,17 +29,15 @@ class TurretMetadata: AbstractSpawnMetadata {
 
     // ---
 
-    enum CodingKeys: CodingKey {
-        case initialTurretDirectionRelativeToAnchor
+    override func decodeFrom(json: JSON) throws {
+        let jsonDict = try json.toDictionary()
+        try DecodeSettingError.assertKeysIn(dictionary: jsonDict, requiredKeys: ["initialTurretDirectionRelativeToAnchor"])
+        initialTurretDirectionRelativeToAnchor = try jsonDict["initialTurretDirectionRelativeToAnchor"]!.toAngle()
     }
 
-    override func decode(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        initialTurretDirectionRelativeToAnchor = try container.decode(Angle.self, forKey: .initialTurretDirectionRelativeToAnchor)
-    }
-
-    override func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(initialTurretDirectionRelativeToAnchor, forKey: .initialTurretDirectionRelativeToAnchor)
+    override func encodeToJson() throws -> JSON {
+        JSON([
+            "initialTurretDirectionRelativeToAnchor": JSON(initialTurretDirectionRelativeToAnchor)
+        ])
     }
 }

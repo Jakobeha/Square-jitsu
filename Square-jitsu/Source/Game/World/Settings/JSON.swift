@@ -6,6 +6,10 @@
 import SpriteKit
 
 extension JSON {
+    init(_ angle: Angle) {
+        self.init(angle.description)
+    }
+
     var isNull: Bool { type == .null }
 
     func toString() throws -> String {

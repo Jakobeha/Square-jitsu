@@ -11,11 +11,12 @@ class Button: UXView {
     private static let backgroundSelected: SKTexture = SKTexture(imageNamed: "UI/ButtonBackgroundSelected")
     private static let backgroundTintSaturation: CGFloat = 0.25
     static let disabledForegroundAlpha: CGFloat = 0.5
+    private static let rouletteNextItemSizeMultiplier: CGFloat = 0.5
+    private static let rouletteNextItemAlphaMultiplier: CGFloat = 0.5
 
     static let instantActionButtonTintHue: CGFloat = 0.32
-    static let selectButtonTintHue: CGFloat = 0.54
 
-    private static func backgroundNodeTintColor(tintHue: CGFloat?) -> SKColor {
+    private static func backgroundTintColor(tintHue: CGFloat?) -> SKColor {
         if let tintHue = tintHue {
             return SKColor(hue: tintHue, saturation: backgroundTintSaturation, brightness: 1, alpha: 1)
         } else {
@@ -23,7 +24,7 @@ class Button: UXView {
         }
     }
 
-    private static func backgroundNodeTexture(isPressed: Bool, isSelected: Bool) -> SKTexture {
+    private static func backgroundTexture(isPressed: Bool, isSelected: Bool) -> SKTexture {
         if isPressed {
             return backgroundPressed
         } else if isSelected {
@@ -33,13 +34,17 @@ class Button: UXView {
         }
     }
 
+    private static func foregroundAlpha(isEnabled: Bool) -> CGFloat {
+        isEnabled ? 1 : Button.disabledForegroundAlpha
+    }
+
     private let buttonSize: ButtonSize
 
     private var isPressed: Bool = false {
-        didSet { backgroundNode.texture = Button.backgroundNodeTexture(isPressed: isPressed, isSelected: isSelected) }
+        didSet { backgroundNode.texture = Button.backgroundTexture(isPressed: isPressed, isSelected: isSelected) }
     }
     private var isSelected: Bool {
-        didSet { backgroundNode.texture = Button.backgroundNodeTexture(isPressed: isPressed, isSelected: isSelected) }
+        didSet { backgroundNode.texture = Button.backgroundTexture(isPressed: isPressed, isSelected: isSelected) }
     }
     var isEnabled: Bool {
         didSet { updateForIsEnabled() }
@@ -47,19 +52,27 @@ class Button: UXView {
 
     private let buttonNode: ButtonNode
     private let backgroundNode: SKSpriteNode
+    private let rouletteNextItemNode: SKSpriteNode?
     private let foregroundNode: SKSpriteNode
     var node: SKNode { buttonNode }
 
     var size: CGSize { buttonSize.cgSize }
 
-    init(textureName: String, size: ButtonSize = .medium, isEnabled: Bool = true, isSelected: Bool = false, tintHue: CGFloat? = nil, action: @escaping () -> ()) {
+    init(
+            textureName: String,
+            rouletteNextItemTextureName: String? = nil,
+            size: ButtonSize = .medium,
+            isEnabled: Bool = true,
+            isSelected: Bool = false,
+            tintHue: CGFloat? = nil,
+            action: @escaping () -> ()
+    ) {
         buttonSize = size
         self.isEnabled = isEnabled
         self.isSelected = isSelected
-        let texture = SKTexture(imageNamed: textureName)
         backgroundNode = SKSpriteNode(
-                texture: Button.backgroundNodeTexture(isPressed: false, isSelected: isSelected),
-                color: Button.backgroundNodeTintColor(tintHue: tintHue),
+                texture: Button.backgroundTexture(isPressed: false, isSelected: isSelected),
+                color: Button.backgroundTintColor(tintHue: tintHue),
                 size: size.cgSize
         )
         if tintHue != nil {
@@ -67,15 +80,34 @@ class Button: UXView {
         }
         backgroundNode.anchorPoint = UXSpriteAnchor
         backgroundNode.zPosition = 0
+        if let rouletteNextItemTextureName = rouletteNextItemTextureName {
+            let rouletteNextItemTexture = SKTexture(imageNamed: rouletteNextItemTextureName)
+            rouletteNextItemNode = SKSpriteNode(texture: rouletteNextItemTexture, size: size.cgSize * Button.rouletteNextItemSizeMultiplier)
+            rouletteNextItemNode!.alpha = Button.foregroundAlpha(isEnabled: isEnabled) * Button.rouletteNextItemAlphaMultiplier
+            rouletteNextItemNode!.anchorPoint = UXSpriteAnchor
+            rouletteNextItemNode!.position = CGPoint(
+                x: size.cgSize.width * (1 - Button.rouletteNextItemSizeMultiplier),
+                // Necessary because of UX coordinates
+                y: -size.cgSize.height * (1 - Button.rouletteNextItemSizeMultiplier)
+            )
+            rouletteNextItemNode!.position.y *= -1
+            rouletteNextItemNode!.zPosition = 1
+        } else {
+            rouletteNextItemNode = nil
+        }
+        let texture = SKTexture(imageNamed: textureName)
         foregroundNode = SKSpriteNode(texture: texture, size: size.cgSize)
         foregroundNode.alpha = isEnabled ? 1 : Button.disabledForegroundAlpha
         foregroundNode.anchorPoint = UXSpriteAnchor
-        foregroundNode.zPosition = 1
+        foregroundNode.zPosition = 2
         buttonNode = ButtonNode(
             size: buttonSize.cgSize,
             action: action
         )
         buttonNode.addChild(backgroundNode)
+        if let rouletteNextItemNode = rouletteNextItemNode {
+            buttonNode.addChild(rouletteNextItemNode)
+        }
         buttonNode.addChild(foregroundNode)
         buttonNode.onTouchDown = { self.isPressed = true }
         buttonNode.onTouchUp = { self.isPressed = false }
@@ -85,7 +117,8 @@ class Button: UXView {
 
     private func updateForIsEnabled() {
         buttonNode.isEnabled = isEnabled
-        foregroundNode.alpha = isEnabled ? 1 : Button.disabledForegroundAlpha
+        foregroundNode.alpha = Button.foregroundAlpha(isEnabled: isEnabled)
+        rouletteNextItemNode?.alpha = Button.foregroundAlpha(isEnabled: isEnabled) * Button.rouletteNextItemAlphaMultiplier
     }
 
     func set(sceneSize: CGSize) {}

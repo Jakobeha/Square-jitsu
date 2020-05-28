@@ -14,6 +14,9 @@ class Chunk: ReadonlyChunk, Codable {
 
     private var tiles: ChunkMatrix<TileType> = ChunkMatrix()
     var tileMetadatas: [ChunkTilePos3D:TileMetadata] = [:]
+    private var sortedTileMetadatas: [(key: ChunkTilePos3D, value: TileMetadata)] {
+        tileMetadatas.sorted { $0.key < $1.key }
+    }
 
     private let _didChangeTile: Publisher<(pos3D: ChunkTilePos3D, oldType: TileType)> = Publisher()
     // Exposed for the world class, which signals events through the chunk for views
@@ -183,19 +186,14 @@ class Chunk: ReadonlyChunk, Codable {
         }
         tiles.decode(from: tileData)
 
-        let metadatasContainer = try container.nestedContainer(keyedBy: MetadataCodingKey.self, forKey: .tileMetadatas)
-        tileMetadatas = [:]
-        var nextMetadataIndex: Int = 0
-        for chunkTilePos3D in ChunkTilePos3D.allCases {
-            let tileType = tiles[chunkTilePos3D]
-            if let tileMetadata = tileType.bigType.newMetadata() {
-                TileMetadataCodingWrapper.metadataBeingCoded = tileMetadata
-                let _ = try metadatasContainer.decode(TileMetadataCodingWrapper.self, forKey: MetadataCodingKey(index: nextMetadataIndex))
-                nextMetadataIndex += 1
-            }
-
-            if tileType.bigType == TileBigType.player {
-                throw DecodingError.dataCorruptedError(forKey: .tileData, in: container, debugDescription: "player tile can't be serialized - currently player position needs to be in the chunk at (0, 0), so it's provided by the background chunk which isn't serialized")
+        let encodedMetadatasAndPositions = try container.decode([JSON].self, forKey: .tileMetadatas)
+        for encodedMetadataAndPos3D in encodedMetadatasAndPositions {
+            try DecodeTileMetadataFrom(json: encodedMetadataAndPos3D) { pos3D in
+                let tileType = tiles[pos3D]
+                // Might be nil
+                let tileMetadata = tileType.bigType.newMetadata()
+                tileMetadatas[pos3D] = tileMetadata
+                return tileMetadata
             }
         }
     }
@@ -206,15 +204,10 @@ class Chunk: ReadonlyChunk, Codable {
         let tileData = tiles.toData
         try container.encode(tileData, forKey: .tileData)
 
-        var metadatasContainer = container.nestedContainer(keyedBy: MetadataCodingKey.self, forKey: .tileMetadatas)
-        var nextMetadataIndex: Int = 0
-        for chunkTilePos3D in ChunkTilePos3D.allCases {
-            if let tileMetadata = tileMetadatas[chunkTilePos3D] {
-                TileMetadataCodingWrapper.metadataBeingCoded = tileMetadata
-                try metadatasContainer.encode(TileMetadataCodingWrapper(), forKey: MetadataCodingKey(index: nextMetadataIndex))
-                nextMetadataIndex += 1
-            }
+        let encodedMetadatasAndPositions = try sortedTileMetadatas.map { (pos, tileMetadata) in
+            try EncodeTileMetadataToJson(pos: pos, tileMetadata: tileMetadata)
         }
+        try container.encode(encodedMetadatasAndPositions, forKey: .tileMetadatas)
     }
     // endregion
 }

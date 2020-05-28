@@ -6,6 +6,30 @@
 import SpriteKit
 
 extension CGRect {
+    var center: CGPoint {
+        CGPoint(x: midX, y: midY)
+    }
+
+    var bottomLeft: CGPoint {
+        CGPoint(x: minX, y: minY)
+    }
+
+    var bottomRight: CGPoint {
+        CGPoint(x: maxX, y: minY)
+    }
+
+    var topLeft: CGPoint {
+        CGPoint(x: minX, y: maxY)
+    }
+
+    var topRight: CGPoint {
+        CGPoint(x: maxX, y: maxY)
+    }
+
+    var corners: [CGPoint] {
+        [topRight, topLeft, bottomLeft, bottomRight]
+    }
+
     init(center: CGPoint, size: CGSize) {
         self.init(origin: center - (size / 2), size: size)
     }
@@ -23,19 +47,14 @@ extension CGRect {
         insetBy(dx: sideLength, dy: sideLength)
     }
 
-    var bottomLeft: CGPoint {
-        CGPoint(x: minX, y: minY)
-    }
-
-    var bottomRight: CGPoint {
-        CGPoint(x: maxX, y: minY)
-    }
-
-    var topLeft: CGPoint {
-        CGPoint(x: minX, y: maxY)
-    }
-
-    var topRight: CGPoint {
-        CGPoint(x: maxX, y: maxY)
+    /// The bounds of this rectangle (as a geometric shape) rotated by angle
+    func rotateBoundsBy(_ angle: Angle) -> CGRect {
+        let originalQuadrant = (size / 2).toPoint
+        let rotatedQuadrant = originalQuadrant.rotateAroundCenter(by: angle)
+        let rotatedSize = CGSize(
+            width: abs(rotatedQuadrant.x) * 2,
+            height: abs(rotatedQuadrant.y) * 2
+        )
+        return CGRect(center: self.center, size: rotatedSize)
     }
 }

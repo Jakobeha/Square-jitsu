@@ -15,9 +15,7 @@ class EditMoveView: UXView {
 
     private var hasTileViews: Bool { !tileViews.isEmpty }
 
-    private var sceneSize: CGSize = CGSize.zero {
-        didSet { updateNodePositionForCameraChange() }
-    }
+    private var sceneSize: CGSize = CGSize.zero
     var size: CGSize { sceneSize }
 
     init(editor: Editor) {
@@ -32,15 +30,21 @@ class EditMoveView: UXView {
     private func updateMovedTileViews() {
         switch editor.tools.editAction {
         case .move(let selectedPositions, let state):
-            switch state {
-            case .notStarted:
-                removeMovedTileViewsIfNecessary()
-            case .inProgress(let start, let end):
-                addMovedTileViewsIfNecessary(positions: selectedPositions)
-                updateMovedTileViewPositions(startTouchPos: start, endTouchPos: end)
-            }
+            updateMovedTileViews(selectedPositions: selectedPositions, state: state)
+        case .copy(let selectedPositions, let state):
+            updateMovedTileViews(selectedPositions: selectedPositions, state: state)
         default:
             removeMovedTileViewsIfNecessary()
+        }
+    }
+
+    private func updateMovedTileViews(selectedPositions: Set<WorldTilePos3D>, state: EditMoveState) {
+        switch state {
+        case .notStarted:
+            removeMovedTileViewsIfNecessary()
+        case .inProgress(let start, let end):
+            addMovedTileViewsIfNecessary(positions: selectedPositions)
+            updateMovedTileViewPositions(startTouchPos: start, endTouchPos: end)
         }
     }
 
@@ -72,7 +76,7 @@ class EditMoveView: UXView {
     }
 
     private func updateNodePositionForCameraChange() {
-        editor.editorCamera.inverseTransformUX(rootNode: node, size: sceneSize, settings: editor.settings)
+        editor.editorCamera.inverseTransformUX(rootNode: node)
     }
 
     func set(sceneSize: CGSize) {

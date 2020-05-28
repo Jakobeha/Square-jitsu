@@ -17,7 +17,7 @@ class EditorView: NodeView<SKNode> {
         let editorUiView = UXTopLevelView(child: editorToolsView, sceneSize: sceneSize)
 
         let worldView = WorldView(world: editor.editableWorld.world)
-        worldCameraView = CameraView(camera: editor.currentCamera, child: worldView, sceneSize: sceneSize, settings: editor.editableWorld.world.settings)
+        worldCameraView = CameraView(camera: editor.currentCamera, child: worldView)
 
         super.init(node: SKNode())
         editorUiView.placeIn(parent: node)

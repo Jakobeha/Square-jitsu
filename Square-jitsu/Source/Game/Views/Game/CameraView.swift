@@ -16,14 +16,10 @@ class CameraView: NodeView<SKNode> {
         }
     }
     private let child: View
-    private let sceneSize: CGSize
-    private let settings: WorldSettings
 
-    init(camera: Camera, child: View, sceneSize: CGSize, settings: WorldSettings) {
+    init(camera: Camera, child: View) {
         self.camera = camera
         self.child = child
-        self.sceneSize = sceneSize
-        self.settings = settings
         super.init(node: SKNode())
         child.placeIn(parent: node)
         update()
@@ -31,6 +27,6 @@ class CameraView: NodeView<SKNode> {
     }
 
     private func update() {
-        camera.inverseTransform(rootNode: node, size: sceneSize, settings: settings)
+        camera.inverseTransform(rootNode: node)
     }
 }

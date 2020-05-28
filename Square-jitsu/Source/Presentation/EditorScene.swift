@@ -10,6 +10,9 @@ import SpriteKit
 
 class EditorScene: SKScene {
     private let settings: UserSettings = UserSettings()
+    override var size: CGSize {
+        didSet { settings.screenSize = size }
+    }
 
     private var editorController: EditorController? {
         willSet {
@@ -29,8 +32,9 @@ class EditorScene: SKScene {
 
     override func sceneDidLoad() {
         super.sceneDidLoad()
+        settings.screenSize = size
 
-        editorController = EditorController(userSettings: UserSettings(), parent: self)
+        editorController = EditorController(userSettings: settings, parent: self)
         editorController!.loadTestWorld()
     }
 

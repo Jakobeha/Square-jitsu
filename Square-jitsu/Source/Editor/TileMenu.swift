@@ -36,15 +36,13 @@ class TileMenu {
     }
 
     var selectedTileTypesPerLayer: [TileLayer:TileType] {
-        selectedBigTypesPerLayer.mapValues { bigType in TileType(bigType: bigType, smallType: selectedSmallType) }
+        selectedBigTypesPerLayer.mapValues(getCurrentSelectableTypeWith)
     }
     var selectedTileType: TileType { TileType(bigType: selectedBigType, smallType: selectedSmallType) }
 
     var layerSubmenuLayout: [TileLayer]
     var bigSubmenuLayout: [TileLayer:[TileType]] {
-        generalLayout.mapValues { bigTypes in bigTypes.map { bigType in
-            TileType(bigType: bigType, smallType: selectedSmallType)
-        } }
+        generalLayout.mapValues { bigTypes in bigTypes.map(getCurrentSelectableTypeWith) }
     }
     var smallSubmenuLayout: [TileBigType:[TileType]]? {
         openLayer == nil ? nil : generalLayout[openLayer!]!.associateWith { bigType in
@@ -70,5 +68,15 @@ class TileMenu {
         }
         selectedBigType = selectableBigTypes.first!
         selectedBigTypesPerLayer = generalLayout.mapValues { bigTypes in bigTypes.first! }
+    }
+
+    /// If the input big type becomes the selected big type,
+    /// the output tile type will be the selected tile type.
+    /// That is, this is the big type with the selected small type if that type is selectable,
+    /// otherwise it's the big type with the first selectable small type
+    func getCurrentSelectableTypeWith(bigType: TileBigType) -> TileType {
+        let selectableSmallTypes = settings.selectableTypes[bigType]!
+        let smallType = selectableSmallTypes.contains(selectedSmallType) ? selectedSmallType : selectableSmallTypes.first!
+        return TileType(bigType: bigType, smallType: smallType)
     }
 }

@@ -110,6 +110,10 @@ extension CGPoint {
         CGPoint(x: round(x), y: round(y))
     }
 
+    var toSize: CGSize {
+        CGSize(width: x, height: y)
+    }
+
     func rotateAroundCenter(by rotation: Angle) -> CGPoint {
         CGPoint(magnitude: magnitude, directionFromOrigin: directionFromOrigin + rotation)
     }

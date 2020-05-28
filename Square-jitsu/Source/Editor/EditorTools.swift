@@ -31,8 +31,8 @@ class EditorTools {
 
     var selectedTileType: TileType { tileMenu.selectedTileType }
     private var hasEditMoveState: Bool {
-        switch editAction {
-        case .move(selectedPositions: _, state: _):
+        switch editAction.mode {
+        case .move, .copy:
             return true
         default:
             return false
@@ -43,6 +43,8 @@ class EditorTools {
             switch editAction {
             case .move(selectedPositions: _, let state):
                 return state
+            case .copy(selectedPositions: _, let state):
+                return state
             default:
                 fatalError("illegal state - tried to get edit move state but there is none")
             }
@@ -51,6 +53,8 @@ class EditorTools {
             switch editAction {
             case .move(let selectedPositions, state: _):
                 editAction = .move(selectedPositions: selectedPositions, state: newValue)
+            case .copy(let selectedPositions, state: _):
+                editAction = .copy(selectedPositions: selectedPositions, state: newValue)
             default:
                 fatalError("illegal state - tried to set edit move state but there is none")
             }
@@ -166,6 +170,10 @@ class EditorTools {
                 // Perform a move with these tiles - select them and then perform a move
                 let nextEditMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
                 editAction = .move(selectedPositions: selectedPositions, state: nextEditMoveState)
+            case .copy:
+                // Perform a copy with these tiles
+                let nextEditMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
+                editAction = .copy(selectedPositions: selectedPositions, state: nextEditMoveState)
             case .place, .remove, .select, .deselect, .inspect:
                 fatalError("unhandled move which requires selection: \(editAction.mode)")
             }
@@ -173,10 +181,12 @@ class EditorTools {
             if hasEditMoveState {
                 // Perform a move with the selected tiles
                 editMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
-                // We need to synchronize before hiding, we don't put it in the temporarilyHide method
-                // because it would be misleading
-                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
-                world.temporarilyHide(positions: editAction.selectedPositions)
+                if editAction.mode == .move {
+                    // We need to synchronize before hiding, we don't put it in temporarilyHide
+                    // because it would be misleading
+                    world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+                    world.temporarilyHide(positions: editAction.selectedPositions)
+                }
             } else {
                 // Perform a select
                 editSelection = editSelection.afterTouchDown(firstTouchPos: touchPos)
@@ -194,11 +204,18 @@ class EditorTools {
 
     private func afterTouchUp(touchPos: TouchPos) {
         if hasEditMoveState && editMoveState.isStarted {
+            if editAction.mode == .move {
+                // We need to synchronize before showing, we don't put it in showTemporarilyHidden
+                // because it would be misleading
+                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+                world.showTemporarilyHidden(positions: editAction.selectedPositions)
+            }
+
             let distanceMoved = editMoveState.distanceMovedAfterTouchUp(finalTouchPos: touchPos)
-            delegate?.performMoveAction(selectedPositions: editAction.selectedPositions, distanceMoved: distanceMoved)
-            if editSelection.mode.canInstantSelect {
-                editAction = .move(selectedPositions: [], state: .notStarted)
-            } else {
+            delegate?.performMoveAction(selectedPositions: editAction.selectedPositions, distanceMoved: distanceMoved, isCopy: editAction.mode == .copy)
+
+            editAction.selectedPositions = []
+            if !editSelection.mode.canInstantSelect {
                 // We need to change the mode because we can't select move without instant select ability, it's useless
                 editAction = .select(selectedPositions: [])
             }
@@ -211,7 +228,13 @@ class EditorTools {
 
     private func afterTouchCancel() {
         if hasEditMoveState {
-            world.showTemporarilyHidden(positions: editAction.selectedPositions)
+            if editAction.mode == .move {
+                // We need to synchronize before showing, we don't put it in showTemporarilyHidden
+                // because it would be misleading
+                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+                world.showTemporarilyHidden(positions: editAction.selectedPositions)
+            }
+            
             editMoveState = .notStarted
         } else {
             editSelection = editSelection.endedOrCancelled
@@ -243,8 +266,8 @@ class EditorTools {
             // Don't need to filter non-air positions because those are not present either way
             let newSelectedPositions = oldSelectedPositions.subtracting(selectedPositions)
             editAction = .deselect(selectedPositions: newSelectedPositions)
-        case .move(selectedPositions: _, state: _):
-            fatalError("illegal state - performCurrentAction called with .move action, use performMoveAction instead ")
+        case .move(selectedPositions: _, state: _), .copy(selectedPositions: _, state: _):
+            fatalError("illegal state - performCurrentAction called with move or copy action, use performMoveAction instead ")
         case .inspect(let selectedPositions):
             presentInspector(selectedPositions: selectedPositions)
         }
@@ -261,7 +284,7 @@ class EditorTools {
                 delegate?.performRemoveAction(selectedPositions: selectedPositions)
             case .inspect:
                 presentInspector(selectedPositions: selectedPositions)
-            case .move, .select, .deselect:
+            case .move, .copy, .select, .deselect:
                 // Not necessary on select
                 break
             }

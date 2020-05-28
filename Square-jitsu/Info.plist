@@ -4,6 +4,28 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>squarejitsu</string>
+			</array>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>LevelIcon_320x320.png</string>
+				<string>LevelIcon_64x64.png</string>
+				<string>LevelIcon_44x58.png</string>
+				<string>LevelIcon_22x29.png</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Square-jitsu Level</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>jakobeha.squarejitsulevel</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -19,6 +41,10 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -41,6 +67,46 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Square-jitsu Level</string>
+			<key>UTTypeIconFiles</key>
+			<array>
+				<string>LevelIcon_320x320.png</string>
+				<string>LevelIcon_64x64.png</string>
+				<string>LevelIcon_44x58.png</string>
+				<string>LevelIcon_22x29.png</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>jakobeha.squarejitsulevel</string>
+		</dict>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Square-jitsu Level</string>
+			<key>UTTypeIconFiles</key>
+			<array>
+				<string>LevelIcon_44x58.png</string>
+				<string>LevelIcon_64x64.png</string>
+				<string>LevelIcon_320x320.png</string>
+				<string>LevelIcon_22x29.png</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>jakobeha.squarejitsulevel</string>
+		</dict>
 	</array>
 </dict>
 </plist>

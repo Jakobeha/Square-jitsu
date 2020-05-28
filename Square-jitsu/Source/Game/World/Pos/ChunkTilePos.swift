@@ -5,7 +5,9 @@
 
 import SpriteKit
 
-struct ChunkTilePos: Equatable, Hashable, Codable, CaseIterable {
+struct ChunkTilePos: Equatable, Comparable, Hashable, Codable, CaseIterable {
+    static let zero: ChunkTilePos = ChunkTilePos(x: 0, y: 0)
+
     static let allCases: [ChunkTilePos] = {
         (0..<Chunk.widthHeight).flatMap { x in
             (0..<Chunk.widthHeight).map { y in
@@ -18,8 +20,17 @@ struct ChunkTilePos: Equatable, Hashable, Codable, CaseIterable {
         ChunkTilePos(x: lhs.x + offset.x, y: lhs.y + offset.y)
     }
 
+    /// Natural order is the same as that in `allCases`
+    static func <(lhs: ChunkTilePos, rhs: ChunkTilePos) -> Bool {
+        lhs.order < rhs.order
+    }
+
     let x: Int
     let y: Int
+
+    var order: Int {
+        x + (y * Chunk.widthHeight)
+    }
 
     var cgPoint: CGPoint {
         CGPoint(x: CGFloat(x), y: CGFloat(y))

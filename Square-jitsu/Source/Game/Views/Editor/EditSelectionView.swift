@@ -18,9 +18,7 @@ class EditSelectionView: UXView {
     private let currentSelectionNode: SKShapeNode
     private let pastSelectionNode: SKShapeNode
 
-    private var sceneSize: CGSize = CGSize.zero {
-        didSet { updateNodePositionForCameraChange() }
-    }
+    private var sceneSize: CGSize = CGSize.zero
     var size: CGSize { sceneSize }
 
     init(editor: Editor) {
@@ -57,7 +55,7 @@ class EditSelectionView: UXView {
     }
 
     private func updateNodePositionForCameraChange() {
-        editor.editorCamera.inverseTransformUX(rootNode: node, size: sceneSize, settings: editor.settings)
+        editor.editorCamera.inverseTransformUX(rootNode: node)
     }
 
     private func updateCurrentSelectionNodePath() {
