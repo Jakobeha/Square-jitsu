@@ -61,6 +61,15 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         }
     }
 
+    var canBeSelected: Bool {
+        switch self {
+        case .air, .player:
+            return false
+        default:
+            return true
+        }
+    }
+
     // --- End pattern matching
 
     static func typesCanOverlap(_ lhs: TileBigType, _ rhs: TileBigType) -> Bool {

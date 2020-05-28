@@ -8,5 +8,5 @@ import Foundation
 struct Inspector {
     let positions: Set<WorldTilePos3D>
     weak var delegate: EditorToolsDelegate? = nil
-    weak var world: ReadonlyWorld! = nil
+    weak var world: ReadonlyStatelessWorld! = nil
 }

@@ -1,0 +1,81 @@
+//
+// Created by Jakob Hain on 5/27/20.
+// Copyright (c) 2020 Jakobeha. All rights reserved.
+//
+
+import SpriteKit
+
+class EditMoveView: UXView {
+    private let editor: Editor
+
+    let node: SKNode = SKNode()
+    // TODO: Make an SKEffectNode and add a shadow effect
+    private let tileViewsNode: SKNode = SKNode()
+    private var tileViews: [TileView] = []
+
+    private var hasTileViews: Bool { !tileViews.isEmpty }
+
+    private var sceneSize: CGSize = CGSize.zero {
+        didSet { updateNodePositionForCameraChange() }
+    }
+    var size: CGSize { sceneSize }
+
+    init(editor: Editor) {
+        self.editor = editor
+
+        node.addChild(tileViewsNode)
+
+        editor.tools.didChangeEditAction.subscribe(observer: self, handler: updateMovedTileViews)
+        editor.editorCamera.didChange.subscribe(observer: self, handler: updateNodePositionForCameraChange)
+    }
+
+    private func updateMovedTileViews() {
+        switch editor.tools.editAction {
+        case .move(let selectedPositions, let state):
+            switch state {
+            case .notStarted:
+                removeMovedTileViewsIfNecessary()
+            case .inProgress(let start, let end):
+                addMovedTileViewsIfNecessary(positions: selectedPositions)
+                updateMovedTileViewPositions(startTouchPos: start, endTouchPos: end)
+            }
+        default:
+            removeMovedTileViewsIfNecessary()
+        }
+    }
+
+    private func removeMovedTileViewsIfNecessary() {
+        if hasTileViews {
+            for tileView in tileViews {
+                tileView.removeFromParent()
+            }
+            tileViews.removeAll()
+        }
+    }
+
+    private func addMovedTileViewsIfNecessary(positions: Set<WorldTilePos3D>) {
+        if hasTileViews {
+            assert(tileViews.count == positions.count, "unexpected change in moved tile positions, didn't implement handling this")
+        } else {
+            for pos3D in positions {
+                let tileType = editor.editableWorld.world[pos3D]
+                let tileView = TileView(world: editor.editableWorld.world, pos: pos3D.pos, tileType: tileType, coordinates: .world)
+                tileView.placeIn(parent: tileViewsNode)
+                tileViews.append(tileView)
+            }
+        }
+    }
+
+    private func updateMovedTileViewPositions(startTouchPos: TouchPos, endTouchPos: TouchPos) {
+        let offsetFromMove = endTouchPos.screenPos - startTouchPos.screenPos
+        tileViewsNode.position = offsetFromMove
+    }
+
+    private func updateNodePositionForCameraChange() {
+        editor.editorCamera.inverseTransformUX(rootNode: node, size: sceneSize, settings: editor.settings)
+    }
+
+    func set(sceneSize: CGSize) {
+        self.sceneSize = sceneSize
+    }
+}

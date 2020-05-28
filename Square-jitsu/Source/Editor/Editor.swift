@@ -24,14 +24,14 @@ class Editor: EditorToolsDelegate {
         }
     }
 
-    var settings: WorldSettings { editableWorld.world.settings }
+    var settings: WorldSettings { editableWorld.settings }
 
     private let _didChangeState: Publisher<()> = Publisher()
     var didChangeState: Observable<()> { Observable(publisher: _didChangeState) }
 
     /// Creates an editable world from the document and settings, and an editor for it
-    convenience init(worldDocument: WorldDocument, userSettings: UserSettings) throws {
-        let worldFile = try worldDocument.getFile()
+    convenience init(worldDocument: WorldDocument, userSettings: UserSettings) {
+        let worldFile = worldDocument.file!
         let editableWorld = EditableWorld(worldFile: worldFile, userSettings: userSettings)
 
         self.init(editableWorld: editableWorld, undoManager: worldDocument.undoManager, userSettings: userSettings)
@@ -39,7 +39,7 @@ class Editor: EditorToolsDelegate {
     
     init(editableWorld: EditableWorld, undoManager: UndoManager, userSettings: UserSettings) {
         self.editableWorld = editableWorld
-        tools = EditorTools(world: editableWorld.world, editorCamera: editorCamera, userSettings: userSettings)
+        tools = EditorTools(world: editableWorld, editorCamera: editorCamera, userSettings: userSettings)
         self.undoManager = undoManager
 
         tools.delegate = self

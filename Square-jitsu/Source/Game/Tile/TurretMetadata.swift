@@ -5,9 +5,8 @@
 
 import SpriteKit
 
-class TurretMetadata: EmptyTileMetadata {
+class TurretMetadata: AbstractSpawnMetadata {
     var initialTurretDirectionRelativeToAnchor: Angle = -Angle.right
-    private var spawned: Bool = false
 
     override func tick(world: World, pos: WorldTilePos3D) {
         super.tick(world: world, pos: pos)
@@ -26,16 +25,6 @@ class TurretMetadata: EmptyTileMetadata {
                 }
             }
         }
-    }
-
-    private func spawn(world: World, pos: WorldTilePos3D) {
-        let myTileType = world[pos]
-        let turretEntity = Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
-
-        let initialTurretDirection = myTileType.orientation.toSide.angle + initialTurretDirectionRelativeToAnchor
-        turretEntity.next.locC!.rotation = initialTurretDirection
-
-        spawned = true
     }
 
     // ---

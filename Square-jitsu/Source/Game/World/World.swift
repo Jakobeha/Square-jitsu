@@ -31,21 +31,16 @@ class World: ReadonlyWorld {
         }
     }
 
-    private var _playerMetadata: PlayerSpawnMetadata? = nil
-    var playerMetadata: PlayerSpawnMetadata {
-        get { _playerMetadata! }
-        set {
-            if _playerMetadata != nil {
-                Logger.warn("player already loaded, one player spawn chunk per world, not setting this field")
-            } else {
-                _playerMetadata = newValue
-            }
+    var playerMetadata: PlayerSpawnMetadata? = nil {
+        willSet {
+            assert(playerMetadata == nil, "playerMetadata can only be assigned once")
+            assert(newValue != nil, "this is a redundant assignment of playerMetadata to nil, it's almost definitely wrong")
         }
     }
     private var _player: Entity? = nil
     var player: Entity {
-            assert(_player != nil, "world isn't loaded yet, the player spawn chunk must be loaded, which loads the player spawn and sets the player entity")
-            return _player!
+        assert(_player != nil, "world isn't loaded yet, the player spawn chunk must be loaded, which loads the player spawn and sets the player entity")
+        return _player!
     }
     /// We put this in the world so it (i.e. what the player sees) is defined as part of the game
     /// ... and also because it's easy
@@ -81,11 +76,11 @@ class World: ReadonlyWorld {
 
     private func loadPlayer() {
         load(pos: loader.playerSpawnChunkPos)
-        if _playerMetadata == nil {
+        if playerMetadata == nil {
             Logger.warn("player spawn not in chunk pos, or player spawn didn't spawn player")
-            _playerMetadata = PlayerSpawnMetadata.dummyForInvalid(world: self)
+            playerMetadata = PlayerSpawnMetadata.dummyForInvalid(world: self)
         }
-        _player = playerMetadata.spawnPlayer()
+        _player = playerMetadata!.spawnPlayer()
         // This actually adds the player entity,
         // otherwise the player isn't visible first frame,
         // which is a problem since the editor initially loads the world paused
@@ -101,22 +96,24 @@ class World: ReadonlyWorld {
     }
 
     func resetExceptForPlayer() {
-        // Unload all chunks except for 
-        let playerSpawnChunk = getChunkAt(pos: loader.playerSpawnChunkPos)
-        let persistentPlayerSpawnChunkData = persistentChunkData[loader.playerSpawnChunkPos]!
-
         peekedChunks = [:]
-        chunks = [loader.playerSpawnChunkPos:playerSpawnChunk]
-        persistentChunkData = [loader.playerSpawnChunkPos:persistentPlayerSpawnChunkData]
+        chunks = [:]
+        persistentChunkData = [:]
         speed = 1
         entitiesToAdd = []
         entitiesToRemove = []
         entities = [player]
+        _didReset.publish()
+        tick()
     }
 
     func resetPlayer() {
-        remove(entity: player)
-        _player = playerMetadata.spawnPlayer()
+        // Otherwise player died so it's already removed
+        if player.world === self {
+            removeNow(entity: player)
+        }
+        _player = playerMetadata!.spawnPlayer()
+        tick() // Adds the player
     }
     //endregion
 
@@ -276,6 +273,15 @@ class World: ReadonlyWorld {
         notifyObserversOfAdjacentTileChanges(pos: pos3D.pos)
     }
 
+    /// If you changed a tile and had the change persist,
+    /// but want to revert the change to the same tile as the world loader provides,
+    /// call this to clear the persistent data and then call
+    /// set(pos3D: pos3D, to: <#original#>, persistInGame: false)`
+    func clearPersistentTileTypeAt(pos3D: WorldTilePos3D) {
+        let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
+        persistentDataForChunk.overwrittenTiles[pos3D.chunkTilePos3D] = nil
+    }
+
     func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
         return chunk.getMetadatasAt(pos: pos.chunkTilePos)
@@ -334,88 +340,6 @@ class World: ReadonlyWorld {
     private func getChunkAt(pos: WorldChunkPos) -> Chunk {
         load(pos: pos)
         return chunks[pos]!
-    }
-    // endregion
-
-    // region advanced tile access
-    /// Note: doesn't return nil for air
-    func sideAdjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
-        let type = self[pos3D]
-
-        return getConnectedSideAdjacents(origin: pos3D) { testPos in
-            let typesAtPos = self[testPos]
-            // Technically it doesn't matter whether we use firstIndex or lastIndex
-            if let indexWithSameTypeAtPos = typesAtPos.lastIndex(of: type) {
-                return [indexWithSameTypeAtPos]
-            } else {
-                return []
-            }
-        }
-    }
-
-    // Return a set of all positions "connected" to the origin (including it), according to the predicate
-    private func getConnectedSideAdjacents(origin: WorldTilePos3D, getConnectedLayers: (WorldTilePos) -> [Int]) -> Set<WorldTilePos3D> {
-        var positions3D: Set<WorldTilePos3D> = [origin]
-
-        var positions2DAtPrevDistance: Set<WorldTilePos> = [origin.pos]
-        var distance = 0
-        while !positions2DAtPrevDistance.isEmpty {
-            distance += 1
-            var positions2DAtNextDistance: Set<WorldTilePos> = []
-            var maybeConnectedPositions2DAtNextDistance: Set<WorldTilePos> = []
-            var maybeConnectedPositions3D: Set<WorldTilePos3D> = []
-
-            for pos in WorldTilePos.sweepSquare(center: origin.pos, distance: distance) {
-                // Technically it doesn't matter whether we use firstIndex or lastIndex
-                let connectedLayers = getConnectedLayers(pos)
-                for layer in connectedLayers {
-                    // The world has a tile of the same type at this position - else it doesn't
-                    let pos3D = WorldTilePos3D(pos: pos, layer: layer)
-                    if positions2DAtPrevDistance.contains(anyOf: pos.sideAdjacents.values) {
-                        // The tile is connected to pos3D, add it.
-                        // Also all maybe positions are also connected, from transitivity
-                        positions2DAtNextDistance.insert(pos)
-                        positions3D.insert(pos3D)
-                        positions2DAtNextDistance.formUnion(maybeConnectedPositions2DAtNextDistance)
-                        maybeConnectedPositions3D.insert(pos3D)
-                        maybeConnectedPositions2DAtNextDistance.removeAll()
-                        maybeConnectedPositions3D.removeAll()
-                    } else {
-                        // The tile may not be connected, or maybe it will be connected to another connected tile at
-                        // this layer, and thus transitively connected
-                        maybeConnectedPositions2DAtNextDistance.insert(pos)
-                        maybeConnectedPositions3D.insert(pos3D)
-                    }
-                }
-                if !connectedLayers.isEmpty {
-                    // The maybe-connected tiles aren't actually connected
-                    maybeConnectedPositions2DAtNextDistance.removeAll()
-                    maybeConnectedPositions3D.removeAll()
-                }
-            }
-
-            positions2DAtPrevDistance = positions2DAtNextDistance
-        }
-
-        return positions3D
-    }
-    // endregion
-
-    // region tile showing / hiding
-    func temporarilyHide(positions: Set<WorldTilePos3D>) {
-        let tilesInChunks = WorldTilePos3D.groupByChunkPositions(positions)
-        for (worldChunkPos, chunkTilePositions) in tilesInChunks {
-            let chunk = getChunkAt(pos: worldChunkPos)
-            chunk.hide(positions: chunkTilePositions)
-        }
-    }
-
-    func showTemporarilyHidden(positions: Set<WorldTilePos3D>) {
-        let tilesInChunks = WorldTilePos3D.groupByChunkPositions(positions)
-        for (worldChunkPos, chunkTilePositions) in tilesInChunks {
-            let chunk = getChunkAt(pos: worldChunkPos)
-            chunk.showHidden(positions: chunkTilePositions)
-        }
     }
     // endregion
 

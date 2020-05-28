@@ -11,7 +11,13 @@ class TileMenu {
     private let generalLayout: [TileLayer:[TileBigType]]
 
     var selectedBigType: TileBigType {
-        didSet { _didSelect.publish() }
+        didSet {
+            let selectableSmallTypes = settings.selectableTypes[selectedBigType]!
+            if !selectableSmallTypes.contains(selectedSmallType) {
+                selectedSmallType = selectableSmallTypes.first!
+            }
+            _didSelect.publish()
+        }
     }
     var selectedSmallType: TileSmallType = TileSmallType(0) {
         didSet { _didSelect.publish() }

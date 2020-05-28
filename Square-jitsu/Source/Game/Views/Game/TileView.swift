@@ -6,20 +6,25 @@
 import SpriteKit
 
 class TileView: OptionalNodeView {
-    private let world: World
+    private let world: ReadonlyWorld
     private let tileType: TileType
 
     private var settings: WorldSettings { world.settings }
 
-    init(world: World, pos: WorldTilePos, tileType: TileType) {
+    init(world: ReadonlyWorld, pos: WorldTilePos, tileType: TileType, coordinates: TileViewCoordinates) {
         self.world = world
         self.tileType = tileType
         let template = world.settings.tileViewTemplates[tileType]
         super.init(node: template?.generateNode(world: world, pos: pos, tileType: tileType))
         if let node = node {
-            // Uses chunk position because this node is a child of the chunk's node
-            let chunkPos = pos.chunkTilePos
-            node.position = chunkPos.cgPoint * settings.tileViewWidthHeight
+            switch coordinates {
+            case .chunk:
+                // Uses chunk position because this node is a child of the chunk's node
+                let chunkPos = pos.chunkTilePos
+                node.position = chunkPos.cgPoint * settings.tileViewWidthHeight
+            case .world:
+                node.position = pos.cgPoint * settings.tileViewWidthHeight
+            }
             node.zPosition = tileType.bigType.layer.zPosition
             if world.settings.rotateTileViewBasedOnOrientation[tileType] ?? false {
                 node.angle = tileType.orientation.toSide.angle

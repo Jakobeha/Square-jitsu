@@ -31,6 +31,7 @@ class EditorController {
     }
 
     func loadTestWorld() {
+        // try! FileManager.default.removeItem(at: EditorController.testWorldUrl)
         load(worldUrl: EditorController.testWorldUrl) { result in
             switch result {
             case .success(()):
@@ -45,22 +46,18 @@ class EditorController {
         let document = WorldDocument(fileURL: worldUrl)
         document.open { succeeded in
             if succeeded {
-                do {
-                    try self.load(worldDocument: document)
-                    completionHandler(.success(()))
-                } catch {
-                    completionHandler(.failure(error))
-                }
+                self.load(worldDocument: document)
+                completionHandler(.success(()))
             } else {
                 completionHandler(.failure(WorldFileSyncError(action: "reading", error: nil)))
             }
         }
     }
 
-    func load(worldDocument: WorldDocument) throws {
+    func load(worldDocument: WorldDocument) {
         unload()
 
-        let editor = try Editor(worldDocument: worldDocument, userSettings: userSettings)
+        let editor = Editor(worldDocument: worldDocument, userSettings: userSettings)
         let editorView = EditorView(editor: editor, sceneSize: parent.size)
         editorView.placeIn(parent: parent)
         loaded = EditorModelView(editor: editor, editorView: editorView)

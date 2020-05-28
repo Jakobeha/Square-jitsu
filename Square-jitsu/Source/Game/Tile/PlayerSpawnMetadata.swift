@@ -21,8 +21,6 @@ class PlayerSpawnMetadata: EmptyTileMetadata {
     private var loadInfo: LoadInfo?
 
     override func onFirstLoad(world: World, pos: WorldTilePos3D) {
-        assert(loadInfo == nil)
-
         // Avoid if the tile type is wrong
         let myTileType = world[pos]
         if myTileType.bigType != TileBigType.player {
@@ -31,11 +29,15 @@ class PlayerSpawnMetadata: EmptyTileMetadata {
         }
         
 
-        // Assign to the world, and the world will spawn the player later
-        world.playerMetadata = self
+        if world.playerMetadata == nil {
+            // Assign to the world, and the world will spawn the player later
+            world.playerMetadata = self
 
-        // Assign load info for when the player will be spawned
-        loadInfo = LoadInfo(playerSpawnWorld: world, playerSpawnPos: pos)
+            // Assign load info for when the player will be spawned
+            loadInfo = LoadInfo(playerSpawnWorld: world, playerSpawnPos: pos)
+        }
+        // otherwise the world reset everything except the player, so this metadata just gets discarded.
+        // We still need to clear the tile position though
 
         // Remove so the player tile is no longer visible
         world.set(pos3D: pos, to: TileType.air, persistInGame: true)
@@ -47,5 +49,10 @@ class PlayerSpawnMetadata: EmptyTileMetadata {
         let pos = loadInfo!.playerSpawnPos
         let world = loadInfo!.playerSpawnWorld
         return Entity.newForSpawnTile(type: TileType.player, pos: pos, world: world)
+    }
+
+    func revert(world: World, pos3D: WorldTilePos3D) {
+        // This will never be called (as of writing this comment), but we can give it an ok implementation
+        world.resetPlayer()
     }
 }

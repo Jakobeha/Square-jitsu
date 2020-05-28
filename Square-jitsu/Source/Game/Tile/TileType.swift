@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct TileType: Equatable, Hashable, Codable, HasDefault, LosslessStringConvertible {
+struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault, LosslessStringConvertible {
     static let air: TileType = TileType(bigType: TileBigType.air)
     static let basicBackground: TileType = TileType(bigType: TileBigType.background)
     static let basicOverlapSensitiveBackground: TileType = TileType(bigType: TileBigType.overlapSensitiveBackground)

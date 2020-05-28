@@ -25,7 +25,7 @@ class EditorTools {
     let tileMenu: TileMenu
     private var inspector: Inspector? = nil
     weak var delegate: EditorToolsDelegate? = nil
-    private let world: ReadonlyWorld
+    private let world: EditableReadonlyStatelessWorld
     private let editorCamera: Camera
     private let userSettings: UserSettings
 
@@ -66,7 +66,7 @@ class EditorTools {
     var didChangeEditActionMode: Observable<()> { Observable(publisher: _didChangeEditActionMode) }
     var didChangeEditAction: Observable<()> { Observable(publisher: _didChangeEditAction) }
 
-    init(world: ReadonlyWorld, editorCamera: Camera, userSettings: UserSettings) {
+    init(world: EditableReadonlyStatelessWorld, editorCamera: Camera, userSettings: UserSettings) {
         self.world = world
         self.editorCamera = editorCamera
         self.userSettings = userSettings
@@ -173,6 +173,9 @@ class EditorTools {
             if hasEditMoveState {
                 // Perform a move with the selected tiles
                 editMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
+                // We need to synchronize before hiding, we don't put it in the temporarilyHide method
+                // because it would be misleading
+                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
                 world.temporarilyHide(positions: editAction.selectedPositions)
             } else {
                 // Perform a select
@@ -233,15 +236,17 @@ class EditorTools {
         case .remove:
             delegate?.performRemoveAction(selectedPositions: selectedPositions)
         case .select(selectedPositions: let oldSelectedPositions):
-            let selectedNonAirPositions = selectedPositions.filter { pos3D in world[pos3D] != TileType.air }
+            let selectedNonAirPositions = selectedPositions.filter { pos3D in world[pos3D].bigType.canBeSelected }
             let newSelectedPositions = oldSelectedPositions.union(selectedNonAirPositions)
             editAction = .select(selectedPositions: newSelectedPositions)
         case .deselect(selectedPositions: let oldSelectedPositions):
             // Don't need to filter non-air positions because those are not present either way
             let newSelectedPositions = oldSelectedPositions.subtracting(selectedPositions)
             editAction = .deselect(selectedPositions: newSelectedPositions)
-        case .move(selectedPositions: _, state: _), .inspect(selectedPositions: _):
-            fatalError("illegal state - performCurrentAction called with .move or .inspect actions, use performMoveAction or performInspectAction instead ")
+        case .move(selectedPositions: _, state: _):
+            fatalError("illegal state - performCurrentAction called with .move action, use performMoveAction instead ")
+        case .inspect(let selectedPositions):
+            presentInspector(selectedPositions: selectedPositions)
         }
     }
 

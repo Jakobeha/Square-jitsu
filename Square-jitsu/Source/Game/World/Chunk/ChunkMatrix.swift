@@ -67,3 +67,29 @@ struct ChunkMatrix<Value: HasDefault> {
         getNextFreeLayerAt(pos: pos) != nil
     }
 }
+
+extension ChunkMatrix: CompactCodable where Value: CompactCodable {
+    mutating func decode(from data: Data) {
+        assert(data.count == ChunkTilePos3D.allCases.count * MemoryLayout<Value>.size)
+        for (index, pos3D) in ChunkTilePos3D.allCases.enumerated() {
+            let itemByteOffset = index * MemoryLayout<Value>.size
+            let itemByteRange = itemByteOffset..<(itemByteOffset + MemoryLayout<Value>.size)
+            let itemData = data[itemByteRange]
+            self[pos3D].decode(from: itemData)
+        }
+    }
+
+    var toData: Data {
+        var data = Data(capacity: Self.sizeAsData)
+        for pos3D in ChunkTilePos3D.allCases {
+            let item = self[pos3D]
+            let itemData = item.toData
+            data.append(itemData)
+        }
+        return data
+    }
+
+    static var sizeAsData: Int {
+        ChunkTilePos3D.allCases.count * MemoryLayout<Value>.size
+    }
+}

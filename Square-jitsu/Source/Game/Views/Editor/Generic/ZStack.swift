@@ -10,6 +10,7 @@ class ZStack: Stack {
     static func layout(children: [UXView]) -> [UXView] {
         var children = children
         for index in children.indices {
+            children[index].topLeft = CGPoint.zero
             children[index].zPosition = CGFloat(children.count - index)
         }
         return children

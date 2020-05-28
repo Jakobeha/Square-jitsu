@@ -7,11 +7,11 @@ import SpriteKit
 
 class ChunkView: NodeView<SKNode> {
     private var tileViews: ChunkMatrix<TileView?> = ChunkMatrix()
-    private let world: World
+    private let world: ReadonlyWorld
     private let chunk: ReadonlyChunk
     private let worldChunkPos: WorldChunkPos
 
-    init(world: World, pos: WorldChunkPos, chunk: ReadonlyChunk) {
+    init(world: ReadonlyWorld, pos: WorldChunkPos, chunk: ReadonlyChunk) {
         self.world = world
         self.chunk = chunk
         worldChunkPos = pos
@@ -23,8 +23,6 @@ class ChunkView: NodeView<SKNode> {
             self.regenerateTileView(chunkTilePos3D: chunkTilePos3D)
         }
         chunk.didAdjacentTileChange.subscribe(observer: self, handler: regenerateTileViewsAt)
-        chunk.didHideTile.subscribe(observer: self, handler: hideTileAt)
-        chunk.didShowTile.subscribe(observer: self, handler: showTileAt)
     }
 
     required init?(coder: NSCoder) {
@@ -53,19 +51,15 @@ class ChunkView: NodeView<SKNode> {
         assert(tileViews[chunkTilePos3D] == nil)
         let tileType = chunk[chunkTilePos3D]
         let worldTilePos = WorldTilePos(worldChunkPos: worldChunkPos, chunkTilePos: chunkTilePos3D.pos)
-        let tileView = TileView(world: world, pos: worldTilePos, tileType: tileType)
-        if !chunk.isTileHiddenAt(position: chunkTilePos3D) {
-            tileView.placeIn(parent: self.node)
-        }
+        let tileView = TileView(world: world, pos: worldTilePos, tileType: tileType, coordinates: .chunk)
+        tileView.placeIn(parent: self.node)
         tileViews[chunkTilePos3D] = tileView
     }
 
     private func removeTileView(chunkTilePos3D: ChunkTilePos3D) {
         assert(tileViews[chunkTilePos3D] != nil)
         let tileView = tileViews[chunkTilePos3D]!
-        if !chunk.isTileHiddenAt(position: chunkTilePos3D) {
-            tileView.removeFromParent()
-        }
+        tileView.removeFromParent()
         tileViews[chunkTilePos3D] = nil
     }
 

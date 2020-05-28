@@ -54,7 +54,7 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         self.semiAdjoiningTypes = semiAdjoiningTypes
     }
 
-    func generateNode(world: World, pos: WorldTilePos, tileType: TileType) -> SKNode {
+    func generateNode(world: ReadonlyWorld, pos: WorldTilePos, tileType: TileType) -> SKNode {
         let alwaysAdjoiningSides = SideSet(pos.sideAdjacents.mapValues { adjacentPos in
             adjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })

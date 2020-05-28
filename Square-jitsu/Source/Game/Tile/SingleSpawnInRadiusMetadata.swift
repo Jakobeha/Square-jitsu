@@ -5,7 +5,14 @@
 
 import SpriteKit
 
-class SingleSpawnInRadiusMetadata: EmptyTileMetadata {
+class SingleSpawnInRadiusMetadata: AbstractSpawnAndRemoveMetadata {
+    private struct SpawnInfo {
+        let tileType: TileType
+        let entity: Entity
+    }
+
+    private var mySpawn: SpawnInfo? = nil
+
     override func tick(world: World, pos: WorldTilePos3D) {
         super.tick(world: world, pos: pos)
         let myTileType = world[pos]
@@ -13,18 +20,11 @@ class SingleSpawnInRadiusMetadata: EmptyTileMetadata {
         for entity in world.entities {
             if let locC = entity.next.locC {
                 if locC.distance(to: pos.pos.cgPoint) < spawnRadius {
-                    spawn(world: world, pos: pos)
+                    spawnAndRemoveTile(world: world, pos: pos)
                     break
                 }
             }
         }
-    }
-
-    private func spawn(world: World, pos: WorldTilePos3D) {
-        let myTileType = world[pos]
-        Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
-
-        world.set(pos3D: pos, to: TileType.air, persistInGame: true)
     }
 
     private func getSpawnRadius(world: World, myTileType: TileType) -> CGFloat {

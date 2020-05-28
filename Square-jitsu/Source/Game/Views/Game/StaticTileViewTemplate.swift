@@ -10,7 +10,7 @@ struct StaticTileViewTemplate: TileViewTemplate, SingleSettingCodable {
 
     let texture: SKTexture
 
-    func generateNode(world: World, pos: WorldTilePos, tileType: TileType) -> SKNode {
+    func generateNode(world: ReadonlyWorld, pos: WorldTilePos, tileType: TileType) -> SKNode {
         SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
 

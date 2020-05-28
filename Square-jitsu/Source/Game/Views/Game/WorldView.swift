@@ -8,9 +8,9 @@ import SpriteKit
 class WorldView: NodeView<SKNode> {
     private var chunkViews: [WorldChunkPos:ChunkView] = [:]
     private var entityViews: [EntityView] = []
-    private let world: World
+    private let world: ReadonlyWorld
 
-    init(world: World) {
+    init(world: ReadonlyWorld) {
         self.world = world
         super.init(node: SKNode())
 
@@ -27,11 +27,6 @@ class WorldView: NodeView<SKNode> {
         fatalError("not implemented - views nodes shouldn't be serialized")
     }
 
-    private func placeExisting() {
-        placeExistingChunks()
-        placeExistingEntities()
-    }
-
     private func reSynchronize() {
         removeAllChildren()
         placeExisting()
@@ -44,8 +39,13 @@ class WorldView: NodeView<SKNode> {
         for entityView in entityViews {
             entityView.removeFromParent()
         }
-        chunkViews = [:]
-        entityViews = []
+        chunkViews.removeAll()
+        entityViews.removeAll()
+    }
+
+    private func placeExisting() {
+        placeExistingChunks()
+        placeExistingEntities()
     }
 
     private func placeExistingChunks() {

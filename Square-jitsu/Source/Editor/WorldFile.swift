@@ -7,7 +7,7 @@ import Foundation
 
 /// API for reading and writing a world to a file. `SerialWorld` is the implementation.
 /// Currently mostly a wrapper for SerialWorld but in the future it might support not having to read the entire file
-class WorldFile: CustomStringConvertible {
+class WorldFile: ReadonlyStatelessWorld, CustomStringConvertible {
     private static let localFileDirectory: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     private static let fileExtension: String = "squarejitsulevel"
 
@@ -16,7 +16,7 @@ class WorldFile: CustomStringConvertible {
     }
 
     var url: URL
-    private var handle: FileHandle
+    private var readHandle: FileHandle
     private let isMutable: Bool
     private let dispatchQueue: DispatchQueue
     private var loaded: SerialWorld = SerialWorld()
@@ -51,7 +51,7 @@ class WorldFile: CustomStringConvertible {
             // Create a new file
             try Data().write(to: url, options: .withoutOverwriting)
         }
-        handle = isMutable ? try FileHandle(forUpdating: url) : try FileHandle(forReadingFrom: url)
+        readHandle = try FileHandle(forReadingFrom: url)
         self.isMutable = isMutable
         dispatchQueue = DispatchQueue(label: "WorldFile@\(url.lastPathComponent)")
 
@@ -62,13 +62,19 @@ class WorldFile: CustomStringConvertible {
         if self.url != url {
             // TODO: Make sure we loaded everything once we incrementally load
             self.url = url
-            try closeHandle()
-            handle = isMutable ? try FileHandle(forUpdating: url) : try FileHandle(forReadingFrom: url)
+            try resetReadHandle()
         }
     }
 
     func readChunkAt(pos: WorldChunkPos) -> ReadonlyChunk {
-        loaded.chunks[pos] ?? backgroundLoader.loadChunk(pos: pos)
+        loaded.chunks.getOrInsert(pos) {
+            backgroundLoader.loadChunk(pos: pos)
+        }
+    }
+
+    subscript(pos: WorldTilePos) -> [TileType] {
+        let chunk = readChunkAt(pos: pos.worldChunkPos)
+        return chunk[pos.chunkTilePos]
     }
 
     subscript(pos3D: WorldTilePos3D) -> TileType {
@@ -122,12 +128,12 @@ class WorldFile: CustomStringConvertible {
     private func loadFromDiskSynchronously() throws {
         do {
             if #available(iOS 13.0, *) {
-                if let loadedData = try handle.readToEnd(),
+                if let loadedData = try readHandle.readToEnd(),
                    !loadedData.isEmpty {
                     loaded = try SerialWorld(from: loadedData)
                 }
             } else {
-                let loadedData = handle.readDataToEndOfFile()
+                let loadedData = readHandle.readDataToEndOfFile()
                 if !loadedData.isEmpty {
                     loaded = try SerialWorld(from: loadedData)
                 }
@@ -152,25 +158,36 @@ class WorldFile: CustomStringConvertible {
     func saveToDiskSynchronously() throws {
         assert(isMutable, "mutable operation performed on immutable world file")
         do {
-            let loadedData = try loaded.encode()
-            if #available(iOS 13.0, *) {
-                try handle.truncate(atOffset: 0)
-                try handle.write(contentsOf: loadedData)
-            } else {
-                handle.truncateFile(atOffset: 0)
-                handle.write(loadedData)
-            }
+            let loadedData = try encode()
+
+            try closeReadHandle()
+            try loadedData.write(to: url, options: [.atomic, .noFileProtection])
+            try reopenReadHandle()
         } catch {
             throw WorldFileSyncError(action: "writing", error: error)
         }
     }
 
-    private func closeHandle() throws {
+    /// Converts the file into data, for writing
+    func encode() throws -> Data {
+        try loaded.encode()
+    }
+
+    private func resetReadHandle() throws {
+        try closeReadHandle()
+        try reopenReadHandle()
+    }
+
+    private func closeReadHandle() throws {
         if #available(iOS 13.0, *) {
-            try handle.close()
+            try readHandle.close()
         } else {
-            handle.closeFile()
+            readHandle.closeFile()
         }
+    }
+
+    private func reopenReadHandle() throws {
+        readHandle = try FileHandle(forReadingFrom: url)
     }
 
     private func raiseAsync(error: Error) {

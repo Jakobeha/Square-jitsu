@@ -14,17 +14,12 @@ class Chunk: ReadonlyChunk, Codable {
 
     private var tiles: ChunkMatrix<TileType> = ChunkMatrix()
     var tileMetadatas: [ChunkTilePos3D:TileMetadata] = [:]
-    private var hiddenTiles: Set<ChunkTilePos3D> = []
 
     private let _didChangeTile: Publisher<(pos3D: ChunkTilePos3D, oldType: TileType)> = Publisher()
     // Exposed for the world class, which signals events through the chunk for views
     let _didAdjacentTileChange: Publisher<ChunkTilePos> = Publisher()
-    let _didHideTile: Publisher<ChunkTilePos3D> = Publisher()
-    let _didShowTile: Publisher<ChunkTilePos3D> = Publisher()
     var didChangeTile: Observable<(pos3D: ChunkTilePos3D, oldType: TileType)> { Observable(publisher: _didChangeTile) }
     var didAdjacentTileChange: Observable<ChunkTilePos> { Observable(publisher: _didAdjacentTileChange) }
-    var didHideTile: Observable<ChunkTilePos3D> { Observable(publisher: _didHideTile) }
-    var didShowTile: Observable<ChunkTilePos3D> { Observable(publisher: _didShowTile) }
 
     init() {}
 
@@ -143,27 +138,10 @@ class Chunk: ReadonlyChunk, Codable {
     }
     // endregion
 
-    // region showing and hiding tiles
-    func hide(positions: Set<ChunkTilePos3D>) {
-        assert(hiddenTiles.intersection(positions).isEmpty, "tried to hide already hidden tiles (hiding tiles is strict because it's semi-internal)")
-        hiddenTiles.formUnion(positions)
-    }
-
-    func showHidden(positions: Set<ChunkTilePos3D>) {
-        assert(hiddenTiles.contains(allOf: positions), "tried to show not hidden tiles (hiding tiles is strict because it's semi-internal)")
-        hiddenTiles.subtract(positions)
-    }
-
-    func isTileHiddenAt(position: ChunkTilePos3D) -> Bool {
-        hiddenTiles.contains(position)
-    }
-    // endregion
-
     func clone() -> Chunk {
         let clone = Chunk()
         clone.tiles = tiles
         clone.tileMetadatas = tileMetadatas
-        clone.hiddenTiles = hiddenTiles
         return clone
     }
 
@@ -200,11 +178,10 @@ class Chunk: ReadonlyChunk, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let tileData = try container.decode(Data.self, forKey: .tileData)
-        let expectedTileDataSize = MemoryLayout.size(ofValue: tiles)
-        if tileData.count != expectedTileDataSize {
-            throw DecodingError.dataCorruptedError(forKey: .tileData, in: container, debugDescription: "tile data size is wrong: expected \(expectedTileDataSize) got \(tileData.count)")
+        if tileData.count != ChunkMatrix<TileType>.sizeAsData {
+            throw DecodingError.dataCorruptedError(forKey: .tileData, in: container, debugDescription: "tile data size is wrong: expected \(ChunkMatrix<TileType>.sizeAsData) got \(tileData.count)")
         }
-        (tileData as NSData).getBytes(&tiles, length: expectedTileDataSize)
+        tiles.decode(from: tileData)
 
         let metadatasContainer = try container.nestedContainer(keyedBy: MetadataCodingKey.self, forKey: .tileMetadatas)
         tileMetadatas = [:]
@@ -226,11 +203,7 @@ class Chunk: ReadonlyChunk, Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
-        let tileDataSize = MemoryLayout.size(ofValue: tiles)
-        var tileData = Data(count: tileDataSize)
-        tileData.withUnsafeMutableBytes { dataPtr in
-            dataPtr.storeBytes(of: tiles, as: ChunkMatrix.self)
-        }
+        let tileData = tiles.toData
         try container.encode(tileData, forKey: .tileData)
 
         var metadatasContainer = container.nestedContainer(keyedBy: MetadataCodingKey.self, forKey: .tileMetadatas)

@@ -8,6 +8,7 @@ import SpriteKit
 class EditorToolsView: UXCompoundView {
     private let editor: Editor
 
+    private let editMoveView: EditMoveView
     private let editSelectionView: EditSelectionView
     private let actionView: EditorToolsActionView
     private let selectModeView: EditorToolsSelectModeView
@@ -18,6 +19,7 @@ class EditorToolsView: UXCompoundView {
     init(editor: Editor, sceneSize: CGSize) {
         self.editor = editor
 
+        editMoveView = EditMoveView(editor: editor)
         editSelectionView = EditSelectionView(editor: editor)
         actionView = EditorToolsActionView(editorTools: editor.tools, settings: editor.editableWorld.world.settings)
         selectModeView = EditorToolsSelectModeView(editorTools: editor.tools)
@@ -35,6 +37,7 @@ class EditorToolsView: UXCompoundView {
             return gameplayControlView
         case .editing:
             return ZStack([
+                editMoveView,
                 editSelectionView,
                 VStack([
                     HStack([

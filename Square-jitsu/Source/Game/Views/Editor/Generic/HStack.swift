@@ -8,9 +8,12 @@ import SpriteKit
 class HStack: Stack {
     static func layout(children: [UXView]) -> [UXView] {
         var children = children
+        if !children.isEmpty {
+            children[0].topLeft = CGPoint.zero
+        }
         for index in children.indices.dropFirst() {
             let prevChild = children[index - 1]
-            children[index].topLeft.x = prevChild.bounds.maxX
+            children[index].topLeft = CGPoint(x: prevChild.bounds.maxX, y: 0)
         }
         return children
     }

@@ -10,4 +10,5 @@ protocol TileMetadata: AliveCodable {
     func onFirstLoad(world: World, pos: WorldTilePos3D)
     func onEntityCollide(entity: Entity, pos: WorldTilePos3D)
     func tick(world: World, pos: WorldTilePos3D)
+    func revert(world: World, pos: WorldTilePos3D)
 }
