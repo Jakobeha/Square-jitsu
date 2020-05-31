@@ -18,7 +18,10 @@ class Camera {
     var userSettings: UserSettings {
         didSet { _didChange.publish() }
     }
-    weak var world: World? = nil
+    weak var world: World? = nil {
+        willSet { world?.didReset.unsubscribe(observer: self) }
+        didSet { world?.didReset.subscribe(observer: self, priority: ObservablePriority.model, handler: loadVisibleChunks) }
+    }
 
     var screenSize: CGSize {
         userSettings.screenSize
@@ -36,9 +39,11 @@ class Camera {
     init(userSettings: UserSettings) {
         self.userSettings = userSettings
 
-        didChange.subscribe(observer: self) {
-            self.world?.load(rect: self.boundsInWorldCoords)
-        }
+        didChange.subscribe(observer: self, priority: ObservablePriority.model, handler: loadVisibleChunks)
+    }
+
+    private func loadVisibleChunks() {
+        world?.load(rect: boundsInWorldCoords)
     }
 
     /// Applies the camera's transform to convert the point from screen coordinates to camera coordinates

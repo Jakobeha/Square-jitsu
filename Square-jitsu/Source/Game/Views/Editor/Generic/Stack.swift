@@ -18,10 +18,7 @@ class Stack: UXView {
         self.height = height
 
         // For some reason self.topLeft doesn't work
-        var position = topLeft
-        // Invert the y for UX manually (this is bad coding, duplication)
-        position.y = -position.y
-        node.position = position
+        node.position = ConvertToUXCoords(point: topLeft)
 
         for child in children {
             child.set(parent: node)

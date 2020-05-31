@@ -24,7 +24,7 @@ class EditorToolsActionView: UXCompoundView {
         super.init()
 
         // We subscribe to changing the action because changing the selection might change buttons' tint colors
-        editorTools.didChangeEditAction.subscribe(observer: self) {
+        editorTools.didChangeEditAction.subscribe(observer: self, priority: ObservablePriority.view) {
             self.regenerateBody()
         }
     }

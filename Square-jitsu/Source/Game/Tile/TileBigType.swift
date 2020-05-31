@@ -76,6 +76,7 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         TileLayer.layersCanOverlap(lhs.layer, rhs.layer)
     }
 
+    // region encoding and decoding
     var description: String { String(describing: self) }
 
     private static let typesByName: [String:TileBigType] = [String:TileBigType](
@@ -105,4 +106,5 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         var container = encoder.singleValueContainer()
         try container.encode(description)
     }
+    // endregion
 }

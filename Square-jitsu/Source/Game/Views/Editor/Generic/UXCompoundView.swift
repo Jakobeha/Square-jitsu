@@ -10,7 +10,7 @@ class UXCompoundView: UXView {
 
     final var node: SKNode { body.node }
 
-    final var size: CGSize { body.size }
+    var size: CGSize { body.size }
 
     private var sceneSize: CGSize = CGSize.zero {
         didSet { body.set(sceneSize: sceneSize) }

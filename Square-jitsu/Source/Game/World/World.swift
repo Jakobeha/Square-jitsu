@@ -88,7 +88,7 @@ class World: ReadonlyWorld {
         // otherwise the player isn't visible first frame,
         // which is a problem since the editor initially loads the world paused
         // and thus it won't be visible until the user changes the mode
-        tick()
+        runActions()
     }
     //endregion
 
@@ -99,6 +99,13 @@ class World: ReadonlyWorld {
     }
 
     func resetExceptForPlayer() {
+        for (pos3D, metadata) in getLoadedMetadatas() {
+            // We explicitly don't want to revert the player
+            if !(metadata is PlayerSpawnMetadata) {
+                metadata.revert(world: self, pos: pos3D)
+            }
+        }
+
         peekedChunks = [:]
         chunks = [:]
         persistentChunkData = [:]
@@ -382,6 +389,8 @@ class World: ReadonlyWorld {
 
         // Notify observers
         _didAddEntity.publish(entity)
+
+        tickEarlySystems(entity: entity)
     }
 
     private func removeNow(entity: Entity) {
@@ -408,6 +417,12 @@ class World: ReadonlyWorld {
         for entity in entities {
             entity.tick()
         }
+    }
+
+    /// Runs systems which must be run before other systems, even though the order in `tick` is different
+    private func tickEarlySystems(entity: Entity) {
+        CollisionSystem.tick(entity: entity)
+        NearCollisionSystem.tick(entity: entity)
     }
 
     private func tickSystems() {

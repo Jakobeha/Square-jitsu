@@ -20,6 +20,10 @@ extension CGFloat {
         (t * (end - start)) + start
     }
 
+    static func reverseLerp(start: CGFloat, end: CGFloat, value: CGFloat) -> CGFloat {
+        (value - start) / (end - start)
+    }
+
     static func clamp(_ value: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
         assert(min <= max)
         if value < min {

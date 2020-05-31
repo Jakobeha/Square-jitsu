@@ -201,6 +201,7 @@ extension WorldSettings {
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
             entitySpawnRadius: setting.usedFieldSettings["entitySpawnRadius"]!.decodeDynamically(),
+            tileOrientationMeanings: setting.usedFieldSettings["tileOrientationMeanings"]!.decodeDynamically(),
             selectableTypes: setting.usedFieldSettings["selectableTypes"]!.decodeDynamically()
         )
     }
@@ -217,6 +218,7 @@ extension WorldSettings {
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
             entitySpawnRadius: setting.usedFieldSettings["entitySpawnRadius"]!.decodeDynamically(),
+            tileOrientationMeanings: setting.usedFieldSettings["tileOrientationMeanings"]!.decodeDynamically(),
             selectableTypes: setting.usedFieldSettings["selectableTypes"]!.decodeDynamically()
         )
     }
@@ -232,6 +234,7 @@ extension WorldSettings {
         self.tileDescriptions.encodeDynamically(to: setting.allFieldSettings["tileDescriptions"]!)
         self.entityData.encodeDynamically(to: setting.allFieldSettings["entityData"]!)
         self.entitySpawnRadius.encodeDynamically(to: setting.allFieldSettings["entitySpawnRadius"]!)
+        self.tileOrientationMeanings.encodeDynamically(to: setting.allFieldSettings["tileOrientationMeanings"]!)
         self.selectableTypes.encodeDynamically(to: setting.allFieldSettings["selectableTypes"]!)
     }
 }

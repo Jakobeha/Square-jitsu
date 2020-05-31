@@ -26,7 +26,16 @@ struct GrabSystem: System {
     }
 
     private func updateGrabbingEntity() {
-        assert(entity.prev.phyC != nil)
+        assert(entity.prev.griC != nil)
+        removeDestroyedGrabbedEntities()
+        grabNewEntities()
+    }
+    
+    private func removeDestroyedGrabbedEntities() {
+        entity.next.griC!.grabbed = entity.next.griC!.grabbed.filter { entityRef in entityRef.deref != nil }
+    }
+
+    private func grabNewEntities() {
         for otherEntity in newOverlappingEntities {
             if GrabSystem.canGrab(grabbingEntity: entity, grabbedEntity: otherEntity) {
                 GrabSystem.grab(grabbingEntity: entity, grabbedEntity: otherEntity)

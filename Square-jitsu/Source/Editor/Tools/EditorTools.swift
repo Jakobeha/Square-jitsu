@@ -23,10 +23,13 @@ class EditorTools {
         }
     }
     let tileMenu: TileMenu
-    private var inspector: Inspector? = nil
+    private(set) var inspector: Inspector? = nil {
+        didSet { _didChangeInspector.publish() }
+    }
     weak var delegate: EditorToolsDelegate? = nil
     private let world: EditableReadonlyStatelessWorld
     private let editorCamera: Camera
+    private let undoManager: UndoManager
     private let userSettings: UserSettings
 
     var selectedTileType: TileType { tileMenu.selectedTileType }
@@ -65,17 +68,20 @@ class EditorTools {
     private let _didChangeEditSelection: Publisher<()> = Publisher()
     private let _didChangeEditActionMode: Publisher<()> = Publisher()
     private let _didChangeEditAction: Publisher<()> = Publisher()
+    private let _didChangeInspector: Publisher<()> = Publisher()
     var didChangeEditSelectMode: Observable<()> { Observable(publisher: _didChangeEditSelectMode) }
     var didChangeEditSelection: Observable<()> { Observable(publisher: _didChangeEditSelection) }
     var didChangeEditActionMode: Observable<()> { Observable(publisher: _didChangeEditActionMode) }
     var didChangeEditAction: Observable<()> { Observable(publisher: _didChangeEditAction) }
+    var didChangeInspector: Observable<()> { Observable(publisher: _didChangeInspector) }
 
-    init(world: EditableReadonlyStatelessWorld, editorCamera: Camera, userSettings: UserSettings) {
+    init(world: EditableReadonlyStatelessWorld, editorCamera: Camera, undoManager: UndoManager, userSettings: UserSettings) {
         self.world = world
         self.editorCamera = editorCamera
+        self.undoManager = undoManager
         self.userSettings = userSettings
         tileMenu = TileMenu(settings: world.settings)
-        tileMenu.didSelect.subscribe(observer: self) {
+        tileMenu.didSelect.subscribe(observer: self, priority: ObservablePriority.view) {
             if self.tileMenu.openLayer != nil {
                 self.select(actionMode: .place)
             }
@@ -83,12 +89,27 @@ class EditorTools {
     }
 
     func select(selectMode: EditSelectMode) {
+        let oldEditSelectMode = editSelection.mode
+
         editSelection = .none(mode: selectMode)
+
+        undoManager.registerUndo(withTarget: self) { this in
+            this.editSelection = .none(mode: oldEditSelectMode)
+        }
     }
 
     func select(actionMode: EditActionMode) {
+        undoManager.beginUndoGrouping()
+        let oldEditAction = editAction
+
         if actionMode != .place {
+            let oldOpenLayer = tileMenu.openLayer
+
             tileMenu.openLayer = nil
+
+            undoManager.registerUndo(withTarget: tileMenu) { tileMenu in
+                tileMenu.openLayer = oldOpenLayer
+            }
         }
 
         // Change edit action
@@ -107,6 +128,11 @@ class EditorTools {
         if actionMode.requiresSelection && !editSelection.mode.canInstantSelect && selectedPositions.isEmpty {
             select(selectMode: EditSelectMode.defaultInstantSelect)
         }
+
+        undoManager.registerUndo(withTarget: self) { this in
+            this.editAction = oldEditAction
+        }
+        undoManager.endUndoGrouping()
     }
     
     // region touch input adapting
@@ -159,7 +185,7 @@ class EditorTools {
     private func afterTouchDown(touchPos: TouchPos) {
         if inspector != nil {
             dismissInspector()
-            editAction = .inspect(selectedPositions: [])
+            editAction = .inspect
         }
 
         if editAction.mode.requiresSelection && editAction.selectedPositions.isEmpty {
@@ -203,6 +229,9 @@ class EditorTools {
     }
 
     private func afterTouchUp(touchPos: TouchPos) {
+        undoManager.beginUndoGrouping()
+        let oldEditAction = editAction
+
         if hasEditMoveState && editMoveState.isStarted {
             if editAction.mode == .move {
                 // We need to synchronize before showing, we don't put it in showTemporarilyHidden
@@ -224,6 +253,11 @@ class EditorTools {
             performCurrentAction(selectedPositions: selectedPositions)
             editSelection = editSelection.endedOrCancelled
         }
+
+        undoManager.registerUndo(withTarget: self) { this in
+            this.editAction = oldEditAction
+        }
+        undoManager.endUndoGrouping()
     }
 
     private func afterTouchCancel() {
@@ -258,6 +292,8 @@ class EditorTools {
             performPlaceAction(selectedPositions3D: selectedPositions)
         case .remove:
             delegate?.performRemoveAction(selectedPositions: selectedPositions)
+        case .inspect:
+            presentInspector(selectedPositions: selectedPositions)
         case .select(selectedPositions: let oldSelectedPositions):
             let selectedNonAirPositions = selectedPositions.filter { pos3D in world[pos3D].bigType.canBeSelected }
             let newSelectedPositions = oldSelectedPositions.union(selectedNonAirPositions)
@@ -268,8 +304,6 @@ class EditorTools {
             editAction = .deselect(selectedPositions: newSelectedPositions)
         case .move(selectedPositions: _, state: _), .copy(selectedPositions: _, state: _):
             fatalError("illegal state - performCurrentAction called with move or copy action, use performMoveAction instead ")
-        case .inspect(let selectedPositions):
-            presentInspector(selectedPositions: selectedPositions)
         }
     }
 
@@ -298,7 +332,7 @@ class EditorTools {
 
     private func presentInspector(selectedPositions: Set<WorldTilePos3D>) {
         assert(editAction.mode == EditActionMode.inspect && !selectedPositions.isEmpty)
-        inspector = Inspector(positions: selectedPositions, delegate: delegate, world: world)
+        inspector = Inspector(positions: selectedPositions, world: world, delegate: delegate)
     }
 
     private func dismissInspector() {

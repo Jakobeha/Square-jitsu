@@ -18,4 +18,15 @@ struct TileLayerSet: OptionSet {
     static let entity: TileLayerSet = TileLayerSet(rawValue: 1 << 5)
 
     let rawValue: UInt32
+
+    init(rawValue: UInt32) {
+        self.rawValue = rawValue
+    }
+
+    init<TileLayerCollection: Collection>(_ layers: TileLayerCollection) where TileLayerCollection.Element == TileLayer {
+        self = []
+        for layer in layers {
+            formUnion(layer.toSet)
+        }
+    }
 }

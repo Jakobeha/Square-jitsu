@@ -10,15 +10,15 @@ import Foundation
 enum EditActionMode {
     case place
     case remove
+    case inspect
     case select
     case deselect
     case move
     case copy
-    case inspect
 
     var requiresSelection: Bool {
         switch self {
-        case .place, .remove, .select, .deselect, .inspect:
+        case .place, .remove, .inspect, .select, .deselect:
             return false
         case .move, .copy:
             return true
@@ -27,7 +27,7 @@ enum EditActionMode {
 
     var affectsSelection: Bool {
         switch self {
-        case .place, .remove, .move, .copy, .inspect:
+        case .place, .remove, .inspect, .move, .copy:
             return false
         case .select, .deselect:
             return true

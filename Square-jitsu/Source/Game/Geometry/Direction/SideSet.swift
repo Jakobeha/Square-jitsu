@@ -29,6 +29,10 @@ struct SideSet: OptionSet, Equatable, Hashable, CaseIterable {
         String(rawValue, radix: 2).leftPadding(toLength: 4, withPad: "0")
     }
 
+    var first: Side? {
+        Side.allCases.first { side in self.contains(side.toSet) }
+    }
+
     init(rawValue: UInt8) {
         self.rawValue = rawValue
     }

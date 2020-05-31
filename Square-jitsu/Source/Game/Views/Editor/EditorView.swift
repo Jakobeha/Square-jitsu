@@ -13,7 +13,7 @@ class EditorView: NodeView<SKNode> {
     init(editor: Editor, sceneSize: CGSize) {
         self.editor = editor
 
-        let editorToolsView = EditorToolsView(editor: editor, sceneSize: sceneSize)
+        let editorToolsView = EditorToolsView(editor: editor)
         let editorUiView = UXTopLevelView(child: editorToolsView, sceneSize: sceneSize)
 
         let worldView = WorldView(world: editor.editableWorld.world)
@@ -26,7 +26,7 @@ class EditorView: NodeView<SKNode> {
         editorUiView.zPosition = TileType.zPositionUpperBound
         worldCameraView.node.zPosition = 0
 
-        editor.didChangeState.subscribe(observer: self, handler: changeCamera)
+        editor.didChangeState.subscribe(observer: self, priority: ObservablePriority.view, handler: changeCamera)
     }
 
     private func changeCamera() {

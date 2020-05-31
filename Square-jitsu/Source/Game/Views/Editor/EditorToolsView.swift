@@ -8,6 +8,7 @@ import SpriteKit
 class EditorToolsView: UXCompoundView {
     private let editor: Editor
 
+    private let inspectorContainerView: InspectorContainerView
     private let editMoveView: EditMoveView
     private let editSelectionView: EditSelectionView
     private let actionView: EditorToolsActionView
@@ -16,9 +17,10 @@ class EditorToolsView: UXCompoundView {
     private let undoView: UndoView
     private let gridView: GridView
 
-    init(editor: Editor, sceneSize: CGSize) {
+    init(editor: Editor) {
         self.editor = editor
 
+        inspectorContainerView = InspectorContainerView(editorTools: editor.tools)
         editMoveView = EditMoveView(editor: editor)
         editSelectionView = EditSelectionView(editor: editor)
         actionView = EditorToolsActionView(editorTools: editor.tools, settings: editor.editableWorld.world.settings)
@@ -28,7 +30,7 @@ class EditorToolsView: UXCompoundView {
         gridView = GridView(camera: editor.editorCamera, settings: editor.editableWorld.world.settings)
         super.init()
 
-        editor.didChangeState.subscribe(observer: self, handler: regenerateBody)
+        editor.didChangeState.subscribe(observer: self, priority: ObservablePriority.view, handler: regenerateBody)
     }
     
     override func newBody() -> UXView {
@@ -37,6 +39,7 @@ class EditorToolsView: UXCompoundView {
             return gameplayControlView
         case .editing:
             return ZStack([
+                inspectorContainerView,
                 editMoveView,
                 editSelectionView,
                 VStack([

@@ -71,9 +71,9 @@ class Button: UXView {
         self.isEnabled = isEnabled
         self.isSelected = isSelected
         backgroundNode = SKSpriteNode(
-                texture: Button.backgroundTexture(isPressed: false, isSelected: isSelected),
-                color: Button.backgroundTintColor(tintHue: tintHue),
-                size: size.cgSize
+            texture: Button.backgroundTexture(isPressed: false, isSelected: isSelected),
+            color: Button.backgroundTintColor(tintHue: tintHue),
+            size: size.cgSize
         )
         if tintHue != nil {
             backgroundNode.colorBlendFactor = 1
@@ -85,11 +85,7 @@ class Button: UXView {
             rouletteNextItemNode = SKSpriteNode(texture: rouletteNextItemTexture, size: size.cgSize * Button.rouletteNextItemSizeMultiplier)
             rouletteNextItemNode!.alpha = Button.foregroundAlpha(isEnabled: isEnabled) * Button.rouletteNextItemAlphaMultiplier
             rouletteNextItemNode!.anchorPoint = UXSpriteAnchor
-            rouletteNextItemNode!.position = CGPoint(
-                x: size.cgSize.width * (1 - Button.rouletteNextItemSizeMultiplier),
-                // Necessary because of UX coordinates
-                y: -size.cgSize.height * (1 - Button.rouletteNextItemSizeMultiplier)
-            )
+            rouletteNextItemNode!.position = ConvertToUXCoords(point: (size.cgSize * (1 - Button.rouletteNextItemSizeMultiplier)).toPoint)
             rouletteNextItemNode!.position.y *= -1
             rouletteNextItemNode!.zPosition = 1
         } else {
@@ -100,17 +96,15 @@ class Button: UXView {
         foregroundNode.alpha = isEnabled ? 1 : Button.disabledForegroundAlpha
         foregroundNode.anchorPoint = UXSpriteAnchor
         foregroundNode.zPosition = 2
-        buttonNode = ButtonNode(
-            size: buttonSize.cgSize,
-            action: action
-        )
+        buttonNode = ButtonNode(size: buttonSize.cgSize)
+        buttonNode.didPress.subscribe(observer: self, priority: ObservablePriority.view, handler: action)
         buttonNode.addChild(backgroundNode)
         if let rouletteNextItemNode = rouletteNextItemNode {
             buttonNode.addChild(rouletteNextItemNode)
         }
         buttonNode.addChild(foregroundNode)
-        buttonNode.onTouchDown = { self.isPressed = true }
-        buttonNode.onTouchUp = { self.isPressed = false }
+        buttonNode.didTouchDown.subscribe(observer: self, priority: ObservablePriority.view) { self.isPressed = true }
+        buttonNode.didTouchUp.subscribe(observer: self, priority: ObservablePriority.view) { self.isPressed = false }
 
         updateForIsEnabled()
     }

@@ -28,14 +28,14 @@ struct ImplicitForcesSystem: System {
                         entity.next.dynC!.velocity.y *= solidFrictionMultiplier
                     }
                 }
-                if entity.prev.phyC!.overlappingTypes.contains(layer: TileLayer.iceSolid) {
+                if entity.prev.phyC!.overlappingTypes.contains(layer: TileLayer.iceSolid) && !entity.prev.phyC!.overlappingTypes.contains(layer: TileLayer.solid) {
                     let minSpeedOnIce = entity.prev.imfC!.minSpeedOnIce
-                    if entity.prev.phyC!.adjacentSides.hasVertical {
+                    if entity.prev.phyC!.adjacentSides.hasVertical && !entity.prev.phyC!.adjacentSides.hasHorizontal {
                         if entity.next.dynC!.velocity.x.magnitude < minSpeedOnIce {
                             entity.next.dynC!.velocity.x = entity.next.dynC!.velocity.x < 0 ? -minSpeedOnIce : minSpeedOnIce
                         }
                     }
-                    if entity.prev.phyC!.adjacentSides.hasHorizontal {
+                    if entity.prev.phyC!.adjacentSides.hasHorizontal && !entity.prev.phyC!.adjacentSides.hasVertical {
                         if entity.next.dynC!.velocity.y.magnitude < minSpeedOnIce {
                             entity.next.dynC!.velocity.y = entity.next.dynC!.velocity.y < 0 ? -minSpeedOnIce : minSpeedOnIce
                         }

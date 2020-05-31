@@ -43,13 +43,13 @@ class EditSelectionView: UXView {
         updateCurrentSelectionNodePath()
         updatePastSelectionNodePath()
         updateNodePositionForCameraChange()
-        editor.editorCamera.didChange.subscribe(observer: self) {
+        editor.editorCamera.didChange.subscribe(observer: self, priority: ObservablePriority.view) {
             self.updateNodePositionForCameraChange()
         }
-        editor.tools.didChangeEditAction.subscribe(observer: self) {
+        editor.tools.didChangeEditAction.subscribe(observer: self, priority: ObservablePriority.view) {
             self.updatePastSelectionNodePath()
         }
-        editor.tools.didChangeEditSelection.subscribe(observer: self) {
+        editor.tools.didChangeEditSelection.subscribe(observer: self, priority: ObservablePriority.view) {
             self.updateCurrentSelectionNodePath()
         }
     }

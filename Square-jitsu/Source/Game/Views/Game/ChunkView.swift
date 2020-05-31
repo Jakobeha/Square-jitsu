@@ -19,10 +19,10 @@ class ChunkView: NodeView<SKNode> {
         node.position = worldChunkPos.originCgPoint * world.settings.tileViewWidthHeight
 
         placeExistingTiles(chunk: chunk)
-        chunk.didChangeTile.subscribe(observer: self) { chunkTilePos3D, oldType in
+        chunk.didChangeTile.subscribe(observer: self, priority: ObservablePriority.view) { chunkTilePos3D, oldType in
             self.regenerateTileView(chunkTilePos3D: chunkTilePos3D)
         }
-        chunk.didAdjacentTileChange.subscribe(observer: self, handler: regenerateTileViewsAt)
+        chunk.didAdjacentTileChange.subscribe(observer: self, priority: ObservablePriority.view, handler: regenerateTileViewsAt)
     }
 
     required init?(coder: NSCoder) {

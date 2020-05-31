@@ -40,7 +40,7 @@ class Editor: EditorToolsDelegate {
     init(editableWorld: EditableWorld, undoManager: UndoManager, userSettings: UserSettings) {
         self.editableWorld = editableWorld
         editorCamera = Camera(userSettings: userSettings)
-        tools = EditorTools(world: editableWorld, editorCamera: editorCamera, userSettings: userSettings)
+        tools = EditorTools(world: editableWorld, editorCamera: editorCamera, undoManager: undoManager, userSettings: userSettings)
         self.undoManager = undoManager
         
         editorCamera.world = editableWorld.world
@@ -74,7 +74,7 @@ class Editor: EditorToolsDelegate {
             let newPosition = tileToMove.position.pos + distanceMoved
             let typeToMove = tileToMove.type
 
-            editableWorld.forceCreateTile(pos: newPosition, type: typeToMove)
+            editableWorld.createTile(pos: newPosition, type: typeToMove)
         }
 
         didPerformAction()
@@ -96,7 +96,7 @@ class Editor: EditorToolsDelegate {
         }
 
         for position2D in selectedPositions2D {
-            editableWorld.forceCreateTile(pos: position2D, type: selectedTileType)
+            editableWorld.createTile(pos: position2D, type: selectedTileType)
         }
 
         didPerformAction()
@@ -137,6 +137,23 @@ class Editor: EditorToolsDelegate {
             this.revertAction(originalTiles: nowOriginalTiles)
         }
     }
+
+    // region inspector actions
+    func connectTilesToSide(tiles: [TileAtPosition], side: Side) {
+        for tileAtPosition in tiles {
+            var newTileType = tileAtPosition.type
+            newTileType.orientation = TileOrientation(side: side)
+            editableWorld[tileAtPosition.position] = newTileType
+        }
+    }
+
+    func setInitialTurretDirections(to initialTurretDirection: Angle, positions: Set<WorldTilePos3D>) {
+        for pos3D in positions {
+            let metadata = editableWorld.getMetadataAt(pos3D: pos3D)! as! TurretMetadata
+            metadata.initialTurretDirectionRelativeToAnchor = initialTurretDirection
+        }
+    }
+    // endregion
 
     private func didPerformAction() {
         editableWorld.world.runActions()

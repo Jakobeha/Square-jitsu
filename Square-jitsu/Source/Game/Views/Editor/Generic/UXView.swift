@@ -7,6 +7,21 @@ import SpriteKit
 
 let UXSpriteAnchor: CGPoint = CGPoint(x: 0, y: 1)
 
+func ConvertToUXCoords(point: CGPoint) -> CGPoint {
+    CGPoint(x: point.x, y: -point.y)
+}
+
+func ConvertToUXCoords(size: CGSize) -> CGSize {
+    CGSize(width: size.width, height: -size.height)
+}
+
+func ConvertToUXCoords(rect: CGRect) -> CGRect {
+    CGRect(
+        origin: CGPoint(x: rect.origin.y, y: -rect.origin.y - rect.size.height),
+        size: rect.size
+    )
+}
+
 protocol UXView {
     /// If either axis is infinity, that means we stretch as much as possible within the screen bounds
     var size: CGSize { get }
@@ -18,18 +33,8 @@ protocol UXView {
 
 extension UXView {
     var topLeft: CGPoint {
-        get {
-            var position = node.position
-            // y position is inverted because this is UX coords
-            position.y = -position.y
-            return position
-        }
-        set {
-            var position = newValue
-            // y position is inverted because this is UX coords
-            position.y = -position.y
-            node.position = position
-        }
+        get { ConvertToUXCoords(point: node.position) }
+        set { node.position = ConvertToUXCoords(point: newValue) }
     }
     var zPosition: CGFloat {
         get { node.zPosition }

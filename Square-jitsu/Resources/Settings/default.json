@@ -298,6 +298,9 @@
   "entitySpawnRadius": {
     "enemy": [3]
   },
+  "tileOrientationMeanings": {
+    "turret": ["directionAdjacentToSolid"]
+  },
   "selectableTypes": {
     "background": [0],
     "overlapSensitiveBackground": [0],

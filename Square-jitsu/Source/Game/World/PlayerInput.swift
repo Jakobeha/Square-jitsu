@@ -46,7 +46,7 @@ class PlayerInput {
 
     init(userSettings: UserSettings) {
         self.userSettings = userSettings
-        tracker.didUpdateTouches.subscribe(observer: self, handler: tick)
+        tracker.didUpdateTouches.subscribe(observer: self, priority: ObservablePriority.input, handler: tick)
     }
 
     func tick() {

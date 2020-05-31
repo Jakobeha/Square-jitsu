@@ -11,11 +11,11 @@ import SpriteKit
 enum EditAction {
     case place
     case remove
+    case inspect
     case select(selectedPositions: Set<WorldTilePos3D>)
     case deselect(selectedPositions: Set<WorldTilePos3D>)
     case move(selectedPositions: Set<WorldTilePos3D>, state: EditMoveState)
     case copy(selectedPositions: Set<WorldTilePos3D>, state: EditMoveState)
-    case inspect(selectedPositions: Set<WorldTilePos3D>)
 
     var mode: EditActionMode {
         switch self {
@@ -23,6 +23,8 @@ enum EditAction {
             return .place
         case .remove:
             return .remove
+        case .inspect:
+            return .inspect
         case .select(selectedPositions: _):
             return .select
         case .deselect(selectedPositions: _):
@@ -31,15 +33,13 @@ enum EditAction {
             return .move
         case .copy(selectedPositions: _, state: _):
             return .copy
-        case .inspect(selectedPositions: _):
-            return .inspect
         }
     }
 
     var selectedPositions: Set<WorldTilePos3D> {
         get {
             switch self {
-            case .place, .remove:
+            case .place, .remove, .inspect:
                 return []
             case .select(let selectedPositions):
                 return selectedPositions
@@ -48,8 +48,6 @@ enum EditAction {
             case .move(let selectedPositions, state: _):
                 return selectedPositions
             case .copy(let selectedPositions, state: _):
-                return selectedPositions
-            case .inspect(let selectedPositions):
                 return selectedPositions
             }
         }
@@ -65,6 +63,8 @@ enum EditAction {
             self = .place
         case .remove:
             self = .remove
+        case .inspect:
+            self = .inspect
         case .select:
             self = .select(selectedPositions: selectedPositions)
         case .deselect:
@@ -73,8 +73,6 @@ enum EditAction {
             self = .move(selectedPositions: selectedPositions, state: EditMoveState.notStarted)
         case .copy:
             self = .copy(selectedPositions: selectedPositions, state: EditMoveState.notStarted)
-        case .inspect:
-            self = .inspect(selectedPositions: selectedPositions)
         }
     }
 }

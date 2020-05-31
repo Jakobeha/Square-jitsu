@@ -23,10 +23,14 @@ extension System {
     static func tick(world: World) {
         preTick(world: world)
         for entity in world.entities {
-            var system = Self(entity: entity)
-            system.tick()
+            tick(entity: entity)
         }
         postTick(world: world)
+    }
+
+    static func tick(entity: Entity) {
+        var system = Self(entity: entity)
+        system.tick()
     }
 
     var world: World { entity.world! }

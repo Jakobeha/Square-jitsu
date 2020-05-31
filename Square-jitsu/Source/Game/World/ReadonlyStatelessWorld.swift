@@ -10,11 +10,33 @@ protocol ReadonlyStatelessWorld: AnyObject {
 
     subscript(pos: WorldTilePos) -> [TileType] { get }
     subscript(pos3D: WorldTilePos3D) -> TileType { get }
+
+    func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)]
+    func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata?
 }
 
 extension ReadonlyStatelessWorld {
+    func getTileAt(pos3D: WorldTilePos3D) -> TileAtPosition {
+        TileAtPosition(type: self[pos3D], position: pos3D)
+    }
+
+    func getTileLayersAt(pos: WorldTilePos) -> TileLayerSet {
+        TileLayerSet(self[pos].map { tileType in tileType.bigType.layer })
+    }
+
+    func getAdjacentTileLayersAt(pos: WorldTilePos) -> DenseEnumMap<Side, TileLayerSet> {
+        pos.sideAdjacents.mapValues(transform: getTileLayersAt)
+    }
+
+    func getSolidAdjacentSidesTo(pos: WorldTilePos) -> SideSet {
+        SideSet(pos.sideAdjacents.mapValues { adjacentPos in
+            let adjacentTileTypes = self[adjacentPos]
+            return adjacentTileTypes.contains { tileType in tileType.isSolid }
+        })
+    }
+
     /// Note: doesn't return nil for air
-    func sideAdjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
+    func getSideAdjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
         let type = self[pos3D]
 
         return getConnectedSideAdjacents(origin: pos3D) { testPos in

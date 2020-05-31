@@ -6,6 +6,10 @@
 import SpriteKit
 
 class View {
+    /// Views need to update after cascading model updates,
+    /// to prevent confusing display bugs
+    static let observerPriority: Int = -1
+
     /// Used as a sanity check
     private(set) weak var parent: SKNode? = nil
 

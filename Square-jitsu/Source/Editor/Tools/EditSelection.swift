@@ -143,7 +143,7 @@ enum EditSelection {
         if world[tilePos3D] == TileType.air {
             return []
         } else {
-            return world.sideAdjacentsWithSameTypeAsTileAt(pos3D: tilePos3D)
+            return world.getSideAdjacentsWithSameTypeAsTileAt(pos3D: tilePos3D)
         }
     }
 }

@@ -12,8 +12,8 @@ struct Observable<Event> {
         self.publisher = publisher
     }
 
-    func subscribe(observer: AnyObject, handler: @escaping (Event) -> ()) {
-        publisher.subscribe(observer: observer, handler: handler)
+    func subscribe(observer: AnyObject, priority: ObservablePriority, handler: @escaping (Event) -> ()) {
+        publisher.subscribe(observer: observer, priority: priority, handler: handler)
     }
 
     func unsubscribe(observer: AnyObject) {

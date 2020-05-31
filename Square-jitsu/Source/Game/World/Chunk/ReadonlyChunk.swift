@@ -12,5 +12,8 @@ protocol ReadonlyChunk {
     subscript(_ pos: ChunkTilePos) -> [TileType] { get }
     subscript(_ pos: ChunkTilePos3D) -> TileType { get }
 
+    var tileMetadatas: [ChunkTilePos3D:TileMetadata] { get }
+    func getMetadatasAt(pos: ChunkTilePos) -> [(layer: Int, tileMetadata: TileMetadata)]
+
     func clone() -> Chunk
 }

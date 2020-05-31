@@ -12,11 +12,11 @@ class EditorToolsSelectModeView: UXCompoundView {
         self.editorTools = editorTools
         super.init()
 
-        editorTools.didChangeEditSelectMode.subscribe(observer: self) {
+        editorTools.didChangeEditSelectMode.subscribe(observer: self, priority: ObservablePriority.view) {
             self.regenerateBody()
         }
         // We subscribe to this because it may change buttons' enabled states
-        editorTools.didChangeEditActionMode.subscribe(observer: self) {
+        editorTools.didChangeEditActionMode.subscribe(observer: self, priority: ObservablePriority.view) {
             self.regenerateBody()
         }
     }

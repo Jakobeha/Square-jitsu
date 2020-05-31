@@ -23,8 +23,8 @@ class EditMoveView: UXView {
 
         node.addChild(tileViewsNode)
 
-        editor.tools.didChangeEditAction.subscribe(observer: self, handler: updateMovedTileViews)
-        editor.editorCamera.didChange.subscribe(observer: self, handler: updateNodePositionForCameraChange)
+        editor.tools.didChangeEditAction.subscribe(observer: self, priority: ObservablePriority.view, handler: updateMovedTileViews)
+        editor.editorCamera.didChange.subscribe(observer: self, priority: ObservablePriority.view, handler: updateNodePositionForCameraChange)
     }
 
     private func updateMovedTileViews() {

@@ -6,19 +6,26 @@
 import Foundation
 
 class Publisher<Event> {
-    private class ObserverHandlerWrapper<Event> {
+    private class ObserverInfo<Event> {
+        let priority: ObservablePriority
         let receive: (Event)->()
 
-        init(_ handler: @escaping (Event) -> ()) {
+        init(priority: ObservablePriority, handler: @escaping (Event) -> ()) {
+            self.priority = priority
             self.receive = handler
         }
     }
 
-    private var observers: MapTable<AnyObject, ObserverHandlerWrapper<Event>> = MapTable(keyOptions: .weakMemory)
+    private var observers: MapTable<AnyObject, ObserverInfo<Event>> = MapTable(keyOptions: .weakMemory)
 
-    func subscribe(observer: AnyObject, handler: @escaping (Event) -> ()) {
+    private var sortedObservers: [ObserverInfo<Event>] {
+        observers.values.sorted { $0.priority > $1.priority }
+    }
+
+    /// Higher priority = receives messages earlier (this is bad design)
+    func subscribe(observer: AnyObject, priority: ObservablePriority, handler: @escaping (Event) -> ()) {
         assert(observers[observer] == nil, "already subscribed")
-        observers[observer] = ObserverHandlerWrapper(handler)
+        observers[observer] = ObserverInfo(priority: priority, handler: handler)
     }
 
     func unsubscribe(observer: AnyObject) {
@@ -27,7 +34,7 @@ class Publisher<Event> {
     }
 
     func publish(_ event: Event) {
-        for handlerWrapped in observers.values {
+        for handlerWrapped in sortedObservers {
             handlerWrapped.receive(event)
         }
     }

@@ -89,6 +89,16 @@ class WorldFile: ReadonlyStatelessWorld, CustomStringConvertible {
         }
     }
 
+    func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
+        let chunk = readChunkAt(pos: pos3D.pos.worldChunkPos)
+        return chunk.tileMetadatas[pos3D.chunkTilePos3D]
+    }
+
+    func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
+        let chunk = readChunkAt(pos: pos.worldChunkPos)
+        return chunk.getMetadatasAt(pos: pos.chunkTilePos)
+    }
+
     func forceCreateTile(pos: WorldTilePos, type: TileType) {
         assert(type.bigType != TileBigType.player, "can't create or move player")
         mutateChunkAt(pos: pos.worldChunkPos) { chunk in

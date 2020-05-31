@@ -30,6 +30,10 @@ extension CGSize {
         CGSize(width: lhs.width * scale, height: lhs.height * scale)
     }
 
+    static func *(lhs: CGSize, rhs: CGSize) -> CGSize {
+        CGSize(width: lhs.width * rhs.width, height: lhs.height * rhs.height)
+    }
+
     static func /(lhs: CGSize, scale: CGFloat) -> CGSize {
         CGSize(width: lhs.width / scale, height: lhs.height / scale)
     }

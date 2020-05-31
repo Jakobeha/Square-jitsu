@@ -52,7 +52,6 @@ class PlayerSpawnMetadata: EmptyTileMetadata {
     }
 
     func revert(world: World, pos3D: WorldTilePos3D) {
-        // This will never be called (as of writing this comment), but we can give it an ok implementation
-        world.resetPlayer()
+        fatalError("didn't expect PlayerSpawnMetadata.revert to be called - since player tiles can't be removed in the editor, and the world should explicitly avoid calling revert on the player metadata when resetting everything except for the player")
     }
 }

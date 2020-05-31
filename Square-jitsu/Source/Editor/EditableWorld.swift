@@ -36,9 +36,19 @@ class EditableWorld: EditableReadonlyStatelessWorld {
         }
     }
 
-    func forceCreateTile(pos: WorldTilePos, type: TileType) {
-        world.forceCreateTile(pos: pos, type: type)
-        worldFile.forceCreateTile(pos: pos, type: type)
+    func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
+        // Metadata in the world file is actually the same as the metadata in the world
+        worldFile.getMetadataAt(pos3D: pos3D)
+    }
+
+    func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
+        worldFile.getMetadatasAt(pos: pos)
+    }
+
+    func createTile(pos: WorldTilePos, type: TileType) {
+        let orientedType = autoReorientType(type, pos: pos)
+        world.forceCreateTile(pos: pos, type: orientedType)
+        worldFile.forceCreateTile(pos: pos, type: orientedType)
     }
 
     func destroyTiles(pos: WorldTilePos) {
@@ -49,6 +59,23 @@ class EditableWorld: EditableReadonlyStatelessWorld {
     func destroyTile(pos3D: WorldTilePos3D) {
         world.set(pos3D: pos3D, to: TileType.air, persistInGame: false)
         worldFile.destroyTile(pos3D: pos3D)
+    }
+
+    private func autoReorientType(_ type: TileType, pos: WorldTilePos) -> TileType{
+        var type = type
+        let orientationMeaning = world.settings.tileOrientationMeanings[type] ?? .unused
+        switch orientationMeaning {
+        case .unused:
+            break
+        case .directionAdjacentToSolid:
+            let sidesWithAdjacentSolid = self.getSolidAdjacentSidesTo(pos: pos)
+            if let aSideWithAdjacentSolid = sidesWithAdjacentSolid.first {
+                type.orientation = TileOrientation(side: aSideWithAdjacentSolid)
+            } else {
+                type.orientation = TileOrientation.none
+            }
+        }
+        return type
     }
     // endregion
 

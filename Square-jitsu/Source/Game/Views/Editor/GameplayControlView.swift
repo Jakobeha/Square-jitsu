@@ -12,7 +12,7 @@ class GameplayControlView: UXCompoundView {
         self.editor = editor
         super.init()
 
-        editor.didChangeState.subscribe(observer: self, handler: regenerateBody)
+        editor.didChangeState.subscribe(observer: self, priority: ObservablePriority.view, handler: regenerateBody)
     }
 
     override func newBody() -> UXView {

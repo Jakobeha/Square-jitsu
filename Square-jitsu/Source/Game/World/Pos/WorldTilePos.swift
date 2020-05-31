@@ -20,7 +20,7 @@ struct WorldTilePos: Equatable, Hashable {
                 FBRange(center.x + distance - 1, center.x - distance).map { x in WorldTilePos(x: x, y: center.y + distance) } +
                 FBRange(center.y + distance - 1, center.y - distance).map { y in WorldTilePos(x: center.x - distance, y: y) } +
                 FBRange(center.x - distance + 1, center.x + distance).map { x in WorldTilePos(x: x, y: center.y - distance) } +
-                FBRange(center.y - distance + 1, center.y + distance).map { y in WorldTilePos(x: center.x + distance, y: y) }
+                FBRange(center.y - distance + 1, center.y - 1).map { y in WorldTilePos(x: center.x + distance, y: y) }
     }
 
     /// A path made up of squares covering each of the tiles, possibly optimized.
