@@ -11,13 +11,16 @@ protocol ReadonlyStatelessWorld: AnyObject {
     subscript(pos: WorldTilePos) -> [TileType] { get }
     subscript(pos3D: WorldTilePos3D) -> TileType { get }
 
-    func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)]
     func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata?
 }
 
 extension ReadonlyStatelessWorld {
     func getTileAt(pos3D: WorldTilePos3D) -> TileAtPosition {
-        TileAtPosition(type: self[pos3D], position: pos3D)
+        TileAtPosition(type: self[pos3D], position: pos3D, metadata: getMetadataAt(pos3D: pos3D))
+    }
+
+    func getUpdatedTileAtPosition(oldTileAtPosition: TileAtPosition) -> TileAtPosition {
+        getTileAt(pos3D: oldTileAtPosition.position)
     }
 
     func getTileLayersAt(pos: WorldTilePos) -> TileLayerSet {

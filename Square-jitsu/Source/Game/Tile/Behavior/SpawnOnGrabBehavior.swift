@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-class SpawnOnGrabMetadata: AbstractSpawnAndRemoveMetadata {
+class SpawnOnGrabBehavior: AbstractSpawnAndRemoveBehavior<Never> {
     override func onEntityCollide(entity: Entity, pos: WorldTilePos3D) {
         super.onEntityCollide(entity: entity, pos: pos)
         let world = entity.world!

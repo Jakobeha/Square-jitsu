@@ -8,6 +8,8 @@ import SpriteKit
 struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
     static let zero: Angle = Angle(radians: 0 as Float)
     static let right: Angle = Angle(radians: Float.pi / 2)
+    static let straight: Angle = Angle(radians: Float.pi)
+    static let circle: Angle = Angle(radians: Float.pi * 2)
 
     static prefix func -(angle: Angle) -> Angle {
         Angle(radians: -angle.radians)

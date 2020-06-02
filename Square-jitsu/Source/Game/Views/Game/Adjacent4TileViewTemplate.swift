@@ -6,8 +6,6 @@
 import SpriteKit
 
 final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
-    typealias AsSetting = StructSetting<Adjacent4TileViewTemplate>
-
     static func getCoalescedForSharedTexture(sideSet: SideSet) -> SideSet {
         if sideSet.contains([.east, .west]) || sideSet.contains([.north, .south]) {
             return SideSet.all
@@ -54,11 +52,11 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         self.semiAdjoiningTypes = semiAdjoiningTypes
     }
 
-    func generateNode(world: ReadonlyWorld, pos: WorldTilePos, tileType: TileType) -> SKNode {
-        let alwaysAdjoiningSides = SideSet(pos.sideAdjacents.mapValues { adjacentPos in
+    func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
+        let alwaysAdjoiningSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
             adjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })
-        let semiAdjoiningSides = SideSet(pos.sideAdjacents.mapValues { adjacentPos in
+        let semiAdjoiningSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
             semiAdjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })
         let adjoiningSides = alwaysAdjoiningSides.union(Adjacent4TileViewTemplate.resolve(semiAdjoiningSides: semiAdjoiningSides))
@@ -72,6 +70,14 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         node.anchorPoint = UXSpriteAnchor
         return node
     }
+
+    func didPlaceInParent(node: SKNode) {}
+
+    func didRemoveFromParent(node: SKNode) {}
+
+    // ---
+
+    typealias AsSetting = StructSetting<Adjacent4TileViewTemplate>
 
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [

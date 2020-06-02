@@ -25,9 +25,7 @@ class AdjacentToSolidInspector: SubInspector {
         let tilesToChange = tilesConnectableToSide[side]
         delegate?.connectTilesToSide(tiles: tilesToChange, side: side)
 
-        tiles = tiles.map { tileAtPosition in
-            world.getTileAt(pos3D: tileAtPosition.position)
-        }
+        tiles = tiles.map(world.getUpdatedTileAtPosition)
         updateConnectedTileInfo()
     }
 

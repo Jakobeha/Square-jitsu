@@ -15,12 +15,12 @@ class WorldView: NodeView<SKNode> {
         super.init(node: SKNode())
 
         placeExisting()
-        world.didReset.subscribe(observer: self, priority: ObservablePriority.view, handler: reSynchronize)
-        world.didLoadChunk.subscribe(observer: self, priority: ObservablePriority.view, handler: placeChunkView)
-        world.didUnloadChunk.subscribe(observer: self, priority: ObservablePriority.view, handler: removeChunkView)
-        world.didAddEntity.subscribe(observer: self, priority: ObservablePriority.view, handler: placeEntityView)
-        world.didRemoveEntity.subscribe(observer: self, priority: ObservablePriority.view, handler: removeEntityView)
-        world.didTick.subscribe(observer: self, priority: ObservablePriority.view, handler: update)
+        world.didReset.subscribe(observer: self, priority: .view, handler: reSynchronize)
+        world.didLoadChunk.subscribe(observer: self, priority: .view, handler: placeChunkView)
+        world.didUnloadChunk.subscribe(observer: self, priority: .view, handler: removeChunkView)
+        world.didAddEntity.subscribe(observer: self, priority: .view, handler: placeEntityView)
+        world.didRemoveEntity.subscribe(observer: self, priority: .view, handler: removeEntityView)
+        world.didTick.subscribe(observer: self, priority: .view, handler: update)
     }
 
     required init?(coder: NSCoder) {

@@ -87,6 +87,19 @@ extension CGPoint {
         ((end - start) * t) + start
     }
 
+    init(magnitude: CGFloat, sideDirection: Side) {
+        switch sideDirection {
+        case .east:
+            self.init(x: magnitude, y: 0)
+        case .north:
+            self.init(x: 0, y: magnitude)
+        case .west:
+            self.init(x: -magnitude, y: 0)
+        case .south:
+            self.init(x: 0, y: -magnitude)
+        }
+    }
+
     init(magnitude: CGFloat, directionFromOrigin: Angle) {
         self.init(
             x: directionFromOrigin.xOnUnitCircle * magnitude,
@@ -112,6 +125,15 @@ extension CGPoint {
 
     var toSize: CGSize {
         CGSize(width: x, height: y)
+    }
+
+    func projectOnto(axis: Axis) -> CGFloat {
+        switch axis {
+        case .horizontal:
+            return x
+        case .vertical:
+            return y
+        }
     }
 
     func rotateAroundCenter(by rotation: Angle) -> CGPoint {

@@ -6,11 +6,9 @@
 import SpriteKit
 
 struct StaticTileViewTemplate: TileViewTemplate, SingleSettingCodable {
-    typealias AsSetting = StructSetting<StaticTileViewTemplate>
-
     let texture: SKTexture
 
-    func generateNode(world: ReadonlyWorld, pos: WorldTilePos, tileType: TileType) -> SKNode {
+    func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
 
@@ -19,6 +17,14 @@ struct StaticTileViewTemplate: TileViewTemplate, SingleSettingCodable {
         node.anchorPoint = UXSpriteAnchor
         return node
     }
+
+    func didPlaceInParent(node: SKNode) {}
+
+    func didRemoveFromParent(node: SKNode) {}
+
+    // ---
+
+    typealias AsSetting = StructSetting<StaticTileViewTemplate>
 
     static func newSetting() -> StructSetting<StaticTileViewTemplate> {
         StructSetting(requiredFields: [

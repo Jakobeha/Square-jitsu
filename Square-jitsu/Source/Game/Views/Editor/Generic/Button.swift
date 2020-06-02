@@ -97,14 +97,14 @@ class Button: UXView {
         foregroundNode.anchorPoint = UXSpriteAnchor
         foregroundNode.zPosition = 2
         buttonNode = ButtonNode(size: buttonSize.cgSize)
-        buttonNode.didPress.subscribe(observer: self, priority: ObservablePriority.view, handler: action)
+        buttonNode.didPress.subscribe(observer: self, priority: .view, handler: action)
         buttonNode.addChild(backgroundNode)
         if let rouletteNextItemNode = rouletteNextItemNode {
             buttonNode.addChild(rouletteNextItemNode)
         }
         buttonNode.addChild(foregroundNode)
-        buttonNode.didTouchDown.subscribe(observer: self, priority: ObservablePriority.view) { self.isPressed = true }
-        buttonNode.didTouchUp.subscribe(observer: self, priority: ObservablePriority.view) { self.isPressed = false }
+        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { self.isPressed = true }
+        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { self.isPressed = false }
 
         updateForIsEnabled()
     }

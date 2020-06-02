@@ -30,19 +30,18 @@ class EditableWorld: EditableReadonlyStatelessWorld {
     subscript(pos3D: WorldTilePos3D) -> TileType {
         get { worldFile[pos3D] }
         set {
-            resetStateAt(pos3D: pos3D)
             worldFile[pos3D] = newValue
-            world.set(pos3D: pos3D, to: newValue, persistInGame: false)
+            resetStateAt(pos3D: pos3D)
         }
     }
 
     func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
-        // Metadata in the world file is actually the same as the metadata in the world
         worldFile.getMetadataAt(pos3D: pos3D)
     }
 
-    func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
-        worldFile.getMetadatasAt(pos: pos)
+    func setMetadataAt(pos3D: WorldTilePos3D, to metadata: TileMetadata?) {
+        worldFile.setMetadataAt(pos3D: pos3D, to: metadata)
+        resetStateAt(pos3D: pos3D)
     }
 
     func createTile(pos: WorldTilePos, type: TileType) {
@@ -59,6 +58,11 @@ class EditableWorld: EditableReadonlyStatelessWorld {
     func destroyTile(pos3D: WorldTilePos3D) {
         world.set(pos3D: pos3D, to: TileType.air, persistInGame: false)
         worldFile.destroyTile(pos3D: pos3D)
+    }
+
+    func setTileAtPositionTo(_ tileAtPosition: TileAtPosition) {
+        self[tileAtPosition.position] = tileAtPosition.type
+        setMetadataAt(pos3D: tileAtPosition.position, to: tileAtPosition.metadata)
     }
 
     private func autoReorientType(_ type: TileType, pos: WorldTilePos) -> TileType{
@@ -100,8 +104,9 @@ class EditableWorld: EditableReadonlyStatelessWorld {
     // region synchronization
     func resetStateAt(pos3D: WorldTilePos3D) {
         // Revert the metadata (might redundantly set tile, but also might remove entities)
-        if let tileMetadata = world.getMetadataAt(pos3D: pos3D) {
-            tileMetadata.revert(world: world, pos: pos3D)
+        if let tileBehavior = world.getBehaviorAt(pos3D: pos3D) {
+            tileBehavior.revert(world: world, pos: pos3D)
+            tileBehavior.untypedMetadata = worldFile.getMetadataAt(pos3D: pos3D)
         }
 
         // Set tile

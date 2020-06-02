@@ -52,10 +52,12 @@ struct ChunkTilePos3D: Equatable, Comparable, Hashable, CaseIterable, LosslessSt
         JSON(self.description)
     }
 
-    mutating func decodeFrom(json: JSON) throws {
+    init(from json: JSON) throws {
         let jsonString = try json.toString()
         if let this = ChunkTilePos3D(jsonString) {
             self = this
+        } else {
+            throw DecodeSettingError.badFormat(expectedDescription: "chunk tile position")
         }
     }
     //endregion

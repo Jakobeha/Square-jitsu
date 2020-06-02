@@ -13,9 +13,9 @@ class Chunk: ReadonlyChunk, Codable {
     static let extraDistanceFromEntityToUnload: CGFloat = CGFloat(widthHeight) / 2
 
     private var tiles: ChunkMatrix<TileType> = ChunkMatrix()
-    var tileMetadatas: [ChunkTilePos3D:TileMetadata] = [:]
-    private var sortedTileMetadatas: [(key: ChunkTilePos3D, value: TileMetadata)] {
-        tileMetadatas.sorted { $0.key < $1.key }
+    var tileBehaviors: [ChunkTilePos3D:TileBehavior] = [:]
+    private var sortedTileBehaviors: [(key: ChunkTilePos3D, value: TileBehavior)] {
+        tileBehaviors.sorted { $0.key < $1.key }
     }
 
     private let _didChangeTile: Publisher<(pos3D: ChunkTilePos3D, oldType: TileType)> = Publisher()
@@ -43,13 +43,13 @@ class Chunk: ReadonlyChunk, Codable {
 
             // Remove metadata if necessary
             if metadataIsDifferent {
-                tileMetadatas[pos3D] = nil
+                tileBehaviors[pos3D] = nil
             }
 
             // Place metadata if necessary
             if metadataIsDifferent {
-                if let newMetadata = newValue.bigType.newMetadata() {
-                    tileMetadatas[pos3D] = newMetadata
+                if let newMetadata = newValue.bigType.newBehavior() {
+                    tileBehaviors[pos3D] = newMetadata
                 }
             }
 
@@ -58,15 +58,8 @@ class Chunk: ReadonlyChunk, Codable {
         }
     }
 
-    func getMetadatasAt(pos: ChunkTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
-        (0..<Chunk.numLayers).compactMap { layer in
-            let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
-            if let tileMetadata = tileMetadatas[pos3D]  {
-                return (layer: layer, tileMetadata: tileMetadata)
-            } else {
-                return nil
-            }
-        }
+    func getMetadataAt(pos3D: ChunkTilePos3D) -> TileMetadata? {
+        tileBehaviors[pos3D]?.untypedMetadata
     }
 
     /// Places the tile, removing any non-overlapping tiles
@@ -87,7 +80,7 @@ class Chunk: ReadonlyChunk, Codable {
         // Remove metadatas
         for layer in 0..<Chunk.numLayers {
             let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
-            tileMetadatas[pos3D] = nil
+            tileBehaviors[pos3D] = nil
         }
 
         // Remove tiles
@@ -116,7 +109,7 @@ class Chunk: ReadonlyChunk, Codable {
         let tileType = self[pos3D]
 
         // Remove metadata
-        tileMetadatas[pos3D] = nil
+        tileBehaviors[pos3D] = nil
 
         // Remove tile
         tiles.remove(at: pos3D)
@@ -130,8 +123,8 @@ class Chunk: ReadonlyChunk, Codable {
         // Place tile and add metadata
         let layer = tiles.insert(type, at: pos)
         let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
-        if let metadata = type.bigType.newMetadata() {
-            tileMetadatas[pos3D] = metadata
+        if let metadata = type.bigType.newBehavior() {
+            tileBehaviors[pos3D] = metadata
         }
 
         // Notify observers
@@ -144,7 +137,9 @@ class Chunk: ReadonlyChunk, Codable {
     func clone() -> Chunk {
         let clone = Chunk()
         clone.tiles = tiles
-        clone.tileMetadatas = tileMetadatas
+        clone.tileBehaviors = tileBehaviors.mapValues { tileBehavior in
+            tileBehavior.clonePermanent()
+        }
         return clone
     }
 
@@ -188,12 +183,12 @@ class Chunk: ReadonlyChunk, Codable {
 
         let encodedMetadatasAndPositions = try container.decode([JSON].self, forKey: .tileMetadatas)
         for encodedMetadataAndPos3D in encodedMetadatasAndPositions {
-            try DecodeTileMetadataFrom(json: encodedMetadataAndPos3D) { pos3D in
+            try DecodeTileMetadataFromJson(json: encodedMetadataAndPos3D) { pos3D in
                 let tileType = tiles[pos3D]
                 // Might be nil
-                let tileMetadata = tileType.bigType.newMetadata()
-                tileMetadatas[pos3D] = tileMetadata
-                return tileMetadata
+                let tileBehavior = tileType.bigType.newBehavior()
+                tileBehaviors[pos3D] = tileBehavior
+                return tileBehavior
             }
         }
     }
@@ -204,8 +199,8 @@ class Chunk: ReadonlyChunk, Codable {
         let tileData = tiles.toData
         try container.encode(tileData, forKey: .tileData)
 
-        let encodedMetadatasAndPositions = try sortedTileMetadatas.map { (pos, tileMetadata) in
-            try EncodeTileMetadataToJson(pos: pos, tileMetadata: tileMetadata)
+        let encodedMetadatasAndPositions = try sortedTileBehaviors.map { (pos, tileBehavior) in
+            try EncodeTileMetadataToJson(pos: pos, tileBehavior: tileBehavior)
         }
         try container.encode(encodedMetadatasAndPositions, forKey: .tileMetadatas)
     }

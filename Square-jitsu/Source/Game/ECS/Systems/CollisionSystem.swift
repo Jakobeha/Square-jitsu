@@ -92,10 +92,11 @@ struct CollisionSystem: System {
         }
 
         // Notify metadatas
-        let tileMetadatas = world.getMetadatasAt(pos: tilePosition)
-        for (layer, tileMetadata) in tileMetadatas {
+        for layer in 0..<Chunk.numLayers {
             let pos3D = WorldTilePos3D(pos: tilePosition, layer: layer)
-            tileMetadata.onEntityCollide(entity: entity, pos: pos3D)
+            if let tileBehavior = world.getBehaviorAt(pos3D: pos3D) {
+                tileBehavior.onEntityCollide(entity: entity, pos: pos3D)
+            }
         }
     }
 

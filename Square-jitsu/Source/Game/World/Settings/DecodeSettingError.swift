@@ -8,6 +8,8 @@ import Foundation
 enum DecodeSettingError: Error, CustomStringConvertible {
     case wrongType(expected: Any.Type, actual: Type)
     case wrongTypeOfMany(anyExpected: [Any.Type], actual: Type)
+    case cantDecodeNever
+    case cantEncodeNever
     case wrongKeys(required: Set<String>, optional: Set<String>, actual: Set<String>)
     case outOfRange(minDesc: String, maxDesc: String)
     case missingFields(Set<String>)
@@ -48,6 +50,10 @@ enum DecodeSettingError: Error, CustomStringConvertible {
             } else {
                 return "Wrong keys: expected \(required.joined(separator: ", ")) (and optionally \(optional.joined(separator: ", ")) got \(actual.joined(separator: ", "))"
             }
+        case .cantDecodeNever:
+            return "Didn't expect a value to exist here (to be decoded)"
+        case .cantEncodeNever:
+            return "Didn't expect a value to exist here (to be encoded)"
         case .outOfRange(let minDesc, let maxDesc):
             return "Must be in range: \(minDesc) to \(maxDesc) (inclusive)"
         case .missingFields(let missingFields):

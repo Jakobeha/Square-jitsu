@@ -6,8 +6,6 @@
 import SpriteKit
 
 final class Adjacent8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
-    typealias AsSetting = StructSetting<Adjacent8TileViewTemplate>
-
     static func getCoalescedForSharedTexture(cornerSet: CornerSet) -> CornerSet {
         var coalescedSet = cornerSet
         if !cornerSet.contains(.east) {
@@ -43,8 +41,8 @@ final class Adjacent8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         self.adjoiningTypes = adjoiningTypes
     }
 
-    func generateNode(world: ReadonlyWorld, pos: WorldTilePos, tileType: TileType) -> SKNode {
-        let adjoiningCorners = CornerSet(pos.cornerAdjacents.mapValues { adjacentPos in
+    func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
+        let adjoiningCorners = CornerSet(pos3D.pos.cornerAdjacents.mapValues { adjacentPos in
             adjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })
         let texture = textures[adjoiningCorners]
@@ -57,6 +55,14 @@ final class Adjacent8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         node.anchorPoint = UXSpriteAnchor
         return node
     }
+
+    func didPlaceInParent(node: SKNode) {}
+
+    func didRemoveFromParent(node: SKNode) {}
+
+    // ---
+
+    typealias AsSetting = StructSetting<Adjacent8TileViewTemplate>
 
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [

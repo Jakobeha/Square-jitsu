@@ -94,7 +94,7 @@ struct TurretComponent: SingleSettingCodable, Codable {
         case isFiringContinuous
     }
 
-    static let turretVisibilityRadius: CGFloat = 7
+    static let turretVisibilityRadius: CGFloat = 14
 
     var rotationPattern: RotationPattern
     var whoToTarget: TileTypePred

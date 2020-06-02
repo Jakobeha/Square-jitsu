@@ -57,12 +57,8 @@ class Editor: EditorToolsDelegate {
         })
         let affectedPositions = isCopy ? allLayersAtPositionsAfterMove : selectedPositions.union(allLayersAtPositionsAfterMove)
 
-        let tilesToMove = selectedPositions.map { position in
-            TileAtPosition(type: editableWorld[position], position: position)
-        }
-        let originalTiles = affectedPositions.map { position in
-            TileAtPosition(type: editableWorld[position], position: position)
-        }
+        let tilesToMove = selectedPositions.map(editableWorld.getTileAt)
+        let originalTiles = affectedPositions.map(editableWorld.getTileAt)
 
         if !isCopy {
             for oldPosition in selectedPositions {
@@ -91,9 +87,7 @@ class Editor: EditorToolsDelegate {
                 WorldTilePos3D(pos: pos2D, layer: layer)
             }
         }
-        let originalTiles = possibleChangedPositions.map { pos3D in
-            TileAtPosition(type: editableWorld[pos3D], position: pos3D)
-        }
+        let originalTiles = possibleChangedPositions.map(editableWorld.getTileAt)
 
         for position2D in selectedPositions2D {
             editableWorld.createTile(pos: position2D, type: selectedTileType)
@@ -106,9 +100,7 @@ class Editor: EditorToolsDelegate {
     }
 
     func performRemoveAction(selectedPositions: Set<WorldTilePos3D>) {
-        let originalTiles = selectedPositions.map { position in
-            TileAtPosition(type: editableWorld[position], position: position)
-        }
+        let originalTiles = selectedPositions.map(editableWorld.getTileAt)
         
         for position in selectedPositions {
             editableWorld[position] = TileType.air
@@ -121,15 +113,10 @@ class Editor: EditorToolsDelegate {
     }
 
     private func revertAction(originalTiles: [TileAtPosition]) {
-        let nowOriginalTiles: [TileAtPosition] = originalTiles.map { originalTile in
-            let position = originalTile.position
-            return TileAtPosition(type: editableWorld[position], position: position)
-        }
+        let nowOriginalTiles: [TileAtPosition] = originalTiles.map(editableWorld.getUpdatedTileAtPosition)
 
         for originalTile in originalTiles {
-            let type = originalTile.type
-            let position = originalTile.position
-            editableWorld[position] = type
+            editableWorld.setTileAtPositionTo(originalTile)
         }
 
         didPerformAction()
@@ -149,8 +136,9 @@ class Editor: EditorToolsDelegate {
 
     func setInitialTurretDirections(to initialTurretDirection: Angle, positions: Set<WorldTilePos3D>) {
         for pos3D in positions {
-            let metadata = editableWorld.getMetadataAt(pos3D: pos3D)! as! TurretMetadata
+            var metadata = editableWorld.getMetadataAt(pos3D: pos3D)! as! TurretMetadata
             metadata.initialTurretDirectionRelativeToAnchor = initialTurretDirection
+            editableWorld.setMetadataAt(pos3D: pos3D, to: metadata)
         }
     }
     // endregion
@@ -197,4 +185,13 @@ class Editor: EditorToolsDelegate {
         }
     }
     // endregion
+
+    func tick() {
+        switch state {
+        case .editing:
+            tools.tick()
+        case .playing:
+            editableWorld.world.tick()
+        }
+    }
 }

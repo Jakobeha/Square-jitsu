@@ -19,10 +19,10 @@ class ChunkView: NodeView<SKNode> {
         node.position = worldChunkPos.originCgPoint * world.settings.tileViewWidthHeight
 
         placeExistingTiles(chunk: chunk)
-        chunk.didChangeTile.subscribe(observer: self, priority: ObservablePriority.view) { chunkTilePos3D, oldType in
+        chunk.didChangeTile.subscribe(observer: self, priority: .view) { chunkTilePos3D, oldType in
             self.regenerateTileView(chunkTilePos3D: chunkTilePos3D)
         }
-        chunk.didAdjacentTileChange.subscribe(observer: self, priority: ObservablePriority.view, handler: regenerateTileViewsAt)
+        chunk.didAdjacentTileChange.subscribe(observer: self, priority: .view, handler: regenerateTileViewsAt)
     }
 
     required init?(coder: NSCoder) {
@@ -50,8 +50,8 @@ class ChunkView: NodeView<SKNode> {
     private func placeTileView(chunkTilePos3D: ChunkTilePos3D) {
         assert(tileViews[chunkTilePos3D] == nil)
         let tileType = chunk[chunkTilePos3D]
-        let worldTilePos = WorldTilePos(worldChunkPos: worldChunkPos, chunkTilePos: chunkTilePos3D.pos)
-        let tileView = TileView(world: world, pos: worldTilePos, tileType: tileType, coordinates: .chunk)
+        let worldTilePos3D = WorldTilePos3D(worldChunkPos: worldChunkPos, chunkTilePos3D: chunkTilePos3D)
+        let tileView = TileView(world: world, pos3D: worldTilePos3D, tileType: tileType, coordinates: .chunk)
         tileView.placeIn(parent: self.node)
         tileViews[chunkTilePos3D] = tileView
     }

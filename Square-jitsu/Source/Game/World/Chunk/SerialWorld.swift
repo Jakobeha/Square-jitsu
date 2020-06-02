@@ -43,8 +43,8 @@ class SerialWorld {
         }
     }
 
-    static let decoder: JSONDecoder = JSONDecoder()
-    static let encoder: JSONEncoder = JSONEncoder()
+    private static let decoder: JSONDecoder = JSONDecoder()
+    private static let encoder: JSONEncoder = JSONEncoder()
 
     var settingsName: String
     var backgroundName: String

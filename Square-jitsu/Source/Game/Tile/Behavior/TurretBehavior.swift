@@ -5,9 +5,7 @@
 
 import SpriteKit
 
-class TurretMetadata: AbstractSpawnMetadata {
-    var initialTurretDirectionRelativeToAnchor: Angle = -Angle.right
-
+class TurretBehavior: AbstractSpawnBehavior<TurretMetadata> {
     override func tick(world: World, pos: WorldTilePos3D) {
         super.tick(world: world, pos: pos)
         if !spawned {
@@ -25,19 +23,5 @@ class TurretMetadata: AbstractSpawnMetadata {
                 }
             }
         }
-    }
-
-    // ---
-
-    override func decodeFrom(json: JSON) throws {
-        let jsonDict = try json.toDictionary()
-        try DecodeSettingError.assertKeysIn(dictionary: jsonDict, requiredKeys: ["initialTurretDirectionRelativeToAnchor"])
-        initialTurretDirectionRelativeToAnchor = try jsonDict["initialTurretDirectionRelativeToAnchor"]!.toAngle()
-    }
-
-    override func encodeToJson() throws -> JSON {
-        JSON([
-            "initialTurretDirectionRelativeToAnchor": JSON(initialTurretDirectionRelativeToAnchor)
-        ])
     }
 }

@@ -41,7 +41,7 @@ class WorldController {
         worldView.placeIn(parent: parent)
         loaded = WorldModelView(world: world, worldView: worldView)
         updater.fixedDeltaTime = world.settings.fixedDeltaTime / world.speed
-        world.didChangeSpeed.subscribe(observer: self, priority: ObservablePriority.model) {
+        world.didChangeSpeed.subscribe(observer: self, priority: .model) {
             self.updater.fixedDeltaTime = world.settings.fixedDeltaTime / world.speed
         }
     }

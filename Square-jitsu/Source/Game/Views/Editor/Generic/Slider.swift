@@ -20,12 +20,17 @@ class Slider<Number: SliderNumber>: UXView {
 
     var value: Number {
         get { values.first! }
-        set { values = [newValue] }
+        set {
+            values = [newValue]
+            didValueChange(value)
+        }
     }
     private let didValueChange: (Number) -> ()
 
     var size: CGSize { SliderSize }
+    private var backgroundSize: CGSize { SliderSize * SliderBackgroundSizeRatio }
     private var knobSize: CGSize { CGSize.square(sideLength: min(size.width, size.height)) }
+    private var knobEdgeOffset: CGFloat { backgroundSize.height / 2 }
 
     private let sliderNode: SliderNode
     var node: SKNode { sliderNode }
@@ -57,13 +62,16 @@ class Slider<Number: SliderNumber>: UXView {
         knobNodes = []
         knobNodes = values.map(createKnobNode)
 
-
-        sliderNode.didSliderFractionsChange.subscribe(observer: self, priority: ObservablePriority.view, handler: setSliderValueFromControl)
+        sliderNode.didSliderFractionsChange.subscribe(observer: self, priority: .view, handler: setSliderValueFromControl)
     }
 
     private func createKnobNode(value: Number) -> SKSpriteNode {
+        let fraction = getFractionOf(value: value)
+        let knobPositionX = CGFloat.lerp(start: knobEdgeOffset, end: size.width - knobEdgeOffset, t: fraction)
+        let knobPosition = CGPoint(x: knobPositionX, y: 0)
+
         let knobNode = SKSpriteNode(texture: SliderKnobTexture, size: knobSize)
-        knobNode.position = CGPoint(x: getFractionOf(value: value) * size.width, y: 0)
+        knobNode.position = knobPosition
         knobNode.anchorPoint = CGPoint(x: 0.5, y: UXSpriteAnchor.y)
         knobNode.zPosition = 1
         // Would put in didSet,
@@ -77,7 +85,7 @@ class Slider<Number: SliderNumber>: UXView {
     private func setSliderValueFromControl(fractions: [CGFloat]) {
         if fractions.count == 1 {
             let fraction = fractions.first!
-            self.value = self.getValueOf(fraction: fraction)
+            value = getValueOf(fraction: fraction)
         }
     }
 

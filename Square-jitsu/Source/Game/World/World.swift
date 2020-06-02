@@ -31,9 +31,9 @@ class World: ReadonlyWorld {
         }
     }
 
-    var playerMetadata: PlayerSpawnMetadata? = nil {
+    var playerBehavior: PlayerSpawnBehavior? = nil {
         willSet {
-            assert(playerMetadata == nil, "playerMetadata can only be assigned once")
+            assert(playerBehavior == nil, "playerMetadata can only be assigned once")
             assert(newValue != nil, "this is a redundant assignment of playerMetadata to nil, it's almost definitely wrong")
         }
     }
@@ -79,11 +79,11 @@ class World: ReadonlyWorld {
 
     private func loadPlayer() {
         load(pos: loader.playerSpawnChunkPos)
-        if playerMetadata == nil {
+        if playerBehavior == nil {
             Logger.warn("player spawn not in chunk pos, or player spawn didn't spawn player")
-            playerMetadata = PlayerSpawnMetadata.dummyForInvalid(world: self)
+            playerBehavior = PlayerSpawnBehavior.dummyForInvalid(world: self)
         }
-        _player = playerMetadata!.spawnPlayer()
+        _player = playerBehavior!.spawnPlayer()
         // This actually adds the player entity,
         // otherwise the player isn't visible first frame,
         // which is a problem since the editor initially loads the world paused
@@ -101,7 +101,7 @@ class World: ReadonlyWorld {
     func resetExceptForPlayer() {
         for (pos3D, metadata) in getLoadedMetadatas() {
             // We explicitly don't want to revert the player
-            if !(metadata is PlayerSpawnMetadata) {
+            if !(metadata is PlayerSpawnBehavior) {
                 metadata.revert(world: self, pos: pos3D)
             }
         }
@@ -122,7 +122,7 @@ class World: ReadonlyWorld {
         if player.world === self {
             remove(entity: player)
         }
-        _player = playerMetadata!.spawnPlayer()
+        _player = playerBehavior!.spawnPlayer()
         runActions() // Adds the player
     }
     //endregion
@@ -177,7 +177,7 @@ class World: ReadonlyWorld {
             // Notify metadata
             if !loadedBefore {
                 let persistentDataForChunk = GamePersistentChunkData()
-                persistentDataForChunk.overwrittenTileMetadatas = chunk.tileMetadatas
+                persistentDataForChunk.overwrittenTileBehaviors = chunk.tileBehaviors
                 persistentChunkData[pos] = persistentDataForChunk
                 notifyAllMetadataInChunk(pos: pos, chunk: chunk) { $0.onFirstLoad }
             }
@@ -233,8 +233,8 @@ class World: ReadonlyWorld {
         }
     }
 
-    private func notifyAllMetadataInChunk(pos: WorldChunkPos, chunk: Chunk, getNotifyFunction: (TileMetadata) -> (World, WorldTilePos3D) -> ()) {
-        for (chunkPos3D, metadata) in chunk.tileMetadatas {
+    private func notifyAllMetadataInChunk(pos: WorldChunkPos, chunk: Chunk, getNotifyFunction: (TileBehavior) -> (World, WorldTilePos3D) -> ()) {
+        for (chunkPos3D, metadata) in chunk.tileBehaviors {
             let pos3D = WorldTilePos3D(worldChunkPos: pos, chunkTilePos3D: chunkPos3D)
             let notifyThisMetadata = getNotifyFunction(metadata)
             notifyThisMetadata(self, pos3D)
@@ -284,7 +284,7 @@ class World: ReadonlyWorld {
         if persistInGame {
             persistentDataForChunk.overwrittenTiles[chunkPos3D] = newType
         }
-        persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = chunk.tileMetadatas[chunkPos3D]
+        persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = chunk.tileBehaviors[chunkPos3D]
 
         notifyObserversOfAdjacentTileChanges(pos: pos3D.pos)
     }
@@ -298,14 +298,13 @@ class World: ReadonlyWorld {
         persistentDataForChunk.overwrittenTiles[pos3D.chunkTilePos3D] = nil
     }
 
-    func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
-        let chunk = getChunkAt(pos: pos.worldChunkPos)
-        return chunk.getMetadatasAt(pos: pos.chunkTilePos)
+    func getBehaviorAt(pos3D: WorldTilePos3D) -> TileBehavior? {
+        let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
+        return chunk.tileBehaviors[pos3D.chunkTilePos3D]
     }
 
     func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
-        let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
-        return chunk.tileMetadatas[pos3D.chunkTilePos3D]
+        getBehaviorAt(pos3D: pos3D)?.untypedMetadata
     }
 
     /// Places the tile, removing any non-overlapping tiles
@@ -320,7 +319,7 @@ class World: ReadonlyWorld {
         let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
         for layer in 0..<Chunk.numLayers {
             let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
-            persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = chunk.tileMetadatas[chunkPos3D]
+            persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = chunk.tileBehaviors[chunkPos3D]
         }
 
         notifyObserversOfAdjacentTileChanges(pos: pos)
@@ -338,7 +337,7 @@ class World: ReadonlyWorld {
         let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
         for layer in 0..<Chunk.numLayers {
             let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
-            persistentDataForChunk.overwrittenTileMetadatas[chunkPos3D] = nil
+            persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = nil
         }
 
         notifyObserversOfAdjacentTileChanges(pos: pos)
@@ -366,9 +365,9 @@ class World: ReadonlyWorld {
         }
     }
 
-    private func getLoadedMetadatas() -> [(pos: WorldTilePos3D, metadata: TileMetadata)] {
+    private func getLoadedMetadatas() -> [(pos: WorldTilePos3D, metadata: TileBehavior)] {
         chunks.flatMap { (worldChunkPos, chunk) in
-            chunk.tileMetadatas.map { (chunkPos3D, metadata) in
+            chunk.tileBehaviors.map { (chunkPos3D, metadata) in
                 let pos = WorldTilePos3D(worldChunkPos: worldChunkPos, chunkTilePos3D: chunkPos3D)
                 return (pos: pos, metadata: metadata)
             }

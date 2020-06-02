@@ -23,8 +23,8 @@ class EditMoveView: UXView {
 
         node.addChild(tileViewsNode)
 
-        editor.tools.didChangeEditAction.subscribe(observer: self, priority: ObservablePriority.view, handler: updateMovedTileViews)
-        editor.editorCamera.didChange.subscribe(observer: self, priority: ObservablePriority.view, handler: updateNodePositionForCameraChange)
+        editor.tools.didChangeEditAction.subscribe(observer: self, priority: .view, handler: updateMovedTileViews)
+        editor.editorCamera.didChange.subscribe(observer: self, priority: .view, handler: updateNodePositionForCameraChange)
     }
 
     private func updateMovedTileViews() {
@@ -63,7 +63,7 @@ class EditMoveView: UXView {
         } else {
             for pos3D in positions {
                 let tileType = editor.editableWorld.world[pos3D]
-                let tileView = TileView(world: editor.editableWorld.world, pos: pos3D.pos, tileType: tileType, coordinates: .world)
+                let tileView = TileView(world: editor.editableWorld.world, pos3D: pos3D, tileType: tileType, coordinates: .world)
                 tileView.placeIn(parent: tileViewsNode)
                 tileViews.append(tileView)
             }

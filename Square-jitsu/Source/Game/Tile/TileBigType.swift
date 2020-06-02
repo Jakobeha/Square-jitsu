@@ -43,7 +43,16 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         }
     }
 
-    func newMetadata() -> TileMetadata? {
+    func newMetadataSetting() -> SerialSetting {
+        switch self {
+        case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice, .player, .enemy, .shuriken, .projectile:
+            return NeverSetting()
+        case .turret:
+            return TurretMetadata.newSetting()
+        }
+    }
+
+    func newBehavior() -> TileBehavior? {
         switch self {
         case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice:
             return nil
@@ -51,13 +60,13 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
             // Not a tile
             return nil
         case .player:
-            return PlayerSpawnMetadata()
+            return PlayerSpawnBehavior()
         case .enemy:
-            return SingleSpawnInRadiusMetadata()
+            return SingleSpawnInRadiusBehavior()
         case .shuriken:
-            return SpawnOnGrabMetadata()
+            return SpawnOnGrabBehavior()
         case .turret:
-            return TurretMetadata()
+            return TurretBehavior()
         }
     }
 

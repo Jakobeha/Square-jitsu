@@ -18,9 +18,9 @@ class StructSetting<Value: SettingCodable>: SerialSetting {
     /// customValidator is a lambda partially because StructSetting is used by Sourcery generated code, also because it's easy
     init(requiredFields: [String:SerialSetting], optionalFields: [String:SerialSetting], allowedExtraFields: Set<String> = [], customValidator: ((StructSetting<Value>) throws -> ())? = nil) {
         assert(
-                !allowedExtraFields.contains(anyOf: requiredFields.keys) &&
-                !allowedExtraFields.contains(anyOf: optionalFields.keys) &&
-                !Set(requiredFields.keys).contains(anyOf: optionalFields.keys)
+            !allowedExtraFields.contains(anyOf: requiredFields.keys) &&
+            !allowedExtraFields.contains(anyOf: optionalFields.keys) &&
+            !Set(requiredFields.keys).contains(anyOf: optionalFields.keys)
         )
         self.requiredFieldSettings = requiredFields
         self.optionalFieldSettings = optionalFields

@@ -5,7 +5,7 @@
 
 import Foundation
 
-class AbstractSpawnAndRemoveMetadata: AbstractSpawnMetadata {
+class AbstractSpawnAndRemoveBehavior<Metadata: TileMetadata>: AbstractSpawnBehavior<Metadata> {
     private var myTileType: TileType?
 
     @discardableResult func spawnAndRemoveTile(world: World, pos: WorldTilePos3D) -> Entity {

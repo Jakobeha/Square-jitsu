@@ -14,7 +14,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
     // This makes user input same-frame, since velocity changes must propagate into an entity's prev state to be rendered
     let fixedDeltaTime: CGFloat = 1.0 / 120
     let cameraSpeed: CGFloat = 1.0 / 16
-    let tileViewWidthHeight: CGFloat = 48
+    let tileViewWidthHeight: CGFloat = 32
 
     // Display info
     var tileViewTemplates: TileTypeMap<TileViewTemplate>
@@ -31,12 +31,13 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var entitySpawnRadius: TileTypeMap<CGFloat>
 
     // Editor info
+    var defaultTileMetadatas: TileTypeMap<TileMetadata>
     var tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>
     var selectableTypes: [TileBigType:[TileSmallType]]
 
     typealias AsSetting = StructSetting<WorldSettings>
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
         self.rotateTileViewBasedOnOrientation = rotateTileViewBasedOnOrientation
@@ -47,6 +48,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
         self.tileDescriptions = tileDescriptions
         self.entityData = entityData
         self.entitySpawnRadius = entitySpawnRadius
+        self.defaultTileMetadatas = defaultTileMetadatas
         self.tileOrientationMeanings = tileOrientationMeanings
         self.selectableTypes = selectableTypes
     }
@@ -63,6 +65,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
             "tileDescriptions": TileTypeMapSetting<String> { StringSetting() },
             "entityData": TileTypeMapSetting<Entity.Components> { Entity.Components.newSetting() },
             "entitySpawnRadius": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(1...16) },
+            "defaultTileMetadatas": TileTypeMapSetting<TileMetadata> { type in type.bigType.newMetadataSetting() },
             "tileOrientationMeanings": TileTypeMapSetting<TileOrientationMeaning> { SimpleEnumSetting<TileOrientationMeaning>() },
             "selectableTypes": DictionarySetting<TileBigType, [TileSmallType]> { CollectionSetting<[TileSmallType]> { TileSmallTypeSetting() } }
         ], optionalFields: [:])

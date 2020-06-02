@@ -73,12 +73,18 @@
     ],
     "turret": [
       {
-        "type": "static",
-        "texture": "TurretAnchor"
+        "type": "turret",
+        "base": {
+          "texture": "TurretAnchor"
+        },
+        "turretTexture": "BasicTurret"
       },
       {
-        "type": "static",
-        "texture": "TurretAnchor"
+        "type": "turret",
+        "base": {
+          "texture": "TurretAnchor"
+        },
+        "turretTexture": "BurstTurret"
       }
     ]
   },
@@ -296,10 +302,18 @@
     ]
   },
   "entitySpawnRadius": {
-    "enemy": [3]
+    "enemy": [5]
+  },
+  "defaultTileMetadatas": {
+    "turret": [{
+      "initialTurretDirectionRelativeToAnchor": "-90°"
+    }]
   },
   "tileOrientationMeanings": {
-    "turret": ["directionAdjacentToSolid"]
+    "turret": [
+      "directionAdjacentToSolid",
+      "directionAdjacentToSolid"
+    ]
   },
   "selectableTypes": {
     "background": [0],

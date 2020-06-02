@@ -12,7 +12,7 @@ class CameraView: NodeView<SKNode> {
         }
         didSet {
             update()
-            camera.didChange.subscribe(observer: self, priority: ObservablePriority.view, handler: update)
+            camera.didChange.subscribe(observer: self, priority: .view, handler: update)
         }
     }
     private let child: View
@@ -23,7 +23,7 @@ class CameraView: NodeView<SKNode> {
         super.init(node: SKNode())
         child.placeIn(parent: node)
         update()
-        camera.didChange.subscribe(observer: self, priority: ObservablePriority.view, handler: update)
+        camera.didChange.subscribe(observer: self, priority: .view, handler: update)
     }
 
     private func update() {

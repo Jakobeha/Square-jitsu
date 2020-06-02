@@ -8,4 +8,5 @@ import Foundation
 struct TileAtPosition {
     var type: TileType
     var position: WorldTilePos3D
+    var metadata: TileMetadata?
 }

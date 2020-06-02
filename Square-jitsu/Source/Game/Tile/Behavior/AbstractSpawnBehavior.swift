@@ -5,18 +5,24 @@
 
 import Foundation
 
-class AbstractSpawnMetadata: EmptyTileMetadata {
+class AbstractSpawnBehavior<Metadata: TileMetadata>: EmptyTileBehavior<Metadata> {
     private var mySpawnedEntities: [Entity] = []
 
-    /// Whether this metadata spawned a tile
+    /// Whether this behavior spawned a tile
     var spawned: Bool {
         !mySpawnedEntities.isEmpty
     }
-    
+
+    private let _didSpawn: Publisher<Entity> = Publisher()
+    private let _didRevert: Publisher<()> = Publisher()
+    var didSpawn: Observable<Entity> { Observable(publisher: _didSpawn) }
+    var didRevert: Observable<()> { Observable(publisher: _didRevert) }
+
     @discardableResult func spawn(world: World, pos: WorldTilePos3D) -> Entity {
         let myTileType = world[pos]
         let entity = Entity.newForSpawnTile(type: myTileType, pos: pos, world: world)
         mySpawnedEntities.append(entity)
+        _didSpawn.publish(entity)
 
         return entity
     }
@@ -32,5 +38,6 @@ class AbstractSpawnMetadata: EmptyTileMetadata {
             }
         }
         mySpawnedEntities.removeAll()
+        _didRevert.publish()
     }
 }

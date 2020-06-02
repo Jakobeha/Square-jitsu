@@ -7,12 +7,12 @@ import Foundation
 
 class GamePersistentChunkData {
     var overwrittenTiles: [ChunkTilePos3D:TileType] = [:]
-    var overwrittenTileMetadatas: [ChunkTilePos3D:TileMetadata] = [:]
+    var overwrittenTileBehaviors: [ChunkTilePos3D:TileBehavior] = [:]
 
     func apply(to chunk: Chunk) {
         for (chunkPos3D, overwrittenTileType) in overwrittenTiles {
             chunk[chunkPos3D] = overwrittenTileType
         }
-        chunk.tileMetadatas = overwrittenTileMetadatas
+        chunk.tileBehaviors = overwrittenTileBehaviors
     }
 }

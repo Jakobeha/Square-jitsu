@@ -48,7 +48,7 @@ class InspectorContainerView: UXView {
         node.addChild(backgroundNode)
 
         updateInspectorView()
-        editorTools.didChangeInspector.subscribe(observer: self, priority: ObservablePriority.view) {
+        editorTools.didChangeInspector.subscribe(observer: self, priority: .view) {
             self.updateInspectorView()
         }
     }

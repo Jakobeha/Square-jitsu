@@ -28,13 +28,19 @@ struct TouchPos {
     }
 
     let screenPos: CGPoint
+    let distancesToScreenEdges: DenseEnumMap<Side, CGFloat>
     let worldScreenPos: CGPoint
     let worldTilePos: WorldTilePos
     /// Change in world position since last touch event
     let worldPosDelta: CGPoint
 
     init(uiTouch: UITouch, camera: Camera, settings: WorldSettings, container: SKScene) {
-        screenPos = TouchPos.getPosition(uiTouch: uiTouch, container: container)
+        let _screenPos = TouchPos.getPosition(uiTouch: uiTouch, container: container)
+        screenPos = _screenPos
+        let containerBounds = CGRect(center: CGPoint.zero, size: container.size)
+        distancesToScreenEdges = DenseEnumMap { side in
+            abs(containerBounds.getEdgeAt(side: side) - _screenPos.projectOnto(axis: side.axis))
+        }
         worldScreenPos = camera.transform(position: screenPos)
         worldTilePos = WorldTilePos.closestTo(pos: worldScreenPos)
 

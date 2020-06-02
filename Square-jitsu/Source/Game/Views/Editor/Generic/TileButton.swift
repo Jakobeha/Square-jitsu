@@ -54,7 +54,7 @@ class TileButton: UXView {
         borderNode.zPosition = 3
 
         buttonNode = ButtonNode(size: ButtonSize.tile.cgSize)
-        buttonNode.didPress.subscribe(observer: self, priority: ObservablePriority.view, handler: action)
+        buttonNode.didPress.subscribe(observer: self, priority: .view, handler: action)
         buttonNode.addChild(backgroundNode)
         if let tilePreviewNode = tilePreviewNode {
             buttonNode.addChild(tilePreviewNode)
@@ -63,8 +63,8 @@ class TileButton: UXView {
             buttonNode.addChild(entityPreviewNode)
         }
         buttonNode.addChild(borderNode)
-        buttonNode.didTouchDown.subscribe(observer: self, priority: ObservablePriority.view) { self.isPressed = true }
-        buttonNode.didTouchUp.subscribe(observer: self, priority: ObservablePriority.view) { self.isPressed = false }
+        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { self.isPressed = true }
+        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { self.isPressed = false }
 
         updateForIsEnabled()
     }

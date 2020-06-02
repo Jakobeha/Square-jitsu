@@ -30,7 +30,7 @@ class EditorToolsView: UXCompoundView {
         gridView = GridView(camera: editor.editorCamera, settings: editor.editableWorld.world.settings)
         super.init()
 
-        editor.didChangeState.subscribe(observer: self, priority: ObservablePriority.view, handler: regenerateBody)
+        editor.didChangeState.subscribe(observer: self, priority: .view, handler: regenerateBody)
     }
     
     override func newBody() -> UXView {

@@ -64,7 +64,7 @@ class EditorController {
 
         let world = loaded!.world
         updater.fixedDeltaTime = world.settings.fixedDeltaTime / world.speed
-        world.didChangeSpeed.subscribe(observer: self, priority: ObservablePriority.model) {
+        world.didChangeSpeed.subscribe(observer: self, priority: .model) {
             self.updater.fixedDeltaTime = world.settings.fixedDeltaTime / world.speed
         }
     }
@@ -82,13 +82,6 @@ class EditorController {
     }
 
     private func tick() {
-        if let loaded = loaded {
-            switch loaded.editor.state {
-            case .editing:
-                break
-            case .playing:
-                loaded.world.tick()
-            }
-        }
+        loaded?.editor.tick()
     }
 }

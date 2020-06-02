@@ -9,14 +9,16 @@ class Label: UXView {
     private static let fontName: String = "Helvetica"
     private static let fontSize: CGFloat = 14
     private static let fontColor: SKColor = SKColor.black
+    private static let estimatedCharacterWidthMultiplier: CGFloat = 0.5
 
     private let text: String
 
     private let labelNode: SKLabelNode
     var node: SKNode { labelNode }
 
+    /// The rough size of the text
     var size: CGSize {
-        CGSize(width: 0, height: Label.fontSize)
+        CGSize(width: Label.fontSize * Label.estimatedCharacterWidthMultiplier * CGFloat(text.count), height: Label.fontSize)
     }
 
     init(text: String) {

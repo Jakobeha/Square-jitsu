@@ -26,6 +26,8 @@ class EditorTools {
     private(set) var inspector: Inspector? = nil {
         didSet { _didChangeInspector.publish() }
     }
+    /// Touch position which will cause edge panning
+    private var edgePanTouchPos: TouchPos? = nil
     weak var delegate: EditorToolsDelegate? = nil
     private let world: EditableReadonlyStatelessWorld
     private let editorCamera: Camera
@@ -81,13 +83,14 @@ class EditorTools {
         self.undoManager = undoManager
         self.userSettings = userSettings
         tileMenu = TileMenu(settings: world.settings)
-        tileMenu.didSelect.subscribe(observer: self, priority: ObservablePriority.view) {
+        tileMenu.didSelect.subscribe(observer: self, priority: .view) {
             if self.tileMenu.openLayer != nil {
                 self.select(actionMode: .place)
             }
         }
     }
 
+    // region selecting different modes
     func select(selectMode: EditSelectMode) {
         let oldEditSelectMode = editSelection.mode
 
@@ -133,155 +136,6 @@ class EditorTools {
             this.editAction = oldEditAction
         }
         undoManager.endUndoGrouping()
-    }
-    
-    // region touch input adapting
-    func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
-        let touchPositions = getTouchPositions(uiTouches: event?.allTouches ?? [], camera: camera, container: container)
-        if touchPositions.count == 1 {
-            let touchPos = touchPositions.randomElement()!
-            afterTouchDown(touchPos: touchPos)
-        } else {
-            afterTouchCancel()
-        }
-    }
-
-    func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
-        let touchPositions = getTouchPositions(uiTouches: event?.allTouches ?? [], camera: camera, container: container)
-        if touchPositions.count == 1 {
-            let touchPos = touchPositions.randomElement()!
-            afterTouchMove(touchPos: touchPos)
-        } else {
-            pan(touchPositions: touchPositions)
-            afterTouchCancel()
-        }
-
-    }
-
-    func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
-        let touchPositions = getTouchPositions(uiTouches: event?.allTouches ?? [], camera: camera, container: container)
-        if touchPositions.count == 1 {
-            let touchPos = touchPositions.randomElement()!
-            afterTouchUp(touchPos: touchPos)
-        } else {
-            afterTouchCancel()
-        }
-    }
-
-    func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
-        afterTouchCancel()
-    }
-
-    private func getTouchPositions(uiTouches: Set<UITouch>, camera: Camera, container: SKScene) -> [TouchPos] {
-        uiTouches.map { uiTouch in getTouchPosition(uiTouch: uiTouch, camera: camera, container: container) }
-    }
-
-    private func getTouchPosition(uiTouch: UITouch, camera: Camera, container: SKScene) -> TouchPos {
-        TouchPos(uiTouch: uiTouch, camera: camera, settings: world.settings, container: container)
-    }
-    // endregion
-
-    // region touch handling
-    private func afterTouchDown(touchPos: TouchPos) {
-        if inspector != nil {
-            dismissInspector()
-            editAction = .inspect
-        }
-
-        if editAction.mode.requiresSelection && editAction.selectedPositions.isEmpty {
-            // Move initiated with no selection, so we instant-select
-            let selectedPositions = editSelection.instantSelect(touchPos: touchPos, world: world)
-            switch editAction.mode {
-            case .move:
-                // Perform a move with these tiles - select them and then perform a move
-                let nextEditMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
-                editAction = .move(selectedPositions: selectedPositions, state: nextEditMoveState)
-            case .copy:
-                // Perform a copy with these tiles
-                let nextEditMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
-                editAction = .copy(selectedPositions: selectedPositions, state: nextEditMoveState)
-            case .place, .remove, .select, .deselect, .inspect:
-                fatalError("unhandled move which requires selection: \(editAction.mode)")
-            }
-        } else {
-            if hasEditMoveState {
-                // Perform a move with the selected tiles
-                editMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
-                if editAction.mode == .move {
-                    // We need to synchronize before hiding, we don't put it in temporarilyHide
-                    // because it would be misleading
-                    world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
-                    world.temporarilyHide(positions: editAction.selectedPositions)
-                }
-            } else {
-                // Perform a select
-                editSelection = editSelection.afterTouchDown(firstTouchPos: touchPos)
-            }
-        }
-    }
-
-    private func afterTouchMove(touchPos: TouchPos) {
-        if hasEditMoveState && editMoveState.isStarted {
-            editMoveState = editMoveState.afterTouchMove(nextTouchPos: touchPos)
-        } else if !hasEditMoveState && !editSelection.isNone {
-            editSelection = editSelection.afterTouchMove(nextTouchPos: touchPos)
-        }
-    }
-
-    private func afterTouchUp(touchPos: TouchPos) {
-        undoManager.beginUndoGrouping()
-        let oldEditAction = editAction
-
-        if hasEditMoveState && editMoveState.isStarted {
-            if editAction.mode == .move {
-                // We need to synchronize before showing, we don't put it in showTemporarilyHidden
-                // because it would be misleading
-                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
-                world.showTemporarilyHidden(positions: editAction.selectedPositions)
-            }
-
-            let distanceMoved = editMoveState.distanceMovedAfterTouchUp(finalTouchPos: touchPos)
-            delegate?.performMoveAction(selectedPositions: editAction.selectedPositions, distanceMoved: distanceMoved, isCopy: editAction.mode == .copy)
-
-            editAction.selectedPositions = []
-            if !editSelection.mode.canInstantSelect {
-                // We need to change the mode because we can't select move without instant select ability, it's useless
-                editAction = .select(selectedPositions: [])
-            }
-        } else if !hasEditMoveState && !editSelection.isNone {
-            let selectedPositions = editSelection.getSelectedPositionsWithTilesAfterTouchUp(lastTouchPos: touchPos, world: world)
-            performCurrentAction(selectedPositions: selectedPositions)
-            editSelection = editSelection.endedOrCancelled
-        }
-
-        undoManager.registerUndo(withTarget: self) { this in
-            this.editAction = oldEditAction
-        }
-        undoManager.endUndoGrouping()
-    }
-
-    private func afterTouchCancel() {
-        if hasEditMoveState {
-            if editAction.mode == .move {
-                // We need to synchronize before showing, we don't put it in showTemporarilyHidden
-                // because it would be misleading
-                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
-                world.showTemporarilyHidden(positions: editAction.selectedPositions)
-            }
-            
-            editMoveState = .notStarted
-        } else {
-            editSelection = editSelection.endedOrCancelled
-        }
-    }
-
-
-    private func pan(touchPositions: [TouchPos]) {
-        let touchOffsets = touchPositions.map { touchPos in touchPos.worldPosDelta }
-        if !touchOffsets.isEmpty {
-            let worldOffset = -touchOffsets.average()! * userSettings.panMultiplierFromScreenOffsetToWorldOffset
-            editorCamera.position += worldOffset
-        }
     }
     // endregion
 
@@ -337,6 +191,188 @@ class EditorTools {
 
     private func dismissInspector() {
         inspector = nil
+    }
+    // endregion
+
+    // region touch handling
+    private func afterTouchDown(touchPos: TouchPos) {
+        edgePanTouchPos = touchPos
+
+        if inspector != nil {
+            dismissInspector()
+        }
+
+        if editAction.mode.requiresSelection && editAction.selectedPositions.isEmpty {
+            // Move initiated with no selection, so we instant-select
+            let selectedPositions = editSelection.instantSelect(touchPos: touchPos, world: world)
+            switch editAction.mode {
+            case .move:
+                // Perform a move with these tiles - select them and then perform a move
+                let nextEditMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
+                editAction = .move(selectedPositions: selectedPositions, state: nextEditMoveState)
+            case .copy:
+                // Perform a copy with these tiles
+                let nextEditMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
+                editAction = .copy(selectedPositions: selectedPositions, state: nextEditMoveState)
+            case .place, .remove, .select, .deselect, .inspect:
+                fatalError("unhandled move which requires selection: \(editAction.mode)")
+            }
+        } else {
+            if hasEditMoveState {
+                // Perform a move with the selected tiles
+                editMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
+                if editAction.mode == .move {
+                    // We need to synchronize before hiding, we don't put it in temporarilyHide
+                    // because it would be misleading
+                    world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+                    world.temporarilyHide(positions: editAction.selectedPositions)
+                }
+            } else {
+                // Perform a select
+                editSelection = editSelection.afterTouchDown(firstTouchPos: touchPos)
+            }
+        }
+    }
+
+    private func afterTouchMove(touchPos: TouchPos) {
+        edgePanTouchPos = touchPos
+
+        if hasEditMoveState && editMoveState.isStarted {
+            editMoveState = editMoveState.afterTouchMove(nextTouchPos: touchPos)
+        } else if !hasEditMoveState && !editSelection.isNone {
+            editSelection = editSelection.afterTouchMove(nextTouchPos: touchPos)
+        }
+    }
+
+    private func afterTouchUp(touchPos: TouchPos) {
+        edgePanTouchPos = nil
+
+        undoManager.beginUndoGrouping()
+        let oldEditAction = editAction
+
+        if hasEditMoveState && editMoveState.isStarted {
+            if editAction.mode == .move {
+                // We need to synchronize before showing, we don't put it in showTemporarilyHidden
+                // because it would be misleading
+                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+                world.showTemporarilyHidden(positions: editAction.selectedPositions)
+            }
+
+            let distanceMoved = editMoveState.distanceMovedAfterTouchUp(finalTouchPos: touchPos)
+            delegate?.performMoveAction(selectedPositions: editAction.selectedPositions, distanceMoved: distanceMoved, isCopy: editAction.mode == .copy)
+
+            editAction.selectedPositions = []
+            if !editSelection.mode.canInstantSelect {
+                // We need to change the mode because we can't select move without instant select ability, it's useless
+                editAction = .select(selectedPositions: [])
+            }
+        } else if !hasEditMoveState && !editSelection.isNone {
+            let selectedPositions = editSelection.getSelectedPositionsWithTilesAfterTouchUp(lastTouchPos: touchPos, world: world)
+            performCurrentAction(selectedPositions: selectedPositions)
+            editSelection = editSelection.endedOrCancelled
+        }
+
+        undoManager.registerUndo(withTarget: self) { this in
+            this.editAction = oldEditAction
+        }
+        undoManager.endUndoGrouping()
+    }
+
+    private func afterTouchCancel() {
+        edgePanTouchPos = nil
+
+        if hasEditMoveState {
+            if editAction.mode == .move {
+                // We need to synchronize before showing, we don't put it in showTemporarilyHidden
+                // because it would be misleading
+                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+                world.showTemporarilyHidden(positions: editAction.selectedPositions)
+            }
+
+            editMoveState = .notStarted
+        } else {
+            editSelection = editSelection.endedOrCancelled
+        }
+    }
+
+    private func pan(touchPositions: [TouchPos]) {
+        let touchOffsets = touchPositions.map { touchPos in touchPos.worldPosDelta }
+        if !touchOffsets.isEmpty {
+            let worldOffset = -touchOffsets.average()! * userSettings.panMultiplierFromScreenOffsetToWorldOffset
+            editorCamera.position += worldOffset
+        }
+    }
+    // endregion
+
+    // region touch input adapting
+    func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
+        let touchPositions = getTouchPositions(uiTouches: event?.allTouches ?? [], camera: camera, container: container)
+        if touchPositions.count == 1 {
+            let touchPos = touchPositions.randomElement()!
+            afterTouchDown(touchPos: touchPos)
+        } else {
+            afterTouchCancel()
+        }
+    }
+
+    func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
+        let touchPositions = getTouchPositions(uiTouches: event?.allTouches ?? [], camera: camera, container: container)
+        if touchPositions.count == 1 {
+            let touchPos = touchPositions.randomElement()!
+            afterTouchMove(touchPos: touchPos)
+        } else {
+            pan(touchPositions: touchPositions)
+            afterTouchCancel()
+        }
+
+    }
+
+    func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
+        let touchPositions = getTouchPositions(uiTouches: event?.allTouches ?? [], camera: camera, container: container)
+        if touchPositions.count == 1 {
+            let touchPos = touchPositions.randomElement()!
+            afterTouchUp(touchPos: touchPos)
+        } else {
+            afterTouchCancel()
+        }
+    }
+
+    func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {
+        afterTouchCancel()
+    }
+
+    private func getTouchPositions(uiTouches: Set<UITouch>, camera: Camera, container: SKScene) -> [TouchPos] {
+        uiTouches.map { uiTouch in getTouchPosition(uiTouch: uiTouch, camera: camera, container: container) }
+    }
+
+    private func getTouchPosition(uiTouch: UITouch, camera: Camera, container: SKScene) -> TouchPos {
+        TouchPos(uiTouch: uiTouch, camera: camera, settings: world.settings, container: container)
+    }
+    // endregion
+
+    // region ticking
+    func tick() {
+        tryEdgePan()
+    }
+
+    private func tryEdgePan() {
+        if let edgePanTouchPos = edgePanTouchPos {
+            for side in Side.allCases {
+                let edgePanGradientPoint = userSettings.edgePanGradient.last { gradientPoint in
+                    gradientPoint.distanceCutoff >= edgePanTouchPos.distancesToScreenEdges[side]
+                }
+                if let edgePanGradientPoint = edgePanGradientPoint {
+                    edgePan(side: side, edgePanGradientPoint: edgePanGradientPoint)
+                }
+            }
+        }
+    }
+
+    private func edgePan(side: Side, edgePanGradientPoint: EdgePanGradientPoint) {
+        let speed = edgePanGradientPoint.speedInPixelsPerSecond / world.settings.tileViewWidthHeight
+        let offsetDistance = speed * world.settings.fixedDeltaTime
+        let offset = CGPoint(magnitude: offsetDistance, sideDirection: side)
+        editorCamera.position += offset
     }
     // endregion
 }

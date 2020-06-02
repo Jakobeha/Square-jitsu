@@ -57,4 +57,17 @@ extension CGRect {
         )
         return CGRect(center: self.center, size: rotatedSize)
     }
+
+    func getEdgeAt(side: Side) -> CGFloat {
+        switch side {
+        case .east:
+            return maxX
+        case .north:
+            return maxY
+        case .west:
+            return minX
+        case .south:
+            return minY
+        }
+    }
 }

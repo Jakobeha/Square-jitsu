@@ -14,7 +14,7 @@ class TileMenuView: UXCompoundView {
         self.settings = settings
         super.init()
 
-        tileMenu.didSelect.subscribe(observer: self, priority: ObservablePriority.view) {
+        tileMenu.didSelect.subscribe(observer: self, priority: .view) {
             self.regenerateBody()
         }
     }

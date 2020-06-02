@@ -26,7 +26,7 @@ class EditorView: NodeView<SKNode> {
         editorUiView.zPosition = TileType.zPositionUpperBound
         worldCameraView.node.zPosition = 0
 
-        editor.didChangeState.subscribe(observer: self, priority: ObservablePriority.view, handler: changeCamera)
+        editor.didChangeState.subscribe(observer: self, priority: .view, handler: changeCamera)
     }
 
     private func changeCamera() {

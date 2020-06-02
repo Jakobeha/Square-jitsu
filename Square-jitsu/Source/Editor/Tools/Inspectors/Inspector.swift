@@ -10,9 +10,7 @@ class Inspector {
     let turretInspector: TurretInspector?
 
     init(positions: Set<WorldTilePos3D>, world: ReadonlyStatelessWorld, delegate: EditorToolsDelegate?) {
-        let tiles = positions.map { pos3D in
-            TileAtPosition(type: world[pos3D], position: pos3D)
-        }
+        let tiles = positions.map(world.getTileAt)
         let world = world
         let delegate = delegate
 

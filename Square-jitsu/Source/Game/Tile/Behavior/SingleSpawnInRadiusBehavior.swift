@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-class SingleSpawnInRadiusMetadata: AbstractSpawnAndRemoveMetadata {
+class SingleSpawnInRadiusBehavior: AbstractSpawnAndRemoveBehavior<Never> {
     private struct SpawnInfo {
         let tileType: TileType
         let entity: Entity

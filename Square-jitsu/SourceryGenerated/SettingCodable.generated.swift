@@ -188,6 +188,43 @@ extension TurretComponent {
         self.delayWhenTargetFoundBeforeFire.encodeDynamically(to: setting.allFieldSettings["delayWhenTargetFoundBeforeFire"]!)
     }
 }
+extension TurretMetadata {
+    internal init(from setting: StructSetting<TurretMetadata>) {
+        self.init(
+            initialTurretDirectionRelativeToAnchor: setting.usedFieldSettings["initialTurretDirectionRelativeToAnchor"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<TurretMetadata>) -> TurretMetadata {
+        self.init(
+            initialTurretDirectionRelativeToAnchor: setting.usedFieldSettings["initialTurretDirectionRelativeToAnchor"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<TurretMetadata>) {
+        self.initialTurretDirectionRelativeToAnchor.encodeDynamically(to: setting.allFieldSettings["initialTurretDirectionRelativeToAnchor"]!)
+    }
+}
+extension TurretTileViewTemplate {
+    internal init(from setting: StructSetting<TurretTileViewTemplate>) {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            turretTexture: setting.usedFieldSettings["turretTexture"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<TurretTileViewTemplate>) -> TurretTileViewTemplate {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            turretTexture: setting.usedFieldSettings["turretTexture"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<TurretTileViewTemplate>) {
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
+        self.turretTexture.encodeDynamically(to: setting.allFieldSettings["turretTexture"]!)
+    }
+}
 extension WorldSettings {
     internal convenience init(from setting: StructSetting<WorldSettings>) {
         self.init(
@@ -201,6 +238,7 @@ extension WorldSettings {
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
             entitySpawnRadius: setting.usedFieldSettings["entitySpawnRadius"]!.decodeDynamically(),
+            defaultTileMetadatas: setting.usedFieldSettings["defaultTileMetadatas"]!.decodeDynamically(),
             tileOrientationMeanings: setting.usedFieldSettings["tileOrientationMeanings"]!.decodeDynamically(),
             selectableTypes: setting.usedFieldSettings["selectableTypes"]!.decodeDynamically()
         )
@@ -218,6 +256,7 @@ extension WorldSettings {
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
             entitySpawnRadius: setting.usedFieldSettings["entitySpawnRadius"]!.decodeDynamically(),
+            defaultTileMetadatas: setting.usedFieldSettings["defaultTileMetadatas"]!.decodeDynamically(),
             tileOrientationMeanings: setting.usedFieldSettings["tileOrientationMeanings"]!.decodeDynamically(),
             selectableTypes: setting.usedFieldSettings["selectableTypes"]!.decodeDynamically()
         )
@@ -234,6 +273,7 @@ extension WorldSettings {
         self.tileDescriptions.encodeDynamically(to: setting.allFieldSettings["tileDescriptions"]!)
         self.entityData.encodeDynamically(to: setting.allFieldSettings["entityData"]!)
         self.entitySpawnRadius.encodeDynamically(to: setting.allFieldSettings["entitySpawnRadius"]!)
+        self.defaultTileMetadatas.encodeDynamically(to: setting.allFieldSettings["defaultTileMetadatas"]!)
         self.tileOrientationMeanings.encodeDynamically(to: setting.allFieldSettings["tileOrientationMeanings"]!)
         self.selectableTypes.encodeDynamically(to: setting.allFieldSettings["selectableTypes"]!)
     }

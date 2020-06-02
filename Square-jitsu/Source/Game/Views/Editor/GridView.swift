@@ -27,7 +27,7 @@ class GridView: UXView {
         configureGridNode()
 
         updateNodePositionForCameraChange()
-        camera.didChange.subscribe(observer: self, priority: ObservablePriority.view) {
+        camera.didChange.subscribe(observer: self, priority: .view) {
             self.updateNodePositionForCameraChange()
         }
     }

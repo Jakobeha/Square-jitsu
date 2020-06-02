@@ -91,12 +91,17 @@ class WorldFile: ReadonlyStatelessWorld, CustomStringConvertible {
 
     func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
         let chunk = readChunkAt(pos: pos3D.pos.worldChunkPos)
-        return chunk.tileMetadatas[pos3D.chunkTilePos3D]
+        return chunk.getMetadataAt(pos3D: pos3D.chunkTilePos3D)
     }
 
-    func getMetadatasAt(pos: WorldTilePos) -> [(layer: Int, tileMetadata: TileMetadata)] {
-        let chunk = readChunkAt(pos: pos.worldChunkPos)
-        return chunk.getMetadatasAt(pos: pos.chunkTilePos)
+    func setMetadataAt(pos3D: WorldTilePos3D, to metadata: TileMetadata?) {
+        mutateChunkAt(pos: pos3D.pos.worldChunkPos) { chunk in
+            if let tileBehavior = chunk.tileBehaviors[pos3D.chunkTilePos3D] {
+                tileBehavior.untypedMetadata = metadata
+            } else if metadata != nil {
+                fatalError("can't set metadata at this position because the tile doesn't have any")
+            }
+        }
     }
 
     func forceCreateTile(pos: WorldTilePos, type: TileType) {

@@ -22,7 +22,7 @@ class TurretInspector: SubInspector {
 
     private func updateInitialTurretDirections() {
         initialTurretDirections = Set(tiles.map { tileAtPosition in
-            let turretMetadata = world.getMetadataAt(pos3D: tileAtPosition.position) as! TurretMetadata
+            let turretMetadata = tileAtPosition.metadata! as! TurretMetadata
             return turretMetadata.initialTurretDirectionRelativeToAnchor
         })
     }

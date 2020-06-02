@@ -8,6 +8,9 @@ import Foundation
 protocol ReadonlyWorld: ReadonlyStatelessWorld {
     var readonlyChunks: [WorldChunkPos:ReadonlyChunk] { get }
 
+    // Exposes mutability via the behavior itself, not a problem now though
+    func getBehaviorAt(pos3D: WorldTilePos3D) -> TileBehavior?
+
     // Exposes mutability via `Entity#world` and the entity itself, not a problem now though
     var entities: [Entity] { get }
 

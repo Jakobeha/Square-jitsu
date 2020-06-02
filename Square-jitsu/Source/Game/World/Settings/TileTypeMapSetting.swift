@@ -6,15 +6,21 @@
 import Foundation
 
 class TileTypeMapSetting<Value>: SerialSetting {
-    private let newValueSetting: () -> SerialSetting
+    private let newValueSetting: (TileType) -> SerialSetting
 
     fileprivate var backing: [TileBigType:[SerialSetting?]] = [:]
 
-    init(_ newValueSetting: @escaping () -> SerialSetting) {
+    convenience init(_ newValueSetting: @escaping () -> SerialSetting) {
+        self.init({ _ in newValueSetting() })
+    }
+
+    init(_ newValueSetting: @escaping (TileType) -> SerialSetting) {
         self.newValueSetting = newValueSetting
     }
 
     func haveValueSettingFor(bigType: TileBigType, smallType: TileSmallType) -> SerialSetting {
+        let type = TileType(bigType: bigType, smallType: smallType)
+
         if backing[bigType] == nil {
             backing[bigType] = []
         }
@@ -24,9 +30,9 @@ class TileTypeMapSetting<Value>: SerialSetting {
             backing[bigType]!.append(nil)
         }
         if backing[bigType]!.count == smallTypeIndex {
-            backing[bigType]!.append(newValueSetting())
+            backing[bigType]!.append(newValueSetting(type))
         } else if backing[bigType]![smallTypeIndex] == nil {
-            backing[bigType]![smallTypeIndex] = newValueSetting()
+            backing[bigType]![smallTypeIndex] = newValueSetting(type)
         }
 
         return backing[bigType]![smallTypeIndex]!
@@ -49,12 +55,14 @@ class TileTypeMapSetting<Value>: SerialSetting {
                 if valueAsJson.isNull {
                     return nil
                 } else {
-                    let valueSetting = newValueSetting()
+                    let smallType = TileSmallType(UInt8(smallTypeIndex))
+                    let type = TileType(bigType: bigType, smallType: smallType)
+
+                    let valueSetting = newValueSetting(type)
 
                     do {
                         try valueSetting.decodeWellFormed(from: valueAsJson)
                     } catch {
-                        let smallType = TileSmallType(UInt8(smallTypeIndex))
                         throw DecodeSettingError.badTypeMapEntry(bigTypeKey: bigType, smallTypeKey: smallType, error: error)
                     }
 
