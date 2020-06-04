@@ -11,6 +11,10 @@ func ConvertToUXCoords(point: CGPoint) -> CGPoint {
     CGPoint(x: point.x, y: -point.y)
 }
 
+func ConvertFromUXCoords(point: CGPoint) -> CGPoint {
+    CGPoint(x: point.x, y: -point.y)
+}
+
 func ConvertToUXCoords(size: CGSize) -> CGSize {
     CGSize(width: size.width, height: -size.height)
 }

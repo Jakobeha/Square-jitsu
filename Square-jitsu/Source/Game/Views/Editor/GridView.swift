@@ -6,7 +6,7 @@
 import SpriteKit
 
 class GridView: UXView {
-    private static let gridStrokeColor: SKColor = SKColor(white: 0.5, alpha: 0.5)
+    private static let gridStrokeColor: SKColor = SKColor(white: 0.5, alpha: 0.25)
     private static let gridLineWidth: CGFloat = 1
 
     private let camera: Camera
@@ -39,7 +39,7 @@ class GridView: UXView {
     }
 
     private func updateGridPath() {
-        let bounds = CGRect(origin: CGPoint.zero, size: sceneSize).insetBy(sideLength: settings.tileViewWidthHeight)
+        let bounds = ConvertToUXCoords(rect: CGRect(origin: CGPoint.zero, size: sceneSize).insetBy(sideLength: -settings.tileViewWidthHeight / 2))
 
         let gridPath = CGMutablePath()
         // Add vertical lines
@@ -59,7 +59,7 @@ class GridView: UXView {
             nextHorizontalLineY += settings.tileViewWidthHeight
         }
 
-        // gridNode.path = gridPath
+        gridNode.path = gridPath
     }
 
     private func updateNodePositionForCameraChange() {
