@@ -13,8 +13,7 @@ struct ToxicComponent: SingleSettingCodable, Codable {
 
     var safeEntities: Set<EntityRef> = []
 
-    // ---
-
+    // region encoding and decoding
     enum CodingKeys: String, CodingKey {
         case damage
         case safeTypes
@@ -30,4 +29,5 @@ struct ToxicComponent: SingleSettingCodable, Codable {
             "onlyToxicIfThrown": BoolSetting()
         ], optionalFields: [:])
     }
+    // endregion
 }

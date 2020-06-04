@@ -5,7 +5,9 @@
 
 import SpriteKit
 
-protocol EntityViewTemplate {
+protocol EntityViewTemplate: DynamicSettingCodable {
     func generateNode(entity: Entity) -> SKNode
     func generatePreviewNode(size: CGSize) -> SKNode
+
+    func tick(entity: Entity, node: SKNode)
 }

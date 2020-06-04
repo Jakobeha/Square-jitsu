@@ -91,12 +91,12 @@ class Slider<Number: SliderNumber>: UXView {
 
     private func getFractionOf(value: Number) -> CGFloat {
         let fraction = CGFloat.reverseLerp(start: range.lowerBound.toFloat, end: range.upperBound.toFloat, value: value.toFloat)
-        assert(fraction >= 0 && fraction <= 1)
+        assert(fraction >= -CGFloat.epsilon && fraction <= 1 + CGFloat.epsilon)
         return fraction
     }
 
     private func getValueOf(fraction: CGFloat) -> Number {
-        assert(fraction >= 0 && fraction <= 1)
+        assert(fraction >= -CGFloat.epsilon && fraction <= 1 + CGFloat.epsilon)
         return Number.round(CGFloat.lerp(start: range.lowerBound.toFloat, end: range.upperBound.toFloat, t: fraction))
     }
 

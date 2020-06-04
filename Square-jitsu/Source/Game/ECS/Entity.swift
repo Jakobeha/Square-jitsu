@@ -10,6 +10,7 @@ class Entity: EqualityIsIdentity {
         typealias AsSetting = StructSetting<Entity.Components>
 
         var locC: LocationComponent?
+        var lilC: LineLocationComponent?
         var larC: LoadAroundComponent?
         var dynC: MovingComponent?
         var imfC: ImplicitForcesComponent?
@@ -26,6 +27,7 @@ class Entity: EqualityIsIdentity {
         static func newSetting() -> AsSetting {
             StructSetting(requiredFields: [:], optionalFields: [
                 "locC": CodableStructSetting<LocationComponent>(),
+                "lilC": CodableStructSetting<LineLocationComponent>(),
                 "larC": CodableStructSetting<LoadAroundComponent>(),
                 "dynC": CodableStructSetting<MovingComponent>(),
                 "imfC": CodableStructSetting<ImplicitForcesComponent>(),
@@ -83,11 +85,24 @@ class Entity: EqualityIsIdentity {
         new(type: type, pos: pos.pos.cgPoint, world: world)
     }
 
-    @discardableResult static func new(type: TileType, pos: CGPoint?, world: World) -> Entity {
+    @discardableResult static func new(type: TileType, pos: Line, world: World) -> Entity {
         var components = world.settings.entityData[type]!
-        if let pos = pos {
-            components.locC?.position = pos
-        }
+        components.lilC!.position = pos
+        let entity = Entity(type: type, components: components)
+        world.add(entity: entity)
+        return entity
+    }
+
+    @discardableResult static func new(type: TileType, pos: CGPoint, world: World) -> Entity {
+        var components = world.settings.entityData[type]!
+        components.locC!.position = pos
+        let entity = Entity(type: type, components: components)
+        world.add(entity: entity)
+        return entity
+    }
+
+    @discardableResult static func new(type: TileType, world: World) -> Entity {
+        let components = world.settings.entityData[type]!
         let entity = Entity(type: type, components: components)
         world.add(entity: entity)
         return entity

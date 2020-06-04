@@ -38,6 +38,10 @@ extension CGSize {
         CGSize(width: lhs.width / scale, height: lhs.height / scale)
     }
 
+    var minValue: CGFloat {
+        min(width, height)
+    }
+
     var aspectRatioYDivX: CGFloat { height / width }
 
     var toPoint: CGPoint {

@@ -3,7 +3,7 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 protocol ReadonlyStatelessWorld: AnyObject {
     var settings: WorldSettings { get }
@@ -123,5 +123,22 @@ extension ReadonlyStatelessWorld {
         }
 
         return positions3D
+    }
+
+    func cast(ray: Ray, maxDistance: CGFloat, hitPredicate: (TileType) -> Bool) -> LineCastHit? {
+        castToSolid(line: ray.cutoffAt(distance: maxDistance), hitPredicate: hitPredicate)
+    }
+
+    func castToSolid(line: Line, hitPredicate: (TileType) -> Bool) -> LineCastHit? {
+        for pos in line.lineCastTilePositions() {
+            for layer in 0..<Chunk.numLayers {
+                let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+                let tileType = self[pos3D]
+                if hitPredicate(tileType) {
+                    return LineCastHit(line: line, pos3D: pos3D, tileType: tileType)
+                }
+            }
+        }
+        return nil
     }
 }

@@ -34,8 +34,8 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
 
     static let defaultValue: TileType = air
 
-    /// All z-positions are less than this
-    static let zPositionUpperBound: CGFloat = CGFloat(TileLayer.allCases.count)
+    /// All z-positions are less than this, adds 1 for custom z-positions in settings
+    static let zPositionUpperBound: CGFloat = CGFloat(TileLayer.allCases.count) + 1
     static let fadingZPositionOffset: CGFloat = 0.5 / CGFloat(TileBigType.allCases.count)
 
     var bigType: TileBigType
@@ -46,10 +46,6 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
 
     /// - Note: If you change this, also change TileTypeSet.containsSolid
     var isSolid: Bool { bigType.layer == TileLayer.solid || bigType.layer == TileLayer.iceSolid }
-
-    var entityZPosition: CGFloat {
-        bigType.layer.zPosition + (CGFloat(bigType.rawValue) / CGFloat(TileBigType.allCases.count))
-    }
 
     init(bigType: TileBigType, smallType: TileSmallType = TileSmallType(0), orientation: TileOrientation = TileOrientation.none) {
         self.bigType = bigType

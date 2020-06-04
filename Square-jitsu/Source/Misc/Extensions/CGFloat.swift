@@ -16,6 +16,10 @@ extension CGFloat {
         lhs = lhs % modulo
     }
 
+    static func areRoughlyEqual(_ lhs: CGFloat, _ rhs: CGFloat) -> Bool {
+        abs(lhs - rhs) <= epsilon
+    }
+
     static func lerp(start: CGFloat, end: CGFloat, t: CGFloat) -> CGFloat {
         (t * (end - start)) + start
     }

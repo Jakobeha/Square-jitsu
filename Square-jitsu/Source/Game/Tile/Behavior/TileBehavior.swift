@@ -29,8 +29,8 @@ protocol TileBehavior: AnyObject {
 }
 
 extension TileBehavior {
-    func onCreate(world: World, pos: WorldTilePos3D) {
-        let tileType = world[pos]
+    func onCreate(world: ReadonlyStatelessWorld, pos3D: WorldTilePos3D) {
+        let tileType = world[pos3D]
         untypedMetadata = world.settings.defaultTileMetadatas[tileType]
     }
 

@@ -51,7 +51,7 @@ struct CollisionSystem: System {
             if entity == otherEntity {
                 // Entity can't collide with itself
                 return nil
-            } else {
+            } else if otherEntity.next.locC != nil {
                 let radiusForIntersection = entity.next.locC!.radius + otherEntity.next.locC!.radius
                 let fractionUntilCollision = trajectoryNextFrame.capsuleCastIntersection(capsuleRadius: radiusForIntersection, point: otherEntity.next.locC!.position)
                 if fractionUntilCollision.isNaN {
@@ -60,6 +60,18 @@ struct CollisionSystem: System {
                 } else {
                     return (fractionUntilCollision, otherEntity)
                 }
+            } else if otherEntity.next.lilC != nil {
+                let radiusForIntersection = entity.next.locC!.radius + otherEntity.next.lilC!.thickness
+                let fractionUntilCollision = trajectoryNextFrame.capsuleCastIntersection(capsuleRadius: radiusForIntersection, otherLine: otherEntity.next.lilC!.position)
+                if fractionUntilCollision.isNaN {
+                    // There was no collision (NaN)
+                    return nil
+                } else {
+                    return (fractionUntilCollision, otherEntity)
+                }
+            } else {
+                // No position = can't collide
+                return nil
             }
         }.sorted { ($0 as (CGFloat, Entity)).0 < $1.0 }
         for (fractionUntilCollision, otherEntity) in entityCollisions {

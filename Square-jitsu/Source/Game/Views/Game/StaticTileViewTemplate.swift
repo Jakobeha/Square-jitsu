@@ -22,8 +22,7 @@ struct StaticTileViewTemplate: TileViewTemplate, SingleSettingCodable {
 
     func didRemoveFromParent(node: SKNode) {}
 
-    // ---
-
+    // region encoding and decoding
     typealias AsSetting = StructSetting<StaticTileViewTemplate>
 
     static func newSetting() -> StructSetting<StaticTileViewTemplate> {
@@ -31,4 +30,5 @@ struct StaticTileViewTemplate: TileViewTemplate, SingleSettingCodable {
             "texture": TextureSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }
+    // endregion
 }

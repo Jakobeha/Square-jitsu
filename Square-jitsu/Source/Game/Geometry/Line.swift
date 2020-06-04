@@ -5,12 +5,8 @@
 
 import SpriteKit
 
-struct Line {
-    enum Slope {
-        case thisIsAPoint(this: CGPoint)
-        case moreHorizontal(yDivX: CGFloat)
-        case moreVertical(xDivY: CGFloat)
-    }
+struct Line: Codable {
+    static let nan: Line = Line(start: CGPoint.nan, end: CGPoint.nan)
 
     let start: CGPoint
     let end: CGPoint
@@ -51,6 +47,12 @@ struct Line {
                 return .moreHorizontal(yDivX: offset.y / offset.x)
             }
         }
+    }
+
+    /// Multiplies the start and end points by the given factor,
+    /// scaling the entire coordinate system
+    func scaleCoordsBy(scale: CGFloat) -> Line {
+        Line(start: start * scale, end: end * scale)
     }
 
     func tAt(x: CGFloat) -> CGFloat? {
@@ -108,21 +110,88 @@ struct Line {
         CGPoint.lerp(start: start, end: end, t: lerp)
     }
 
+    func getClosestFractionTo(otherLine: Line) -> CGFloat {
+        switch (slope, otherLine.slope) {
+        case (.thisIsAPoint(this: _), _):
+            return 0
+        case (_, .thisIsAPoint(this: let otherThis)):
+            return getClosestFractionTo(point: otherThis)
+        case (.moreHorizontal(yDivX: let m1), .moreHorizontal(yDivX: let m2)):
+            // m1x - m1x01 + y01 = m2x - m2x02 + y02
+            // x = (y02 - y01 + m1x01 - m2x02)/(m1 - m2)
+            // If m1 - m2 is small then the lines are almost parallel,
+            // so precision doesn't matter anyways
+            let y01 = start.y
+            let y02 = otherLine.start.y
+            let x01 = start.x
+            let x02 = otherLine.start.x
+            let x = (y02 - y01 + (x01 * m1) - (x02 * m2)) / (m1 - m2)
+            let unclampedT = unclampedTAt(x: x)
+            return CGFloat.clamp(unclampedT, min: 0, max: 1)
+        case (.moreVertical(xDivY: let m1), .moreVertical(xDivY: let m2)):
+            // Same as above but x and y are swapped
+            let x01 = start.x
+            let x02 = otherLine.start.x
+            let y01 = start.y
+            let y02 = otherLine.start.y
+            let y = (x02 - x01 + (y01 * m1) - (y02 * m2)) / (m1 - m2)
+            let unclampedT = unclampedTAt(y: y)
+            return CGFloat.clamp(unclampedT, min: 0, max: 1)
+        case (.moreHorizontal(yDivX: let m1), .moreVertical(xDivY: let m2)):
+            // y = m1(m2y - m2y02 + x02) - m1x01 + y01
+            // y = (m1(x02 - x01 - m2y02) + y01)/(1 - m1m2)
+            // If m1m2 ~= 1 then the lines are almost parallel,
+            // so precision doesn't matter anyways
+            let y01 = start.y
+            let x02 = otherLine.start.x
+            let x01 = start.x
+            let y02 = otherLine.start.y
+            let y = ((m1 * (x02 - x01 - (m2 * y02))) + y01) / (1 - (m1 * m2))
+            let unclampedT = unclampedTAt(y: y)
+            return CGFloat.clamp(unclampedT, min: 0, max: 1)
+        case (.moreVertical(xDivY: let m1), .moreHorizontal(yDivX: let m2)):
+            // Same as above but x and y are swapped
+            let x01 = start.x
+            let y02 = otherLine.start.y
+            let y01 = start.y
+            let x02 = otherLine.start.x
+            let x = ((m1 * (y02 - y01 - (m2 * x02))) + x01) / (1 - (m1 * m2))
+            let unclampedT = unclampedTAt(x: x)
+            return CGFloat.clamp(unclampedT, min: 0, max: 1)
+        }
+    }
+
     func getClosestFractionTo(point: CGPoint) -> CGFloat {
         if (length < CGFloat.epsilon) {
             return 0
         } else {
-            let offset = point - start
-            let offsetProjectionLength = CGPoint.dot(offset, offset.normalized)
+            let pointOffset = point - start
+            let offsetProjectionLength = CGPoint.dot(pointOffset, offset.normalized)
             let unclampedFraction = offsetProjectionLength / length
             return CGFloat.clamp(unclampedFraction, min: 0, max: 1)
         }
     }
+    
+    func getClosestPointTo(point: CGPoint) -> CGPoint {
+        let fraction = getClosestFractionTo(point: point)
+        return lerp(t: fraction)
+    }
 
+    func getDistanceTo(point: CGPoint) -> CGFloat {
+        let closestPoint = getClosestPointTo(point: point)
+        return (closestPoint - point).magnitude
+    }
 
     func extendedBackwardsBy(magnitude: CGFloat) -> Line {
         let backwardsOffset = offset.normalized * -magnitude
         return Line(start: start + backwardsOffset, end: end)
+    }
+
+
+    /// Returns the tiles intersected by a point moving along this line,
+    /// ordered so that the first tiles are at the line's start and the last are at its end
+    func lineCastTilePositions() -> [WorldTilePos] {
+        capsuleCastTilePositions(capsuleRadius: 0)
     }
 
     /// Returns the tiles intersected by an object of radius moving along this line,
@@ -183,6 +252,20 @@ struct Line {
             return CGFloat.nan
         } else {
             return closestToPointFraction
+        }
+    }
+
+
+    /// If an object traveling this line with the given radius intersects the given line, returns the fraction along this line.
+    /// Otherwise returns NaN
+    func capsuleCastIntersection(capsuleRadius: CGFloat, otherLine: Line) -> CGFloat {
+        let closestToLineFraction = getClosestFractionTo(otherLine: otherLine)
+        let closestToLine = lerp(t: closestToLineFraction)
+        let distanceFromLine = otherLine.getDistanceTo(point: closestToLine)
+        if distanceFromLine > capsuleRadius {
+            return CGFloat.nan
+        } else {
+            return closestToLineFraction
         }
     }
 }

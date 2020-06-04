@@ -6,13 +6,8 @@
 import SpriteKit
 
 struct TurretTileViewTemplate: TileViewTemplate, SingleSettingCodable {
-    let base: StaticTileViewTemplate
+    let base: TileViewTemplate
     let turretTexture: SKTexture
-
-    init(base: StaticTileViewTemplate, turretTexture: SKTexture) {
-        self.base = base
-        self.turretTexture = turretTexture
-    }
 
     func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         assert(tileType.bigType == .turret, "TurretTileViewTemplate is only allowed on turret tiles")
@@ -24,9 +19,9 @@ struct TurretTileViewTemplate: TileViewTemplate, SingleSettingCodable {
         let turretNode = SKSpriteNode(texture: turretTexture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
         baseNode.addChild(turretNode)
 
-        turretNode.angle = turretBehavior.metadata!.initialTurretDirectionRelativeToAnchor
+        updateFor(turretNode: turretNode, metadata: turretBehavior.metadata)
         turretBehavior.didChangeMetadata.subscribe(observer: turretNode, priority: .view) {
-            turretNode.angle = turretBehavior.metadata!.initialTurretDirectionRelativeToAnchor
+            self.updateFor(turretNode: turretNode, metadata: turretBehavior.metadata)
         }
 
         turretNode.isHidden = turretBehavior.spawned
@@ -39,6 +34,12 @@ struct TurretTileViewTemplate: TileViewTemplate, SingleSettingCodable {
 
         return baseNode
     }
+    
+    private func updateFor(turretNode: SKNode, metadata: TurretMetadata?) {
+        if let metadata = metadata {
+            turretNode.angle = metadata.initialTurretDirectionRelativeToAnchor
+        }
+    }
 
     func generatePreviewNode(size: CGSize) -> SKNode {
         // The turret entity will already be rendered on top of the preview,
@@ -50,14 +51,14 @@ struct TurretTileViewTemplate: TileViewTemplate, SingleSettingCodable {
 
     func didRemoveFromParent(node: SKNode) {}
 
-    // ---
-
+    // region encoding and decoding
     typealias AsSetting = StructSetting<TurretTileViewTemplate>
 
     static func newSetting() -> StructSetting<TurretTileViewTemplate> {
         StructSetting(requiredFields: [
-            "base": StaticTileViewTemplate.newSetting(),
+            "base": DeferredSetting { TileViewTemplateSetting() },
             "turretTexture": TextureSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }
+    // endregion
 }

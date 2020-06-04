@@ -107,7 +107,12 @@ class WorldFile: ReadonlyStatelessWorld, CustomStringConvertible {
     func forceCreateTile(pos: WorldTilePos, type: TileType) {
         assert(type.bigType != TileBigType.player, "can't create or move player")
         mutateChunkAt(pos: pos.worldChunkPos) { chunk in
-            chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type)
+            let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type)
+
+            // Notify behavior to set metadata
+            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+            let tileBehavior = chunk.tileBehaviors[pos3D.chunkTilePos3D]
+            tileBehavior?.onCreate(world: self, pos3D: pos3D)
         }
     }
 

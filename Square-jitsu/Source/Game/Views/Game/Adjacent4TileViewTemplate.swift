@@ -75,8 +75,7 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
 
     func didRemoveFromParent(node: SKNode) {}
 
-    // ---
-
+    // region encoding and decoding
     typealias AsSetting = StructSetting<Adjacent4TileViewTemplate>
 
     static func newSetting() -> AsSetting {
@@ -86,4 +85,5 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
             "semiAdjoiningTypes": TileTypePredSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }
+    // endregion
 }

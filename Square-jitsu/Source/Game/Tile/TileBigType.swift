@@ -3,7 +3,7 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 /// - Note: Try to put all pattern matching on TileBigType here, so it's easier to add new cases
 enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
@@ -26,8 +26,7 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
     // Entity / tile hybrids (both tile and entity representations are used)
     case turret
 
-    // --- Pattern matching below
-
+    // region pattern matching
     var layer: TileLayer {
         switch self {
         case .air:
@@ -78,18 +77,21 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
             return true
         }
     }
-
-    // --- End pattern matching
+    // endregion
 
     static func typesCanOverlap(_ lhs: TileBigType, _ rhs: TileBigType) -> Bool {
         TileLayer.layersCanOverlap(lhs.layer, rhs.layer)
+    }
+
+    var zPosition: CGFloat {
+        layer.zPosition + (CGFloat(rawValue) / CGFloat(TileBigType.allCases.count))
     }
 
     // region encoding and decoding
     var description: String { String(describing: self) }
 
     private static let typesByName: [String:TileBigType] = [String:TileBigType](
-            uniqueKeysWithValues: allCases.map { bigType in (key: bigType.description, value: bigType) }
+        uniqueKeysWithValues: allCases.map { bigType in (key: bigType.description, value: bigType) }
     )
 
     // TODO: Remove this and go back to encoding / decoding as integer after switching component encoding / decoding to use settings
@@ -115,5 +117,6 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         var container = encoder.singleValueContainer()
         try container.encode(description)
     }
+
     // endregion
 }

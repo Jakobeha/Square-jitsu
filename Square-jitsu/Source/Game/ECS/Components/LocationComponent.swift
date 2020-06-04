@@ -24,9 +24,15 @@ struct LocationComponent: SettingCodableByCodable, Codable {
         max(0, (position - point).magnitude - radius)
     }
 
-    // ---
+    /// Distance from the furthest point on this entity (assuming it's a circle) to the given line
+    /// (distance from the closest point on the line)
+    func distance(to line: Line) -> CGFloat {
+        max(0, line.getDistanceTo(point: position) - radius)
+    }
 
+    // region encoding and decoding
     enum CodingKeys: String, CodingKey {
         case radius
     }
+    // endregion
 }

@@ -8,8 +8,7 @@ import SpriteKit
 struct TurretMetadata: TileMetadata, SingleSettingCodable {
     var initialTurretDirectionRelativeToAnchor: Angle
 
-    // ---
-
+    // region encoding and decoding
     typealias AsSetting = StructSetting<TurretMetadata>
 
     static func newSetting() -> AsSetting {
@@ -17,4 +16,5 @@ struct TurretMetadata: TileMetadata, SingleSettingCodable {
             "initialTurretDirectionRelativeToAnchor": AngleSetting(),
         ], optionalFields: [:])
     }
+    // endregion
 }

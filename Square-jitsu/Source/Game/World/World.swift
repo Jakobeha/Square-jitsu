@@ -112,7 +112,13 @@ class World: ReadonlyWorld {
         speed = 1
         entitiesToAdd = []
         entitiesToRemove = []
-        entities = [player]
+        // Remove all entities except player
+        if player.world === self {
+            entities = [player]
+            player.worldIndex = 0
+        } else {
+            entities = []
+        }
         _didReset.publish()
         runActions()
     }
@@ -322,6 +328,11 @@ class World: ReadonlyWorld {
             persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = chunk.tileBehaviors[chunkPos3D]
         }
 
+        // Notify metadata onCreate
+        let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+        let behavior = getBehaviorAt(pos3D: pos3D)
+        behavior?.onCreate(world: self, pos3D: pos3D)
+
         notifyObserversOfAdjacentTileChanges(pos: pos)
 
         return layer
@@ -453,11 +464,13 @@ class World: ReadonlyWorld {
     private var entitiesToRemove: [Entity] = []
 
     func add(entity: Entity) {
-        assert(!entitiesToAdd.contains(entity))
+        assert(entity.world === nil, "can't add entity because it's already added to a world: \(entity)")
+        assert(!entitiesToAdd.contains(entity), "already adding this entity: \(entity)")
         entitiesToAdd.append(entity)
     }
 
     func remove(entity: Entity) {
+        assert(entity.world === self, "can't remove entity because it isn't in this world: \(entity)")
         if !entitiesToRemove.contains(entity) {
             entitiesToRemove.append(entity)
         }

@@ -10,6 +10,7 @@ enum DecodeSettingError: Error, CustomStringConvertible {
     case wrongTypeOfMany(anyExpected: [Any.Type], actual: Type)
     case cantDecodeNever
     case cantEncodeNever
+    case wrongLength(expected: Int, actual: Int)
     case wrongKeys(required: Set<String>, optional: Set<String>, actual: Set<String>)
     case outOfRange(minDesc: String, maxDesc: String)
     case missingFields(Set<String>)
@@ -27,7 +28,14 @@ enum DecodeSettingError: Error, CustomStringConvertible {
     case missingComponentDependencies(target: String, dependencies: [String])
     case noMetadataAtPos(pos3D: ChunkTilePos3D)
 
-    /// Throw a `DecodeSettingError` if the keys are wrong
+    /// Throws a `DecodeSettingError` if the length isn't expected
+    static func assertLengthOf(array: [Any], expected: Int) throws {
+        if array.count != expected {
+            throw DecodeSettingError.wrongLength(expected: expected, actual: array.count)
+        }
+    }
+
+    /// Throws a `DecodeSettingError` if the keys are wrong
     static func assertKeysIn(dictionary: [String:Any], requiredKeys: Set<String>, optionalKeys: Set<String> = []) throws {
         let actualKeys = Set(dictionary.keys)
         let actualKeysWithoutOptional = actualKeys.subtracting(optionalKeys)
@@ -54,6 +62,8 @@ enum DecodeSettingError: Error, CustomStringConvertible {
             return "Didn't expect a value to exist here (to be decoded)"
         case .cantEncodeNever:
             return "Didn't expect a value to exist here (to be encoded)"
+        case .wrongLength(let expected, let actual):
+            return "Wrong length: expected \(expected) got \(actual)"
         case .outOfRange(let minDesc, let maxDesc):
             return "Must be in range: \(minDesc) to \(maxDesc) (inclusive)"
         case .missingFields(let missingFields):

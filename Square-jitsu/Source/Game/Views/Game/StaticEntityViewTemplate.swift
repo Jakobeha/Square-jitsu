@@ -20,6 +20,8 @@ struct StaticEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
         return node
     }
 
+    func tick(entity: Entity, node: SKNode) {}
+
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "texture": TextureSetting()

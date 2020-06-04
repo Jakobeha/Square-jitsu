@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-protocol TileViewTemplate {
+protocol TileViewTemplate: DynamicSettingCodable {
     func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode
     func generatePreviewNode(size: CGSize) -> SKNode
 

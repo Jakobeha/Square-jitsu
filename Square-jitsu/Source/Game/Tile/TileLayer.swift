@@ -17,8 +17,7 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
 
     case entity
 
-    // --- Pattern matching below
-
+    // region pattern matching
     var toSet: TileLayerSet {
         switch self {
         case .air:
@@ -75,8 +74,7 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
             return false
         }
     }
-
-    // -- End pattern matching
+    // endregion
 
     /// Whether rhs tiles are on top of lhs tiles
     static func <(lhs: TileLayer, rhs: TileLayer) -> Bool {
@@ -87,6 +85,7 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
         CGFloat(rawValue)
     }
 
+    // region encoding and decoding
     var description: String { String(describing: self) }
 
     private static let layersByName: [String:TileLayer] = [String:TileLayer](
@@ -100,4 +99,5 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
             return nil
         }
     }
+    // endregion
 }

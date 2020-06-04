@@ -50,6 +50,7 @@ extension Entity.Components {
     internal init(from setting: StructSetting<Entity.Components>) {
         self.init(
             locC: setting.usedFieldSettings["locC"]?.decodeDynamically(),
+            lilC: setting.usedFieldSettings["lilC"]?.decodeDynamically(),
             larC: setting.usedFieldSettings["larC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
@@ -68,6 +69,7 @@ extension Entity.Components {
     static internal func decode(from setting: StructSetting<Entity.Components>) -> Entity.Components {
         self.init(
             locC: setting.usedFieldSettings["locC"]?.decodeDynamically(),
+            lilC: setting.usedFieldSettings["lilC"]?.decodeDynamically(),
             larC: setting.usedFieldSettings["larC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
@@ -85,6 +87,7 @@ extension Entity.Components {
 
     internal func encode(to setting: StructSetting<Entity.Components>) {
         self.locC?.encodeDynamically(to: setting.allFieldSettings["locC"]!)
+        self.lilC?.encodeDynamically(to: setting.allFieldSettings["lilC"]!)
         self.larC?.encodeDynamically(to: setting.allFieldSettings["larC"]!)
         self.dynC?.encodeDynamically(to: setting.allFieldSettings["dynC"]!)
         self.imfC?.encodeDynamically(to: setting.allFieldSettings["imfC"]!)
@@ -97,6 +100,26 @@ extension Entity.Components {
         self.toxC?.encodeDynamically(to: setting.allFieldSettings["toxC"]!)
         self.turC?.encodeDynamically(to: setting.allFieldSettings["turC"]!)
         self.nijC?.encodeDynamically(to: setting.allFieldSettings["nijC"]!)
+    }
+}
+extension LaserEntityViewTemplate {
+    internal init(from setting: StructSetting<LaserEntityViewTemplate>) {
+        self.init(
+            color: setting.usedFieldSettings["color"]!.decodeDynamically(),
+            thickness: setting.usedFieldSettings["thickness"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<LaserEntityViewTemplate>) -> LaserEntityViewTemplate {
+        self.init(
+            color: setting.usedFieldSettings["color"]!.decodeDynamically(),
+            thickness: setting.usedFieldSettings["thickness"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<LaserEntityViewTemplate>) {
+        self.color.encodeDynamically(to: setting.allFieldSettings["color"]!)
+        self.thickness.encodeDynamically(to: setting.allFieldSettings["thickness"]!)
     }
 }
 extension StaticEntityViewTemplate {
@@ -188,6 +211,35 @@ extension TurretComponent {
         self.delayWhenTargetFoundBeforeFire.encodeDynamically(to: setting.allFieldSettings["delayWhenTargetFoundBeforeFire"]!)
     }
 }
+extension TurretEntityViewTemplate {
+    internal init(from setting: StructSetting<TurretEntityViewTemplate>) {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            maxChargingCircleRadius: setting.usedFieldSettings["maxChargingCircleRadius"]!.decodeDynamically(),
+            minChargingCircleRadius: setting.usedFieldSettings["minChargingCircleRadius"]!.decodeDynamically(),
+            chargingCircleOffset: setting.usedFieldSettings["chargingCircleOffset"]!.decodeDynamically(),
+            chargingCircleColor: setting.usedFieldSettings["chargingCircleColor"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<TurretEntityViewTemplate>) -> TurretEntityViewTemplate {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            maxChargingCircleRadius: setting.usedFieldSettings["maxChargingCircleRadius"]!.decodeDynamically(),
+            minChargingCircleRadius: setting.usedFieldSettings["minChargingCircleRadius"]!.decodeDynamically(),
+            chargingCircleOffset: setting.usedFieldSettings["chargingCircleOffset"]!.decodeDynamically(),
+            chargingCircleColor: setting.usedFieldSettings["chargingCircleColor"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<TurretEntityViewTemplate>) {
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
+        self.maxChargingCircleRadius.encodeDynamically(to: setting.allFieldSettings["maxChargingCircleRadius"]!)
+        self.minChargingCircleRadius.encodeDynamically(to: setting.allFieldSettings["minChargingCircleRadius"]!)
+        self.chargingCircleOffset.encodeDynamically(to: setting.allFieldSettings["chargingCircleOffset"]!)
+        self.chargingCircleColor.encodeDynamically(to: setting.allFieldSettings["chargingCircleColor"]!)
+    }
+}
 extension TurretMetadata {
     internal init(from setting: StructSetting<TurretMetadata>) {
         self.init(
@@ -230,6 +282,7 @@ extension WorldSettings {
         self.init(
             tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
+            entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
             entityViewScaleModes: setting.usedFieldSettings["entityViewScaleModes"]!.decodeDynamically(),
             tileViewFadeDurations: setting.usedFieldSettings["tileViewFadeDurations"]!.decodeDynamically(),
@@ -248,6 +301,7 @@ extension WorldSettings {
         self.init(
             tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
+            entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
             entityViewScaleModes: setting.usedFieldSettings["entityViewScaleModes"]!.decodeDynamically(),
             tileViewFadeDurations: setting.usedFieldSettings["tileViewFadeDurations"]!.decodeDynamically(),
@@ -265,6 +319,7 @@ extension WorldSettings {
     internal func encode(to setting: StructSetting<WorldSettings>) {
         self.tileViewTemplates.encodeDynamically(to: setting.allFieldSettings["tileViewTemplates"]!)
         self.entityViewTemplates.encodeDynamically(to: setting.allFieldSettings["entityViewTemplates"]!)
+        self.entityZPositions.encodeDynamically(to: setting.allFieldSettings["entityZPositions"]!)
         self.rotateTileViewBasedOnOrientation.encodeDynamically(to: setting.allFieldSettings["rotateTileViewBasedOnOrientation"]!)
         self.entityViewScaleModes.encodeDynamically(to: setting.allFieldSettings["entityViewScaleModes"]!)
         self.tileViewFadeDurations.encodeDynamically(to: setting.allFieldSettings["tileViewFadeDurations"]!)

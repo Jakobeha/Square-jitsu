@@ -6,7 +6,12 @@
 import SpriteKit
 
 class EntityView: OptionalNodeView {
+    private static func getEntityZPosition(type: TileType, settings: WorldSettings) -> CGFloat {
+        settings.entityZPositions[type] ?? type.bigType.zPosition
+    }
+
     private let entity: Entity
+    private let template: EntityViewTemplate?
 
     // Saved so it can be used when the entity is removed
     private let settings: WorldSettings
@@ -14,10 +19,10 @@ class EntityView: OptionalNodeView {
     init(entity: Entity) {
         self.entity = entity
         self.settings = entity.world!.settings
-        let template = settings.entityViewTemplates[entity.type]
+        template = settings.entityViewTemplates[entity.type]
         super.init(node: template?.generateNode(entity: entity))
         if let node = node {
-            node.zPosition = entity.type.entityZPosition
+            node.zPosition = EntityView.getEntityZPosition(type: entity.type, settings: settings)
         }
         self.update()
     }
@@ -42,6 +47,7 @@ class EntityView: OptionalNodeView {
                     }
                 }
             }
+            template!.tick(entity: entity, node: node)
         }
     }
 

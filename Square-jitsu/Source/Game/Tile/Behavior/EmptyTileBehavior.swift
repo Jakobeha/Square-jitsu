@@ -27,8 +27,7 @@ class EmptyTileBehavior<Metadata: TileMetadata>: TileBehavior {
     func tick(world: World, pos: WorldTilePos3D) {}
     func revert(world: World, pos: WorldTilePos3D) {}
 
-    // ---
-
+    // region encoding and decoding
     func encodeMetadata() throws -> Data {
         try TileBehaviorJsonEncoder.encodeWrapped(metadata)
     }
@@ -40,4 +39,5 @@ class EmptyTileBehavior<Metadata: TileMetadata>: TileBehavior {
             metadata = try TileBehaviorJsonDecoder.decodeWrapped(Metadata?.self, from: data)
         }
     }
+    // endregion
 }

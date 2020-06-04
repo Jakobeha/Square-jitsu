@@ -19,6 +19,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
     // Display info
     var tileViewTemplates: TileTypeMap<TileViewTemplate>
     var entityViewTemplates: TileTypeMap<EntityViewTemplate>
+    var entityZPositions: TileTypeMap<CGFloat>
     var rotateTileViewBasedOnOrientation: TileTypeMap<Bool>
     var entityViewScaleModes: TileTypeMap<ScaleMode>
     var tileViewFadeDurations: TileTypeMap<TimeInterval>
@@ -37,9 +38,10 @@ final class WorldSettings: SingleSettingCodable, Codable {
 
     typealias AsSetting = StructSetting<WorldSettings>
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
+        self.entityZPositions = entityZPositions
         self.rotateTileViewBasedOnOrientation = rotateTileViewBasedOnOrientation
         self.entityViewScaleModes = entityViewScaleModes
         self.tileViewFadeDurations = tileViewFadeDurations
@@ -57,6 +59,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
         StructSetting(requiredFields: [
             "tileViewTemplates": TileTypeMapSetting<TileViewTemplate> { TileViewTemplateSetting() },
             "entityViewTemplates": TileTypeMapSetting<EntityViewTemplate> { EntityViewTemplateSetting() },
+            "entityZPositions": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(-TileType.zPositionUpperBound...TileType.zPositionUpperBound) },
             "rotateTileViewBasedOnOrientation": TileTypeMapSetting<Bool> { BoolSetting() },
             "entityViewScaleModes": TileTypeMapSetting<ScaleMode> { ScaleMode.newSetting() },
             "tileViewFadeDurations": TileTypeMapSetting<TimeInterval> { TimeRangeSetting(0...4) },

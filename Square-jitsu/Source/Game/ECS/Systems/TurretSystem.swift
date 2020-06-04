@@ -17,7 +17,7 @@ struct TurretSystem: System {
     static func postTick(world: World) {}
 
     func tick() {
-        if entity.prev.turC != nil {
+        if entity.next.turC != nil {
             updateTurret()
         }
     }
@@ -117,7 +117,7 @@ struct TurretSystem: System {
     }
 
     private func nextFireState() -> TurretComponent.FireState {
-        switch entity.prev.turC!.fireState {
+        switch entity.next.turC!.fireState {
         case .targetNotFound:
             if shouldTurretFire {
                 return stateWhenJustFoundTarget
@@ -160,10 +160,12 @@ struct TurretSystem: System {
             } else {
                 return stateWhenLostTarget(prevTimeUntilFire: timeUntilFire)
             }
-        case .isFiringContinuous:
+        case .isFiringContinuous(projectile: let projectileRef):
             if shouldTurretFire {
-                return .isFiringContinuous
+                keepFiringContinuousProjectile(projectileRef: projectileRef)
+                return .isFiringContinuous(projectile: projectileRef)
             } else {
+                destroyContinuousProjectile(projectileRef: projectileRef)
                 return stateWhenLostTarget(prevTimeUntilFire: 0)
             }
         }
@@ -192,18 +194,19 @@ struct TurretSystem: System {
     }
 
     private var stateAfterFire: TurretComponent.FireState {
-        switch entity.prev.turC!.howToFire {
+        switch entity.next.turC!.howToFire {
         case .consistent(projectileSpeed: _, let delay):
             return .didFireReloading(timeUntilFire: delay)
         case .burst(projectileSpeed: _, delayBetweenBursts: _, let numShotsInBurst, let delayInBurst):
             return .didFireInBurstReloading(timeUntilFire: delayInBurst, numShotsLeftInBurstAfterThis: numShotsInBurst - 2)
         case .continuous:
-            return .isFiringContinuous
+            assert(entity.next.turC!.fireState.isContinuous, "illegal state - stateAfterFire called on continuous firing-turret, but turret's firing state isn't continuous")
+            return entity.next.turC!.fireState
         }
     }
 
     private func stateAfterBurstFire(numShotsLeftInBurstAfterThis: Int) -> TurretComponent.FireState {
-        switch entity.prev.turC!.howToFire {
+        switch entity.next.turC!.howToFire {
         case .burst(projectileSpeed: _, let delayBetweenBursts, let numShotsInBurst, let delayInBurst):
             if numShotsLeftInBurstAfterThis == 0 {
                 return .didFireInBurstReloading(timeUntilFire: delayBetweenBursts, numShotsLeftInBurstAfterThis: numShotsInBurst - 1)
@@ -216,16 +219,54 @@ struct TurretSystem: System {
     }
 
     private func fireProjectile() {
-        let projectileDirection = entity.next.locC!.rotation
-        let projectile = Entity.new(type: projectileType, pos: entity.next.locC!.position, world: world)
-        projectile.next.toxC?.safeEntities.insert(EntityRef(entity))
-        projectile.next.locC!.rotation = projectileDirection
-        if let projectileSpeed = entity.next.turC!.howToFire.projectileSpeed {
-            projectile.next.dynC!.velocity = CGPoint(magnitude: projectileSpeed, directionFromOrigin: projectileDirection)
+        let projectile = Entity.new(type: projectileType, world: world)
+        configure(projectile: projectile)
+
+        if entity.next.turC!.howToFire.isContinuous {
+            entity.next.turC!.fireState = .isFiringContinuous(projectile: EntityRef(projectile))
+        }
+    }
+
+    private func keepFiringContinuousProjectile(projectileRef: EntityRef) {
+        if let projectile = projectileRef.deref {
+            configure(projectile: projectile)
+        }
+    }
+
+    private func destroyContinuousProjectile(projectileRef: EntityRef) {
+        if let projectile = projectileRef.deref {
+            world.remove(entity: projectile)
         }
     }
 
     private var projectileType: TileType {
         TileType(bigType: .projectile, smallType: entity.type.smallType)
+    }
+
+    private func configure(projectile: Entity) {
+        let projectileDirection = entity.next.locC!.rotation
+
+        if projectile.next.locC != nil {
+            projectile.next.locC!.position = entity.next.locC!.position
+            projectile.next.locC!.rotation = projectileDirection
+        } else if projectile.next.lilC != nil {
+            let projectileRay = Ray(start: entity.next.locC!.position, direction: projectileDirection)
+            let projectileEndHit = world.cast(ray: projectileRay, maxDistance: TurretComponent.maxLaserDistance) { tileType in
+                tileType.isSolid
+            }
+            if let projectileEndHit = projectileEndHit {
+                projectile.next.lilC!.endEndpointHit = projectileEndHit
+                let projectileEndPosition = projectileEndHit.hitPoint
+                projectile.next.lilC!.position = Line(start: projectileRay.start, end: projectileEndPosition)
+            } else {
+                projectile.next.lilC!.position = projectileRay.cutoffAt(distance: TurretComponent.maxLaserDistance)
+            }
+        }
+
+        projectile.next.toxC?.safeEntities.insert(EntityRef(entity))
+
+        if let projectileSpeed = entity.next.turC!.howToFire.projectileSpeed {
+            projectile.next.dynC!.velocity = CGPoint(magnitude: projectileSpeed, directionFromOrigin: projectileDirection)
+        }
     }
 }

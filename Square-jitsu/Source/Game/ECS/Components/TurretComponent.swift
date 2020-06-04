@@ -11,8 +11,7 @@ struct TurretComponent: SingleSettingCodable, Codable {
         case rotateAtSpeed(speed: UnclampedAngle)
         case rotateInstantly
 
-        // ---
-
+        // region encoding and decoding
         typealias AsSetting = ComplexEnumSetting<RotationPattern>
 
         static func newSetting() -> AsSetting {
@@ -24,6 +23,7 @@ struct TurretComponent: SingleSettingCodable, Codable {
                 "rotateInstantly": [:]
             ])
         }
+        // endregion
     }
 
     enum WhenToFire: AutoCodable, CaseIterable, SimpleEnumSettingCodable {
@@ -48,8 +48,16 @@ struct TurretComponent: SingleSettingCodable, Codable {
             }
         }
 
-        // ---
+        var isContinuous: Bool {
+            switch self {
+            case .continuous:
+                return true
+            default:
+                return false
+            }
+        }
 
+        // region encoding and decoding
         typealias AsSetting = ComplexEnumSetting<HowToFire>
 
         static func newSetting() -> AsSetting {
@@ -67,6 +75,7 @@ struct TurretComponent: SingleSettingCodable, Codable {
                 "continuous": [:]
             ])
         }
+        // endregion
     }
 
     enum TargetState {
@@ -91,10 +100,20 @@ struct TurretComponent: SingleSettingCodable, Codable {
         case targetFoundNeedToCharge(timeUntilFire: CGFloat)
         case didFireReloading(timeUntilFire: CGFloat)
         case didFireInBurstReloading(timeUntilFire: CGFloat, numShotsLeftInBurstAfterThis: Int)
-        case isFiringContinuous
+        case isFiringContinuous(projectile: EntityRef)
+
+        var isContinuous: Bool {
+            switch self {
+            case .isFiringContinuous(projectile: _):
+                return true
+            default:
+                return false
+            }
+        }
     }
 
     static let turretVisibilityRadius: CGFloat = 14
+    static let maxLaserDistance: CGFloat = 32
 
     var rotationPattern: RotationPattern
     var whoToTarget: TileTypePred
@@ -106,8 +125,7 @@ struct TurretComponent: SingleSettingCodable, Codable {
     var targetState: TargetState = .targetNotFound
     var fireState: FireState = .targetNotFound
 
-    // ---
-
+    // region encoding and decoding
     enum CodingKeys: String, CodingKey {
         case rotationPattern
         case whoToTarget
@@ -129,4 +147,5 @@ struct TurretComponent: SingleSettingCodable, Codable {
             "delayWhenTargetFoundBeforeFire": CGFloatRangeSetting(0...64)
         ], optionalFields: [:])
     }
+    // endregion
 }
