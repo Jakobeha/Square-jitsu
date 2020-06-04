@@ -56,6 +56,15 @@ enum EditAction {
         }
     }
 
+    var lastStateBeforeTouchesBegan: EditAction {
+        switch self {
+        case .move(let selectedPositions, state: .inProgress(start: _, end: _)):
+            return .move(selectedPositions: selectedPositions, state: .notStarted)
+        default:
+            return self
+        }
+    }
+
     /// Creates an action with the given mode and an empty state
     init(mode: EditActionMode, selectedPositions: Set<WorldTilePos3D>) {
         switch mode {

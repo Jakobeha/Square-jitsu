@@ -59,13 +59,13 @@ class Button: UXView {
     var size: CGSize { buttonSize.cgSize }
 
     init(
-            textureName: String,
-            rouletteNextItemTextureName: String? = nil,
-            size: ButtonSize = .medium,
-            isEnabled: Bool = true,
-            isSelected: Bool = false,
-            tintHue: CGFloat? = nil,
-            action: @escaping () -> ()
+        textureName: String,
+        rouletteNextItemTextureName: String? = nil,
+        size: ButtonSize = .medium,
+        isEnabled: Bool = true,
+        isSelected: Bool = false,
+        tintHue: CGFloat? = nil,
+        action: @escaping () -> ()
     ) {
         buttonSize = size
         self.isEnabled = isEnabled
@@ -86,7 +86,6 @@ class Button: UXView {
             rouletteNextItemNode!.alpha = Button.foregroundAlpha(isEnabled: isEnabled) * Button.rouletteNextItemAlphaMultiplier
             rouletteNextItemNode!.anchorPoint = UXSpriteAnchor
             rouletteNextItemNode!.position = ConvertToUXCoords(point: (size.cgSize * (1 - Button.rouletteNextItemSizeMultiplier)).toPoint)
-            rouletteNextItemNode!.position.y *= -1
             rouletteNextItemNode!.zPosition = 1
         } else {
             rouletteNextItemNode = nil

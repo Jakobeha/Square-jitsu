@@ -110,8 +110,8 @@ class EditorTools {
 
             tileMenu.openLayer = nil
 
-            undoManager.registerUndo(withTarget: tileMenu) { tileMenu in
-                tileMenu.openLayer = oldOpenLayer
+            undoManager.registerUndo(withTarget: self) { this in
+                this.setInUndo(tileMenuOpenLayer: oldOpenLayer)
             }
         }
 
@@ -133,7 +133,7 @@ class EditorTools {
         }
 
         undoManager.registerUndo(withTarget: self) { this in
-            this.editAction = oldEditAction
+            this.setInUndo(editAction: oldEditAction)
         }
         undoManager.endUndoGrouping()
     }
@@ -273,7 +273,7 @@ class EditorTools {
         }
 
         undoManager.registerUndo(withTarget: self) { this in
-            this.editAction = oldEditAction
+            this.setInUndo(editAction: oldEditAction)
         }
         undoManager.endUndoGrouping()
     }
@@ -347,6 +347,28 @@ class EditorTools {
 
     private func getTouchPosition(uiTouch: UITouch, camera: Camera, container: SKScene) -> TouchPos {
         TouchPos(uiTouch: uiTouch, camera: camera, settings: world.settings, container: container)
+    }
+    // endregion
+
+    // region undo operations
+    private func setInUndo(tileMenuOpenLayer newOpenLayer: TileLayer?) {
+        let oldOpenLayer = tileMenu.openLayer
+        tileMenu.openLayer = newOpenLayer
+
+        undoManager.registerUndo(withTarget: self) { this in
+            this.setInUndo(tileMenuOpenLayer: oldOpenLayer)
+        }
+    }
+
+    private func setInUndo(editAction newEditAction: EditAction) {
+        let newEditAction = newEditAction.lastStateBeforeTouchesBegan
+
+        let oldEditAction = editAction
+        editAction = newEditAction
+
+        undoManager.registerUndo(withTarget: self) { this in
+            this.setInUndo(editAction: oldEditAction)
+        }
     }
     // endregion
 

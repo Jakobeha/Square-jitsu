@@ -112,8 +112,8 @@ struct TurretComponent: SingleSettingCodable, Codable {
         }
     }
 
-    static let turretVisibilityRadius: CGFloat = 14
-    static let maxLaserDistance: CGFloat = 32
+    static let turretVisibilityRadius: CGFloat = 12
+    static let maxLaserDistance: CGFloat = 24
 
     var rotationPattern: RotationPattern
     var whoToTarget: TileTypePred
