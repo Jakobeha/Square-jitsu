@@ -55,6 +55,8 @@ struct NearCollisionSystem: System {
 
     // Same definition as CollisionSystem#trajectoryNextFrame but it's calculated after next entity position might change
     private lazy var nearTrajectoryNextFrame: Line =
+        entity.prev.locC!.position.isNaN ?
+        Line(start: entity.next.locC!.position, end: entity.next.locC!.position) :
         Line(start: entity.prev.locC!.position, end: entity.next.locC!.position)
 
 }

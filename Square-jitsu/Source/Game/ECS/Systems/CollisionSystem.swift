@@ -307,6 +307,8 @@ struct CollisionSystem: System {
 
     // Has to be lazy otherwise we would throw on entities without a location component
     private lazy var trajectoryNextFrame: Line =
+        entity.prev.locC!.position.isNaN ?
+        Line(start: entity.next.locC!.position, end: entity.next.locC!.position) :
         Line(start: entity.prev.locC!.position, end: entity.next.locC!.position)
 
 }

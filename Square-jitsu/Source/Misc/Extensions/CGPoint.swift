@@ -87,6 +87,10 @@ extension CGPoint {
         ((end - start) * t) + start
     }
 
+    var isNaN: Bool {
+        x.isNaN && y.isNaN
+    }
+
     init(magnitude: CGFloat, sideDirection: Side) {
         switch sideDirection {
         case .east:
