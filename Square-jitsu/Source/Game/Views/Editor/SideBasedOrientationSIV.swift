@@ -5,11 +5,11 @@
 
 import Foundation
 
-/// Connected side sub inspector view
-class ConnectedSideSIV: UXCompoundView {
-    private let subInspector: AdjacentToSolidInspector
+/// Side-based orientation sub inspector view
+class SideBasedOrientationSIV: UXCompoundView {
+    private let subInspector: SideBasedOrientationInspector
 
-    init(_ subInspector: AdjacentToSolidInspector) {
+    init(_ subInspector: SideBasedOrientationInspector) {
         self.subInspector = subInspector
     }
 

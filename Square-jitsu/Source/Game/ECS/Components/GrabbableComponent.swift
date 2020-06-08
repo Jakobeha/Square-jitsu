@@ -10,7 +10,9 @@ struct GrabbableComponent: SettingCodableByCodable, Codable {
 
     var grabState: GrabState = GrabState.idle
 
+    // region encoding and decoding
     enum CodingKeys: String, CodingKey {
         case thrownSpeedMultiplier
     }
+    // endregion
 }

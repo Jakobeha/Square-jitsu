@@ -11,8 +11,10 @@ struct DestroyOnCollideComponent: SettingCodableByCodable, Codable {
 
     var isRemoved: Bool = false
 
+    // region encoding and decoding
     enum CodingKeys: String, CodingKey {
         case destroyOnEntityCollision
         case destroyOnSolidCollision
     }
+    // endregion
 }

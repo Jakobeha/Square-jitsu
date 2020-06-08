@@ -10,12 +10,13 @@ struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
 
     var rawValue: UInt8
 
-    var toSide: Side {
+    var asSide: Side {
         Side(rawValue: Int(rawValue))!
     }
 
-    var toSideSet: SideSet {
-        SideSet(rawValue: rawValue)
+    var asSideSet: SideSet {
+        get { SideSet(rawValue: rawValue) }
+        set { self = TileOrientation(sideSet: newValue) }
     }
 
     init(side: Side) {

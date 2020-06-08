@@ -11,7 +11,7 @@ struct PhysicsComponent: SettingCodableByCodable, Codable {
     var mass: CGFloat
 
     var adjacentSides: SideSet = []
-    var adjacentPositions: [Side:Set<WorldTilePos>] = [:]
+    var adjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> = [:]
     var overlappingTypes: TileTypeSet = TileTypeSet()
     var overlappingPositions: Set<WorldTilePos> = []
     var overlappingEntities: Set<Entity> = []
@@ -33,7 +33,7 @@ struct PhysicsComponent: SettingCodableByCodable, Codable {
 
     mutating func reset() {
         adjacentSides = []
-        adjacentPositions.removeAll()
+        adjacentPositions = [:]
         overlappingTypes.removeAll()
         overlappingPositions.removeAll()
         overlappingEntities.removeAll()

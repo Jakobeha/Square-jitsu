@@ -17,6 +17,8 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
     case adjacentSensitiveSolid
     case ice
 
+    case lava
+
     // Entities
     case player
     case enemy
@@ -37,6 +39,8 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
             return .solid
         case .ice:
             return .iceSolid
+        case .lava:
+            return .toxic
         case .player, .enemy, .shuriken, .projectile, .turret:
             return .entity
         }
@@ -44,7 +48,7 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
 
     func newMetadataSetting() -> SerialSetting {
         switch self {
-        case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice, .player, .enemy, .shuriken, .projectile:
+        case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice, .lava, .player, .enemy, .shuriken, .projectile:
             return NeverSetting()
         case .turret:
             return TurretMetadata.newSetting()
@@ -53,7 +57,7 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
 
     func newBehavior() -> TileBehavior? {
         switch self {
-        case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice:
+        case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice, .lava:
             return nil
         case .projectile:
             // Not a tile
@@ -71,7 +75,7 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
 
     var canBeSelected: Bool {
         switch self {
-        case .air, .player:
+        case .air:
             return false
         default:
             return true

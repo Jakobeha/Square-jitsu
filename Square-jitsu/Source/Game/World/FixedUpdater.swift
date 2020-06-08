@@ -6,6 +6,10 @@
 import SpriteKit
 
 class FixedUpdater {
+    /// After enough fixed updates we just ignore the rest, because they would
+    /// create lag and the player isn't getting anything out of slowing the game this much
+    private static let maxFixedUpdatesBeforeWeIgnoreTheRest: Int = 5
+
     var onTick: (() -> ())? = nil
     var fixedDeltaTime: CGFloat = CGFloat.nan {
         didSet {
@@ -23,9 +27,12 @@ class FixedUpdater {
             if fixedCurrentTime.isNaN {
                 fixedCurrentTime = currentTime
             } else {
-                while fixedCurrentTime < currentTime {
+                var numFixedUpdatesSoFar = 0
+                while fixedCurrentTime < currentTime &&
+                      numFixedUpdatesSoFar < FixedUpdater.maxFixedUpdatesBeforeWeIgnoreTheRest {
                     onTick?()
                     fixedCurrentTime += TimeInterval(fixedDeltaTime)
+                    numFixedUpdatesSoFar += 1
                 }
             }
         }

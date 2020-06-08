@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-final class Adjacent8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
+final class Square8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     static func getCoalescedForSharedTexture(cornerSet: CornerSet) -> CornerSet {
         var coalescedSet = cornerSet
         if !cornerSet.contains(.east) {
@@ -32,8 +32,8 @@ final class Adjacent8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     let adjoiningTypes: TileTypePred
 
     private lazy var textures: DenseEnumMap<CornerSet, SKTexture> = DenseEnumMap { cornerSet in
-        let coalescedSet = Adjacent8TileViewTemplate.getCoalescedForSharedTexture(cornerSet: cornerSet)
-        return Adjacent8TileViewTemplate.getTexture(base: textureBase, cornerSet: coalescedSet)
+        let coalescedSet = Square8TileViewTemplate.getCoalescedForSharedTexture(cornerSet: cornerSet)
+        return Square8TileViewTemplate.getTexture(base: textureBase, cornerSet: coalescedSet)
     }
 
     init(textureBase: TextureSet, adjoiningTypes: TileTypePred) {
@@ -61,7 +61,7 @@ final class Adjacent8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     func didRemoveFromParent(node: SKNode) {}
 
     // region encoding and decoding
-    typealias AsSetting = StructSetting<Adjacent8TileViewTemplate>
+    typealias AsSetting = StructSetting<Square8TileViewTemplate>
 
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [

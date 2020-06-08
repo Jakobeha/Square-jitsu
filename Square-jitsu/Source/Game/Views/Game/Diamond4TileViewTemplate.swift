@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
+final class Diamond4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     static func getCoalescedForSharedTexture(sideSet: SideSet) -> SideSet {
         if sideSet.contains([.east, .west]) || sideSet.contains([.north, .south]) {
             return SideSet.all
@@ -38,8 +38,8 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     let semiAdjoiningTypes: TileTypePred
     
     private lazy var textures: DenseEnumMap<SideSet, SKTexture> = DenseEnumMap { sideSet in
-        let coalescedSet = Adjacent4TileViewTemplate.getCoalescedForSharedTexture(sideSet: sideSet)
-        return Adjacent4TileViewTemplate.getTexture(base: textureBase, sideSet: coalescedSet)
+        let coalescedSet = Diamond4TileViewTemplate.getCoalescedForSharedTexture(sideSet: sideSet)
+        return Diamond4TileViewTemplate.getTexture(base: textureBase, sideSet: coalescedSet)
     }
 
     /// - Parameters:
@@ -59,7 +59,7 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         let semiAdjoiningSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
             semiAdjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })
-        let adjoiningSides = alwaysAdjoiningSides.union(Adjacent4TileViewTemplate.resolve(semiAdjoiningSides: semiAdjoiningSides))
+        let adjoiningSides = alwaysAdjoiningSides.union(Diamond4TileViewTemplate.resolve(semiAdjoiningSides: semiAdjoiningSides))
         let texture = textures[adjoiningSides]
         return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
@@ -76,7 +76,7 @@ final class Adjacent4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     func didRemoveFromParent(node: SKNode) {}
 
     // region encoding and decoding
-    typealias AsSetting = StructSetting<Adjacent4TileViewTemplate>
+    typealias AsSetting = StructSetting<Diamond4TileViewTemplate>
 
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [

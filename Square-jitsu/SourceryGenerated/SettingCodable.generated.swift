@@ -3,8 +3,8 @@
 
 // Modified from https://raw.githubusercontent.com/krzysztofzablocki/Sourcery/master/Templates/Templates/AutoCodable.swifttemplate
 import SpriteKit
-extension Adjacent4TileViewTemplate {
-    internal convenience init(from setting: StructSetting<Adjacent4TileViewTemplate>) {
+extension Diamond4TileViewTemplate {
+    internal convenience init(from setting: StructSetting<Diamond4TileViewTemplate>) {
         self.init(
             textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
             adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically(),
@@ -12,7 +12,7 @@ extension Adjacent4TileViewTemplate {
         )
     }
 
-    static internal func decode(from setting: StructSetting<Adjacent4TileViewTemplate>) -> Adjacent4TileViewTemplate {
+    static internal func decode(from setting: StructSetting<Diamond4TileViewTemplate>) -> Diamond4TileViewTemplate {
         self.init(
             textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
             adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically(),
@@ -20,30 +20,10 @@ extension Adjacent4TileViewTemplate {
         )
     }
 
-    internal func encode(to setting: StructSetting<Adjacent4TileViewTemplate>) {
+    internal func encode(to setting: StructSetting<Diamond4TileViewTemplate>) {
         self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
         self.adjoiningTypes.encodeDynamically(to: setting.allFieldSettings["adjoiningTypes"]!)
         self.semiAdjoiningTypes.encodeDynamically(to: setting.allFieldSettings["semiAdjoiningTypes"]!)
-    }
-}
-extension Adjacent8TileViewTemplate {
-    internal convenience init(from setting: StructSetting<Adjacent8TileViewTemplate>) {
-        self.init(
-            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
-            adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically()
-        )
-    }
-
-    static internal func decode(from setting: StructSetting<Adjacent8TileViewTemplate>) -> Adjacent8TileViewTemplate {
-        self.init(
-            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
-            adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically()
-        )
-    }
-
-    internal func encode(to setting: StructSetting<Adjacent8TileViewTemplate>) {
-        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
-        self.adjoiningTypes.encodeDynamically(to: setting.allFieldSettings["adjoiningTypes"]!)
     }
 }
 extension Entity.Components {
@@ -55,6 +35,7 @@ extension Entity.Components {
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
             docC: setting.usedFieldSettings["docC"]?.decodeDynamically(),
+            cocC: setting.usedFieldSettings["cocC"]?.decodeDynamically(),
             phyC: setting.usedFieldSettings["phyC"]?.decodeDynamically(),
             ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
             griC: setting.usedFieldSettings["griC"]?.decodeDynamically(),
@@ -74,6 +55,7 @@ extension Entity.Components {
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
             docC: setting.usedFieldSettings["docC"]?.decodeDynamically(),
+            cocC: setting.usedFieldSettings["cocC"]?.decodeDynamically(),
             phyC: setting.usedFieldSettings["phyC"]?.decodeDynamically(),
             ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
             griC: setting.usedFieldSettings["griC"]?.decodeDynamically(),
@@ -92,6 +74,7 @@ extension Entity.Components {
         self.dynC?.encodeDynamically(to: setting.allFieldSettings["dynC"]!)
         self.imfC?.encodeDynamically(to: setting.allFieldSettings["imfC"]!)
         self.docC?.encodeDynamically(to: setting.allFieldSettings["docC"]!)
+        self.cocC?.encodeDynamically(to: setting.allFieldSettings["cocC"]!)
         self.phyC?.encodeDynamically(to: setting.allFieldSettings["phyC"]!)
         self.ntlC?.encodeDynamically(to: setting.allFieldSettings["ntlC"]!)
         self.griC?.encodeDynamically(to: setting.allFieldSettings["griC"]!)
@@ -120,6 +103,43 @@ extension LaserEntityViewTemplate {
     internal func encode(to setting: StructSetting<LaserEntityViewTemplate>) {
         self.color.encodeDynamically(to: setting.allFieldSettings["color"]!)
         self.thickness.encodeDynamically(to: setting.allFieldSettings["thickness"]!)
+    }
+}
+extension Square4DeterminedByOrientationTileViewTemplate {
+    internal convenience init(from setting: StructSetting<Square4DeterminedByOrientationTileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<Square4DeterminedByOrientationTileViewTemplate>) -> Square4DeterminedByOrientationTileViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<Square4DeterminedByOrientationTileViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
+    }
+}
+extension Square8TileViewTemplate {
+    internal convenience init(from setting: StructSetting<Square8TileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
+            adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<Square8TileViewTemplate>) -> Square8TileViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
+            adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<Square8TileViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
+        self.adjoiningTypes.encodeDynamically(to: setting.allFieldSettings["adjoiningTypes"]!)
     }
 }
 extension StaticEntityViewTemplate {

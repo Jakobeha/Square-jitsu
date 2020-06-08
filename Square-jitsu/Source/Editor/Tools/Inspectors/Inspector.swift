@@ -7,6 +7,7 @@ import Foundation
 
 class Inspector {
     let adjacentToSolidInspector: AdjacentToSolidInspector?
+    let atSolidBorderInspector: AtSolidBorderInspector?
     let turretInspector: TurretInspector?
 
     init(positions: Set<WorldTilePos3D>, world: ReadonlyStatelessWorld, delegate: EditorToolsDelegate?) {
@@ -28,6 +29,9 @@ class Inspector {
 
         adjacentToSolidInspector = createSubInspectorIfNecessary(type: AdjacentToSolidInspector.self) { tileType in
             (world.settings.tileOrientationMeanings[tileType] ?? .unused) == .directionAdjacentToSolid
+        }
+        atSolidBorderInspector = createSubInspectorIfNecessary(type: AtSolidBorderInspector.self) { tileType in
+            (world.settings.tileOrientationMeanings[tileType] ?? .unused) == .atSolidBorder
         }
         turretInspector = createSubInspectorIfNecessary(type: TurretInspector.self) { tileType in
             tileType.bigType == .turret

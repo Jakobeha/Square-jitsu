@@ -6,6 +6,10 @@
 import Foundation
 
 extension Never: Codable {
+    func toValueViaAbsurd<T>() -> T {
+        fatalError("absurd (how did we get here?)")
+    }
+
     public init(from decoder: Decoder) throws {
         throw DecodingError.dataCorrupted(DecodingError.Context(
             codingPath: decoder.codingPath,

@@ -39,8 +39,25 @@ struct DenseEnumMap<Key: CaseIterable & RawRepresentable, Value>: Sequence where
     func makeIterator() -> Iterator { toList.makeIterator() }
 }
 
-extension DenseEnumMap where Value: HasDefault {
-    init() {
+extension DenseEnumMap: ExpressibleByDictionaryLiteral where Value: HasDefault {
+    init(dictionaryLiteral elements: (Key, Value)...) {
+        self.init()
+        for (key, value) in elements {
+            self[key] = value
+        }
+    }
+
+    private init() {
         self.init { _ in Value.defaultValue }
+    }
+}
+
+extension DenseEnumMap where Value: Appendable {
+    var allElements: [Value.Element] {
+        values.flatMap { $0 }
+    }
+
+    mutating func append(key: Key, _ element: Value.Element) {
+        self[key].appendOrInsert(element)
     }
 }

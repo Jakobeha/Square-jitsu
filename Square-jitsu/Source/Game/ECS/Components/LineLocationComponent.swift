@@ -12,6 +12,21 @@ struct LineLocationComponent: SettingCodableByCodable, Codable {
     var startEndpointHit: LineCastHit? = nil
     var endEndpointHit: LineCastHit? = nil
 
+    var adjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> {
+        DenseEnumMap { side in
+            var adjacentPositionsForSide: Set<WorldTilePos> = []
+            if let startEndpointHit = startEndpointHit,
+               startEndpointHit.hitSide == side {
+                adjacentPositionsForSide.insert(startEndpointHit.pos3D.pos)
+            }
+            if let endEndpointHit = endEndpointHit,
+               endEndpointHit.hitSide == side {
+                adjacentPositionsForSide.insert(endEndpointHit.pos3D.pos)
+            }
+            return adjacentPositionsForSide
+        }
+    }
+
     /// Distance from the furthest point on this entity (assuming it's a circle) to the given point
     func distance(to point: CGPoint) -> CGFloat {
         max(0, position.getDistanceTo(point: point) - thickness)

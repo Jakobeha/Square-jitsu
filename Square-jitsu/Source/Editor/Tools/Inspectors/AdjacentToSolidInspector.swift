@@ -5,40 +5,12 @@
 
 import Foundation
 
-class AdjacentToSolidInspector: SubInspector {
-    private var tiles: [TileAtPosition]
-    private let world: ReadonlyStatelessWorld
-    private weak var delegate: EditorToolsDelegate? = nil
-
-    private(set) var tilesConnectableToSide: DenseEnumMap<Side, [TileAtPosition]>! = nil
-    private(set) var tilesConnectedToSide: DenseEnumMap<Side, [TileAtPosition]>! = nil
-
-    required init(tiles: [TileAtPosition], world: ReadonlyStatelessWorld, delegate: EditorToolsDelegate?) {
-        self.tiles = tiles
-        self.world = world
-        self.delegate = delegate
-
-        updateConnectedTileInfo()
+class AdjacentToSolidInspector: SideBasedOrientationInspector {
+    override func isTileConnectableToSide(tileAtPosition: TileAtPosition, side: Side) -> Bool {
+        world.getSolidAdjacentSidesTo(pos: tileAtPosition.position.pos).contains(side.toSet)
     }
 
-    func connectTilesTo(side: Side) {
-        let tilesToChange = tilesConnectableToSide[side]
-        delegate?.connectTilesToSide(tiles: tilesToChange, side: side)
-
-        tiles = tiles.map(world.getUpdatedTileAtPosition)
-        updateConnectedTileInfo()
-    }
-
-    private func updateConnectedTileInfo() {
-        tilesConnectableToSide = DenseEnumMap { side in
-            tiles.filter { tileAtPosition in
-                world.getSolidAdjacentSidesTo(pos: tileAtPosition.position.pos).contains(side.toSet)
-            }
-        }
-        tilesConnectedToSide = DenseEnumMap { side in
-            tiles.filter { tileAtPosition in
-                tileAtPosition.type.orientation.toSide == side
-            }
-        }
+    override func isTileConnectedToSide(tileAtPosition: TileAtPosition, side: Side) -> Bool {
+        tileAtPosition.type.orientation.asSide == side
     }
 }

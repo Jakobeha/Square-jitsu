@@ -47,6 +47,14 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
     /// - Note: If you change this, also change TileTypeSet.containsSolid
     var isSolid: Bool { bigType.layer == TileLayer.solid || bigType.layer == TileLayer.iceSolid }
 
+    var withDefaultOrientation: TileType {
+        get { TileType(bigType: bigType, smallType: smallType) }
+        set {
+            bigType = newValue.bigType
+            smallType = newValue.smallType
+        }
+    }
+
     init(bigType: TileBigType, smallType: TileSmallType = TileSmallType(0), orientation: TileOrientation = TileOrientation.none) {
         self.bigType = bigType
         self.smallType = smallType

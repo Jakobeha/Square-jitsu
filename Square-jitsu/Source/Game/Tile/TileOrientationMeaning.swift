@@ -9,6 +9,18 @@ import Foundation
 enum TileOrientationMeaning: Int, CaseIterable, Codable, LosslessStringConvertibleEnum {
     case unused
     case directionAdjacentToSolid
+    case atSolidBorder
+
+    /// Whether part of a tile can be added to the same position even when another tile is present
+    /// with a different orientation, because the orientations can unify
+    var doesSupportUnion: Bool {
+        switch self {
+        case .unused, .directionAdjacentToSolid:
+            return false
+        case .atSolidBorder:
+            return true
+        }
+    }
 
     // region encoding and decoding
     var description: String { String(describing: self) }

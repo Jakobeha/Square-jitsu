@@ -78,6 +78,10 @@ class EditableWorld: EditableReadonlyStatelessWorld {
             } else {
                 type.orientation = TileOrientation.none
             }
+        case .atSolidBorder:
+            let sidesWithAdjacentSolid = self.getSolidAdjacentSidesTo(pos: pos)
+            let orientationSides = sidesWithAdjacentSolid.inverted
+            type.orientation = TileOrientation(sideSet: orientationSides)
         }
         return type
     }

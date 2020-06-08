@@ -6,7 +6,7 @@
 import Foundation
 
 /// The collection protocol with additional methods, which most collections should still adhere to
-protocol StrongerCollection: Sequence, DynamicSettingCodable {
+protocol StrongerCollection: Sequence, ExpressibleByArrayLiteral, HasDefault, DynamicSettingCodable {
     associatedtype Element
 
     init<Source: Sequence>(_ sequence: Source) where Element == Source.Element

@@ -2,8 +2,19 @@
   "tileViewTemplates": {
     "background": [
       {
-        "type": "adjacent4",
+        "type": "diamond4",
         "textureBase": "Background",
+        "adjoiningTypes": [
+          "background"
+        ],
+        "semiAdjoiningTypes": [
+          "Layer.background",
+          "Layer.solid"
+        ]
+      },
+      {
+        "type": "diamond4",
+        "textureBase": "BackgroundBricks",
         "adjoiningTypes": [
           "background"
         ],
@@ -25,7 +36,7 @@
     ],
     "solid": [
       {
-        "type": "adjacent8",
+        "type": "square8",
         "textureBase": "Solid",
         "adjoiningTypes": [
           "solid/0",
@@ -45,12 +56,18 @@
     ],
     "ice": [
       {
-        "type": "adjacent8",
+        "type": "square8",
         "textureBase": "Ice",
         "adjoiningTypes": [
           "solid/0",
           "ice/0"
         ]
+      }
+    ],
+    "lava": [
+      {
+        "type": "square4-determinedByOrientation",
+        "textureBase": "Lava"
       }
     ],
     "player": [
@@ -95,6 +112,14 @@
           "texture": "TurretAnchor"
         },
         "turretTexture": "LaserTurret"
+      },
+      {
+        "type": "turret",
+        "base": {
+          "type": "static",
+          "texture": "TurretAnchor"
+        },
+        "turretTexture": "LavaLaserTurret"
       }
     ]
   },
@@ -135,6 +160,16 @@
           "alpha": 1
         },
         "thickness": 0.125
+      },
+      {
+        "type": "laser",
+        "color": {
+          "hue": 0,
+          "saturation": 0,
+          "brightness": 1,
+          "alpha": 1
+        },
+        "thickness": 0.125
       }
     ],
     "turret": [
@@ -144,7 +179,7 @@
           "type": "static",
           "texture": "BasicTurret"
         },
-        "maxChargingCircleRadius": 0.75,
+        "maxChargingCircleRadius": 0.5,
         "minChargingCircleRadius": 0.125,
         "chargingCircleOffset": [0.4375, 0],
         "chargingCircleColor": {
@@ -160,7 +195,7 @@
           "type": "static",
           "texture": "BurstTurret"
         },
-        "maxChargingCircleRadius": 0.75,
+        "maxChargingCircleRadius": 0.5,
         "minChargingCircleRadius": 0.125,
         "chargingCircleOffset": [0.4375, 0],
         "chargingCircleColor": {
@@ -176,7 +211,23 @@
           "type": "static",
           "texture": "LaserTurret"
         },
-        "maxChargingCircleRadius": 0.75,
+        "maxChargingCircleRadius": 0.5,
+        "minChargingCircleRadius": 0.125,
+        "chargingCircleOffset": [0.4375, 0],
+        "chargingCircleColor": {
+          "hue": 0,
+          "saturation": 0,
+          "brightness": 1,
+          "alpha": 1
+        }
+      },
+      {
+        "type": "turret",
+        "base": {
+          "type": "static",
+          "texture": "LavaLaserTurret"
+        },
+        "maxChargingCircleRadius": 0.5,
         "minChargingCircleRadius": 0.125,
         "chargingCircleOffset": [0.4375, 0],
         "chargingCircleColor": {
@@ -193,6 +244,7 @@
   },
   "rotateTileViewBasedOnOrientation": {
     "turret": [
+      true,
       true,
       true,
       true
@@ -227,6 +279,7 @@
     "turret": [
       1,
       1,
+      1,
       1
     ]
   },
@@ -251,10 +304,11 @@
     "solid": ["Default"],
     "adjacentSensitiveSolid": ["Default-Off", "Default-On"],
     "ice": ["Default"],
+    "lava": ["Lava"],
     "player": [""],
     "enemy": ["Default"],
     "shuriken": ["Default"],
-    "turret": ["Default", "Burst", "Laser"]
+    "turret": ["Default", "Burst", "Laser", "Lava-Laser"]
   },
   "entityData": {
     "player": [{
@@ -325,6 +379,11 @@
       {
         "lilC": {"thickness": 0.0625},
         "toxC": {"damage": 0.5, "safeTypes": [], "onlyToxicIfThrown": false}
+      },
+      {
+        "lilC": {"thickness": 0.0625},
+        "cocC": {"createdTileType": "lava"},
+        "toxC": {"damage": 0.5, "safeTypes": [], "onlyToxicIfThrown": false}
       }
     ],
     "turret": [
@@ -374,7 +433,22 @@
         "turC": {
           "rotationPattern": {
             "type": "rotateAtSpeed",
-            "speed": "56°"
+            "speed": "40°"
+          },
+          "whoToTarget": ["player"],
+          "whenToFire": "fireOnSeek",
+          "howToFire": "continuous",
+          "whatToFire": "projectile",
+          "delayWhenTargetFoundBeforeFire": 1
+        }
+      },
+      {
+        "locC": {"radius": 0.5},
+        "dynC": {},
+        "turC": {
+          "rotationPattern": {
+            "type": "rotateAtSpeed",
+            "speed": "40°"
           },
           "whoToTarget": ["player"],
           "whenToFire": "fireOnSeek",
@@ -398,11 +472,18 @@
       },
       {
         "initialTurretDirectionRelativeToAnchor": "-90°"
+      },
+      {
+        "initialTurretDirectionRelativeToAnchor": "-90°"
       }
     ]
   },
   "tileOrientationMeanings": {
+    "toxic": [
+      "atSolidBorder"
+    ],
     "turret": [
+      "directionAdjacentToSolid",
       "directionAdjacentToSolid",
       "directionAdjacentToSolid",
       "directionAdjacentToSolid"
@@ -414,8 +495,9 @@
     "solid": [0],
     "adjacentSensitiveSolid": [0],
     "ice": [0],
+    "lava": [0],
     "enemy": [0],
     "shuriken": [0],
-    "turret": [0, 1, 2]
+    "turret": [0, 1, 2, 3]
   }
 }

@@ -14,10 +14,12 @@ struct GrabbingComponent: SettingCodableByCodable, Codable {
     /// Order matters because first grabbed is first thrown
     var grabbed: [EntityRef] = []
 
+    // region encoding and decoding
     enum CodingKeys: String, CodingKey {
         case grabbableTypes
         case grabOffset
         case throwSpeed
         case throwAngularSpeed
     }
+    // endregion
 }

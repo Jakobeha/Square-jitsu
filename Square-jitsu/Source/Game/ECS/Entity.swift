@@ -15,6 +15,7 @@ class Entity: EqualityIsIdentity {
         var dynC: MovingComponent?
         var imfC: ImplicitForcesComponent?
         var docC: DestroyOnCollideComponent?
+        var cocC: CreateOnCollideComponent?
         var phyC: PhysicsComponent?
         var ntlC: NearTileComponent?
         var griC: GrabbingComponent?
@@ -32,6 +33,7 @@ class Entity: EqualityIsIdentity {
                 "dynC": CodableStructSetting<MovingComponent>(),
                 "imfC": CodableStructSetting<ImplicitForcesComponent>(),
                 "docC": CodableStructSetting<DestroyOnCollideComponent>(),
+                "cocC": CodableStructSetting<CreateOnCollideComponent>(),
                 "phyC": CodableStructSetting<PhysicsComponent>(),
                 "ntlC": CodableStructSetting<NearTileComponent>(),
                 "griC": CodableStructSetting<GrabbingComponent>(),
@@ -46,23 +48,26 @@ class Entity: EqualityIsIdentity {
             }
         }
 
-        private static let componentDependencies: [String:[String]] = [
-            "larC": ["locC"],
-            "dynC": ["locC"],
-            "imfC": ["dynC", "locC"],
-            "docC": ["dynC", "locC"],
-            "phyC": ["dynC", "locC"],
-            "ntlC": ["phyC", "dynC", "locC"],
-            "griC": ["phyC", "dynC", "locC"],
-            "graC": ["dynC", "locC"],
-            "turC": ["dynC", "locC"],
-            "nijC": ["helC", "ntlC", "phyC", "dynC", "locC"]
+        /// CNF = Conjunctive normal form ('and' of 'or's; if the key dependency is contained,
+        /// at least one element from each sub-array of the value dependency must also be contained)
+        private static let componentDependenciesCNF: [String:[[String]]] = [
+            "larC": [["locC"]],
+            "dynC": [["locC"]],
+            "imfC": [["dynC"], ["locC"]],
+            "docC": [["dynC"], ["locC"]],
+            "cocC": [["lilC", "phyC"]],
+            "phyC": [["dynC"], ["locC"]],
+            "ntlC": [["phyC"], ["dynC"], ["locC"]],
+            "griC": [["phyC"], ["dynC"], ["locC"]],
+            "graC": [["dynC"], ["locC"]],
+            "turC": [["dynC"], ["locC"]],
+            "nijC": [["helC"], ["ntlC"], ["phyC"], ["dynC"], ["locC"]]
         ]
 
         func validate() throws {
             let myComponents = myComponentsAsStrings
-            for (target, dependencies) in Components.componentDependencies {
-                try Components.validateDependenciesOfComponent(myComponents: myComponents, target: target, dependencies: dependencies)
+            for (target, dependencies) in Components.componentDependenciesCNF {
+                try Components.validateDependenciesOfComponent(myComponents: myComponents, target: target, dependenciesCNF: dependencies)
             }
         }
 
@@ -74,9 +79,11 @@ class Entity: EqualityIsIdentity {
             return Set(myComponentNames)
         }
         
-        private static func validateDependenciesOfComponent(myComponents: Set<String>, target: String, dependencies: [String]) throws {
-            if myComponents.contains(target) && !myComponents.contains(allOf: dependencies) {
-                throw DecodeSettingError.missingComponentDependencies(target: target, dependencies: dependencies)
+        private static func validateDependenciesOfComponent(myComponents: Set<String>, target: String, dependenciesCNF: [[String]]) throws {
+            if myComponents.contains(target) && !dependenciesCNF.allSatisfy({ orDependencies in
+                myComponents.contains(anyOf: orDependencies)
+            }) {
+                throw DecodeSettingError.missingComponentDependencies(target: target, dependenciesCNF: dependenciesCNF)
             }
         }
     }

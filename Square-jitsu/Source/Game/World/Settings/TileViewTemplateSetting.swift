@@ -8,8 +8,9 @@ import Foundation
 class TileViewTemplateSetting: UnionSetting {
     static var options: [USOGenerator] = [
         USOGenerator(SettingOptionRecognizerByName("static"), StaticTileViewTemplate.newSetting),
-        USOGenerator(SettingOptionRecognizerByName("adjacent4"), Adjacent4TileViewTemplate.newSetting),
-        USOGenerator(SettingOptionRecognizerByName("adjacent8"), Adjacent8TileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("diamond4"), Diamond4TileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("square4-determinedByOrientation"), Square4DeterminedByOrientationTileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("square8"), Square8TileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("turret"), TurretTileViewTemplate.newSetting)
     ]
 

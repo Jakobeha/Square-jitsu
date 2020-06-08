@@ -10,24 +10,12 @@ struct UnclampedAngle: Equatable, Hashable, Codable, LosslessStringConvertible {
         UnclampedAngle(radians: -angle.radians)
     }
 
-    static func +(lhs: Angle, rhs: UnclampedAngle) -> Angle {
-        Angle(radians: lhs.radians + rhs.radians)
-    }
-
     static func +(lhs: UnclampedAngle, rhs: UnclampedAngle) -> UnclampedAngle {
         UnclampedAngle(radians: lhs.radians + rhs.radians)
     }
 
-    static func +=(lhs: inout Angle, rhs: UnclampedAngle) {
-        lhs = lhs + rhs
-    }
-
     static func +=(lhs: inout UnclampedAngle, rhs: UnclampedAngle) {
         lhs.radians += rhs.radians
-    }
-
-    static func -(lhs: Angle, rhs: UnclampedAngle) -> Angle {
-        Angle(radians: lhs.radians - rhs.radians)
     }
 
     static func -(lhs: UnclampedAngle, rhs: UnclampedAngle) -> UnclampedAngle {
@@ -36,10 +24,6 @@ struct UnclampedAngle: Equatable, Hashable, Codable, LosslessStringConvertible {
 
     static func -=(lhs: inout UnclampedAngle, rhs: UnclampedAngle) {
         lhs.radians -= rhs.radians
-    }
-
-    static func -=(lhs: inout Angle, rhs: UnclampedAngle) {
-        lhs = lhs - rhs
     }
 
     static func *(lhs: UnclampedAngle, scale: CGFloat) -> UnclampedAngle {

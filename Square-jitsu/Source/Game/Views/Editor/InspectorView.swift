@@ -41,7 +41,10 @@ class InspectorView: UXCompoundView {
         var views: [LabeledSIV] = []
 
         if let adjacentToSolidInspector = inspector.adjacentToSolidInspector {
-            views.append(LabeledSIV(ConnectedSideSIV(adjacentToSolidInspector), label: "Connected Side"))
+            views.append(LabeledSIV(SideBasedOrientationSIV(adjacentToSolidInspector), label: "Connected Side"))
+        }
+        if let atSolidBorderInspector = inspector.atSolidBorderInspector {
+            views.append(LabeledSIV(SideBasedOrientationSIV(atSolidBorderInspector), label: "Edges"))
         }
         if let turretInspector = inspector.turretInspector {
             views.append(LabeledSIV(TurretSIV(turretInspector), label: "Turret"))

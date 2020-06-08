@@ -16,3 +16,21 @@ extension Optional: HasDefault {
 
     var isDefault: Bool { self == nil }
 }
+
+extension Array: HasDefault {
+    static var defaultValue: [Element] { [] }
+
+    var isDefault: Bool { isEmpty }
+}
+
+extension Set: HasDefault {
+    static var defaultValue: Set<Element> { [] }
+
+    var isDefault: Bool { isEmpty }
+}
+
+extension Dictionary: HasDefault {
+    static var defaultValue: [Key:Value] { [:] }
+
+    var isDefault: Bool { isEmpty }
+}

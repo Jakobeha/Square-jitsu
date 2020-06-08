@@ -32,6 +32,10 @@ struct SideSet: OptionSet, Equatable, Hashable, CaseIterable {
     var first: Side? {
         Side.allCases.first { side in self.contains(side.toSet) }
     }
+    
+    var inverted: SideSet {
+        SideSet.all.subtracting(self)
+    }
 
     init(rawValue: UInt8) {
         self.rawValue = rawValue

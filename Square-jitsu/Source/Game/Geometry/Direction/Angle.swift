@@ -15,16 +15,24 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
         Angle(radians: -angle.radians)
     }
 
-    static func +(lhs: Angle, rhs: Angle) -> Angle {
+    static func +(lhs: Angle, rhs: UnclampedAngle) -> Angle {
         Angle(radians: lhs.radians + rhs.radians)
     }
 
-    static func +=(lhs: inout Angle, rhs: Angle) {
+    static func +=(lhs: inout Angle, rhs: UnclampedAngle) {
         lhs = lhs + rhs
+    }
+
+    static func -(lhs: Angle, rhs: UnclampedAngle) -> Angle {
+        Angle(radians: lhs.radians - rhs.radians)
     }
 
     static func -(lhs: Angle, rhs: Angle) -> Angle {
         Angle(radians: lhs.radians - rhs.radians)
+    }
+
+    static func -=(lhs: inout Angle, rhs: UnclampedAngle) {
+        lhs = lhs - rhs
     }
 
     static func -=(lhs: inout Angle, rhs: Angle) {
@@ -51,7 +59,7 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
         assert(!radians.isNaN && !radians.isInfinite, "sanity check failed")
         var radians = radians
         radians = fmodf(radians, Float.pi * 2)
-        if (radians < Float.pi) {
+        if (radians < -Float.pi) {
             radians += Float.pi * 2
         }
         if (radians > Float.pi) {
