@@ -28,6 +28,8 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var tileDescriptions: TileTypeMap<String>
 
     // Functional info
+    var tileDamage: TileTypeMap<CGFloat>
+    var knockback: TileTypeMap<CGFloat>
     var entityData: TileTypeMap<Entity.Components>
     var entitySpawnRadius: TileTypeMap<CGFloat>
 
@@ -38,7 +40,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
 
     typealias AsSetting = StructSetting<WorldSettings>
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
         self.entityZPositions = entityZPositions
@@ -48,6 +50,8 @@ final class WorldSettings: SingleSettingCodable, Codable {
         self.entityViewFadeDurations = entityViewFadeDurations
         self.entityGrabColors = entityGrabColors
         self.tileDescriptions = tileDescriptions
+        self.tileDamage = tileDamage
+        self.knockback = knockback
         self.entityData = entityData
         self.entitySpawnRadius = entitySpawnRadius
         self.defaultTileMetadatas = defaultTileMetadatas
@@ -66,6 +70,8 @@ final class WorldSettings: SingleSettingCodable, Codable {
             "entityViewFadeDurations": TileTypeMapSetting<TimeInterval> { TimeRangeSetting(0...4) },
             "entityGrabColors": TileTypeMapSetting<SKColor> { ColorSetting() },
             "tileDescriptions": TileTypeMapSetting<String> { StringSetting() },
+            "tileDamage": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...1) },
+            "knockback": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...128) },
             "entityData": TileTypeMapSetting<Entity.Components> { Entity.Components.newSetting() },
             "entitySpawnRadius": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(1...16) },
             "defaultTileMetadatas": TileTypeMapSetting<TileMetadata> { type in type.bigType.newMetadataSetting() },

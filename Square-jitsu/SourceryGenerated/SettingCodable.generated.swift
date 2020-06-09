@@ -34,10 +34,11 @@ extension Entity.Components {
             larC: setting.usedFieldSettings["larC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
+            colC: setting.usedFieldSettings["colC"]?.decodeDynamically(),
+            ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
             docC: setting.usedFieldSettings["docC"]?.decodeDynamically(),
             cocC: setting.usedFieldSettings["cocC"]?.decodeDynamically(),
-            phyC: setting.usedFieldSettings["phyC"]?.decodeDynamically(),
-            ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
+            matC: setting.usedFieldSettings["matC"]?.decodeDynamically(),
             griC: setting.usedFieldSettings["griC"]?.decodeDynamically(),
             graC: setting.usedFieldSettings["graC"]?.decodeDynamically(),
             helC: setting.usedFieldSettings["helC"]?.decodeDynamically(),
@@ -54,10 +55,11 @@ extension Entity.Components {
             larC: setting.usedFieldSettings["larC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
+            colC: setting.usedFieldSettings["colC"]?.decodeDynamically(),
+            ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
             docC: setting.usedFieldSettings["docC"]?.decodeDynamically(),
             cocC: setting.usedFieldSettings["cocC"]?.decodeDynamically(),
-            phyC: setting.usedFieldSettings["phyC"]?.decodeDynamically(),
-            ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
+            matC: setting.usedFieldSettings["matC"]?.decodeDynamically(),
             griC: setting.usedFieldSettings["griC"]?.decodeDynamically(),
             graC: setting.usedFieldSettings["graC"]?.decodeDynamically(),
             helC: setting.usedFieldSettings["helC"]?.decodeDynamically(),
@@ -73,10 +75,11 @@ extension Entity.Components {
         self.larC?.encodeDynamically(to: setting.allFieldSettings["larC"]!)
         self.dynC?.encodeDynamically(to: setting.allFieldSettings["dynC"]!)
         self.imfC?.encodeDynamically(to: setting.allFieldSettings["imfC"]!)
+        self.colC?.encodeDynamically(to: setting.allFieldSettings["colC"]!)
+        self.ntlC?.encodeDynamically(to: setting.allFieldSettings["ntlC"]!)
         self.docC?.encodeDynamically(to: setting.allFieldSettings["docC"]!)
         self.cocC?.encodeDynamically(to: setting.allFieldSettings["cocC"]!)
-        self.phyC?.encodeDynamically(to: setting.allFieldSettings["phyC"]!)
-        self.ntlC?.encodeDynamically(to: setting.allFieldSettings["ntlC"]!)
+        self.matC?.encodeDynamically(to: setting.allFieldSettings["matC"]!)
         self.griC?.encodeDynamically(to: setting.allFieldSettings["griC"]!)
         self.graC?.encodeDynamically(to: setting.allFieldSettings["graC"]!)
         self.helC?.encodeDynamically(to: setting.allFieldSettings["helC"]!)
@@ -103,6 +106,40 @@ extension LaserEntityViewTemplate {
     internal func encode(to setting: StructSetting<LaserEntityViewTemplate>) {
         self.color.encodeDynamically(to: setting.allFieldSettings["color"]!)
         self.thickness.encodeDynamically(to: setting.allFieldSettings["thickness"]!)
+    }
+}
+extension MatterComponent {
+    internal init(from setting: StructSetting<MatterComponent>) {
+        self.init(
+            mass: setting.usedFieldSettings["mass"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<MatterComponent>) -> MatterComponent {
+        self.init(
+            mass: setting.usedFieldSettings["mass"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<MatterComponent>) {
+        self.mass.encodeDynamically(to: setting.allFieldSettings["mass"]!)
+    }
+}
+extension MovingComponent {
+    internal init(from setting: StructSetting<MovingComponent>) {
+        self.init(
+            dynamicKnockbackMultiplier: setting.usedFieldSettings["dynamicKnockbackMultiplier"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<MovingComponent>) -> MovingComponent {
+        self.init(
+            dynamicKnockbackMultiplier: setting.usedFieldSettings["dynamicKnockbackMultiplier"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<MovingComponent>) {
+        self.dynamicKnockbackMultiplier.encodeDynamically(to: setting.allFieldSettings["dynamicKnockbackMultiplier"]!)
     }
 }
 extension Square4DeterminedByOrientationTileViewTemplate {
@@ -180,23 +217,20 @@ extension ToxicComponent {
     internal init(from setting: StructSetting<ToxicComponent>) {
         self.init(
             damage: setting.usedFieldSettings["damage"]!.decodeDynamically(),
-            safeTypes: setting.usedFieldSettings["safeTypes"]!.decodeDynamically(),
-            onlyToxicIfThrown: setting.usedFieldSettings["onlyToxicIfThrown"]!.decodeDynamically()
+            safeTypes: setting.usedFieldSettings["safeTypes"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<ToxicComponent>) -> ToxicComponent {
         self.init(
             damage: setting.usedFieldSettings["damage"]!.decodeDynamically(),
-            safeTypes: setting.usedFieldSettings["safeTypes"]!.decodeDynamically(),
-            onlyToxicIfThrown: setting.usedFieldSettings["onlyToxicIfThrown"]!.decodeDynamically()
+            safeTypes: setting.usedFieldSettings["safeTypes"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<ToxicComponent>) {
         self.damage.encodeDynamically(to: setting.allFieldSettings["damage"]!)
         self.safeTypes.encodeDynamically(to: setting.allFieldSettings["safeTypes"]!)
-        self.onlyToxicIfThrown.encodeDynamically(to: setting.allFieldSettings["onlyToxicIfThrown"]!)
     }
 }
 extension TurretComponent {
@@ -309,6 +343,8 @@ extension WorldSettings {
             entityViewFadeDurations: setting.usedFieldSettings["entityViewFadeDurations"]!.decodeDynamically(),
             entityGrabColors: setting.usedFieldSettings["entityGrabColors"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
+            tileDamage: setting.usedFieldSettings["tileDamage"]!.decodeDynamically(),
+            knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
             entitySpawnRadius: setting.usedFieldSettings["entitySpawnRadius"]!.decodeDynamically(),
             defaultTileMetadatas: setting.usedFieldSettings["defaultTileMetadatas"]!.decodeDynamically(),
@@ -328,6 +364,8 @@ extension WorldSettings {
             entityViewFadeDurations: setting.usedFieldSettings["entityViewFadeDurations"]!.decodeDynamically(),
             entityGrabColors: setting.usedFieldSettings["entityGrabColors"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
+            tileDamage: setting.usedFieldSettings["tileDamage"]!.decodeDynamically(),
+            knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
             entitySpawnRadius: setting.usedFieldSettings["entitySpawnRadius"]!.decodeDynamically(),
             defaultTileMetadatas: setting.usedFieldSettings["defaultTileMetadatas"]!.decodeDynamically(),
@@ -346,6 +384,8 @@ extension WorldSettings {
         self.entityViewFadeDurations.encodeDynamically(to: setting.allFieldSettings["entityViewFadeDurations"]!)
         self.entityGrabColors.encodeDynamically(to: setting.allFieldSettings["entityGrabColors"]!)
         self.tileDescriptions.encodeDynamically(to: setting.allFieldSettings["tileDescriptions"]!)
+        self.tileDamage.encodeDynamically(to: setting.allFieldSettings["tileDamage"]!)
+        self.knockback.encodeDynamically(to: setting.allFieldSettings["knockback"]!)
         self.entityData.encodeDynamically(to: setting.allFieldSettings["entityData"]!)
         self.entitySpawnRadius.encodeDynamically(to: setting.allFieldSettings["entitySpawnRadius"]!)
         self.defaultTileMetadatas.encodeDynamically(to: setting.allFieldSettings["defaultTileMetadatas"]!)

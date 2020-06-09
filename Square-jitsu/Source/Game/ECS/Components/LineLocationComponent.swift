@@ -5,8 +5,10 @@
 
 import SpriteKit
 
+/// The entity's shape is actually a line segment,
+/// so a point + radius (as in a regular location component) isn't good enough
 struct LineLocationComponent: SettingCodableByCodable, Codable {
-    var position: Line = Line.nan
+    var position: LineSegment = LineSegment.nan
     var thickness: CGFloat
 
     var startEndpointHit: LineCastHit? = nil

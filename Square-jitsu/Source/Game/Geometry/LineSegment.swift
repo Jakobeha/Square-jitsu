@@ -5,8 +5,8 @@
 
 import SpriteKit
 
-struct Line: Codable {
-    static let nan: Line = Line(start: CGPoint.nan, end: CGPoint.nan)
+struct LineSegment: Codable {
+    static let nan: LineSegment = LineSegment(start: CGPoint.nan, end: CGPoint.nan)
 
     let start: CGPoint
     let end: CGPoint
@@ -49,10 +49,14 @@ struct Line: Codable {
         }
     }
 
+    var direction: Angle {
+        offset.directionFromOrigin
+    }
+
     /// Multiplies the start and end points by the given factor,
     /// scaling the entire coordinate system
-    func scaleCoordsBy(scale: CGFloat) -> Line {
-        Line(start: start * scale, end: end * scale)
+    func scaleCoordsBy(scale: CGFloat) -> LineSegment {
+        LineSegment(start: start * scale, end: end * scale)
     }
 
     func tAt(x: CGFloat) -> CGFloat? {
@@ -110,7 +114,7 @@ struct Line: Codable {
         CGPoint.lerp(start: start, end: end, t: lerp)
     }
 
-    func getClosestFractionTo(otherLine: Line) -> CGFloat {
+    func getClosestFractionTo(otherLine: LineSegment) -> CGFloat {
         switch (slope, otherLine.slope) {
         case (.thisIsAPoint(this: _), _):
             return 0
@@ -119,7 +123,7 @@ struct Line: Codable {
         case (.moreHorizontal(yDivX: let m1), .moreHorizontal(yDivX: let m2)):
             // m1x - m1x01 + y01 = m2x - m2x02 + y02
             // x = (y02 - y01 + m1x01 - m2x02)/(m1 - m2)
-            // If m1 - m2 is small then the lines are almost parallel,
+            // If m1 - m2 is small then the line segments are almost parallel,
             // so precision doesn't matter anyways
             let y01 = start.y
             let y02 = otherLine.start.y
@@ -140,7 +144,7 @@ struct Line: Codable {
         case (.moreHorizontal(yDivX: let m1), .moreVertical(xDivY: let m2)):
             // y = m1(m2y - m2y02 + x02) - m1x01 + y01
             // y = (m1(x02 - x01 - m2y02) + y01)/(1 - m1m2)
-            // If m1m2 ~= 1 then the lines are almost parallel,
+            // If m1m2 ~= 1 then the line segments are almost parallel,
             // so precision doesn't matter anyways
             let y01 = start.y
             let x02 = otherLine.start.x
@@ -162,7 +166,7 @@ struct Line: Codable {
     }
 
     func getClosestFractionTo(point: CGPoint) -> CGFloat {
-        if (length < CGFloat.epsilon) {
+        if length < CGFloat.epsilon {
             return 0
         } else {
             let pointOffset = point - start
@@ -182,20 +186,25 @@ struct Line: Codable {
         return (closestPoint - point).magnitude
     }
 
-    func extendedBackwardsBy(magnitude: CGFloat) -> Line {
-        let backwardsOffset = offset.normalized * -magnitude
-        return Line(start: start + backwardsOffset, end: end)
+    /// The direction from the closest point on this line segment to the given point
+    func getDirectionTo(point: CGPoint) -> Angle {
+        let closestPoint = getClosestPointTo(point: point)
+        return closestPoint.getDirectionTo(point: point)
     }
 
+    func extendedBackwardsBy(magnitude: CGFloat) -> LineSegment {
+        let backwardsOffset = offset.normalized * -magnitude
+        return LineSegment(start: start + backwardsOffset, end: end)
+    }
 
-    /// Returns the tiles intersected by a point moving along this line,
-    /// ordered so that the first tiles are at the line's start and the last are at its end
-    func lineCastTilePositions() -> [WorldTilePos] {
+    /// Returns the tiles intersected by a point moving along this line segment,
+    /// ordered so that the first tiles are at the line segment's start and the last are at its end
+    func lineSegmentCastTilePositions() -> [WorldTilePos] {
         capsuleCastTilePositions(capsuleRadius: 0)
     }
 
-    /// Returns the tiles intersected by an object of radius moving along this line,
-    /// ordered so that the first tiles are at the line's start and the last are at its end
+    /// Returns the tiles intersected by an object of radius moving along this line segment,
+    /// ordered so that the first tiles are at the line segment's start and the last are at its end
     func capsuleCastTilePositions(capsuleRadius: CGFloat) -> [WorldTilePos] {
         let assumedCapsuleRadius = capsuleRadius + CGFloat.epsilon
         switch slope {
@@ -242,7 +251,7 @@ struct Line: Codable {
         }
     }
 
-    /// If an object traveling this line with the given radius intersects the given point, returns the fraction along this line.
+    /// If an object traveling this line segment with the given radius intersects the given point, returns the fraction along this line segment.
     /// Otherwise returns NaN
     func capsuleCastIntersection(capsuleRadius: CGFloat, point: CGPoint) -> CGFloat {
         let closestToPointFraction = getClosestFractionTo(point: point)
@@ -256,9 +265,9 @@ struct Line: Codable {
     }
 
 
-    /// If an object traveling this line with the given radius intersects the given line, returns the fraction along this line.
+    /// If an object traveling this line segment with the given radius intersects the given line segment, returns the fraction along this line segment.
     /// Otherwise returns NaN
-    func capsuleCastIntersection(capsuleRadius: CGFloat, otherLine: Line) -> CGFloat {
+    func capsuleCastIntersection(capsuleRadius: CGFloat, otherLine: LineSegment) -> CGFloat {
         let closestToLineFraction = getClosestFractionTo(otherLine: otherLine)
         let closestToLine = lerp(t: closestToLineFraction)
         let distanceFromLine = otherLine.getDistanceTo(point: closestToLine)

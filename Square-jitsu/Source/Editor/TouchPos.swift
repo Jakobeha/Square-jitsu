@@ -39,7 +39,7 @@ struct TouchPos {
         screenPos = _screenPos
         let containerBounds = CGRect(center: CGPoint.zero, size: container.size)
         distancesToScreenEdges = DenseEnumMap { side in
-            abs(containerBounds.getEdgeAt(side: side) - _screenPos.projectOnto(axis: side.axis))
+            abs(containerBounds.getEdgeAt(side: side) - _screenPos.projectedOnto(axis: side.axis))
         }
         worldScreenPos = camera.transform(position: screenPos)
         worldTilePos = WorldTilePos.closestTo(pos: worldScreenPos)

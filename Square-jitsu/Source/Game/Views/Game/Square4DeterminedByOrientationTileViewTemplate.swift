@@ -28,8 +28,7 @@ final class Square4DeterminedByOrientationTileViewTemplate: TileViewTemplate, Si
 
     /// - Parameters:
     ///   - base: Texture set with all textures
-    ///   - adjoiningTypes: Will always be considered adjoining sides
-    init(textureBase: TextureSet, adjoiningTypes: TileTypePred, semiAdjoiningTypes: TileTypePred) {
+    init(textureBase: TextureSet) {
         self.textureBase = textureBase
     }
 

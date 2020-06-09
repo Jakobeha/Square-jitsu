@@ -5,9 +5,23 @@
 
 import SpriteKit
 
-struct MovingComponent: SettingCodableByCodable, Codable {
+struct MovingComponent: SingleSettingCodable, Codable {
+    var dynamicKnockbackMultiplier: CGFloat
+
     var velocity: CGPoint = CGPoint.zero
     var angularVelocity: UnclampedAngle = Angle.zero.toUnclamped
 
-    enum CodingKeys: CodingKey {}
+    // region encoding and decoding
+    enum CodingKeys: String, CodingKey {
+        case dynamicKnockbackMultiplier
+    }
+
+    typealias AsSetting = StructSetting<MovingComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [
+            "dynamicKnockbackMultiplier": CGFloatRangeSetting(0...16)
+        ], optionalFields: [:])
+    }
+    // endregion
 }

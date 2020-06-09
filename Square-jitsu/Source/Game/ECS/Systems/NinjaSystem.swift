@@ -63,7 +63,7 @@ struct NinjaSystem: System {
     }
 
     var primaryAction: NinjaPrimaryAction {
-        assert(entity.prev.nijC != nil && entity.prev.ntlC != nil && entity.prev.phyC != nil)
+        assert(entity.prev.nijC != nil && entity.prev.ntlC != nil && entity.prev.colC != nil)
         if isNearOrOnSolid {
             return .jump
         } else if canThrow {
@@ -77,8 +77,8 @@ struct NinjaSystem: System {
 
     var isNearOrOnSolid: Bool {
         let nearTypes = entity.prev.ntlC!.nearTypes
-        let onTypes = entity.prev.phyC!.overlappingTypes
-        return (nearTypes.contains(layer: TileLayer.solid) && !onTypes.contains(layer: TileLayer.toxic)) || onTypes.contains(layer: TileLayer.solid)
+        let onTypes = entity.prev.colC!.overlappingTypes
+        return (nearTypes.contains(layer: .solid) && !onTypes.contains(layer: .toxicEdge)) || onTypes.contains(layer: .solid)
     }
 
     var canThrow: Bool {
@@ -91,6 +91,6 @@ struct NinjaSystem: System {
     }
 
     var overlappingBackgroundTypes: Set<TileType> {
-        entity.prev.phyC!.overlappingTypes[TileLayer.background]
+        entity.prev.colC!.overlappingTypes[TileLayer.background]
     }
 }

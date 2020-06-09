@@ -68,6 +68,12 @@ struct UnclampedAngle: Equatable, Hashable, Codable, LosslessStringConvertible {
         self.radians = radians
     }
 
+    /// If the absolute value is closer to 0°
+    func isAbsoluteSmallerThan(angle: UnclampedAngle) -> Bool {
+        abs(radians) < abs(angle.radians)
+    }
+
+    // region encoding and decoding
     init?(_ description: String) {
         if description.hasSuffix("°"),
            let degrees = Float(description[..<description.index(before: description.endIndex)]) {
@@ -93,4 +99,5 @@ struct UnclampedAngle: Equatable, Hashable, Codable, LosslessStringConvertible {
         var container = encoder.singleValueContainer()
         try container.encode(description)
     }
+    // endregion
 }

@@ -26,6 +26,7 @@ enum DecodeSettingError: Error, CustomStringConvertible {
     case notAnAngleInDegrees
     case badFormat(expectedDescription: String)
     case missingComponentDependencies(target: String, dependenciesCNF: [[String]])
+    case hasComponentConflicts(target: String, conflicts: [String])
     case noMetadataAtPos(pos3D: ChunkTilePos3D)
 
     /// Throws a `DecodeSettingError` if the length isn't expected
@@ -93,6 +94,8 @@ enum DecodeSettingError: Error, CustomStringConvertible {
             return "String isn't a valid \(expectedDescription)"
         case .missingComponentDependencies(let target, let dependenciesCNF):
             return "Component \(target) missing dependencies (in CNF): \(dependenciesCNF)"
+        case .hasComponentConflicts(let target, let conflicts):
+            return "Component \(target) can't be in an entity with any of these components: \(conflicts)"
         case .noMetadataAtPos(let pos3D):
             return "No metadata at \(pos3D)"
         }

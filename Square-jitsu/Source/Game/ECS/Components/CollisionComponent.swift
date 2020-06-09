@@ -5,16 +5,16 @@
 
 import SpriteKit
 
-/// An entity with this component which will react to tile collisions by sticking to the wall,
-/// and other physics entity collisions by pushing the other entity back
-struct PhysicsComponent: SettingCodableByCodable, Codable {
-    var mass: CGFloat
-
+/// An entity with this component gets more advanced (but slow to calculate)
+/// information about surrounding collisions
+struct CollisionComponent: SettingCodableByCodable, Codable {
     var adjacentSides: SideSet = []
     var adjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> = [:]
     var overlappingTypes: TileTypeSet = TileTypeSet()
-    var overlappingPositions: Set<WorldTilePos> = []
-    var overlappingEntities: Set<Entity> = []
+    /// Positions are in order they were collided
+    var overlappingPositions: [WorldTilePos] = []
+    /// Entities are in order they were collided
+    var overlappingEntities: [Entity] = []
 
     var hasAdjacents: Bool {
         adjacentSides != []
@@ -39,7 +39,5 @@ struct PhysicsComponent: SettingCodableByCodable, Codable {
         overlappingEntities.removeAll()
     }
 
-    enum CodingKeys: String, CodingKey {
-        case mass
-    }
+    enum CodingKeys: CodingKey {}
 }

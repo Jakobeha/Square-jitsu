@@ -14,7 +14,7 @@ struct OverlapSensitiveSystem: AbstractSensitiveSystem {
         self.entity = entity
     }
 
-    static func getSensitivePositions(components: Entity.Components) -> Set<WorldTilePos> {
-        components.phyC != nil ? components.phyC!.overlappingPositions : []
+    static func getSensitivePositions(components: Entity.Components) -> [WorldTilePos] {
+        components.colC?.overlappingPositions ?? []
     }
 }

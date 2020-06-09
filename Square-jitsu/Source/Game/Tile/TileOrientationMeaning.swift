@@ -6,10 +6,16 @@
 import Foundation
 
 /// How a tile's orientation affects a tile
-enum TileOrientationMeaning: Int, CaseIterable, Codable, LosslessStringConvertibleEnum {
+enum TileOrientationMeaning: Int, CaseIterable, Codable, LosslessStringConvertibleEnum, HasDefault {
     case unused
     case directionAdjacentToSolid
     case atSolidBorder
+
+    static let defaultValue: TileOrientationMeaning = .unused
+
+    var isDefault: Bool {
+        self == TileOrientationMeaning.defaultValue
+    }
 
     /// Whether part of a tile can be added to the same position even when another tile is present
     /// with a different orientation, because the orientations can unify

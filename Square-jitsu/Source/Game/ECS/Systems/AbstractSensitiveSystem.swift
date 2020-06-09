@@ -8,7 +8,7 @@ import SpriteKit
 protocol AbstractSensitiveSystem: System {
     static var sensitiveType: TileBigType { get }
 
-    static func getSensitivePositions(components: Entity.Components) -> Set<WorldTilePos>
+    static func getSensitivePositions(components: Entity.Components) -> [WorldTilePos]
 }
 
 fileprivate var AllPrevSensitivePositions: Set<WorldTilePos> = Set()

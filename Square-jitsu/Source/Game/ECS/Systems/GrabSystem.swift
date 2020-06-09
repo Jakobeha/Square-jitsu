@@ -44,7 +44,7 @@ struct GrabSystem: System {
     }
 
     private var newOverlappingEntities: Set<Entity> {
-        entity.next.phyC!.overlappingEntities.subtracting(entity.prev.phyC!.overlappingEntities)
+        Set(entity.next.colC!.overlappingEntities).subtracting(entity.prev.colC!.overlappingEntities)
     }
 
     private func updateGrabbableEntity() {
@@ -60,7 +60,7 @@ struct GrabSystem: System {
                 entity.next.graC!.grabState = .idle
             }
         case .thrown(thrower: _):
-            if entity.next.phyC?.overlappingTypes.containsSolid ?? false {
+            if entity.next.colC?.overlappingTypes.containsSolid ?? false {
                 // End throw
                 entity.next.graC!.grabState = .idle
             }

@@ -99,7 +99,9 @@ class Chunk: ReadonlyChunk, Codable {
         for layer in (0..<Chunk.numLayers).reversed() {
             let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
             let existingType = self[pos3D]
-            if (!TileBigType.typesCanOverlap(type.bigType, existingType.bigType)) {
+            if !TileType.typesCanOverlap(type, existingType) || TileType.typesWouldMerge(type, existingType) {
+                // If types would merge we would remove the existing type and replace it with type anyways
+                // (because it's probably the largest merge result)
                 removeTile(pos3D: pos3D)
             }
         }

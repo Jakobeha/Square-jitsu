@@ -13,7 +13,7 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
     case solid
     case iceSolid
 
-    case toxic
+    case toxicEdge
 
     case entity
 
@@ -28,8 +28,8 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
             return TileLayerSet.solid
         case .iceSolid:
             return TileLayerSet.iceSolid
-        case .toxic:
-            return TileLayerSet.toxic
+        case .toxicEdge:
+            return TileLayerSet.toxicEdge
         case .entity:
             return TileLayerSet.entity
         }
@@ -39,7 +39,7 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
         switch self {
         case .solid, .iceSolid:
             return true
-        case .air, .background, .toxic, .entity:
+        case .air, .background, .toxicEdge, .entity:
             return false
         }
     }
@@ -52,23 +52,23 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
             return false
         case (.background, .solid), (.solid, .background), (.background, .iceSolid), (.iceSolid, .background):
             return false
-        case (.background, .toxic), (.toxic, .background), (.background, .entity), (.entity, .background):
+        case (.background, .toxicEdge), (.toxicEdge, .background), (.background, .entity), (.entity, .background):
             return true
         case (.solid, .solid):
             return false
         case (.solid, .iceSolid), (.iceSolid, .solid), (.solid, .entity), (.entity, .solid):
             return false
-        case (.solid, .toxic), (.toxic, .solid):
+        case (.solid, .toxicEdge), (.toxicEdge, .solid):
             return true
         case (.iceSolid, .iceSolid):
             return false
         case (.iceSolid, .entity), (.entity, .iceSolid):
             return false
-        case (.iceSolid, .toxic), (.toxic, .iceSolid):
+        case (.iceSolid, .toxicEdge), (.toxicEdge, .iceSolid):
             return true
-        case (.toxic, .toxic):
-            return false
-        case (.toxic, .entity), (.entity, .toxic):
+        case (.toxicEdge, .toxicEdge):
+            return true
+        case (.toxicEdge, .entity), (.entity, .toxicEdge):
             return false
         case (.entity, .entity):
             return false

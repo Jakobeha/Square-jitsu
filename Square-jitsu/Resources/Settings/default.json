@@ -310,23 +310,26 @@
     "shuriken": ["Default"],
     "turret": ["Default", "Burst", "Laser", "Lava-Laser"]
   },
+  "tileDamage": {
+    "lava": [0.25]
+  },
+  "knockback": {
+    "lava": [4],
+    "projectile": [null, null, 4, 4]
+  },
   "entityData": {
     "player": [{
       "locC": {"radius": 0.5},
       "larC": {},
-      "dynC": {},
+      "dynC": {"dynamicKnockbackMultiplier": 0.25},
       "imfC": {
         "gravity": 0.25,
         "minSpeedOnIce": 2,
         "solidFriction": 0.015625,
         "aerialAngularFriction": 0.02083333333
       },
-      "phyC": {
-        "mass": 1
-      },
-      "ntlC": {
-        "nearRadiusExtra": 0.5
-      },
+      "matC": {"mass": 1},
+      "ntlC": {"nearRadiusExtra": 0.5},
       "griC": {
         "grabbableTypes": [
           "shuriken"
@@ -335,9 +338,7 @@
         "throwSpeed": 4.5,
         "throwAngularSpeed": "90°"
       },
-      "helC": {
-        "maxHealth": 1
-      },
+      "helC": {"maxHealth": 1},
       "nijC": {
         "jumpSpeed": 9,
         "jumpAngularSpeed": "180°"
@@ -345,51 +346,51 @@
     }],
     "enemy": [{
       "locC": {"radius": 0.5},
-      "dynC": {},
+      "dynC": {"dynamicKnockbackMultiplier": 0.25},
       "imfC": {
         "gravity": 0.25,
         "minSpeedOnIce": 2,
         "solidFriction": 0.015625,
         "aerialAngularFriction": 0.02083333333
       },
-      "phyC": {"mass": 1},
+      "matC": {"mass": 1},
       "helC": {"maxHealth": 1}
     }],
     "shuriken": [{
       "locC": {"radius": 0.5},
-      "dynC": {},
+      "dynC": {"dynamicKnockbackMultiplier": 0.5},
       "docC": {"destroyOnEntityCollision": false, "destroyOnSolidCollision": true},
-      "phyC": {"mass": 1},
+      "matC": {"mass": 1},
       "graC": {"thrownSpeedMultiplier": 2},
-      "toxC": {"damage": 0.25, "safeTypes": [], "onlyToxicIfThrown": true}
+      "toxC": {"damage": 0.25, "safeTypes": []}
     }],
     "projectile": [
       {
         "locC": {"radius": 0.0833},
-        "dynC": {},
+        "dynC": {"dynamicKnockbackMultiplier": 0.5},
         "docC": {"destroyOnEntityCollision": true, "destroyOnSolidCollision": true},
-        "toxC": {"damage": 0.125, "safeTypes": [], "onlyToxicIfThrown": false}
+        "toxC": {"damage": 0.125, "safeTypes": []}
       },
       {
         "locC": {"radius": 0.0833},
-        "dynC": {},
+        "dynC": {"dynamicKnockbackMultiplier": 0.5},
         "docC": {"destroyOnEntityCollision": true, "destroyOnSolidCollision": true},
-        "toxC": {"damage": 0.125, "safeTypes": [], "onlyToxicIfThrown": false}
+        "toxC": {"damage": 0.125, "safeTypes": []}
       },
       {
         "lilC": {"thickness": 0.0625},
-        "toxC": {"damage": 0.5, "safeTypes": [], "onlyToxicIfThrown": false}
+        "toxC": {"damage": 0.5, "safeTypes": []}
       },
       {
         "lilC": {"thickness": 0.0625},
         "cocC": {"createdTileType": "lava"},
-        "toxC": {"damage": 0.5, "safeTypes": [], "onlyToxicIfThrown": false}
+        "toxC": {"damage": 0.5, "safeTypes": []}
       }
     ],
     "turret": [
       {
         "locC": {"radius": 0.5},
-        "dynC": {},
+        "dynC": {"dynamicKnockbackMultiplier": 0},
         "turC": {
           "rotationPattern": {
             "type": "rotateAtSpeed",
@@ -408,7 +409,7 @@
       },
       {
         "locC": {"radius": 0.5},
-        "dynC": {},
+        "dynC": {"dynamicKnockbackMultiplier": 0},
         "turC": {
           "rotationPattern": {
             "type": "rotateAtSpeed",
@@ -429,7 +430,7 @@
       },
       {
         "locC": {"radius": 0.5},
-        "dynC": {},
+        "dynC": {"dynamicKnockbackMultiplier": 0},
         "turC": {
           "rotationPattern": {
             "type": "rotateAtSpeed",
@@ -444,7 +445,7 @@
       },
       {
         "locC": {"radius": 0.5},
-        "dynC": {},
+        "dynC": {"dynamicKnockbackMultiplier": 0},
         "turC": {
           "rotationPattern": {
             "type": "rotateAtSpeed",

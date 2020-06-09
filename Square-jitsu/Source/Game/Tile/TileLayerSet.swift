@@ -13,7 +13,7 @@ struct TileLayerSet: OptionSet {
     static let solid: TileLayerSet = TileLayerSet(rawValue: 1 << 2)
     static let iceSolid: TileLayerSet = TileLayerSet(rawValue: 1 << 3)
 
-    static let toxic: TileLayerSet = TileLayerSet(rawValue: 1 << 4)
+    static let toxicEdge: TileLayerSet = TileLayerSet(rawValue: 1 << 4)
 
     static let entity: TileLayerSet = TileLayerSet(rawValue: 1 << 5)
 

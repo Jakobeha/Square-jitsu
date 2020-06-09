@@ -74,9 +74,6 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
 
     var toUnclamped: UnclampedAngle { UnclampedAngle(radians: radians) }
 
-    /// Flips the angle if it's between -180° and 0°
-    var absolute: Angle { Angle(radians: abs(radians)) }
-
     var positiveRadians: Float {
         radians < 0 ? (Float.pi * 2) + radians : radians
     }
@@ -91,6 +88,10 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
     /// Sine
     var yOnUnitCircle: CGFloat {
         CGFloat(sin(radians))
+    }
+
+    var pointOnUnitCircle: CGPoint {
+        CGPoint(x: xOnUnitCircle, y: yOnUnitCircle)
     }
 
     init(_ unclamped: UnclampedAngle) {
@@ -113,6 +114,19 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
         Angle(radians: roundf(radians / unit.radians) * unit.radians)
     }
 
+    /// If the absolute value is closer to 0°
+    func isAbsoluteSmallerThan(angle: Angle) -> Bool {
+        abs(radians) < abs(angle.radians)
+    }
+
+    /// If the absolute value is closer to 0°.
+    /// This means that if the other angle's absolute is more than 180°
+    /// this method will always return true
+    func isAbsoluteSmallerThan(angle: UnclampedAngle) -> Bool {
+        abs(radians) < abs(angle.radians)
+    }
+
+    // region encoding and decoding
     init?(_ description: String) {
         if let unclamped = UnclampedAngle(description) {
             self.init(unclamped)
@@ -137,4 +151,5 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
         var container = encoder.singleValueContainer()
         try container.encode(description)
     }
+    // endregion
 }

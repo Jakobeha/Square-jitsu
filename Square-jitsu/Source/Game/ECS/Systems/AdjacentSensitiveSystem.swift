@@ -14,7 +14,7 @@ struct AdjacentSensitiveSystem: AbstractSensitiveSystem {
         self.entity = entity
     }
 
-    static func getSensitivePositions(components: Entity.Components) -> Set<WorldTilePos> {
-        components.phyC != nil ? Set(components.phyC!.adjacentPositions.allElements) : []
+    static func getSensitivePositions(components: Entity.Components) -> [WorldTilePos] {
+        components.colC?.adjacentPositions.allElements ?? []
     }
 }

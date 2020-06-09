@@ -38,6 +38,15 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
     static let zPositionUpperBound: CGFloat = CGFloat(TileLayer.allCases.count) + 1
     static let fadingZPositionOffset: CGFloat = 0.5 / CGFloat(TileBigType.allCases.count)
 
+    static func typesCanOverlap(_ lhs: TileType, _ rhs: TileType) -> Bool {
+        TileLayer.layersCanOverlap(lhs.bigType.layer, rhs.bigType.layer) &&
+        lhs.withDefaultOrientation != rhs.withDefaultOrientation
+    }
+
+    static func typesWouldMerge(_ lhs: TileType, _ rhs: TileType) -> Bool {
+        lhs.withDefaultOrientation == rhs.withDefaultOrientation
+    }
+
     var bigType: TileBigType
     var smallType: TileSmallType
     var orientation: TileOrientation
@@ -61,6 +70,11 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
         self.orientation = orientation
     }
 
+    func existsAt(side: Side, orientationMeaning: TileOrientationMeaning) -> Bool {
+        orientation.existsAt(side: side, meaning: orientationMeaning)
+    }
+
+    // region encoding and decoding
     init?(_ description: String) {
         let components = description.split(separator: "/")
         if components.count < 1 {
@@ -118,4 +132,5 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
         var container = encoder.singleValueContainer()
         try container.encode(description)
     }
+    // endregion
 }

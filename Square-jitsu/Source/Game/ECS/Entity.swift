@@ -14,10 +14,11 @@ class Entity: EqualityIsIdentity {
         var larC: LoadAroundComponent?
         var dynC: MovingComponent?
         var imfC: ImplicitForcesComponent?
+        var colC: CollisionComponent?
+        var ntlC: NearTileComponent?
         var docC: DestroyOnCollideComponent?
         var cocC: CreateOnCollideComponent?
-        var phyC: PhysicsComponent?
-        var ntlC: NearTileComponent?
+        var matC: MatterComponent?
         var griC: GrabbingComponent?
         var graC: GrabbableComponent?
         var helC: HealthComponent?
@@ -30,12 +31,13 @@ class Entity: EqualityIsIdentity {
                 "locC": CodableStructSetting<LocationComponent>(),
                 "lilC": CodableStructSetting<LineLocationComponent>(),
                 "larC": CodableStructSetting<LoadAroundComponent>(),
-                "dynC": CodableStructSetting<MovingComponent>(),
+                "dynC": MovingComponent.newSetting(),
+                "colC": CodableStructSetting<CollisionComponent>(),
+                "ntlC": CodableStructSetting<NearTileComponent>(),
                 "imfC": CodableStructSetting<ImplicitForcesComponent>(),
                 "docC": CodableStructSetting<DestroyOnCollideComponent>(),
                 "cocC": CodableStructSetting<CreateOnCollideComponent>(),
-                "phyC": CodableStructSetting<PhysicsComponent>(),
-                "ntlC": CodableStructSetting<NearTileComponent>(),
+                "matC": MatterComponent.newSetting(),
                 "griC": CodableStructSetting<GrabbingComponent>(),
                 "graC": CodableStructSetting<GrabbableComponent>(),
                 "helC": CodableStructSetting<HealthComponent>(),
@@ -48,26 +50,32 @@ class Entity: EqualityIsIdentity {
             }
         }
 
+        /// First item in value tuple contains dependencies (must have in order to have key),
+        /// second item contains conflicts (can't have in order to have key).
         /// CNF = Conjunctive normal form ('and' of 'or's; if the key dependency is contained,
         /// at least one element from each sub-array of the value dependency must also be contained)
-        private static let componentDependenciesCNF: [String:[[String]]] = [
-            "larC": [["locC"]],
-            "dynC": [["locC"]],
-            "imfC": [["dynC"], ["locC"]],
-            "docC": [["dynC"], ["locC"]],
-            "cocC": [["lilC", "phyC"]],
-            "phyC": [["dynC"], ["locC"]],
-            "ntlC": [["phyC"], ["dynC"], ["locC"]],
-            "griC": [["phyC"], ["dynC"], ["locC"]],
-            "graC": [["dynC"], ["locC"]],
-            "turC": [["dynC"], ["locC"]],
-            "nijC": [["helC"], ["ntlC"], ["phyC"], ["dynC"], ["locC"]]
+        private static let componentDependenciesAndConflictsCNF: [String:([[String]], [String])] = [
+            "lilC": ([], ["locC"]),
+            "larC": ([["locC"]], []),
+            "dynC": ([["locC"]], []),
+            "colC": ([["locC", "lilC"]], []),
+            "ntlC": ([["locC"]], []),
+            "imfC": ([["dynC"], ["locC"]], []),
+            "docC": ([["dynC"], ["locC"]], []),
+            "cocC": ([["phyC"]], []),
+            "matC": ([["dynC"], ["locC"]], []),
+            "ntlC": ([["phyC"], ["dynC"], ["locC"]], []),
+            "griC": ([["phyC"], ["dynC"], ["locC"]], []),
+            "graC": ([["dynC"], ["locC"]], []),
+            "turC": ([["dynC"], ["locC"]], []),
+            "nijC": ([["helC"], ["ntlC"], ["phyC"], ["dynC"], ["locC"]], [])
         ]
 
         func validate() throws {
             let myComponents = myComponentsAsStrings
-            for (target, dependencies) in Components.componentDependenciesCNF {
-                try Components.validateDependenciesOfComponent(myComponents: myComponents, target: target, dependenciesCNF: dependencies)
+            for (target, (dependencies, conflicts)) in Components.componentDependenciesAndConflictsCNF {
+                try Components.validateComponentDependencies(myComponents: myComponents, target: target, dependenciesCNF: dependencies)
+                try Components.validateComponentConflicts(myComponents: myComponents, target: target, conflicts: conflicts)
             }
         }
 
@@ -79,11 +87,17 @@ class Entity: EqualityIsIdentity {
             return Set(myComponentNames)
         }
         
-        private static func validateDependenciesOfComponent(myComponents: Set<String>, target: String, dependenciesCNF: [[String]]) throws {
+        private static func validateComponentDependencies(myComponents: Set<String>, target: String, dependenciesCNF: [[String]]) throws {
             if myComponents.contains(target) && !dependenciesCNF.allSatisfy({ orDependencies in
                 myComponents.contains(anyOf: orDependencies)
             }) {
                 throw DecodeSettingError.missingComponentDependencies(target: target, dependenciesCNF: dependenciesCNF)
+            }
+        }
+
+        private static func validateComponentConflicts(myComponents: Set<String>, target: String, conflicts: [String]) throws {
+            if myComponents.contains(target) && myComponents.contains(anyOf: conflicts) {
+                throw DecodeSettingError.hasComponentConflicts(target: target, conflicts: conflicts)
             }
         }
     }
@@ -92,7 +106,7 @@ class Entity: EqualityIsIdentity {
         new(type: type, pos: pos.pos.cgPoint, world: world)
     }
 
-    @discardableResult static func new(type: TileType, pos: Line, world: World) -> Entity {
+    @discardableResult static func new(type: TileType, pos: LineSegment, world: World) -> Entity {
         var components = world.settings.entityData[type]!
         components.lilC!.position = pos
         let entity = Entity(type: type, components: components)

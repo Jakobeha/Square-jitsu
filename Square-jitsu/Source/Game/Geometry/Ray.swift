@@ -16,7 +16,7 @@ struct Ray {
     }
 
     /// The line from the ray's start going in its direction with the given distance
-    func cutoffAt(distance: CGFloat) -> Line {
-        Line(start: start, end: positionAt(distance: distance))
+    func cutoffAt(distance: CGFloat) -> LineSegment {
+        LineSegment(start: start, end: positionAt(distance: distance))
     }
 }

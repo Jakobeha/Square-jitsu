@@ -6,14 +6,14 @@
 import SpriteKit
 
 struct LineCastHit {
-    private let line: Line
+    private let line: LineSegment
     let pos3D: WorldTilePos3D
     let tileType: TileType
 
     let hitPoint: CGPoint
     let hitSide: Side
 
-    init(line: Line, pos3D: WorldTilePos3D, tileType: TileType) {
+    init(line: LineSegment, pos3D: WorldTilePos3D, tileType: TileType) {
         self.line = line
         self.pos3D = pos3D
         self.tileType = tileType
@@ -21,7 +21,7 @@ struct LineCastHit {
         (hitPoint, hitSide) = LineCastHit.calculateHitPointAndSide(line: line, pos3D: pos3D)
     }
 
-    private static func calculateHitPointAndSide(line: Line, pos3D: WorldTilePos3D) -> (hitPoint: CGPoint, hitSide: Side) {
+    private static func calculateHitPointAndSide(line: LineSegment, pos3D: WorldTilePos3D) -> (hitPoint: CGPoint, hitSide: Side) {
         // Similar to in CollisionSystem we calculate which side we hit
         // except this time we don't worry about adjacents or close calls
         let xWouldHitEastSide = line.end.x > line.start.x

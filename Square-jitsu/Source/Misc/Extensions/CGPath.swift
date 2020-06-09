@@ -10,7 +10,7 @@ extension CGPath {
         CGPath(ellipseIn: CGRect(center: CGPoint.zero, size: CGSize.square(sideLength: radius * 2)), transform: nil)
     }
 
-    static func of(line: Line) -> CGPath {
+    static func of(line: LineSegment) -> CGPath {
         let path = CGMutablePath()
         path.move(to: line.start)
         path.addLine(to: line.end)

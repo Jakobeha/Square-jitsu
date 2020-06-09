@@ -43,7 +43,7 @@ struct TurretSystem: System {
     }
 
     private func isEntityVisibleToTurret(otherEntity: Entity) -> Bool {
-        let lineFromTurretToEntity = Line(start: entity.next.locC!.position, end: otherEntity.next.locC!.position)
+        let lineFromTurretToEntity = LineSegment(start: entity.next.locC!.position, end: otherEntity.next.locC!.position)
         if lineFromTurretToEntity.length > TurretComponent.turretVisibilityRadius {
             return false
         }
@@ -71,7 +71,7 @@ struct TurretSystem: System {
                 let currentDirection = entity.next.locC!.rotation
                 let directionOffset = directionToOtherEntity - currentDirection
                 let deltaRotation = speed * world.settings.fixedDeltaTime
-                return directionOffset.absolute.toUnclamped < deltaRotation
+                return directionOffset.isAbsoluteSmallerThan(angle: deltaRotation)
             } else {
                 return false
             }
@@ -89,7 +89,7 @@ struct TurretSystem: System {
                 let currentDirection = entity.prev.locC!.rotation
                 let directionOffset = directionToTarget - currentDirection
                 let deltaRotation = speed * world.settings.fixedDeltaTime
-                if directionOffset.absolute.toUnclamped < deltaRotation {
+                if directionOffset.isAbsoluteSmallerThan(angle: deltaRotation) {
                     // Will rotate to target instantly
                     entity.next.locC!.rotation = directionToTarget
                 } else if directionOffset.isCounterClockwise {
@@ -257,7 +257,7 @@ struct TurretSystem: System {
             if let projectileEndHit = projectileEndHit {
                 projectile.next.lilC!.endEndpointHit = projectileEndHit
                 let projectileEndPosition = projectileEndHit.hitPoint
-                projectile.next.lilC!.position = Line(start: projectileRay.start, end: projectileEndPosition)
+                projectile.next.lilC!.position = LineSegment(start: projectileRay.start, end: projectileEndPosition)
             } else {
                 projectile.next.lilC!.position = projectileRay.cutoffAt(distance: TurretComponent.maxLaserDistance)
             }

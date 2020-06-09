@@ -19,7 +19,7 @@ struct LaserEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
     }
 
     func generatePreviewNode(size: CGSize) -> SKNode {
-        let previewLine = Line(start: CGPoint(x: size.width / 2, y: 0), end: CGPoint(x: size.width / 2, y: size.height))
+        let previewLine = LineSegment(start: CGPoint(x: size.width / 2, y: 0), end: CGPoint(x: size.width / 2, y: size.height))
 
         let node = SKShapeNode(path: CGPath.of(line: previewLine))
         configure(node: node, tileWidthHeight: size.minValue)

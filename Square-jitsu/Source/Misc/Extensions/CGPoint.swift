@@ -131,7 +131,11 @@ extension CGPoint {
         CGSize(width: x, height: y)
     }
 
-    func projectOnto(axis: Axis) -> CGFloat {
+    func getDirectionTo(point: CGPoint) -> Angle {
+        (point - self).directionFromOrigin
+    }
+
+    func projectedOnto(axis: Axis) -> CGFloat {
         switch axis {
         case .horizontal:
             return x
@@ -140,7 +144,19 @@ extension CGPoint {
         }
     }
 
+    func projectedOnto(angle: Angle) -> CGFloat {
+        CGPoint.dot(self, angle.pointOnUnitCircle)
+    }
+
+    func projectedPointOnto(angle: Angle) -> CGPoint {
+        CGPoint(magnitude: projectedOnto(angle: angle), directionFromOrigin: angle)
+    }
+
     func rotateAroundCenter(by rotation: Angle) -> CGPoint {
+        rotateAroundCenter(by: rotation.toUnclamped)
+    }
+
+    func rotateAroundCenter(by rotation: UnclampedAngle) -> CGPoint {
         CGPoint(magnitude: magnitude, directionFromOrigin: directionFromOrigin + rotation)
     }
 }

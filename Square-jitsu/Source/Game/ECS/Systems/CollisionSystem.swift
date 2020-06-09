@@ -27,75 +27,66 @@ struct CollisionSystem: System {
     }
 
     private func resetCollisions() {
-        if entity.next.phyC != nil {
-            entity.next.phyC!.reset()
+        if entity.next.colC != nil {
+            entity.next.colC!.reset()
         }
+    }
+
+    private var handlesTileCollisions: Bool {
+        ((entity.prev.docC != nil && entity.prev.docC!.destroyOnSolidCollision) || entity.prev.colC != nil) &&
+                !(entity.next.graC?.grabState.isGrabbed ?? false)
+    }
+
+    private var handlesEntityCollisions: Bool {
+        ((entity.prev.docC != nil && entity.prev.docC!.destroyOnEntityCollision) || entity.prev.colC != nil) &&
+                !(entity.next.graC?.grabState.isGrabbed ?? false)
     }
 
     private mutating func handleTileCollisions() {
         assert(handlesTileCollisions)
+        if entity.prev.locC != nil {
+            handleTileCollisionsWithLocation()
+        } else if entity.prev.lilC != nil {
+            handleTileCollisionsWithLineLocation()
+        } else {
+            fatalError("illegal state - no location or line location component")
+        }
+    }
+
+    private mutating func handleEntityCollisions() {
+        assert(handlesEntityCollisions)
+        if entity.prev.locC != nil {
+            handleEntityCollisionsWithLocation()
+        } else if entity.prev.lilC != nil {
+            handleEntityCollisionsWithLineLocation()
+        } else {
+            fatalError("illegal state - no location or line location component")
+        }
+    }
+
+    // region location component collision detection
+    private mutating func handleTileCollisionsWithLocation() {
         for tilePosition in trajectoryNextFrame.capsuleCastTilePositions(capsuleRadius: entity.prev.locC!.radius) {
             let tileTypes = world[tilePosition]
             for tileType in tileTypes {
                 handleCollisionWith(tileType: tileType, tilePosition: tilePosition)
-                if (entityBlockedFromFurtherCollisions) {
+                if entityBlockedFromFurtherCollisions {
                     return // blocked by other collisions
                 }
             }
         }
     }
 
-    private mutating func handleEntityCollisions() {
-        assert(handlesEntityCollisions)
-        let entityCollisions = world.entities.compactMap { otherEntity in
-            if entity == otherEntity {
-                // Entity can't collide with itself
-                return nil
-            } else if otherEntity.next.locC != nil {
-                let radiusForIntersection = entity.next.locC!.radius + otherEntity.next.locC!.radius
-                let fractionUntilCollision = trajectoryNextFrame.capsuleCastIntersection(capsuleRadius: radiusForIntersection, point: otherEntity.next.locC!.position)
-                if fractionUntilCollision.isNaN {
-                    // There was no collision (NaN)
-                    return nil
-                } else {
-                    return (fractionUntilCollision, otherEntity)
-                }
-            } else if otherEntity.next.lilC != nil {
-                let radiusForIntersection = entity.next.locC!.radius + otherEntity.next.lilC!.thickness
-                let fractionUntilCollision = trajectoryNextFrame.capsuleCastIntersection(capsuleRadius: radiusForIntersection, otherLine: otherEntity.next.lilC!.position)
-                if fractionUntilCollision.isNaN {
-                    // There was no collision (NaN)
-                    return nil
-                } else {
-                    return (fractionUntilCollision, otherEntity)
-                }
-            } else {
-                // No position = can't collide
-                return nil
-            }
-        }.sorted { ($0 as (CGFloat, Entity)).0 < $1.0 }
-        for (fractionUntilCollision, otherEntity) in entityCollisions {
-            if shouldCollideWith(entity: otherEntity) {
-                handleCollisionWith(entity: otherEntity, fractionOnTrajectory: fractionUntilCollision)
-            }
-        }
-    }
-
-    private var handlesTileCollisions: Bool {
-        ((entity.prev.docC != nil && entity.prev.docC!.destroyOnSolidCollision) || entity.prev.phyC != nil) &&
-        !(entity.prev.graC?.grabState.isGrabbed ?? false)
-    }
-
-    private var handlesEntityCollisions: Bool {
-        ((entity.prev.docC != nil && entity.prev.docC!.destroyOnEntityCollision) || entity.prev.phyC != nil) &&
-        !(entity.prev.graC?.grabState.isGrabbed ?? false)
+    private mutating func handleEntityCollisionsWithLocation() {
+        handleEntityCollisionsWith(trajectory: trajectoryNextFrame, radiusOrThickness: entity.next.locC!.radius)
     }
 
     private mutating func handleCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
         // Insert into overlapping types
-        if entity.prev.phyC != nil {
-            entity.next.phyC!.overlappingTypes.insert(tileType)
-            entity.next.phyC!.overlappingPositions.insert(tilePosition)
+        if entity.prev.colC != nil {
+            assert(!entity.next.colC!.overlappingPositions.contains(tilePosition))
+            entity.next.colC!.overlappingTypes.insert(tileType)
+            entity.next.colC!.overlappingPositions.append(tilePosition)
         }
 
         // Handle if solid
@@ -117,7 +108,7 @@ struct CollisionSystem: System {
             world.remove(entity: entity)
             entity.next.docC!.isRemoved = true
         }
-        if entity.prev.phyC != nil {
+        if entity.prev.colC != nil {
             // Determine what sides we hit from
             let xIsLeft = trajectoryNextFrame.start.x < trajectoryNextFrame.end.x
             let yIsBottom = trajectoryNextFrame.start.y < trajectoryNextFrame.end.y
@@ -130,28 +121,8 @@ struct CollisionSystem: System {
             if calculateIfTileIsCorner(tilePosition: tilePosition, radiusSum: radiusSum) {
                 // Not a solid collision, prevent the other cases
             } else if let parallelSide = calculateIfMovingExactlyParallelAlongSideOf(tilePosition: tilePosition, radiusSum: radiusSum) {
-                // Fix entity position and velocity if it's slightly clipped or moving into tile
-                switch parallelSide {
-                case .east:
-                    //entity.next.locC!.position.x = min(entity.next.locC!.position.x, outwardsX)
-                    entity.next.dynC!.velocity.x = min(entity.next.dynC!.velocity.x, 0)
-                case .north:
-                    //entity.next.locC!.position.y = min(entity.next.locC!.position.y, outwardsY)
-                    entity.next.dynC!.velocity.y = min(entity.next.dynC!.velocity.y, 0)
-                case .west:
-                    //entity.next.locC!.position.x = max(entity.next.locC!.position.x, outwardsX)
-                    entity.next.dynC!.velocity.x = max(entity.next.dynC!.velocity.x, 0)
-                case .south:
-                    //entity.next.locC!.position.y = max(entity.next.locC!.position.y, outwardsY)
-                    entity.next.dynC!.velocity.y = max(entity.next.dynC!.velocity.y, 0)
-                }
-
-                // Fix rotation
-                entity.next.locC!.rotation = entity.next.locC!.rotation.round(by: Angle.right)
-
-                // Add collision to state
-                entity.next.phyC!.adjacentSides.insert(parallelSide.toSet)
-                entity.next.phyC!.adjacentPositions.append(key: parallelSide, tilePosition)
+                entity.next.colC!.adjacentSides.insert(parallelSide.toSet)
+                entity.next.colC!.adjacentPositions.append(key: parallelSide, tilePosition)
             } else if let hitAxis = calculateCollidedAxis(
                     trajectoryNextFrame: trajectoryNextFrame,
                     xIsLeft: xIsLeft,
@@ -162,37 +133,19 @@ struct CollisionSystem: System {
             ) {
                 // Necessary so we don't override velocity - technically we collide this frame but we won't the next
                 var side: Side! = nil
-                var isLeaving = false
                 switch hitAxis {
                 case .horizontal:
                     // We hit from the x axis
                     // Add side, move out of solid, cancel velocity
                     side = xIsLeft ? Side.east : Side.west
-                    entity.next.phyC!.adjacentSides.insert(side.toSet)
-                    entity.next.locC!.position.x = xBarrier
-                    isLeaving = xIsLeft ? entity.next.dynC!.velocity.x < -CGFloat.epsilon : entity.next.dynC!.velocity.x > CGFloat.epsilon
-                    if !isLeaving {
-                        entity.next.dynC!.velocity.x = 0
-                    }
+                    entity.next.colC!.adjacentSides.insert(side.toSet)
                 case .vertical:
                     // We hit from the y axis
                     // Add side, move out of solid, cancel velocity
                     side = yIsBottom ? Side.north : Side.south
-                    entity.next.phyC!.adjacentSides.insert(side.toSet)
-                    entity.next.locC!.position.y = yBarrier
-                    isLeaving = yIsBottom ? entity.next.dynC!.velocity.y < -CGFloat.epsilon : entity.next.dynC!.velocity.y > CGFloat.epsilon
-                    if !isLeaving {
-                        entity.next.dynC!.velocity.y = 0
-                    }
+                    entity.next.colC!.adjacentSides.insert(side.toSet)
                 }
-                entity.next.phyC!.adjacentPositions.append(key: side, tilePosition)
-                // Rotate out, cancel angular velocity
-                // (even if we didn't actually collide, we should've collided with something else,
-                //  so this will happen anyways)
-                entity.next.locC!.rotation = entity.next.locC!.rotation.round(by: Angle.right)
-                if !isLeaving {
-                    entity.next.dynC!.angularVelocity = Angle.zero.toUnclamped
-                }
+                entity.next.colC!.adjacentPositions.append(key: side, tilePosition)
             }
         }
     }
@@ -252,7 +205,7 @@ struct CollisionSystem: System {
         return nil
     }
 
-    private func calculateCollidedAxis(trajectoryNextFrame: Line, xIsLeft: Bool, yIsBottom: Bool, xBarrier: CGFloat, yBarrier: CGFloat, tilePosition: WorldTilePos) -> Axis? {
+    private func calculateCollidedAxis(trajectoryNextFrame: LineSegment, xIsLeft: Bool, yIsBottom: Bool, xBarrier: CGFloat, yBarrier: CGFloat, tilePosition: WorldTilePos) -> Axis? {
         let timeToXBarrier = trajectoryNextFrame.tAt(x: xBarrier)
         let timeToYBarrier = trajectoryNextFrame.tAt(y: yBarrier)
         let neverHitXBarrier = timeToXBarrier == nil
@@ -263,7 +216,7 @@ struct CollisionSystem: System {
         let adjacentYPosition = tilePosition + ySide.offset
         let adjacentXIsBlocked = world[adjacentXPosition].contains { type in type.isSolid }
         let adjacentYIsBlocked = world[adjacentYPosition].contains { type in type.isSolid }
-        let adjacentSides = entity.next.phyC!.adjacentSides
+        let adjacentSides = entity.next.colC!.adjacentSides
         let collidedWithXEarlierInTrajectory = adjacentSides.contains(xSide.toSet)
         let collidedWithYEarlierInTrajectory = adjacentSides.contains(ySide.toSet)
         let xIsImpossible = collidedWithXEarlierInTrajectory || adjacentXIsBlocked || neverHitXBarrier
@@ -287,18 +240,6 @@ struct CollisionSystem: System {
         entity.prev.graC?.grabState.grabbedOrThrownBy != otherEntity
     }
 
-    private func handleCollisionWith(entity otherEntity: Entity, fractionOnTrajectory: CGFloat) {
-        if destroyOnEntityCollisionWith(otherEntity: otherEntity) {
-            world.remove(entity: entity)
-            entity.next.docC!.isRemoved = true
-        }
-        if entity.prev.phyC != nil {
-            entity.next.phyC!.overlappingEntities.insert(otherEntity)
-            // TODO: set otherEntity velocity to lerp between it and this,
-            // and this velocity to lerp between this and other (they will have different velocities)
-        }
-    }
-
     private func destroyOnEntityCollisionWith(otherEntity: Entity) -> Bool {
         entity.prev.docC != nil &&
         entity.prev.docC!.destroyOnEntityCollision &&
@@ -306,9 +247,97 @@ struct CollisionSystem: System {
     }
 
     // Has to be lazy otherwise we would throw on entities without a location component
-    private lazy var trajectoryNextFrame: Line =
+    private lazy var trajectoryNextFrame: LineSegment =
         entity.prev.locC!.position.isNaN ?
-        Line(start: entity.next.locC!.position, end: entity.next.locC!.position) :
-        Line(start: entity.prev.locC!.position, end: entity.next.locC!.position)
+        LineSegment(start: entity.next.locC!.position, end: entity.next.locC!.position) :
+        LineSegment(start: entity.prev.locC!.position, end: entity.next.locC!.position)
+    // endregion
 
+    // region line location component collision detection
+
+    // Currently we only use the next line location,
+    // instead of a trajectory from prev to next,
+    // because the latter is too complicated and unnecessary.
+
+    private mutating func handleTileCollisionsWithLineLocation() {
+        entity.next.colC!.overlappingPositions = lineLocationOverlappingPositions
+        entity.next.colC!.adjacentPositions = lineLocationAdjacentPositions
+        entity.next.colC!.adjacentSides = getLineLocationAdjacentSides()
+    }
+    
+    var lineLocationOverlappingPositions: [WorldTilePos] {
+        entity.next.lilC!.position.capsuleCastTilePositions(capsuleRadius: entity.next.lilC!.thickness)
+    }
+
+    lazy var lineLocationAdjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> = DenseEnumMap { side in
+        var adjacentPositionsForSide: Set<WorldTilePos> = []
+        if let startEndpointHit = entity.next.lilC!.startEndpointHit,
+           startEndpointHit.hitSide == side {
+            adjacentPositionsForSide.insert(startEndpointHit.pos3D.pos)
+        }
+        if let endEndpointHit = entity.next.lilC!.endEndpointHit,
+           endEndpointHit.hitSide == side {
+            adjacentPositionsForSide.insert(endEndpointHit.pos3D.pos)
+        }
+        return adjacentPositionsForSide
+    }
+
+    mutating func getLineLocationAdjacentSides() -> SideSet {
+        SideSet(lineLocationAdjacentPositions.mapValues {
+            positions in !positions.isEmpty
+        })
+    }
+
+
+    private mutating func handleEntityCollisionsWithLineLocation() {
+        handleEntityCollisionsWith(trajectory: entity.next.lilC!.position, radiusOrThickness: entity.next.lilC!.thickness)
+    }
+    // endregion
+
+    // region entity collision detection shared between location and line location components
+    private mutating func handleEntityCollisionsWith(trajectory: LineSegment, radiusOrThickness: CGFloat) {
+        let entityCollisions = world.entities.compactMap { otherEntity in
+            if entity == otherEntity {
+                // Entity can't collide with itself
+                return nil
+            } else if otherEntity.next.locC != nil {
+                let radiusForIntersection = radiusOrThickness + otherEntity.next.locC!.radius
+                let fractionUntilCollision = trajectory.capsuleCastIntersection(capsuleRadius: radiusForIntersection, point: otherEntity.next.locC!.position)
+                if fractionUntilCollision.isNaN {
+                    // There was no collision (NaN)
+                    return nil
+                } else {
+                    return (fractionUntilCollision, otherEntity)
+                }
+            } else if otherEntity.next.lilC != nil {
+                let radiusForIntersection = radiusOrThickness + otherEntity.next.lilC!.thickness
+                let fractionUntilCollision = trajectory.capsuleCastIntersection(capsuleRadius: radiusForIntersection, otherLine: otherEntity.next.lilC!.position)
+                if fractionUntilCollision.isNaN {
+                    // There was no collision (NaN)
+                    return nil
+                } else {
+                    return (fractionUntilCollision, otherEntity)
+                }
+            } else {
+                // No position = can't collide
+                return nil
+            }
+        }.sorted { ($0 as (CGFloat, Entity)).0 < $1.0 }
+        for (fractionUntilCollision, otherEntity) in entityCollisions {
+            if shouldCollideWith(entity: otherEntity) {
+                handleCollisionWith(entity: otherEntity, fractionOnTrajectory: fractionUntilCollision)
+            }
+        }
+    }
+
+    private func handleCollisionWith(entity otherEntity: Entity, fractionOnTrajectory: CGFloat) {
+        if destroyOnEntityCollisionWith(otherEntity: otherEntity) {
+            world.remove(entity: entity)
+            entity.next.docC!.isRemoved = true
+        }
+        if entity.prev.colC != nil {
+            entity.next.colC!.overlappingEntities.append(otherEntity)
+        }
+    }
+    // endregion
 }

@@ -40,7 +40,7 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         case .ice:
             return .iceSolid
         case .lava:
-            return .toxic
+            return .toxicEdge
         case .player, .enemy, .shuriken, .projectile, .turret:
             return .entity
         }
@@ -82,11 +82,7 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         }
     }
     // endregion
-
-    static func typesCanOverlap(_ lhs: TileBigType, _ rhs: TileBigType) -> Bool {
-        TileLayer.layersCanOverlap(lhs.layer, rhs.layer)
-    }
-
+    
     var zPosition: CGFloat {
         layer.zPosition + (CGFloat(rawValue) / CGFloat(TileBigType.allCases.count))
     }

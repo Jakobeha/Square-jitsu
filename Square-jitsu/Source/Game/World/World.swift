@@ -445,13 +445,17 @@ class World: ReadonlyWorld {
         // Must be after CollisionSystem
         NearCollisionSystem.tick(world: self)
         // Must be after CollisionSystem
+        GrabSystem.tick(world: self)
+        // Must be after CollisionSystem and GrabSystem
+        MatterSystem.tick(world: self)
+        // Must be after CollisionSystem and GrabSystem
         OverlapSensitiveSystem.tick(world: self)
-        // Must be after CollisionSystem
+        // Must be after CollisionSystem and GrabSystem
         AdjacentSensitiveSystem.tick(world: self)
+        // Must be after CollisionSystem and GrabSystem
+        CreateOnCollideSystem.tick(world: self)
         // Must be after CollisionSystem
         TurretSystem.tick(world: self)
-        // Must be after CollisionSystem
-        GrabSystem.tick(world: self)
         // Must be after CollisionSystem
         DamageSystem.tick(world: self)
         // Must be last

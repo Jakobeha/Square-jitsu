@@ -34,8 +34,7 @@ struct CreateOnCollideSystem: System {
 
     private func canCreateTileAt(side: Side, pos: WorldTilePos) -> Bool {
         !world[pos].contains { tileType in
-            tileType.bigType.layer == entity.next.cocC!.createdTileType.bigType.layer &&
-            !(tileType.withNullOrientation == entity.next.cocC!.createdTileType.withNullOrientation && doesOrientationSupportUnion(orientation: tileType.orientation))
+            TileType.typesCanOverlap(tileType, entity.next.cocC!.createdTileType)
         }
     }
 
@@ -45,27 +44,9 @@ struct CreateOnCollideSystem: System {
         world.forceCreateTile(pos: pos, type: tileType)
     }
 
-    private func doesOrientationSupportUnion(orientation: TileOrientation) -> Bool {
-        (world.settings.tileOrientationMeanings[entity.next.cocC!.createdTileType] ?? .unused).doesSupportUnion
-    }
-
     private var newAdjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> {
         DenseEnumMap { side in
-            nextAdjacentPositions[side].subtracting(prevAdjacentPositions[side])
+            entity.next.colC!.adjacentPositions[side].subtracting(entity.prev.colC!.adjacentPositions[side])
         }
-    }
-
-    private var nextAdjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> {
-        CreateOnCollideSystem.getAdjacentPositionsFor(components: entity.next)
-    }
-
-    private var prevAdjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> {
-        CreateOnCollideSystem.getAdjacentPositionsFor(components: entity.prev)
-    }
-
-    private static func getAdjacentPositionsFor(components: Entity.Components) -> DenseEnumMap<Side, Set<WorldTilePos>> {
-        components.phyC?.adjacentPositions ??
-        components.lilC?.adjacentPositions ??
-        fatalError("illegal state - create-on-collide component missing dependencies").toValueViaAbsurd()
     }
 }

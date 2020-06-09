@@ -129,8 +129,8 @@ extension ReadonlyStatelessWorld {
         castToSolid(line: ray.cutoffAt(distance: maxDistance), hitPredicate: hitPredicate)
     }
 
-    func castToSolid(line: Line, hitPredicate: (TileType) -> Bool) -> LineCastHit? {
-        for pos in line.lineCastTilePositions() {
+    func castToSolid(line: LineSegment, hitPredicate: (TileType) -> Bool) -> LineCastHit? {
+        for pos in line.lineSegmentCastTilePositions() {
             for layer in 0..<Chunk.numLayers {
                 let pos3D = WorldTilePos3D(pos: pos, layer: layer)
                 let tileType = self[pos3D]
