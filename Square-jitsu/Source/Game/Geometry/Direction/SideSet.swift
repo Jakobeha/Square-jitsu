@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct SideSet: OptionSet, Equatable, Hashable, CaseIterable {
+struct SideSet: MonoidOptionSet, Equatable, Hashable, CaseIterable {
     static let east: SideSet = SideSet(rawValue: 1 << 0)
     static let north: SideSet = SideSet(rawValue: 1 << 1)
     static let west: SideSet = SideSet(rawValue: 1 << 2)

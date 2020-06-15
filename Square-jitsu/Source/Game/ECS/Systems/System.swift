@@ -11,27 +11,8 @@ protocol System {
     var entity: Entity { get }
 
     init(entity: Entity)
-
-    static func preTick(world: World)
-
-    static func postTick(world: World)
-
-    mutating func tick()
 }
 
 extension System {
-    static func tick(world: World) {
-        preTick(world: world)
-        for entity in world.entities {
-            tick(entity: entity)
-        }
-        postTick(world: world)
-    }
-
-    static func tick(entity: Entity) {
-        var system = Self(entity: entity)
-        system.tick()
-    }
-
     var world: World { entity.world! }
 }

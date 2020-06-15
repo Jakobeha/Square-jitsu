@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct NearCollisionSystem: System {
+struct NearCollisionSystem: TopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {

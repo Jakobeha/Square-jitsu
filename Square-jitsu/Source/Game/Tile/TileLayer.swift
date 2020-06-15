@@ -35,6 +35,15 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
         }
     }
 
+    var doTilesOccupySides: Bool {
+        switch self {
+        case .toxicEdge:
+            return true
+        case .air, .background, .solid, .iceSolid, .entity:
+            return false
+        }
+    }
+
     var isSolid: Bool {
         switch self {
         case .solid, .iceSolid:
@@ -67,7 +76,7 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
         case (.iceSolid, .toxicEdge), (.toxicEdge, .iceSolid):
             return true
         case (.toxicEdge, .toxicEdge):
-            return true
+            return false
         case (.toxicEdge, .entity), (.entity, .toxicEdge):
             return false
         case (.entity, .entity):

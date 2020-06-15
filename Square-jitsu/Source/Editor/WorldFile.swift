@@ -7,7 +7,7 @@ import Foundation
 
 /// API for reading and writing a world to a file. `SerialWorld` is the implementation.
 /// Currently mostly a wrapper for SerialWorld but in the future it might support not having to read the entire file
-class WorldFile: ReadonlyStatelessWorld, CustomStringConvertible {
+class WorldFile: WritableStatelessWorld, CustomStringConvertible {
     private static let localFileDirectory: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     private static let fileExtension: String = "squarejitsulevel"
 
@@ -107,7 +107,9 @@ class WorldFile: ReadonlyStatelessWorld, CustomStringConvertible {
     func forceCreateTile(pos: WorldTilePos, type: TileType) {
         assert(type.bigType != TileBigType.player, "can't create or move player")
         mutateChunkAt(pos: pos.worldChunkPos) { chunk in
-            let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type)
+            guard let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type) else {
+                return
+            }
 
             // Notify behavior to set metadata
             let pos3D = WorldTilePos3D(pos: pos, layer: layer)

@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct CreateOnCollideSystem: System {
+struct CreateOnCollideSystem: TopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {
@@ -27,21 +27,9 @@ struct CreateOnCollideSystem: System {
     }
 
     private func createTileIfNecessaryAt(side: Side, pos: WorldTilePos) {
-        if canCreateTileAt(side: side, pos: pos) {
-            createTileAt(side: side, pos: pos)
-        }
-    }
-
-    private func canCreateTileAt(side: Side, pos: WorldTilePos) -> Bool {
-        !world[pos].contains { tileType in
-            TileType.typesCanOverlap(tileType, entity.next.cocC!.createdTileType)
-        }
-    }
-
-    private func createTileAt(side: Side, pos: WorldTilePos) {
-        var tileType: TileType = world[pos].first { tileType in tileType.bigType == entity.next.cocC!.createdTileType.bigType } ?? entity.next.cocC!.createdTileType
+        var tileType: TileType = entity.next.cocC!.createdTileType
         tileType.orientation.asSideSet.insert(side.toSet)
-        world.forceCreateTile(pos: pos, type: tileType)
+        world.tryCreateTilePersistent(pos: pos, type: tileType)
     }
 
     private var newAdjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> {

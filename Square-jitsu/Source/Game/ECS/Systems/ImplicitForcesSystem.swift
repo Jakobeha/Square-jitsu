@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct ImplicitForcesSystem: System {
+struct ImplicitForcesSystem: TopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {

@@ -251,7 +251,8 @@ struct LineSegment: Codable {
         }
     }
 
-    /// If an object traveling this line segment with the given radius intersects the given point, returns the fraction along this line segment.
+    /// If an object traveling this line segment with the given radius intersects the given point,
+    /// returns the fraction along this line segment.
     /// Otherwise returns NaN
     func capsuleCastIntersection(capsuleRadius: CGFloat, point: CGPoint) -> CGFloat {
         let closestToPointFraction = getClosestFractionTo(point: point)
@@ -265,16 +266,30 @@ struct LineSegment: Codable {
     }
 
 
-    /// If an object traveling this line segment with the given radius intersects the given line segment, returns the fraction along this line segment.
-    /// Otherwise returns NaN
-    func capsuleCastIntersection(capsuleRadius: CGFloat, otherLine: LineSegment) -> CGFloat {
+    /// If an object traveling this line segment with the given radius intersects the given line segment,
+    /// returns the fraction along this line segment and other line segment that they intersect.
+    /// Otherwise returns nil.
+    ///
+    /// This is equivalent to checking if capsule A intersects capsule B,
+    /// where capsule A is formed by this line and a,
+    /// capsule B is formed by the other line and b,
+    /// and a + b == the given capsule radius.
+    ///
+    /// The return value is symmetric, so that
+    /// `self.capsuleCastIntersection(capsuleRadius: capsuleRadius, otherLine: otherLine) ==
+    /// otherLine.capsuleCastIntersection(capsuleRadius: capsuleRadius, otherLine: self)?.swap()`
+    /// (where `.swap()` swaps the first and second elements of the tuple)
+    func capsuleCastIntersection(capsuleRadius: CGFloat, otherLine: LineSegment) -> (closestToLineFraction: CGFloat, otherClosestToLineFraction: CGFloat)? {
         let closestToLineFraction = getClosestFractionTo(otherLine: otherLine)
+        let otherClosestToLineFraction = otherLine.getClosestFractionTo(otherLine: self)
         let closestToLine = lerp(t: closestToLineFraction)
+        let otherClosestToLine = otherLine.lerp(t: otherClosestToLineFraction)
         let distanceFromLine = otherLine.getDistanceTo(point: closestToLine)
-        if distanceFromLine > capsuleRadius {
-            return CGFloat.nan
+        let otherDistanceFromLine = getDistanceTo(point: otherClosestToLine)
+        if distanceFromLine > capsuleRadius && otherDistanceFromLine > capsuleRadius {
+            return nil
         } else {
-            return closestToLineFraction
+            return (closestToLineFraction, otherClosestToLineFraction)
         }
     }
 }

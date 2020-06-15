@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct TurretSystem: System {
+struct TurretSystem: TopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {
@@ -268,5 +268,8 @@ struct TurretSystem: System {
         if let projectileSpeed = entity.next.turC!.howToFire.projectileSpeed {
             projectile.next.dynC!.velocity = CGPoint(magnitude: projectileSpeed, directionFromOrigin: projectileDirection)
         }
+
+        // Set prev to next
+        projectile.tick()
     }
 }

@@ -39,12 +39,8 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
     static let fadingZPositionOffset: CGFloat = 0.5 / CGFloat(TileBigType.allCases.count)
 
     static func typesCanOverlap(_ lhs: TileType, _ rhs: TileType) -> Bool {
-        TileLayer.layersCanOverlap(lhs.bigType.layer, rhs.bigType.layer) &&
-        lhs.withDefaultOrientation != rhs.withDefaultOrientation
-    }
-
-    static func typesWouldMerge(_ lhs: TileType, _ rhs: TileType) -> Bool {
-        lhs.withDefaultOrientation == rhs.withDefaultOrientation
+        TileLayer.layersCanOverlap(lhs.bigType.layer, rhs.bigType.layer) ||
+        lhs.occupiedSides.isDisjoint(with: rhs.occupiedSides)
     }
 
     var bigType: TileBigType
@@ -55,6 +51,16 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
 
     /// - Note: If you change this, also change TileTypeSet.containsSolid
     var isSolid: Bool { bigType.layer == TileLayer.solid || bigType.layer == TileLayer.iceSolid }
+
+    var occupiedSides: SideSet {
+        bigType.layer.doTilesOccupySides ? orientation.asSideSet : SideSet.all
+    }
+
+    /// Whether the tile would be visible or have any effect if placed in game.
+    /// If not, it won't actually be placed
+    var isMeaninglessInGame: Bool {
+        occupiedSides.isEmpty
+    }
 
     var withDefaultOrientation: TileType {
         get { TileType(bigType: bigType, smallType: smallType) }
@@ -70,8 +76,16 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
         self.orientation = orientation
     }
 
-    func existsAt(side: Side, orientationMeaning: TileOrientationMeaning) -> Bool {
-        orientation.existsAt(side: side, meaning: orientationMeaning)
+    /// If this tile occupies sides based on its orientation,
+    /// will combine the orientations treating them as side sets.
+    /// Otherwise will replace this type's orientation with the given orientation
+    func mergedOrReplaced(orientation: TileOrientation) -> TileType {
+        let mergedOrientation = bigType.layer.doTilesOccupySides ?
+            TileOrientation(sideSet: self.orientation.asSideSet.union(orientation.asSideSet)) :
+            orientation
+        var result = self
+        result.orientation = mergedOrientation
+        return result
     }
 
     // region encoding and decoding

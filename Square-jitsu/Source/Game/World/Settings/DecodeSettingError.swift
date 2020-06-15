@@ -91,7 +91,7 @@ enum DecodeSettingError: Error, CustomStringConvertible {
         case .notAnAngleInDegrees:
             return "Not an angle (must be of the form ###°)"
         case .badFormat(let expectedDescription):
-            return "String isn't a valid \(expectedDescription)"
+            return "The string isn't a valid \(expectedDescription)"
         case .missingComponentDependencies(let target, let dependenciesCNF):
             return "Component \(target) missing dependencies (in CNF): \(dependenciesCNF)"
         case .hasComponentConflicts(let target, let conflicts):

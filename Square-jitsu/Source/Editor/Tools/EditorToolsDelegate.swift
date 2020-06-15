@@ -10,5 +10,6 @@ protocol EditorToolsDelegate: AnyObject {
     func performRemoveAction(selectedPositions: Set<WorldTilePos3D>)
     func performMoveAction(selectedPositions: Set<WorldTilePos3D>, distanceMoved: RelativePos, isCopy: Bool)
     func connectTilesToSide(tiles: [TileAtPosition], side: Side)
-    func setInitialTurretDirections(to initialTurretDirection: Angle, positions: Set<WorldTilePos3D>)
+    func disconnectTilesToSide(tiles: [TileAtPosition], side: Side)
+    func setInitialTurretDirections(to initialTurretDirectionsAndPositions: Zip2Sequence<[Angle], [WorldTilePos3D]>)
 }

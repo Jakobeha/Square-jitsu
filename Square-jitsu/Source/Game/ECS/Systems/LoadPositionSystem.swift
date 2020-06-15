@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct LoadPositionSystem: System {
+struct LoadPositionSystem: TopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {

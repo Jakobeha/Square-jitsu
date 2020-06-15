@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct GrabSystem: System {
+struct GrabSystem: TopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {

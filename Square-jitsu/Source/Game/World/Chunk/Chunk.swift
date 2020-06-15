@@ -7,7 +7,7 @@ import SpriteKit
 
 class Chunk: ReadonlyChunk, Codable {
     static let widthHeight: Int = 32
-    static let numLayers: Int = 4
+    static let numLayers: Int = 8
 
     static let cgSize: CGSize = CGSize.square(sideLength: CGFloat(widthHeight))
     static let extraDistanceFromEntityToUnload: CGFloat = CGFloat(widthHeight) / 2
@@ -62,14 +62,52 @@ class Chunk: ReadonlyChunk, Codable {
         tileBehaviors[pos3D]?.untypedMetadata
     }
 
-    /// Places the tile, removing any non-overlapping tiles
-    /// - Returns: The layer of the tile which was placed
+    /// Places the tile if there are no overlapping tiles
+    /// - Returns: The layer of the tile if it was placed, otherwise nil
     /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
     ///   places the tile, while "place" may mean it was loaded
-    @discardableResult func forcePlaceTile(pos: ChunkTilePos, type: TileType) -> Int {
-        removeNonOverlappingTiles(pos: pos, type: type)
-        assert(tiles.hasFreeLayerAt(pos: pos), "there are no overlapping tiles but no free layer, this isn't allowed - num layers should be increased")
-        return placeTile(pos: pos, type: type)
+    @discardableResult func tryPlaceTile(pos: ChunkTilePos, type: TileType) -> Int? {
+        if type.isMeaninglessInGame {
+            return nil
+        } else {
+            if let layer = getLayerWithSameNotOrientedType(pos: pos, type: type.withDefaultOrientation) {
+                if type.bigType.layer.doTilesOccupySides {
+                    let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
+                    self[pos3D].orientation.asSideSet.formUnion(type.orientation.asSideSet)
+                    return layer
+                } else {
+                    return nil
+                }
+            } else {
+                if !hasOverlappingTiles(pos: pos, type: type) {
+                    assert(tiles.hasFreeLayerAt(pos: pos), "there are no overlapping tiles but no free layer, this isn't allowed - num layers should be increased")
+                    return placeTile(pos: pos, type: type)
+                } else {
+                    return nil
+                }
+            }
+        }
+    }
+
+    /// Places the tile, removing any non-overlapping tiles. The tile still won't be placed if it's meaningless
+    /// (e.g. a tile which functions based on its orientation, but has none)
+    /// - Returns: The layer of the tile if it was placed, otherwise nil
+    /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
+    ///   places the tile, while "place" may mean it was loaded
+    @discardableResult func forcePlaceTile(pos: ChunkTilePos, type: TileType) -> Int? {
+        if type.isMeaninglessInGame {
+            return nil
+        } else {
+            if let layer = getLayerWithSameNotOrientedType(pos: pos, type: type.withDefaultOrientation) {
+                let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
+                self[pos3D] = self[pos3D].mergedOrReplaced(orientation: type.orientation)
+                return layer
+            } else {
+                removeNonOverlappingTiles(pos: pos, type: type)
+                assert(tiles.hasFreeLayerAt(pos: pos), "there are no overlapping tiles but no free layer, this isn't allowed - num layers should be increased")
+                return placeTile(pos: pos, type: type)
+            }
+        }
     }
 
     /// - Note: "destroy" is distinguished from "remove" are different in that "destroy" means e.g. the user explicitly
@@ -99,9 +137,7 @@ class Chunk: ReadonlyChunk, Codable {
         for layer in (0..<Chunk.numLayers).reversed() {
             let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
             let existingType = self[pos3D]
-            if !TileType.typesCanOverlap(type, existingType) || TileType.typesWouldMerge(type, existingType) {
-                // If types would merge we would remove the existing type and replace it with type anyways
-                // (because it's probably the largest merge result)
+            if !TileType.typesCanOverlap(type, existingType) {
                 removeTile(pos3D: pos3D)
             }
         }
@@ -120,6 +156,18 @@ class Chunk: ReadonlyChunk, Codable {
         _didChangeTile.publish((pos3D: pos3D, oldType: tileType))
     }
 
+    private func hasOverlappingTiles(pos: ChunkTilePos, type: TileType) -> Bool {
+        // We go backwards because removing earlier tiles moves later ones down
+        for layer in (0..<Chunk.numLayers).reversed() {
+            let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
+            let existingType = self[pos3D]
+            if !TileType.typesCanOverlap(type, existingType) {
+                return true
+            }
+        }
+        return false
+    }
+
     /// - Returns: The layer of the tile which was placed
     @discardableResult private func placeTile(pos: ChunkTilePos, type: TileType) -> Int {
         // Place tile and add metadata
@@ -133,6 +181,11 @@ class Chunk: ReadonlyChunk, Codable {
         _didChangeTile.publish((pos3D: pos3D, oldType: TileType.air))
 
         return layer
+    }
+
+    private func getLayerWithSameNotOrientedType(pos: ChunkTilePos, type: TileType) -> Int? {
+        assert(type.withDefaultOrientation == type)
+        return self[pos].firstIndex { otherType in otherType.withDefaultOrientation == type }
     }
     // endregion
 

@@ -16,6 +16,11 @@ struct CollisionComponent: SettingCodableByCodable, Codable {
     /// Entities are in order they were collided
     var overlappingEntities: [Entity] = []
 
+    /// Used to help make collisions between entities consistent
+    /// relative to their indices in the world.
+    /// e.g. makes them symmetric so if A collides with B, B should collide with A
+    var earlyOverlappingEntities: [(fractionUntilCollision: CGFloat, entity: Entity)] = []
+
     var hasAdjacents: Bool {
         adjacentSides != []
     }
@@ -31,12 +36,16 @@ struct CollisionComponent: SettingCodableByCodable, Codable {
         return axes
     }
 
-    mutating func reset() {
+    mutating func preReset() {
         adjacentSides = []
         adjacentPositions = [:]
         overlappingTypes.removeAll()
         overlappingPositions.removeAll()
         overlappingEntities.removeAll()
+    }
+
+    mutating func postReset() {
+        earlyOverlappingEntities.removeAll()
     }
 
     enum CodingKeys: CodingKey {}

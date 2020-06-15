@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-protocol AbstractSensitiveSystem: System {
+protocol AbstractSensitiveSystem: TopLevelSystem {
     static var sensitiveType: TileBigType { get }
 
     static func getSensitivePositions(components: Entity.Components) -> [WorldTilePos]

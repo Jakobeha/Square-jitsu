@@ -5,11 +5,17 @@
 
 import SpriteKit
 
-struct CollisionSystem: System {
+struct CollisionSystem: TopLevelSystem {
     let entity: Entity
+
+    var subCollisionSystems: [SubCollisionSystem]
 
     init(entity: Entity) {
         self.entity = entity
+
+        subCollisionSystems = SubCollisionSystems.map { subCollisionSystemClass in
+            subCollisionSystemClass.init(entity: entity)
+        }
     }
 
     static func preTick(world: World) {}
@@ -17,19 +23,22 @@ struct CollisionSystem: System {
     static func postTick(world: World) {}
 
     mutating func tick() {
-        resetCollisions()
+        preResetCollisions()
         if handlesTileCollisions {
             handleTileCollisions()
         }
         if handlesEntityCollisions {
             handleEntityCollisions()
         }
+        postResetCollisions()
     }
 
-    private func resetCollisions() {
-        if entity.next.colC != nil {
-            entity.next.colC!.reset()
-        }
+    private func preResetCollisions() {
+        entity.next.colC?.preReset()
+    }
+
+    private func postResetCollisions() {
+        entity.next.colC?.postReset()
     }
 
     private var handlesTileCollisions: Bool {
@@ -53,23 +62,14 @@ struct CollisionSystem: System {
         }
     }
 
-    private mutating func handleEntityCollisions() {
-        assert(handlesEntityCollisions)
-        if entity.prev.locC != nil {
-            handleEntityCollisionsWithLocation()
-        } else if entity.prev.lilC != nil {
-            handleEntityCollisionsWithLineLocation()
-        } else {
-            fatalError("illegal state - no location or line location component")
-        }
-    }
-
     // region location component collision detection
     private mutating func handleTileCollisionsWithLocation() {
         for tilePosition in trajectoryNextFrame.capsuleCastTilePositions(capsuleRadius: entity.prev.locC!.radius) {
             let tileTypes = world[tilePosition]
+            var isFirstAtPosition = true
             for tileType in tileTypes {
-                handleCollisionWith(tileType: tileType, tilePosition: tilePosition)
+                handleCollisionWith(tileType: tileType, tilePosition: tilePosition, isFirstAtPosition: isFirstAtPosition)
+                isFirstAtPosition = false
                 if entityBlockedFromFurtherCollisions {
                     return // blocked by other collisions
                 }
@@ -77,16 +77,19 @@ struct CollisionSystem: System {
         }
     }
 
-    private mutating func handleEntityCollisionsWithLocation() {
-        handleEntityCollisionsWith(trajectory: trajectoryNextFrame, radiusOrThickness: entity.next.locC!.radius)
-    }
-
-    private mutating func handleCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
+    private mutating func handleCollisionWith(tileType: TileType, tilePosition: WorldTilePos, isFirstAtPosition: Bool) {
         // Insert into overlapping types
         if entity.prev.colC != nil {
-            assert(!entity.next.colC!.overlappingPositions.contains(tilePosition))
             entity.next.colC!.overlappingTypes.insert(tileType)
-            entity.next.colC!.overlappingPositions.append(tilePosition)
+            if isFirstAtPosition {
+                assert(!entity.next.colC!.overlappingPositions.contains(tilePosition))
+                entity.next.colC!.overlappingPositions.append(tilePosition)
+            }
+        }
+
+        // Handle sub-systems
+        for index in subCollisionSystems.indices {
+            subCollisionSystems[index].handleOverlappingCollisionWith(tileType: tileType, tilePosition: tilePosition)
         }
 
         // Handle if solid
@@ -123,6 +126,11 @@ struct CollisionSystem: System {
             } else if let parallelSide = calculateIfMovingExactlyParallelAlongSideOf(tilePosition: tilePosition, radiusSum: radiusSum) {
                 entity.next.colC!.adjacentSides.insert(parallelSide.toSet)
                 entity.next.colC!.adjacentPositions.append(key: parallelSide, tilePosition)
+
+                // Handle sub-systems
+                for index in subCollisionSystems.indices {
+                    subCollisionSystems[index].handleSolidCollisionWith(tileType: tileType, tilePosition: tilePosition, side: parallelSide)
+                }
             } else if let hitAxis = calculateCollidedAxis(
                     trajectoryNextFrame: trajectoryNextFrame,
                     xIsLeft: xIsLeft,
@@ -146,6 +154,11 @@ struct CollisionSystem: System {
                     entity.next.colC!.adjacentSides.insert(side.toSet)
                 }
                 entity.next.colC!.adjacentPositions.append(key: side, tilePosition)
+
+                // Handle sub-systems
+                for index in subCollisionSystems.indices {
+                    subCollisionSystems[index].handleSolidCollisionWith(tileType: tileType, tilePosition: tilePosition, side: side)
+                }
             }
         }
     }
@@ -236,8 +249,12 @@ struct CollisionSystem: System {
         }
     }
 
-    private func shouldCollideWith(entity otherEntity: Entity) -> Bool {
-        entity.prev.graC?.grabState.grabbedOrThrownBy != otherEntity
+    private static func entitiesShouldCollide(_ lhs: Entity, _ rhs: Entity) -> Bool {
+        entitiesShouldCollide1Way(lhs, rhs) && entitiesShouldCollide1Way(rhs, lhs)
+    }
+
+    private static func entitiesShouldCollide1Way(_ lhs: Entity, _ rhs: Entity) -> Bool {
+        lhs.prev.graC?.grabState.grabbedOrThrownBy != rhs
     }
 
     private func destroyOnEntityCollisionWith(otherEntity: Entity) -> Bool {
@@ -245,12 +262,6 @@ struct CollisionSystem: System {
         entity.prev.docC!.destroyOnEntityCollision &&
         !(entity.next.toxC?.safeEntities.contains(EntityRef(otherEntity)) ?? false)
     }
-
-    // Has to be lazy otherwise we would throw on entities without a location component
-    private lazy var trajectoryNextFrame: LineSegment =
-        entity.prev.locC!.position.isNaN ?
-        LineSegment(start: entity.next.locC!.position, end: entity.next.locC!.position) :
-        LineSegment(start: entity.prev.locC!.position, end: entity.next.locC!.position)
     // endregion
 
     // region line location component collision detection
@@ -260,16 +271,16 @@ struct CollisionSystem: System {
     // because the latter is too complicated and unnecessary.
 
     private mutating func handleTileCollisionsWithLineLocation() {
-        entity.next.colC!.overlappingPositions = lineLocationOverlappingPositions
+        entity.next.colC!.overlappingPositions = getLineLocationOverlappingPositions()
         entity.next.colC!.adjacentPositions = lineLocationAdjacentPositions
         entity.next.colC!.adjacentSides = getLineLocationAdjacentSides()
     }
     
-    var lineLocationOverlappingPositions: [WorldTilePos] {
-        entity.next.lilC!.position.capsuleCastTilePositions(capsuleRadius: entity.next.lilC!.thickness)
+    private mutating func getLineLocationOverlappingPositions() -> [WorldTilePos] {
+        trajectoryNextFrame.capsuleCastTilePositions(capsuleRadius: entity.next.lilC!.thickness)
     }
 
-    lazy var lineLocationAdjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> = DenseEnumMap { side in
+    private lazy var lineLocationAdjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> = DenseEnumMap { side in
         var adjacentPositionsForSide: Set<WorldTilePos> = []
         if let startEndpointHit = entity.next.lilC!.startEndpointHit,
            startEndpointHit.hitSide == side {
@@ -282,61 +293,98 @@ struct CollisionSystem: System {
         return adjacentPositionsForSide
     }
 
-    mutating func getLineLocationAdjacentSides() -> SideSet {
+    private mutating func getLineLocationAdjacentSides() -> SideSet {
         SideSet(lineLocationAdjacentPositions.mapValues {
             positions in !positions.isEmpty
         })
     }
-
-
-    private mutating func handleEntityCollisionsWithLineLocation() {
-        handleEntityCollisionsWith(trajectory: entity.next.lilC!.position, radiusOrThickness: entity.next.lilC!.thickness)
-    }
     // endregion
 
     // region entity collision detection shared between location and line location components
-    private mutating func handleEntityCollisionsWith(trajectory: LineSegment, radiusOrThickness: CGFloat) {
+    private mutating func handleEntityCollisions() {
         let entityCollisions = world.entities.compactMap { otherEntity in
-            if entity == otherEntity {
-                // Entity can't collide with itself
+            if entity == otherEntity || !CollisionSystem.entitiesShouldCollide(entity, otherEntity) {
+                // Entity can't collide with itself, or entities shouldn't collide
                 return nil
-            } else if otherEntity.next.locC != nil {
-                let radiusForIntersection = radiusOrThickness + otherEntity.next.locC!.radius
-                let fractionUntilCollision = trajectory.capsuleCastIntersection(capsuleRadius: radiusForIntersection, point: otherEntity.next.locC!.position)
-                if fractionUntilCollision.isNaN {
-                    // There was no collision (NaN)
-                    return nil
-                } else {
+            } else if otherEntity.worldIndex < entity.worldIndex,
+                      let fractionUntilCollision = entity.next.colC!.earlyOverlappingEntities.first(where: { (fractionUntilCollision, earlyOverlappingEntity) in
+                otherEntity == earlyOverlappingEntity
+            }).map({ (fractionUntilCollision, earlyOverlappingEntity) in
+                fractionUntilCollision
+            }) {
+                // The other entity collided and is giving us our fraction
+                // (this ensures that if A collides with B, B collides with A)
+                return (fractionUntilCollision, otherEntity)
+            } else if CollisionSystem.doesEntityHaveLocation(entity: otherEntity) {
+                let otherEntityTrajectory = CollisionSystem.getTrajectoryOf(entity: otherEntity)
+                let radiusForIntersection = radiusOrThickness + CollisionSystem.getRadiusOrThicknessOf(entity: otherEntity)
+                if let (fractionUntilCollision, otherEntityFractionUntilCollision) = trajectoryNextFrame.capsuleCastIntersection(capsuleRadius: radiusForIntersection, otherLine: otherEntityTrajectory) {
+                    otherEntity.next.colC?.earlyOverlappingEntities.append((otherEntityFractionUntilCollision, entity))
                     return (fractionUntilCollision, otherEntity)
-                }
-            } else if otherEntity.next.lilC != nil {
-                let radiusForIntersection = radiusOrThickness + otherEntity.next.lilC!.thickness
-                let fractionUntilCollision = trajectory.capsuleCastIntersection(capsuleRadius: radiusForIntersection, otherLine: otherEntity.next.lilC!.position)
-                if fractionUntilCollision.isNaN {
-                    // There was no collision (NaN)
-                    return nil
                 } else {
-                    return (fractionUntilCollision, otherEntity)
+                    // There was no collision
+                    return nil
                 }
             } else {
-                // No position = can't collide
+                // Can't collide (no position)
                 return nil
             }
         }.sorted { ($0 as (CGFloat, Entity)).0 < $1.0 }
+        
+        // Handle collisions on this entity's trajectory
         for (fractionUntilCollision, otherEntity) in entityCollisions {
-            if shouldCollideWith(entity: otherEntity) {
-                handleCollisionWith(entity: otherEntity, fractionOnTrajectory: fractionUntilCollision)
-            }
+            handleCollisionWith(entity: otherEntity, fractionOnTrajectory: fractionUntilCollision)
         }
     }
 
-    private func handleCollisionWith(entity otherEntity: Entity, fractionOnTrajectory: CGFloat) {
+    private mutating func handleCollisionWith(entity otherEntity: Entity, fractionOnTrajectory: CGFloat) {
+        // Destroy if necessary
         if destroyOnEntityCollisionWith(otherEntity: otherEntity) {
             world.remove(entity: entity)
             entity.next.docC!.isRemoved = true
         }
+
+        // Insert into overlapping entities
         if entity.prev.colC != nil {
             entity.next.colC!.overlappingEntities.append(otherEntity)
+        }
+
+        // Handle sub-systems
+        for index in subCollisionSystems.indices {
+            subCollisionSystems[index].handleCollisionWith(entity: otherEntity)
+        }
+    }
+    // endregion
+
+    // region misc shared computations
+    // Has to be lazy otherwise we would throw on entities without a location component
+    private lazy var trajectoryNextFrame: LineSegment = CollisionSystem.getTrajectoryOf(entity: entity)
+
+    private var radiusOrThickness: CGFloat { CollisionSystem.getRadiusOrThicknessOf(entity: entity) }
+
+    private static func doesEntityHaveLocation(entity: Entity) -> Bool {
+        entity.next.locC != nil || entity.next.lilC != nil
+    }
+
+    private static func getTrajectoryOf(entity: Entity) -> LineSegment {
+        if entity.next.locC != nil {
+            return entity.prev.locC!.position.isNaN ?
+                    LineSegment(start: entity.next.locC!.position, end: entity.next.locC!.position) :
+                    LineSegment(start: entity.prev.locC!.position, end: entity.next.locC!.position)
+        } else if entity.next.lilC != nil {
+            return entity.next.lilC!.position
+        } else {
+            fatalError("illegal state - no location component (locC or lilC) on entity")
+        }
+    }
+
+    private static func getRadiusOrThicknessOf(entity: Entity) -> CGFloat {
+        if entity.next.locC != nil {
+            return entity.next.locC!.radius
+        } else if entity.next.lilC != nil {
+            return entity.next.lilC!.thickness
+        } else {
+            fatalError("illegal state - no location component (locC or lilC) on entity")
         }
     }
     // endregion

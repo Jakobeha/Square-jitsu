@@ -62,13 +62,12 @@ class Entity: EqualityIsIdentity {
             "ntlC": ([["locC"]], []),
             "imfC": ([["dynC"], ["locC"]], []),
             "docC": ([["dynC"], ["locC"]], []),
-            "cocC": ([["phyC"]], []),
+            "cocC": ([["colC"]], []),
             "matC": ([["dynC"], ["locC"]], []),
-            "ntlC": ([["phyC"], ["dynC"], ["locC"]], []),
-            "griC": ([["phyC"], ["dynC"], ["locC"]], []),
+            "griC": ([["colC"], ["dynC"], ["locC"]], []),
             "graC": ([["dynC"], ["locC"]], []),
             "turC": ([["dynC"], ["locC"]], []),
-            "nijC": ([["helC"], ["ntlC"], ["phyC"], ["dynC"], ["locC"]], [])
+            "nijC": ([["helC"], ["ntlC"], ["colC"], ["dynC"], ["locC"]], [])
         ]
 
         func validate() throws {
@@ -82,7 +81,7 @@ class Entity: EqualityIsIdentity {
         private var myComponentsAsStrings: Set<String> {
             let mirror = Mirror(reflecting: self)
             let allComponents = mirror.children
-            let myComponents = allComponents.filter { component in (component.value as Any?) != nil }
+            let myComponents = allComponents.filter { component in (component.value as Any?).isDefault }
             let myComponentNames = myComponents.map { component in component.label! }
             return Set(myComponentNames)
         }

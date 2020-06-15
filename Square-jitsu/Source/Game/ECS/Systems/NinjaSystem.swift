@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct NinjaSystem: System {
+struct NinjaSystem: TopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {

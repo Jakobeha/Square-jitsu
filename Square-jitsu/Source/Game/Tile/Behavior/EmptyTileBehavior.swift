@@ -8,7 +8,7 @@ import Foundation
 /// Provides empty implementations of all on... handlers as well as a typed metadata variable.
 /// When not subclassed, a behavior which does nothing.
 class EmptyTileBehavior<Metadata: TileMetadata>: TileBehavior {
-    var metadata: Metadata? = nil {
+    var metadata: Metadata! = nil {
         didSet { _didChangeMetadata.publish() }
     }
 

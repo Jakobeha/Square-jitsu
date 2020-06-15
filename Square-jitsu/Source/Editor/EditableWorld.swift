@@ -9,7 +9,7 @@ import Foundation
 /// In gameplay the world file can be forgotten once the world is created,
 /// because the world will retain it and use it to load new chunks when necessary,
 /// but when editing the file needs to be kept so it can be written to
-class EditableWorld: EditableReadonlyStatelessWorld {
+class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
     let world: World
     private let worldFile: WorldFile
 
@@ -44,14 +44,14 @@ class EditableWorld: EditableReadonlyStatelessWorld {
         resetStateAt(pos3D: pos3D)
     }
 
-    func createTile(pos: WorldTilePos, type: TileType) {
+    func forceCreateTile(pos: WorldTilePos, type: TileType) {
         let orientedType = autoReorientType(type, pos: pos)
-        world.forceCreateTile(pos: pos, type: orientedType)
+        world.forceCreateTileNotPersistent(pos: pos, type: orientedType)
         worldFile.forceCreateTile(pos: pos, type: orientedType)
     }
 
     func destroyTiles(pos: WorldTilePos) {
-        world.destroyTiles(pos: pos)
+        world.destroyTilesNotPersistent(pos: pos)
         worldFile.destroyTiles(pos: pos)
     }
 
@@ -65,22 +65,23 @@ class EditableWorld: EditableReadonlyStatelessWorld {
         setMetadataAt(pos3D: tileAtPosition.position, to: tileAtPosition.metadata)
     }
 
-    private func autoReorientType(_ type: TileType, pos: WorldTilePos) -> TileType{
+    private func autoReorientType(_ type: TileType, pos: WorldTilePos) -> TileType {
         var type = type
         let orientationMeaning = world.settings.tileOrientationMeanings[type] ?? .unused
         switch orientationMeaning {
         case .unused:
             break
         case .directionAdjacentToSolid:
-            let sidesWithAdjacentSolid = self.getSolidAdjacentSidesTo(pos: pos)
+            let sidesWithAdjacentSolid = getSolidAdjacentSidesTo(pos: pos)
             if let aSideWithAdjacentSolid = sidesWithAdjacentSolid.first {
                 type.orientation = TileOrientation(side: aSideWithAdjacentSolid)
             } else {
                 type.orientation = TileOrientation.none
             }
         case .atSolidBorder:
-            let sidesWithAdjacentSolid = self.getSolidAdjacentSidesTo(pos: pos)
-            let orientationSides = sidesWithAdjacentSolid.inverted
+            let sidesWithAdjacentSolid = getSolidAdjacentSidesTo(pos: pos)
+            let alreadyOccupiedSides = getOccupiedTileSidesAt(pos: pos, tileLayer: type.bigType.layer)
+            let orientationSides = sidesWithAdjacentSolid.inverted.subtracting(alreadyOccupiedSides)
             type.orientation = TileOrientation(sideSet: orientationSides)
         }
         return type

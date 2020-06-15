@@ -315,7 +315,7 @@
   },
   "knockback": {
     "lava": [4],
-    "projectile": [null, null, 4, 4]
+    "projectile": [null, null, 8, 8]
   },
   "entityData": {
     "player": [{
@@ -328,6 +328,7 @@
         "solidFriction": 0.015625,
         "aerialAngularFriction": 0.02083333333
       },
+      "colC": {},
       "matC": {"mass": 1},
       "ntlC": {"nearRadiusExtra": 0.5},
       "griC": {
@@ -353,6 +354,7 @@
         "solidFriction": 0.015625,
         "aerialAngularFriction": 0.02083333333
       },
+      "colC": {},
       "matC": {"mass": 1},
       "helC": {"maxHealth": 1}
     }],
@@ -379,10 +381,12 @@
       },
       {
         "lilC": {"thickness": 0.0625},
+        "colC": {},
         "toxC": {"damage": 0.5, "safeTypes": []}
       },
       {
         "lilC": {"thickness": 0.0625},
+        "colC": {},
         "cocC": {"createdTileType": "lava"},
         "toxC": {"damage": 0.5, "safeTypes": []}
       }
@@ -480,7 +484,7 @@
     ]
   },
   "tileOrientationMeanings": {
-    "toxic": [
+    "lava": [
       "atSolidBorder"
     ],
     "turret": [

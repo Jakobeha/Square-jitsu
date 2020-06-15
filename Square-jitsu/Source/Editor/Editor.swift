@@ -70,7 +70,7 @@ class Editor: EditorToolsDelegate {
             let newPosition = tileToMove.position.pos + distanceMoved
             let typeToMove = tileToMove.type
 
-            editableWorld.createTile(pos: newPosition, type: typeToMove)
+            editableWorld.forceCreateTile(pos: newPosition, type: typeToMove)
         }
 
         didPerformAction()
@@ -90,7 +90,7 @@ class Editor: EditorToolsDelegate {
         let originalTiles = possibleChangedPositions.map(editableWorld.getTileAt)
 
         for position2D in selectedPositions2D {
-            editableWorld.createTile(pos: position2D, type: selectedTileType)
+            editableWorld.forceCreateTile(pos: position2D, type: selectedTileType)
         }
 
         didPerformAction()
@@ -129,13 +129,48 @@ class Editor: EditorToolsDelegate {
     func connectTilesToSide(tiles: [TileAtPosition], side: Side) {
         for tileAtPosition in tiles {
             var newTileType = tileAtPosition.type
-            newTileType.orientation = TileOrientation(side: side)
+            newTileType.orientation = addSideToOrientationInType(type: newTileType, side: side)
             editableWorld[tileAtPosition.position] = newTileType
         }
     }
 
-    func setInitialTurretDirections(to initialTurretDirection: Angle, positions: Set<WorldTilePos3D>) {
-        for pos3D in positions {
+    private func addSideToOrientationInType(type: TileType, side: Side) -> TileOrientation {
+        switch settings.tileOrientationMeanings[type] ?? .unused {
+        case .unused:
+            fatalError("orientation isn't side-based")
+        case .directionAdjacentToSolid:
+            return TileOrientation(side: side)
+        case .atSolidBorder:
+            var orientation = type.orientation
+            orientation.asSideSet.insert(side.toSet)
+            return orientation
+        }
+    }
+
+    func disconnectTilesToSide(tiles: [TileAtPosition], side: Side) {
+        for tileAtPosition in tiles {
+            var newTileType = tileAtPosition.type
+            newTileType.orientation = tryRemoveSideToOrientationInType(type: newTileType, side: side)
+            editableWorld[tileAtPosition.position] = newTileType
+        }
+    }
+
+    private func tryRemoveSideToOrientationInType(type: TileType, side: Side) -> TileOrientation {
+        switch settings.tileOrientationMeanings[type] ?? .unused {
+        case .unused:
+            fatalError("orientation isn't side-based")
+        case .directionAdjacentToSolid:
+            // Can't remove because there is only one side
+            return type.orientation
+        case .atSolidBorder:
+            var orientation = type.orientation
+            orientation.asSideSet.remove(side.toSet)
+            return orientation
+        }
+    }
+
+    func setInitialTurretDirections(to initialTurretDirectionsAndPositions: Zip2Sequence<[Angle], [WorldTilePos3D]>) {
+        for (initialTurretDirection, pos3D) in initialTurretDirectionsAndPositions {
             var metadata = editableWorld.getMetadataAt(pos3D: pos3D)! as! TurretMetadata
             metadata.initialTurretDirectionRelativeToAnchor = initialTurretDirection
             editableWorld.setMetadataAt(pos3D: pos3D, to: metadata)

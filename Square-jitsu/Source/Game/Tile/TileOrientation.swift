@@ -31,15 +31,6 @@ struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
         self.rawValue = rawValue
     }
 
-    func existsAt(side: Side, meaning: TileOrientationMeaning) -> Bool {
-        switch meaning {
-        case .unused, .directionAdjacentToSolid:
-            return true
-        case .atSolidBorder:
-            return asSideSet.contains(side.toSet)
-        }
-    }
-
     // region encoding and decoding
     init?(_ description: String) {
         if let value = UInt8(description) {

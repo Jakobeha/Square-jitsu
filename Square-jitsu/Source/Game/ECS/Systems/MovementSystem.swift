@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct MovementSystem: System {
+struct MovementSystem: TopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {

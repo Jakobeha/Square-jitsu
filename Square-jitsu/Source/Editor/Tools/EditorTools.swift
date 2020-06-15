@@ -186,7 +186,7 @@ class EditorTools {
 
     private func presentInspector(selectedPositions: Set<WorldTilePos3D>) {
         assert(editAction.mode == EditActionMode.inspect && !selectedPositions.isEmpty)
-        inspector = Inspector(positions: selectedPositions, world: world, delegate: delegate)
+        inspector = Inspector(positions: selectedPositions, world: world, delegate: delegate, undoManager: undoManager)
     }
 
     private func dismissInspector() {
@@ -282,7 +282,7 @@ class EditorTools {
         edgePanTouchPos = nil
 
         if hasEditMoveState {
-            if editAction.mode == .move {
+            if editAction.mode == .move && editMoveState.isStarted {
                 // We need to synchronize before showing, we don't put it in showTemporarilyHidden
                 // because it would be misleading
                 world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
@@ -324,7 +324,6 @@ class EditorTools {
             pan(touchPositions: touchPositions)
             afterTouchCancel()
         }
-
     }
 
     func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?, camera: Camera, container: SKScene) {

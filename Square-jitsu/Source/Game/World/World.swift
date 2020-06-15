@@ -313,13 +313,43 @@ class World: ReadonlyWorld {
         getBehaviorAt(pos3D: pos3D)?.untypedMetadata
     }
 
-    /// Places the tile, removing any non-overlapping tiles
-    /// - Returns: The layer of the tile which was placed
+    /// Places the tile if there are no overlapping tiles at the given position
+    /// - Returns: The layer of the tile if it was placed, otherwise nil
     /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
     ///   places the tile, while "place" may mean it was loaded
-    @discardableResult func forceCreateTile(pos: WorldTilePos, type: TileType) -> Int {
+    @discardableResult func tryCreateTilePersistent(pos: WorldTilePos, type: TileType) -> Int? {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
-        let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type)
+        guard let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type) else {
+            return nil
+        }
+
+        // Update metadata persistence
+        let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
+        for layer in 0..<Chunk.numLayers {
+            let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
+            persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = chunk.tileBehaviors[chunkPos3D]
+        }
+
+        // Notify metadata onCreate
+        let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+        let behavior = getBehaviorAt(pos3D: pos3D)
+        behavior?.onCreate(world: self, pos3D: pos3D)
+
+        notifyObserversOfAdjacentTileChanges(pos: pos)
+
+        return layer
+    }
+
+    /// Places the tile, removing any non-overlapping tiles. Won't place if the tile is meaningless in-game
+    /// (e.g. it functions based on orientation but its orientation is empty)
+    /// - Returns: The layer of the tile if it was placed, or nil
+    /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
+    ///   places the tile, while "place" may mean it was loaded
+    @discardableResult func forceCreateTileNotPersistent(pos: WorldTilePos, type: TileType) -> Int? {
+        let chunk = getChunkAt(pos: pos.worldChunkPos)
+        guard let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type) else {
+            return nil
+        }
 
         // Update metadata persistence
         let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
@@ -340,7 +370,7 @@ class World: ReadonlyWorld {
 
     /// Note: "destroy" is distinguished from "remove" are different in that "destroy" means e.g. the user explicitly
     /// deletes the tile, while "remove" may mean it was unloaded
-    func destroyTiles(pos: WorldTilePos) {
+    func destroyTilesNotPersistent(pos: WorldTilePos) {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
         chunk.removeTiles(pos: pos.chunkTilePos)
 
@@ -352,6 +382,17 @@ class World: ReadonlyWorld {
         }
 
         notifyObserversOfAdjacentTileChanges(pos: pos)
+    }
+
+    func destroyTileNotPersistent(pos3D: WorldTilePos3D) {
+        let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
+        chunk[pos3D.chunkTilePos3D] = TileType.air
+
+        // Update metadata persistence
+        let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
+        persistentDataForChunk.overwrittenTileBehaviors[pos3D.chunkTilePos3D] = nil
+
+        notifyObserversOfAdjacentTileChanges(pos: pos3D.pos)
     }
 
     private func notifyObserversOfAdjacentTileChanges(pos: WorldTilePos) {
@@ -431,35 +472,15 @@ class World: ReadonlyWorld {
 
     /// Runs systems which must be run before other systems, even though the order in `tick` is different
     private func tickEarlySystems(entity: Entity) {
-        CollisionSystem.tick(entity: entity)
-        NearCollisionSystem.tick(entity: entity)
+        for system in EarlyTopLevelSystems {
+            system.tick(world: self)
+        }
     }
 
     private func tickSystems() {
-        NinjaSystem.tick(world: self)
-        ImplicitForcesSystem.tick(world: self)
-        // Must be after ImplicitForcesSystem and NinjaSystem
-        MovementSystem.tick(world: self)
-        // Must be after MovementSystem
-        CollisionSystem.tick(world: self)
-        // Must be after CollisionSystem
-        NearCollisionSystem.tick(world: self)
-        // Must be after CollisionSystem
-        GrabSystem.tick(world: self)
-        // Must be after CollisionSystem and GrabSystem
-        MatterSystem.tick(world: self)
-        // Must be after CollisionSystem and GrabSystem
-        OverlapSensitiveSystem.tick(world: self)
-        // Must be after CollisionSystem and GrabSystem
-        AdjacentSensitiveSystem.tick(world: self)
-        // Must be after CollisionSystem and GrabSystem
-        CreateOnCollideSystem.tick(world: self)
-        // Must be after CollisionSystem
-        TurretSystem.tick(world: self)
-        // Must be after CollisionSystem
-        DamageSystem.tick(world: self)
-        // Must be last
-        LoadPositionSystem.tick(world: self)
+        for system in TopLevelSystems {
+            system.tick(world: self)
+        }
     }
     // endregion
 

@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct DamageSystem: System {
+struct DamageSystem: TopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {
@@ -32,13 +32,8 @@ struct DamageSystem: System {
     func handleOverlappingNotSolidTiles() {
         // Otherwise we don't need to handle tiles
         if entity.prev.helC != nil {
-            for tilePosition in newOverlappingTilePositions {
-                let tileTypes = world[tilePosition]
-                for tileType in tileTypes {
-                    if !tileType.isSolid {
-                        handleOverlappingNotSolid(tileType: tileType, tilePosition: tilePosition)
-                    }
-                }
+            for tileType in newOverlappingTileTypes {
+                handleOverlappingNotSolid(tileType: tileType)
             }
         }
     }
@@ -46,12 +41,9 @@ struct DamageSystem: System {
     func handleAdjacentTiles() {
         // Otherwise we don't need to handle tiles
         if entity.prev.helC != nil {
-            for (side, tilePositions) in newAdjacentTilePositions {
-                for tilePosition in tilePositions {
-                    let tileTypes = world[tilePosition]
-                    for tileType in tileTypes {
-                        handleAdjacent(tileType: tileType, tilePosition: tilePosition, side: side)
-                    }
+            for (side, tileTypes) in newAdjacentTileTypes {
+                for tileType in tileTypes {
+                    handleAdjacent(tileType: tileType, side: side)
                 }
             }
         }
@@ -72,13 +64,13 @@ struct DamageSystem: System {
         world.remove(entity: entity)
     }
 
-    func handleOverlappingNotSolid(tileType: TileType, tilePosition: WorldTilePos) {
+    func handleOverlappingNotSolid(tileType: TileType) {
         if DamageSystem.isToxic(toxicType: tileType, damagedEntity: entity) {
             DamageSystem.damage(toxicType: tileType, damagedEntity: entity)
         }
     }
 
-    func handleAdjacent(tileType: TileType, tilePosition: WorldTilePos, side: Side) {
+    func handleAdjacent(tileType: TileType, side: Side) {
         if DamageSystem.isToxic(toxicType: tileType, toxicSide: side, damagedEntity: entity) {
             DamageSystem.damage(toxicType: tileType, damagedEntity: entity)
         }
@@ -94,13 +86,13 @@ struct DamageSystem: System {
         }
     }
 
-    private var newOverlappingTilePositions: Set<WorldTilePos> {
-        Set(entity.next.colC!.overlappingPositions).subtracting(entity.prev.colC!.overlappingPositions)
+    private var newOverlappingTileTypes: Set<TileType> {
+        getTypesAt(positions: entity.next.colC!.overlappingPositions).subtracting(getTypesAt(positions: entity.prev.colC!.overlappingPositions)).subtracting(newAdjacentTileTypes.allElements)
     }
 
-    private var newAdjacentTilePositions: DenseEnumMap<Side, Set<WorldTilePos>> {
+    private var newAdjacentTileTypes: DenseEnumMap<Side, Set<TileType>> {
         DenseEnumMap { side in
-            entity.next.colC!.adjacentPositions[side].subtracting(entity.prev.colC!.adjacentPositions[side])
+            getTypesAt(positions: entity.next.colC!.adjacentPositions[side]).subtracting(getTypesAt(positions: entity.prev.colC!.adjacentPositions[side]))
         }
     }
 
@@ -108,10 +100,14 @@ struct DamageSystem: System {
         Set(entity.next.colC!.overlappingEntities).subtracting(entity.prev.colC!.overlappingEntities)
     }
 
+    private func getTypesAt<WorldTilePosCollection: Collection>(positions: WorldTilePosCollection) -> Set<TileType> where WorldTilePosCollection.Element == WorldTilePos {
+        Set(positions.flatMap { position in world[position] })
+    }
+
     // region exposed methods
     static func isToxic(toxicType: TileType, toxicSide: Side, damagedEntity: Entity) -> Bool {
         isToxic(toxicType: toxicType, damagedEntity: damagedEntity) &&
-        toxicType.existsAt(side: toxicSide, orientationMeaning: damagedEntity.world!.settings.tileOrientationMeanings[toxicType] ?? .unused)
+        toxicType.occupiedSides.contains(toxicSide.toSet)
     }
 
     static func isToxic(toxicType: TileType, damagedEntity: Entity) -> Bool {

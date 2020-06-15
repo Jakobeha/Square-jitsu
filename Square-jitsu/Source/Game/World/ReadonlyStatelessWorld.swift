@@ -24,7 +24,11 @@ extension ReadonlyStatelessWorld {
     }
 
     func getTileLayersAt(pos: WorldTilePos) -> TileLayerSet {
-        TileLayerSet(self[pos].map { tileType in tileType.bigType.layer })
+        TileLayerSet(self[pos].map { tileType in tileType.bigType.layer})
+    }
+
+    func getOccupiedTileSidesAt(pos: WorldTilePos, tileLayer: TileLayer) -> SideSet {
+        self[pos].filter { tileType in tileType.bigType.layer == tileLayer }.map { tileType in tileType.occupiedSides }.reduce()
     }
 
     func getAdjacentTileLayersAt(pos: WorldTilePos) -> DenseEnumMap<Side, TileLayerSet> {
@@ -135,7 +139,10 @@ extension ReadonlyStatelessWorld {
                 let pos3D = WorldTilePos3D(pos: pos, layer: layer)
                 let tileType = self[pos3D]
                 if hitPredicate(tileType) {
-                    return LineCastHit(line: line, pos3D: pos3D, tileType: tileType)
+                    let blockedAdjacentSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
+                        self[adjacentPos].contains(where: hitPredicate)
+                    })
+                    return LineCastHit(line: line, pos3D: pos3D, tileType: tileType, blockedAdjacentSides: blockedAdjacentSides)
                 }
             }
         }

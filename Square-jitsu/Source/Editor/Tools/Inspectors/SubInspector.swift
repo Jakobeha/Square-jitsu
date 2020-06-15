@@ -6,5 +6,5 @@
 import Foundation
 
 protocol SubInspector {
-    init(tiles: [TileAtPosition], world: ReadonlyStatelessWorld, delegate: EditorToolsDelegate?)
+    init(tiles: [TileAtPosition], world: ReadonlyStatelessWorld, delegate: EditorToolsDelegate?, undoManager: UndoManager)
 }

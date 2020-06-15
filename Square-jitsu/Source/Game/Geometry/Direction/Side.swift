@@ -28,6 +28,19 @@ enum Side: Int, CaseIterable {
         }
     }
 
+    var opposite: Side {
+        switch self {
+        case .east:
+            return .west
+        case .north:
+            return .south
+        case .west:
+            return .east
+        case .south:
+            return .north
+        }
+    }
+
     var axis: Axis {
         switch self {
         case .east, .west:
