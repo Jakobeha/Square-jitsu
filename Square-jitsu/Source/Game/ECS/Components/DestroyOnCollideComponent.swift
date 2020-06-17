@@ -9,6 +9,7 @@ struct DestroyOnCollideComponent: SettingCodableByCodable, Codable {
     var destroyOnEntityCollision: Bool
     var destroyOnSolidCollision: Bool
 
+    var ignoredEntities: Set<EntityRef> = []
     var isRemoved: Bool = false
 
     // region encoding and decoding

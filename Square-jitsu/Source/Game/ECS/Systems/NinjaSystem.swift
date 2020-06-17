@@ -17,7 +17,7 @@ struct NinjaSystem: TopLevelSystem {
     static func postTick(world: World) {}
 
     func tick() {
-        if entity.prev.nijC != nil {
+        if entity.next.nijC != nil {
             switch entity.prev.nijC!.actionState {
             case .idle:
                 break
@@ -56,9 +56,15 @@ struct NinjaSystem: TopLevelSystem {
         } else {
             entity.next.dynC!.angularVelocity += entity.prev.nijC!.jumpAngularSpeed
         }
-        // Technically this is cleared somewhere else if on solid anyways...
-        if !isNearOrOnSolid {
+        if isNearOrOnSolid {
+            entity.next.nijC!.numJumpsWithoutBackgroundRemaining = entity.next.nijC!.minNumJumpsWithoutBackground
+        } else {
+            // Technically this is cleared somewhere else if on solid anyways...
             entity.next.nijC!.backgroundTypesUsed.formUnion(overlappingBackgroundTypes)
+
+            if entity.next.nijC!.numJumpsWithoutBackgroundRemaining > 0 {
+                entity.next.nijC!.numJumpsWithoutBackgroundRemaining -= 1
+            }
         }
     }
 
@@ -68,7 +74,7 @@ struct NinjaSystem: TopLevelSystem {
             return .jump
         } else if canThrow {
             return .throw
-        } else if isOnUnusedBackground {
+        } else if isOnUnusedBackground || entity.next.nijC!.numJumpsWithoutBackgroundRemaining > 0 {
             return .jump
         } else {
             return .none

@@ -258,9 +258,9 @@ struct CollisionSystem: TopLevelSystem {
     }
 
     private func destroyOnEntityCollisionWith(otherEntity: Entity) -> Bool {
-        entity.prev.docC != nil &&
-        entity.prev.docC!.destroyOnEntityCollision &&
-        !(entity.next.toxC?.safeEntities.contains(EntityRef(otherEntity)) ?? false)
+        entity.next.docC != nil &&
+        entity.next.docC!.destroyOnEntityCollision &&
+        !(entity.next.docC?.ignoredEntities.contains(EntityRef(otherEntity)) ?? false)
     }
     // endregion
 
@@ -307,7 +307,7 @@ struct CollisionSystem: TopLevelSystem {
                 // Entity can't collide with itself, or entities shouldn't collide
                 return nil
             } else if otherEntity.worldIndex < entity.worldIndex,
-                      let fractionUntilCollision = entity.next.colC!.earlyOverlappingEntities.first(where: { (fractionUntilCollision, earlyOverlappingEntity) in
+                      let fractionUntilCollision = entity.next.colC?.earlyOverlappingEntities.first(where: { (fractionUntilCollision, earlyOverlappingEntity) in
                 otherEntity == earlyOverlappingEntity
             }).map({ (fractionUntilCollision, earlyOverlappingEntity) in
                 fractionUntilCollision

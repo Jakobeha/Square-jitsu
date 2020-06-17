@@ -94,6 +94,31 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
         CGPoint(x: xOnUnitCircle, y: yOnUnitCircle)
     }
 
+    /// Returns a side if exactly on the x or y axis
+    var quadrantCorner: Corner {
+        let x = xOnUnitCircle
+        let y = yOnUnitCircle
+        if CGFloat.areRoughlyEqual(x, 0) && y > 0 {
+            return .east
+        } else if CGFloat.areRoughlyEqual(x, 0) && y < 0 {
+            return .west
+        } else if x > 0 && CGFloat.areRoughlyEqual(y, 0) {
+            return .north
+        } else if x < 0 && CGFloat.areRoughlyEqual(y, 0) {
+            return .south
+        } else if x > 0 && y > 0 {
+            return .northEast
+        } else if x < 0 && y > 0 {
+            return .northWest
+        } else if x > 0 && y < 0 {
+            return .southEast
+        } else if x < 0 && y < 0 {
+            return .southWest
+        } else {
+            fatalError("unhandled (impossible?) conditions")
+        }
+    }
+
     init(_ unclamped: UnclampedAngle) {
         self.init(radians: unclamped.radians)
     }

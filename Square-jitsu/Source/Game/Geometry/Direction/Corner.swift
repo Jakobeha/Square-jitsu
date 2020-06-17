@@ -41,4 +41,27 @@ enum Corner: Int, CaseIterable {
             return RelativePos(x: 1, y: -1)
         }
     }
+    
+    /// Returns itself if already a side,
+    /// the adjacent sides if an actual corner
+    var toNearestSides: SideSet {
+        switch self {
+        case .east:
+            return [.east]
+        case .northEast:
+            return [.north, .east]
+        case .north:
+            return [.north]
+        case .northWest:
+            return [.north, .west]
+        case .west:
+            return [.west]
+        case .southWest:
+            return [.south, .west]
+        case .south:
+            return [.south]
+        case .southEast:
+            return [.south, .east]
+        }
+    }
 }

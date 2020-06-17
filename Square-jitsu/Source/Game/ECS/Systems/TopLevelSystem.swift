@@ -11,6 +11,8 @@ let EarlyTopLevelSystems: [TopLevelSystem.Type] = [
 ]
 
 let TopLevelSystems: [TopLevelSystem.Type] = [
+    AINinjaSystem.self,
+    // Must be after AINinjaSystem
     NinjaSystem.self,
     ImplicitForcesSystem.self,
     // Must be after ImplicitForcesSystem and NinjaSystem

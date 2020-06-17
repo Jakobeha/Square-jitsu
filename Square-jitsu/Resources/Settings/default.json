@@ -148,20 +148,6 @@
         "texture": "Projectile"
       },
       {
-        "type": "static",
-        "texture": "Projectile"
-      },
-      {
-        "type": "laser",
-        "color": {
-          "hue": 0,
-          "saturation": 0,
-          "brightness": 1,
-          "alpha": 1
-        },
-        "thickness": 0.125
-      },
-      {
         "type": "laser",
         "color": {
           "hue": 0,
@@ -240,7 +226,7 @@
     ]
   },
   "entityZPositions": {
-    "projectile": [null, null, 1.999]
+    "projectile": [null, 1.999]
   },
   "rotateTileViewBasedOnOrientation": {
     "turret": [
@@ -252,7 +238,6 @@
   },
   "entityViewScaleModes": {
     "projectile": [
-      "aspectFill",
       "aspectFill"
     ]
   },
@@ -315,7 +300,7 @@
   },
   "knockback": {
     "lava": [4],
-    "projectile": [null, null, 8, 8]
+    "projectile": [null, 8]
   },
   "entityData": {
     "player": [{
@@ -342,7 +327,8 @@
       "helC": {"maxHealth": 1},
       "nijC": {
         "jumpSpeed": 9,
-        "jumpAngularSpeed": "180°"
+        "jumpAngularSpeed": "180°",
+        "minNumJumpsWithoutBackground": 0
       }
     }],
     "enemy": [{
@@ -356,7 +342,22 @@
       },
       "colC": {},
       "matC": {"mass": 1},
-      "helC": {"maxHealth": 1}
+      "ntlC": {"nearRadiusExtra": 0.5},
+      "helC": {"maxHealth": 1},
+      "nijC": {
+        "jumpSpeed": 9,
+        "jumpAngularSpeed": "180°",
+        "minNumJumpsWithoutBackground": 4294967295
+      },
+      "anjC": {
+        "incomingTargetDistanceBeforeFirstJump": 5,
+        "firstJumpAngle": "90°",
+        "distanceBeforeConsecutiveJumps": 4,
+        "distanceBeforeTargetLost": 7,
+        "minSpeedToNotWantStateChange": 2,
+        "minAngularSpeedToNotWantStateChange": "11.25°",
+        "targetTypes": ["player"]
+      }
     }],
     "shuriken": [{
       "locC": {"radius": 0.5},
@@ -372,17 +373,6 @@
         "dynC": {"dynamicKnockbackMultiplier": 0.5},
         "docC": {"destroyOnEntityCollision": true, "destroyOnSolidCollision": true},
         "toxC": {"damage": 0.125, "safeTypes": []}
-      },
-      {
-        "locC": {"radius": 0.0833},
-        "dynC": {"dynamicKnockbackMultiplier": 0.5},
-        "docC": {"destroyOnEntityCollision": true, "destroyOnSolidCollision": true},
-        "toxC": {"damage": 0.125, "safeTypes": []}
-      },
-      {
-        "lilC": {"thickness": 0.0625},
-        "colC": {},
-        "toxC": {"damage": 0.5, "safeTypes": []}
       },
       {
         "lilC": {"thickness": 0.0625},
@@ -407,7 +397,7 @@
             "projectileSpeed": 12,
             "delay": 0.333
           },
-          "whatToFire": "projectile",
+          "whatToFire": "projectile/0",
           "delayWhenTargetFoundBeforeFire": 1
         }
       },
@@ -428,7 +418,7 @@
             "numShotsInBurst": 3,
             "delayInBurst": 0.167
           },
-          "whatToFire": "projectile",
+          "whatToFire": "projectile/0",
           "delayWhenTargetFoundBeforeFire": 1
         }
       },
@@ -443,7 +433,7 @@
           "whoToTarget": ["player"],
           "whenToFire": "fireOnSeek",
           "howToFire": "continuous",
-          "whatToFire": "projectile",
+          "whatToFire": "projectile/1",
           "delayWhenTargetFoundBeforeFire": 1
         }
       },
@@ -458,7 +448,7 @@
           "whoToTarget": ["player"],
           "whenToFire": "fireOnSeek",
           "howToFire": "continuous",
-          "whatToFire": "projectile",
+          "whatToFire": "projectile/1",
           "delayWhenTargetFoundBeforeFire": 1
         }
       }
@@ -495,7 +485,7 @@
     ]
   },
   "selectableTypes": {
-    "background": [0],
+    "background": [0, 1],
     "overlapSensitiveBackground": [0],
     "solid": [0],
     "adjacentSensitiveSolid": [0],

@@ -3,6 +3,41 @@
 
 // Modified from https://raw.githubusercontent.com/krzysztofzablocki/Sourcery/master/Templates/Templates/AutoCodable.swifttemplate
 import SpriteKit
+extension AINinjaComponent {
+    internal init(from setting: StructSetting<AINinjaComponent>) {
+        self.init(
+            incomingTargetDistanceBeforeFirstJump: setting.usedFieldSettings["incomingTargetDistanceBeforeFirstJump"]!.decodeDynamically(),
+            firstJumpAngle: setting.usedFieldSettings["firstJumpAngle"]!.decodeDynamically(),
+            distanceBeforeConsecutiveJumps: setting.usedFieldSettings["distanceBeforeConsecutiveJumps"]!.decodeDynamically(),
+            distanceBeforeTargetLost: setting.usedFieldSettings["distanceBeforeTargetLost"]!.decodeDynamically(),
+            minSpeedToNotWantStateChange: setting.usedFieldSettings["minSpeedToNotWantStateChange"]!.decodeDynamically(),
+            minAngularSpeedToNotWantStateChange: setting.usedFieldSettings["minAngularSpeedToNotWantStateChange"]!.decodeDynamically(),
+            targetTypes: setting.usedFieldSettings["targetTypes"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<AINinjaComponent>) -> AINinjaComponent {
+        self.init(
+            incomingTargetDistanceBeforeFirstJump: setting.usedFieldSettings["incomingTargetDistanceBeforeFirstJump"]!.decodeDynamically(),
+            firstJumpAngle: setting.usedFieldSettings["firstJumpAngle"]!.decodeDynamically(),
+            distanceBeforeConsecutiveJumps: setting.usedFieldSettings["distanceBeforeConsecutiveJumps"]!.decodeDynamically(),
+            distanceBeforeTargetLost: setting.usedFieldSettings["distanceBeforeTargetLost"]!.decodeDynamically(),
+            minSpeedToNotWantStateChange: setting.usedFieldSettings["minSpeedToNotWantStateChange"]!.decodeDynamically(),
+            minAngularSpeedToNotWantStateChange: setting.usedFieldSettings["minAngularSpeedToNotWantStateChange"]!.decodeDynamically(),
+            targetTypes: setting.usedFieldSettings["targetTypes"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<AINinjaComponent>) {
+        self.incomingTargetDistanceBeforeFirstJump.encodeDynamically(to: setting.allFieldSettings["incomingTargetDistanceBeforeFirstJump"]!)
+        self.firstJumpAngle.encodeDynamically(to: setting.allFieldSettings["firstJumpAngle"]!)
+        self.distanceBeforeConsecutiveJumps.encodeDynamically(to: setting.allFieldSettings["distanceBeforeConsecutiveJumps"]!)
+        self.distanceBeforeTargetLost.encodeDynamically(to: setting.allFieldSettings["distanceBeforeTargetLost"]!)
+        self.minSpeedToNotWantStateChange.encodeDynamically(to: setting.allFieldSettings["minSpeedToNotWantStateChange"]!)
+        self.minAngularSpeedToNotWantStateChange.encodeDynamically(to: setting.allFieldSettings["minAngularSpeedToNotWantStateChange"]!)
+        self.targetTypes.encodeDynamically(to: setting.allFieldSettings["targetTypes"]!)
+    }
+}
 extension Diamond4TileViewTemplate {
     internal convenience init(from setting: StructSetting<Diamond4TileViewTemplate>) {
         self.init(
@@ -44,7 +79,8 @@ extension Entity.Components {
             helC: setting.usedFieldSettings["helC"]?.decodeDynamically(),
             toxC: setting.usedFieldSettings["toxC"]?.decodeDynamically(),
             turC: setting.usedFieldSettings["turC"]?.decodeDynamically(),
-            nijC: setting.usedFieldSettings["nijC"]?.decodeDynamically()
+            nijC: setting.usedFieldSettings["nijC"]?.decodeDynamically(),
+            anjC: setting.usedFieldSettings["anjC"]?.decodeDynamically()
         )
     }
 
@@ -65,7 +101,8 @@ extension Entity.Components {
             helC: setting.usedFieldSettings["helC"]?.decodeDynamically(),
             toxC: setting.usedFieldSettings["toxC"]?.decodeDynamically(),
             turC: setting.usedFieldSettings["turC"]?.decodeDynamically(),
-            nijC: setting.usedFieldSettings["nijC"]?.decodeDynamically()
+            nijC: setting.usedFieldSettings["nijC"]?.decodeDynamically(),
+            anjC: setting.usedFieldSettings["anjC"]?.decodeDynamically()
         )
     }
 
@@ -86,6 +123,7 @@ extension Entity.Components {
         self.toxC?.encodeDynamically(to: setting.allFieldSettings["toxC"]!)
         self.turC?.encodeDynamically(to: setting.allFieldSettings["turC"]!)
         self.nijC?.encodeDynamically(to: setting.allFieldSettings["nijC"]!)
+        self.anjC?.encodeDynamically(to: setting.allFieldSettings["anjC"]!)
     }
 }
 extension LaserEntityViewTemplate {
@@ -140,6 +178,29 @@ extension MovingComponent {
 
     internal func encode(to setting: StructSetting<MovingComponent>) {
         self.dynamicKnockbackMultiplier.encodeDynamically(to: setting.allFieldSettings["dynamicKnockbackMultiplier"]!)
+    }
+}
+extension NinjaComponent {
+    internal init(from setting: StructSetting<NinjaComponent>) {
+        self.init(
+            jumpSpeed: setting.usedFieldSettings["jumpSpeed"]!.decodeDynamically(),
+            jumpAngularSpeed: setting.usedFieldSettings["jumpAngularSpeed"]!.decodeDynamically(),
+            minNumJumpsWithoutBackground: setting.usedFieldSettings["minNumJumpsWithoutBackground"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<NinjaComponent>) -> NinjaComponent {
+        self.init(
+            jumpSpeed: setting.usedFieldSettings["jumpSpeed"]!.decodeDynamically(),
+            jumpAngularSpeed: setting.usedFieldSettings["jumpAngularSpeed"]!.decodeDynamically(),
+            minNumJumpsWithoutBackground: setting.usedFieldSettings["minNumJumpsWithoutBackground"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<NinjaComponent>) {
+        self.jumpSpeed.encodeDynamically(to: setting.allFieldSettings["jumpSpeed"]!)
+        self.jumpAngularSpeed.encodeDynamically(to: setting.allFieldSettings["jumpAngularSpeed"]!)
+        self.minNumJumpsWithoutBackground.encodeDynamically(to: setting.allFieldSettings["minNumJumpsWithoutBackground"]!)
     }
 }
 extension Square4DeterminedByOrientationTileViewTemplate {

@@ -121,47 +121,74 @@ struct LineSegment: Codable {
         case (_, .thisIsAPoint(this: let otherThis)):
             return getClosestFractionTo(point: otherThis)
         case (.moreHorizontal(yDivX: let m1), .moreHorizontal(yDivX: let m2)):
-            // m1x - m1x01 + y01 = m2x - m2x02 + y02
-            // x = (y02 - y01 + m1x01 - m2x02)/(m1 - m2)
-            // If m1 - m2 is small then the line segments are almost parallel,
-            // so precision doesn't matter anyways
-            let y01 = start.y
-            let y02 = otherLine.start.y
-            let x01 = start.x
-            let x02 = otherLine.start.x
-            let x = (y02 - y01 + (x01 * m1) - (x02 * m2)) / (m1 - m2)
-            let unclampedT = unclampedTAt(x: x)
-            return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            if CGFloat.areRoughlyEqual(m1, m2) {
+                // Lines are roughly parallel
+                let medianX = (min(bounds.maxX, otherLine.bounds.maxX) + max(bounds.minX, otherLine.bounds.minX)) / 2
+                let unclampedT = unclampedTAt(x: medianX)
+                return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            } else {
+                // m1x - m1x01 + y01 = m2x - m2x02 + y02
+                // x = (y02 - y01 + m1x01 - m2x02)/(m1 - m2)
+                // m1 - m2 isn't close to 0
+                let y01 = start.y
+                let y02 = otherLine.start.y
+                let x01 = start.x
+                let x02 = otherLine.start.x
+                let x = (y02 - y01 + (x01 * m1) - (x02 * m2)) / (m1 - m2)
+                let unclampedT = unclampedTAt(x: x)
+                return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            }
         case (.moreVertical(xDivY: let m1), .moreVertical(xDivY: let m2)):
             // Same as above but x and y are swapped
-            let x01 = start.x
-            let x02 = otherLine.start.x
-            let y01 = start.y
-            let y02 = otherLine.start.y
-            let y = (x02 - x01 + (y01 * m1) - (y02 * m2)) / (m1 - m2)
-            let unclampedT = unclampedTAt(y: y)
-            return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            if CGFloat.areRoughlyEqual(m1, m2) {
+                let medianY = (min(bounds.maxY, otherLine.bounds.maxY) + max(bounds.minY, otherLine.bounds.minY)) / 2
+                let unclampedT = unclampedTAt(y: medianY)
+                return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            } else {
+                let x01 = start.x
+                let x02 = otherLine.start.x
+                let y01 = start.y
+                let y02 = otherLine.start.y
+                let y = (x02 - x01 + (y01 * m1) - (y02 * m2)) / (m1 - m2)
+                let unclampedT = unclampedTAt(y: y)
+                return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            }
         case (.moreHorizontal(yDivX: let m1), .moreVertical(xDivY: let m2)):
-            // y = m1(m2y - m2y02 + x02) - m1x01 + y01
-            // y = (m1(x02 - x01 - m2y02) + y01)/(1 - m1m2)
-            // If m1m2 ~= 1 then the line segments are almost parallel,
-            // so precision doesn't matter anyways
-            let y01 = start.y
-            let x02 = otherLine.start.x
-            let x01 = start.x
-            let y02 = otherLine.start.y
-            let y = ((m1 * (x02 - x01 - (m2 * y02))) + y01) / (1 - (m1 * m2))
-            let unclampedT = unclampedTAt(y: y)
-            return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            if CGFloat.areRoughlyEqual(m1 * m2, 1) {
+                // Lines are roughly parallel
+                // We can use either x or y because they're also roughly diagonal
+                let medianX = (min(bounds.maxX, otherLine.bounds.maxX) + max(bounds.minX, otherLine.bounds.minX)) / 2
+                let unclampedT = unclampedTAt(x: medianX)
+                return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            } else {
+                // y = m1(m2y - m2y02 + x02) - m1x01 + y01
+                // y = (m1(x02 - x01 - m2y02) + y01)/(1 - m1m2)
+                // 1 - m1m2 isn't close to 0
+                let y01 = start.y
+                let x02 = otherLine.start.x
+                let x01 = start.x
+                let y02 = otherLine.start.y
+                let y = ((m1 * (x02 - x01 - (m2 * y02))) + y01) / (1 - (m1 * m2))
+                // We need to use otherLine to get the x position, since m1 might be near 0 so y isn't precise enough
+                let unclampedT = unclampedTAt(x: otherLine.unclampedXAt(y: y))
+                return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            }
         case (.moreVertical(xDivY: let m1), .moreHorizontal(yDivX: let m2)):
             // Same as above but x and y are swapped
-            let x01 = start.x
-            let y02 = otherLine.start.y
-            let y01 = start.y
-            let x02 = otherLine.start.x
-            let x = ((m1 * (y02 - y01 - (m2 * x02))) + x01) / (1 - (m1 * m2))
-            let unclampedT = unclampedTAt(x: x)
-            return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            if CGFloat.areRoughlyEqual(m1 * m2, 1) {
+                let medianY = (min(bounds.maxY, otherLine.bounds.maxY) + max(bounds.minY, otherLine.bounds.minY)) / 2
+                let unclampedT = unclampedTAt(y: medianY)
+                return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            } else {
+                let x01 = start.x
+                let y02 = otherLine.start.y
+                let y01 = start.y
+                let x02 = otherLine.start.x
+                let x = ((m1 * (y02 - y01 - (m2 * x02))) + x01) / (1 - (m1 * m2))
+                // We need to use otherLine to get the y position, since m1 might be near 0 so x isn't precise enough
+                let unclampedT = unclampedTAt(x: otherLine.unclampedYAt(x: x))
+                return CGFloat.clamp(unclampedT, min: 0, max: 1)
+            }
         }
     }
 

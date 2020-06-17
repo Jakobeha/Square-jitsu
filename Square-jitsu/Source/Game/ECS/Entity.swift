@@ -25,6 +25,7 @@ class Entity: EqualityIsIdentity {
         var toxC: ToxicComponent?
         var turC: TurretComponent?
         var nijC: NinjaComponent?
+        var anjC: AINinjaComponent?
 
         static func newSetting() -> AsSetting {
             StructSetting(requiredFields: [:], optionalFields: [
@@ -43,7 +44,8 @@ class Entity: EqualityIsIdentity {
                 "helC": CodableStructSetting<HealthComponent>(),
                 "toxC": ToxicComponent.newSetting(),
                 "turC": TurretComponent.newSetting(),
-                "nijC": CodableStructSetting<NinjaComponent>()
+                "nijC": CodableStructSetting<NinjaComponent>(),
+                "anjC": AINinjaComponent.newSetting()
             ], allowedExtraFields: []) { setting in
                 let components: Components = setting.decodeDynamically()
                 try components.validate()
@@ -67,7 +69,8 @@ class Entity: EqualityIsIdentity {
             "griC": ([["colC"], ["dynC"], ["locC"]], []),
             "graC": ([["dynC"], ["locC"]], []),
             "turC": ([["dynC"], ["locC"]], []),
-            "nijC": ([["helC"], ["ntlC"], ["colC"], ["dynC"], ["locC"]], [])
+            "nijC": ([["helC"], ["ntlC"], ["colC"], ["dynC"], ["locC"]], []),
+            "anjC": ([["nijC"]], [])
         ]
 
         func validate() throws {
@@ -101,28 +104,29 @@ class Entity: EqualityIsIdentity {
         }
     }
 
-    @discardableResult static func newForSpawnTile(type: TileType, pos: WorldTilePos3D, world: World) -> Entity {
-        new(type: type, pos: pos.pos.cgPoint, world: world)
+    @discardableResult static func newForSpawnTile(type: TileType, world: World, pos: WorldTilePos3D) -> Entity {
+        new(type: type, world: world, pos: pos.pos.cgPoint)
     }
 
-    @discardableResult static func new(type: TileType, pos: LineSegment, world: World) -> Entity {
-        var components = world.settings.entityData[type]!
-        components.lilC!.position = pos
-        let entity = Entity(type: type, components: components)
-        world.add(entity: entity)
-        return entity
+    @discardableResult static func new(type: TileType, world: World, pos: LineSegment) -> Entity {
+        new(type: type, world: world) { components in
+            components.lilC!.position = pos
+        }
     }
 
-    @discardableResult static func new(type: TileType, pos: CGPoint, world: World) -> Entity {
-        var components = world.settings.entityData[type]!
-        components.locC!.position = pos
-        let entity = Entity(type: type, components: components)
-        world.add(entity: entity)
-        return entity
+    @discardableResult static func new(type: TileType, world: World, pos: CGPoint) -> Entity {
+        new(type: type, world: world) { components in
+            components.locC!.position = pos
+        }
     }
 
     @discardableResult static func new(type: TileType, world: World) -> Entity {
-        let components = world.settings.entityData[type]!
+        new(type: type, world: world) { _ in }
+    }
+
+    @discardableResult static func new(type: TileType, world: World, configure: (inout Components) -> ()) -> Entity {
+        var components = world.settings.entityData[type]!
+        configure(&components)
         let entity = Entity(type: type, components: components)
         world.add(entity: entity)
         return entity

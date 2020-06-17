@@ -219,8 +219,7 @@ struct TurretSystem: TopLevelSystem {
     }
 
     private func fireProjectile() {
-        let projectile = Entity.new(type: projectileType, world: world)
-        configure(projectile: projectile)
+        let projectile = Entity.new(type: entity.next.turC!.whatToFire, world: world, configure: configureProjectile)
 
         if entity.next.turC!.howToFire.isContinuous {
             entity.next.turC!.fireState = .isFiringContinuous(projectile: EntityRef(projectile))
@@ -229,7 +228,7 @@ struct TurretSystem: TopLevelSystem {
 
     private func keepFiringContinuousProjectile(projectileRef: EntityRef) {
         if let projectile = projectileRef.deref {
-            configure(projectile: projectile)
+            configureProjectile(components: &projectile.next)
         }
     }
 
@@ -243,33 +242,32 @@ struct TurretSystem: TopLevelSystem {
         TileType(bigType: .projectile, smallType: entity.type.smallType)
     }
 
-    private func configure(projectile: Entity) {
+    func configureProjectile(components projectileComponents: inout Entity.Components) {
         let projectileDirection = entity.next.locC!.rotation
 
-        if projectile.next.locC != nil {
-            projectile.next.locC!.position = entity.next.locC!.position
-            projectile.next.locC!.rotation = projectileDirection
-        } else if projectile.next.lilC != nil {
+        if projectileComponents.locC != nil {
+            projectileComponents.locC!.position = entity.next.locC!.position
+            projectileComponents.locC!.rotation = projectileDirection
+        } else if projectileComponents.lilC != nil {
             let projectileRay = Ray(start: entity.next.locC!.position, direction: projectileDirection)
             let projectileEndHit = world.cast(ray: projectileRay, maxDistance: TurretComponent.maxLaserDistance) { tileType in
                 tileType.isSolid
             }
             if let projectileEndHit = projectileEndHit {
-                projectile.next.lilC!.endEndpointHit = projectileEndHit
+                projectileComponents.lilC!.endEndpointHit = projectileEndHit
                 let projectileEndPosition = projectileEndHit.hitPoint
-                projectile.next.lilC!.position = LineSegment(start: projectileRay.start, end: projectileEndPosition)
+                projectileComponents.lilC!.position = LineSegment(start: projectileRay.start, end: projectileEndPosition)
             } else {
-                projectile.next.lilC!.position = projectileRay.cutoffAt(distance: TurretComponent.maxLaserDistance)
+                projectileComponents.lilC!.position = projectileRay.cutoffAt(distance: TurretComponent.maxLaserDistance)
             }
         }
 
-        projectile.next.toxC?.safeEntities.insert(EntityRef(entity))
+        projectileComponents.docC?.ignoredEntities.insert(EntityRef(entity))
+
+        projectileComponents.toxC?.safeEntities.insert(EntityRef(entity))
 
         if let projectileSpeed = entity.next.turC!.howToFire.projectileSpeed {
-            projectile.next.dynC!.velocity = CGPoint(magnitude: projectileSpeed, directionFromOrigin: projectileDirection)
+            projectileComponents.dynC!.velocity = CGPoint(magnitude: projectileSpeed, directionFromOrigin: projectileDirection)
         }
-
-        // Set prev to next
-        projectile.tick()
     }
 }

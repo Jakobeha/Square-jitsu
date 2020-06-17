@@ -41,14 +41,13 @@ class PlayerSpawnBehavior: EmptyTileBehavior<Never> {
 
         // Remove so the player tile is no longer visible
         world.set(pos3D: pos, to: TileType.air, persistInGame: true)
-
     }
 
     func spawnPlayer() -> Entity {
         // Spawn the player
         let pos = loadInfo!.playerSpawnPos
         let world = loadInfo!.playerSpawnWorld
-        return Entity.newForSpawnTile(type: TileType.player, pos: pos, world: world)
+        return Entity.newForSpawnTile(type: TileType.player, world: world, pos: pos)
     }
 
     func revert(world: World, pos3D: WorldTilePos3D) {
