@@ -16,7 +16,7 @@ class TurretSIV: UXCompoundView {
     override func newBody() -> UXView {
         // Want the range to be the entire left side of the unit circle
         Slider(
-            range: -Angle.right.toUnclamped...Angle.right.toUnclamped,
+            range: TurretComponent.minRotation.toUnclamped...TurretComponent.maxRotation.toUnclamped,
             values: subInspector.initialTurretDirections.map { angle in (Angle.straight - angle).toUnclamped }
         ) { newUnclampedAngle in
             let newAngle = Angle.straight - Angle(newUnclampedAngle)

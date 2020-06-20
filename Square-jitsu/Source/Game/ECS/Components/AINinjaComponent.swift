@@ -28,7 +28,7 @@ struct AINinjaComponent: SingleSettingCodable, Codable {
     var distanceBeforeConsecutiveJumps: CGFloat
     var distanceBeforeTargetLost: CGFloat
     var minSpeedToNotWantStateChange: CGFloat
-    var minAngularSpeedToNotWantStateChange: Angle
+    var minAngularSpeedToNotWantStateChange: UnclampedAngle
     var targetTypes: TileTypePred
 
     var state: AIState = .idle

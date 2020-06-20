@@ -403,6 +403,7 @@ extension WorldSettings {
             tileViewFadeDurations: setting.usedFieldSettings["tileViewFadeDurations"]!.decodeDynamically(),
             entityViewFadeDurations: setting.usedFieldSettings["entityViewFadeDurations"]!.decodeDynamically(),
             entityGrabColors: setting.usedFieldSettings["entityGrabColors"]!.decodeDynamically(),
+            amountScreenShakesWhenEntityCollides: setting.usedFieldSettings["amountScreenShakesWhenEntityCollides"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
             tileDamage: setting.usedFieldSettings["tileDamage"]!.decodeDynamically(),
             knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
@@ -424,6 +425,7 @@ extension WorldSettings {
             tileViewFadeDurations: setting.usedFieldSettings["tileViewFadeDurations"]!.decodeDynamically(),
             entityViewFadeDurations: setting.usedFieldSettings["entityViewFadeDurations"]!.decodeDynamically(),
             entityGrabColors: setting.usedFieldSettings["entityGrabColors"]!.decodeDynamically(),
+            amountScreenShakesWhenEntityCollides: setting.usedFieldSettings["amountScreenShakesWhenEntityCollides"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
             tileDamage: setting.usedFieldSettings["tileDamage"]!.decodeDynamically(),
             knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
@@ -444,6 +446,7 @@ extension WorldSettings {
         self.tileViewFadeDurations.encodeDynamically(to: setting.allFieldSettings["tileViewFadeDurations"]!)
         self.entityViewFadeDurations.encodeDynamically(to: setting.allFieldSettings["entityViewFadeDurations"]!)
         self.entityGrabColors.encodeDynamically(to: setting.allFieldSettings["entityGrabColors"]!)
+        self.amountScreenShakesWhenEntityCollides.encodeDynamically(to: setting.allFieldSettings["amountScreenShakesWhenEntityCollides"]!)
         self.tileDescriptions.encodeDynamically(to: setting.allFieldSettings["tileDescriptions"]!)
         self.tileDamage.encodeDynamically(to: setting.allFieldSettings["tileDamage"]!)
         self.knockback.encodeDynamically(to: setting.allFieldSettings["knockback"]!)

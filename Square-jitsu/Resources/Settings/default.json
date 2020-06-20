@@ -282,6 +282,9 @@
       "alpha": 1
     }]
   },
+  "amountScreenShakesWhenEntityCollides": {
+    "projectile": [0.03125, 0.5]
+  },
   "tileDescriptions": {
     "air": [""],
     "background": ["Default"],
@@ -293,6 +296,7 @@
     "player": [""],
     "enemy": ["Default"],
     "shuriken": ["Default"],
+    "projectile": ["Bullet", "Laser"],
     "turret": ["Default", "Burst", "Laser", "Lava-Laser"]
   },
   "tileDamage": {
@@ -326,7 +330,7 @@
       },
       "helC": {"maxHealth": 1},
       "nijC": {
-        "jumpSpeed": 9,
+        "jumpSpeed": 16,
         "jumpAngularSpeed": "180°",
         "minNumJumpsWithoutBackground": 0
       }
@@ -345,9 +349,9 @@
       "ntlC": {"nearRadiusExtra": 0.5},
       "helC": {"maxHealth": 1},
       "nijC": {
-        "jumpSpeed": 9,
+        "jumpSpeed": 12,
         "jumpAngularSpeed": "180°",
-        "minNumJumpsWithoutBackground": 4294967295
+        "minNumJumpsWithoutBackground": 3
       },
       "anjC": {
         "incomingTargetDistanceBeforeFirstJump": 5,
@@ -394,8 +398,8 @@
           "whenToFire": "fireOnSeek",
           "howToFire": {
             "type": "consistent",
-            "projectileSpeed": 12,
-            "delay": 0.333
+            "projectileSpeed": 24,
+            "delay": 0.05
           },
           "whatToFire": "projectile/0",
           "delayWhenTargetFoundBeforeFire": 1
@@ -413,10 +417,10 @@
           "whenToFire": "fireOnSeek",
           "howToFire": {
             "type": "burst",
-            "projectileSpeed": 12,
-            "delayBetweenBursts": 0.75,
+            "projectileSpeed": 24,
+            "delayBetweenBursts": 0.5,
             "numShotsInBurst": 3,
-            "delayInBurst": 0.167
+            "delayInBurst": 0.025
           },
           "whatToFire": "projectile/0",
           "delayWhenTargetFoundBeforeFire": 1

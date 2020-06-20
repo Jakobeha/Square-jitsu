@@ -54,6 +54,7 @@
 		603720E8FA5EB0FBBB9AD848 /* Player.png in Resources */ = {isa = PBXBuildFile; fileRef = 603728110DB9E8439CBA919E /* Player.png */; };
 		603720EED3432D225D4AB28A /* LineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603723E11DC58743C396CADA /* LineSegment.swift */; };
 		603720F52E622C0A6DB38950 /* WorldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603729A31FCB3271BC2681B5 /* WorldView.swift */; };
+		603720FB4F041619E4B790F0 /* EarlyTopLevelSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722E7B847797CF9112643 /* EarlyTopLevelSystem.swift */; };
 		60372101B8F874A5CC437011 /* TileViewTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603723F348193B5877F20CB0 /* TileViewTemplate.swift */; };
 		603721081DC52C1F76E28C38 /* AdjacentToSolidInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037245CA2D4DEBACF505653 /* AdjacentToSolidInspector.swift */; };
 		6037210FD315A60767837E7C /* ChunkTilePos3D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603723EB298C8C4C31775F9C /* ChunkTilePos3D.swift */; };
@@ -125,6 +126,7 @@
 		6037230E3F0BFF2BF922A720 /* LabeledSIV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603727C705A372DEA28E1474 /* LabeledSIV.swift */; };
 		60372319CC7751AA39857409 /* Solid_00011101.png in Resources */ = {isa = PBXBuildFile; fileRef = 603729D635FA9DF8763AAF71 /* Solid_00011101.png */; };
 		6037231A2B738E9F198FEB4E /* NinjaComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372ED70BDEA4289BCA6D6F /* NinjaComponent.swift */; };
+		60372321461A2BBE2227DC75 /* ShakeOnCollideSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372AD25453BD94903782F5 /* ShakeOnCollideSystem.swift */; };
 		603723230A5731CCA0575554 /* Ice_01000000.png in Resources */ = {isa = PBXBuildFile; fileRef = 60372B38F22907CB02553A6D /* Ice_01000000.png */; };
 		603723294D24A716389C49F5 /* Background_0001.png in Resources */ = {isa = PBXBuildFile; fileRef = 60372D21361099AC331859A4 /* Background_0001.png */; };
 		6037232973638F0BC8113DD3 /* ChunkDecodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372F78F69A159BD22BE6B5 /* ChunkDecodingError.swift */; };
@@ -562,6 +564,7 @@
 		603722CC6A995DDE8C59D480 /* AINinjaSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AINinjaSystem.swift; sourceTree = "<group>"; };
 		603722DB122506B161F67C54 /* Appendable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Appendable.swift; sourceTree = "<group>"; };
 		603722E6AF5D7718C9F791BA /* IntRangeSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntRangeSetting.swift; sourceTree = "<group>"; };
+		603722E7B847797CF9112643 /* EarlyTopLevelSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EarlyTopLevelSystem.swift; sourceTree = "<group>"; };
 		603722FA2D09C01B57E07D02 /* SideBasedOrientationSIV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBasedOrientationSIV.swift; sourceTree = "<group>"; };
 		6037230233398611FE2D3B87 /* Ice_11111101.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Ice_11111101.png; sourceTree = "<group>"; };
 		6037230920A012EBB861BAFE /* EditSelectMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditSelectMode.swift; sourceTree = "<group>"; };
@@ -777,6 +780,7 @@
 		60372AB64B2BD71048A4FCFA /* Lava_1100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Lava_1100.png; sourceTree = "<group>"; };
 		60372AB94E744DAF79BCB137 /* Solid_01010100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Solid_01010100.png; sourceTree = "<group>"; };
 		60372ACCA148EBB0B593C617 /* JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
+		60372AD25453BD94903782F5 /* ShakeOnCollideSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShakeOnCollideSystem.swift; sourceTree = "<group>"; };
 		60372ADCA9105A718016B0CF /* SJViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SJViewController.swift; sourceTree = "<group>"; };
 		60372AE8E35F7CC3EC73C9F6 /* Side.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Side.swift; sourceTree = "<group>"; };
 		60372AE9C4326E889BD6D251 /* TileViewCoordinates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileViewCoordinates.swift; sourceTree = "<group>"; };
@@ -1458,6 +1462,8 @@
 				6037271E277477096BB91230 /* TopLevelSystem.swift */,
 				60372EF35EA93B136F291818 /* SubCollisionSystem.swift */,
 				603722CC6A995DDE8C59D480 /* AINinjaSystem.swift */,
+				60372AD25453BD94903782F5 /* ShakeOnCollideSystem.swift */,
+				603722E7B847797CF9112643 /* EarlyTopLevelSystem.swift */,
 			);
 			path = Systems;
 			sourceTree = "<group>";
@@ -2299,6 +2305,8 @@
 				603724398B119E0B74D68EEC /* SubCollisionSystem.swift in Sources */,
 				603723D0F695C6202889B82B /* AINinjaComponent.swift in Sources */,
 				6037283A4D880E119DA3E839 /* AINinjaSystem.swift in Sources */,
+				60372321461A2BBE2227DC75 /* ShakeOnCollideSystem.swift in Sources */,
+				603720FB4F041619E4B790F0 /* EarlyTopLevelSystem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,9 +12,12 @@ final class WorldSettings: SingleSettingCodable, Codable {
 
     // SpriteKit tries to run 60fps so we run 2x.
     // This makes user input same-frame, since velocity changes must propagate into an entity's prev state to be rendered
+    let tileViewWidthHeight: CGFloat = 32
     let fixedDeltaTime: CGFloat = 1.0 / 120
     let cameraSpeed: CGFloat = 1.0 / 16
-    let tileViewWidthHeight: CGFloat = 32
+    let shakeFade: CGFloat = 2
+    let shakeInterpolationFractionPerFrame: CGFloat = 0.5
+    let shakeInterpolationDistanceBeforeChange: CGFloat = 0.125
 
     // Display info
     var tileViewTemplates: TileTypeMap<TileViewTemplate>
@@ -25,6 +28,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var tileViewFadeDurations: TileTypeMap<TimeInterval>
     var entityViewFadeDurations: TileTypeMap<TimeInterval>
     var entityGrabColors: TileTypeMap<SKColor>
+    var amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>
     var tileDescriptions: TileTypeMap<String>
 
     // Functional info
@@ -40,7 +44,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
 
     typealias AsSetting = StructSetting<WorldSettings>
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, tileDescriptions: TileTypeMap<String>, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
         self.entityZPositions = entityZPositions
@@ -49,6 +53,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
         self.tileViewFadeDurations = tileViewFadeDurations
         self.entityViewFadeDurations = entityViewFadeDurations
         self.entityGrabColors = entityGrabColors
+        self.amountScreenShakesWhenEntityCollides = amountScreenShakesWhenEntityCollides
         self.tileDescriptions = tileDescriptions
         self.tileDamage = tileDamage
         self.knockback = knockback
@@ -69,6 +74,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
             "tileViewFadeDurations": TileTypeMapSetting<TimeInterval> { TimeRangeSetting(0...4) },
             "entityViewFadeDurations": TileTypeMapSetting<TimeInterval> { TimeRangeSetting(0...4) },
             "entityGrabColors": TileTypeMapSetting<SKColor> { ColorSetting() },
+            "amountScreenShakesWhenEntityCollides": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...4) },
             "tileDescriptions": TileTypeMapSetting<String> { StringSetting() },
             "tileDamage": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...1) },
             "knockback": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...128) },

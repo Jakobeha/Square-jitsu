@@ -473,7 +473,7 @@ class World: ReadonlyWorld {
     /// Runs systems which must be run before other systems, even though the order in `tick` is different
     private func tickEarlySystems(entity: Entity) {
         for system in EarlyTopLevelSystems {
-            system.tick(world: self)
+            system.tickOnSpawn(entity: entity)
         }
     }
 

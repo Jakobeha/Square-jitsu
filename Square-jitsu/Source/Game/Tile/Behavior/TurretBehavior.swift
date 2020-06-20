@@ -26,8 +26,11 @@ class TurretBehavior: AbstractSpawnBehavior<TurretMetadata> {
     }
 
     @discardableResult override func spawn(world: World, pos: WorldTilePos3D) -> Entity {
+        let myTileType = world[pos]
+        let anchorRotation = myTileType.orientation.asSide.angle
+
         let entity = super.spawn(world: world, pos: pos)
-        entity.next.locC!.rotation = metadata.initialTurretDirectionRelativeToAnchor
+        entity.next.locC!.rotation = metadata.initialTurretDirectionRelativeToAnchor + anchorRotation.toUnclamped
         return entity
     }
 }

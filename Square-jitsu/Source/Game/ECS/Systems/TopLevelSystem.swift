@@ -5,11 +5,6 @@
 
 import Foundation
 
-let EarlyTopLevelSystems: [TopLevelSystem.Type] = [
-    CollisionSystem.self,
-    NearCollisionSystem.self
-]
-
 let TopLevelSystems: [TopLevelSystem.Type] = [
     AINinjaSystem.self,
     // Must be after AINinjaSystem

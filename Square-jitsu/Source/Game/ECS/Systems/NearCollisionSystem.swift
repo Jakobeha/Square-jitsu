@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct NearCollisionSystem: TopLevelSystem {
+struct NearCollisionSystem: EarlyTopLevelSystem {
     let entity: Entity
 
     init(entity: Entity) {
@@ -15,6 +15,10 @@ struct NearCollisionSystem: TopLevelSystem {
     static func preTick(world: World) {}
 
     static func postTick(world: World) {}
+
+    mutating func tickOnSpawn() {
+        tick()
+    }
 
     mutating func tick() {
         resetNearCollisions()

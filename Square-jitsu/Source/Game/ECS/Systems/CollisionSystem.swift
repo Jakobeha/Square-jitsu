@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct CollisionSystem: TopLevelSystem {
+struct CollisionSystem: EarlyTopLevelSystem {
     let entity: Entity
 
     var subCollisionSystems: [SubCollisionSystem]
@@ -21,6 +21,10 @@ struct CollisionSystem: TopLevelSystem {
     static func preTick(world: World) {}
 
     static func postTick(world: World) {}
+
+    mutating func tickOnSpawn() {
+        tick()
+    }
 
     mutating func tick() {
         preResetCollisions()
