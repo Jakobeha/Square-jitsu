@@ -130,14 +130,14 @@ struct AINinjaSystem: TopLevelSystem {
             return nil
         }
 
-        entity.next.nijC!.actionState = .doPrimary(direction: jumpDirection)
+        entity.next.nijC!.actionState = .doJump(direction: jumpDirection)
         return .jumpingToSide(lastPosition: entity.next.locC!.position, target: EntityRef(target))
     }
 
     private func jumpTowards(target: Entity) -> AINinjaComponent.AIState {
         let jumpDirection = calculateDirectionToJumpTowards(target: target)
 
-        entity.next.nijC!.actionState = .doPrimary(direction: jumpDirection)
+        entity.next.nijC!.actionState = .doJump(direction: jumpDirection)
         return .jumpingToTarget(target: EntityRef(target))
     }
 

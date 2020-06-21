@@ -12,6 +12,7 @@ class SpawnOnGrabBehavior: AbstractSpawnAndRemoveBehavior<Never> {
         let myTileType = world[pos]
         if GrabSystem.canGrab(grabbingEntity: entity, grabbedType: myTileType) {
             let grabbedEntity = spawnAndRemoveTile(world: entity.world!, pos: pos)
+            world.expiditeAdd(entity: grabbedEntity)
             GrabSystem.grab(grabbingEntity: entity, grabbedEntity: grabbedEntity)
         }
     }

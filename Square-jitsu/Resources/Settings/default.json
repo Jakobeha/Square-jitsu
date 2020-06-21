@@ -301,6 +301,7 @@
     "projectile": ["Bullet", "Laser"],
     "turret": ["Default", "Burst", "Laser", "Lava-Laser"]
   },
+  "playerInputSpeedMultiplier": 0.0625,
   "tileDamage": {
     "lava": [0.25]
   },
@@ -327,7 +328,7 @@
           "shuriken"
         ],
         "grabOffset": [0.25, -0.25],
-        "throwSpeed": 4.5,
+        "throwSpeed": 16,
         "throwAngularSpeed": "90°"
       },
       "helC": {"maxHealth": 1},

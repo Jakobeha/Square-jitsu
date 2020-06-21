@@ -407,6 +407,7 @@ extension WorldSettings {
             entityGrabColors: setting.usedFieldSettings["entityGrabColors"]!.decodeDynamically(),
             amountScreenShakesWhenEntityCollides: setting.usedFieldSettings["amountScreenShakesWhenEntityCollides"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
+            playerInputSpeedMultiplier: setting.usedFieldSettings["playerInputSpeedMultiplier"]!.decodeDynamically(),
             tileDamage: setting.usedFieldSettings["tileDamage"]!.decodeDynamically(),
             knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
@@ -431,6 +432,7 @@ extension WorldSettings {
             entityGrabColors: setting.usedFieldSettings["entityGrabColors"]!.decodeDynamically(),
             amountScreenShakesWhenEntityCollides: setting.usedFieldSettings["amountScreenShakesWhenEntityCollides"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
+            playerInputSpeedMultiplier: setting.usedFieldSettings["playerInputSpeedMultiplier"]!.decodeDynamically(),
             tileDamage: setting.usedFieldSettings["tileDamage"]!.decodeDynamically(),
             knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
@@ -454,6 +456,7 @@ extension WorldSettings {
         self.entityGrabColors.encodeDynamically(to: setting.allFieldSettings["entityGrabColors"]!)
         self.amountScreenShakesWhenEntityCollides.encodeDynamically(to: setting.allFieldSettings["amountScreenShakesWhenEntityCollides"]!)
         self.tileDescriptions.encodeDynamically(to: setting.allFieldSettings["tileDescriptions"]!)
+        self.playerInputSpeedMultiplier.encodeDynamically(to: setting.allFieldSettings["playerInputSpeedMultiplier"]!)
         self.tileDamage.encodeDynamically(to: setting.allFieldSettings["tileDamage"]!)
         self.knockback.encodeDynamically(to: setting.allFieldSettings["knockback"]!)
         self.entityData.encodeDynamically(to: setting.allFieldSettings["entityData"]!)

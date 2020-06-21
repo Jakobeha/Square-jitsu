@@ -21,8 +21,11 @@ struct NinjaSystem: TopLevelSystem {
             switch entity.prev.nijC!.actionState {
             case .idle:
                 break
-            case .doPrimary(let direction):
-                doPrimary(direction: direction)
+            case .doJump(let direction):
+                tryJump(direction: direction)
+                entity.next.nijC!.actionState = .idle
+            case .doThrow(let direction):
+                tryThrow(direction: direction)
                 entity.next.nijC!.actionState = .idle
             }
             if isNearOrOnSolid {
@@ -32,18 +35,19 @@ struct NinjaSystem: TopLevelSystem {
         }
     }
 
-    func doPrimary(direction: Angle) {
-        switch primaryAction {
-        case .none:
-            break
-        case .jump:
+    private func tryJump(direction: Angle) {
+        if canJump {
             jump(direction: direction)
-        case .throw:
+        }
+    }
+
+    private func tryThrow(direction: Angle) {
+        if canThrow {
             GrabSystem.throwNext(throwingEntity: entity, throwDirection: direction)
         }
     }
 
-    func jump(direction: Angle) {
+    private func jump(direction: Angle) {
         assert(entity.prev.nijC != nil && entity.prev.dynC != nil)
         entity.next.dynC!.velocity = CGPoint(
             magnitude: entity.prev.nijC!.jumpSpeed,
@@ -68,35 +72,26 @@ struct NinjaSystem: TopLevelSystem {
         }
     }
 
-    var primaryAction: NinjaPrimaryAction {
-        assert(entity.prev.nijC != nil && entity.prev.ntlC != nil && entity.prev.colC != nil)
-        if isNearOrOnSolid {
-            return .jump
-        } else if canThrow {
-            return .throw
-        } else if isOnUnusedBackground || entity.next.nijC!.numJumpsWithoutBackgroundRemaining > 0 {
-            return .jump
-        } else {
-            return .none
-        }
+    private var canJump: Bool {
+        isNearOrOnSolid || isOnUnusedBackground || entity.next.nijC!.numJumpsWithoutBackgroundRemaining > 0
     }
 
-    var isNearOrOnSolid: Bool {
+    private var canThrow: Bool {
+        !(entity.next.griC?.grabbed.isEmpty ?? true)
+    }
+
+    private var isNearOrOnSolid: Bool {
         let nearTypes = entity.prev.ntlC!.nearTypes
         let onTypes = entity.prev.colC!.overlappingTypes
         return (nearTypes.contains(layer: .solid) && !onTypes.contains(layer: .toxicEdge)) || onTypes.contains(layer: .solid)
     }
 
-    var canThrow: Bool {
-        !(entity.next.griC?.grabbed.isEmpty ?? true)
-    }
-
-    var isOnUnusedBackground: Bool {
+    private var isOnUnusedBackground: Bool {
         let usedBackgroundTypes = entity.prev.nijC!.backgroundTypesUsed
         return !overlappingBackgroundTypes.subtracting(usedBackgroundTypes).isEmpty
     }
 
-    var overlappingBackgroundTypes: Set<TileType> {
+    private var overlappingBackgroundTypes: Set<TileType> {
         entity.prev.colC!.overlappingTypes[TileLayer.background]
     }
 }

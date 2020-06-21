@@ -53,8 +53,11 @@ struct GrabSystem: TopLevelSystem {
             break
         case .grabbed(grabber: let grabberRef):
             if let grabber = grabberRef.deref {
+                let grabbedIndex = grabber.next.griC!.grabbed.firstIndex(of: EntityRef(entity))!
+                let grabOffset = grabber.next.griC!.grabOffset * CGFloat(grabbedIndex + 1)
+
                 // Move with grabbing entity
-                entity.next.locC!.position = grabber.next.locC!.position + grabber.next.griC!.grabOffset
+                entity.next.locC!.position = grabber.next.locC!.position + grabOffset
             } else {
                 // Grabber is dead so this is no longer grabbed
                 entity.next.graC!.grabState = .idle
@@ -89,7 +92,7 @@ struct GrabSystem: TopLevelSystem {
         }
         let grabbingEntityRef = EntityRef(grabbingEntity)
         let grabbedEntityRef = EntityRef(grabbedEntity)
-        if !grabbingEntity.prev.griC!.grabbed.contains(grabbedEntityRef) {
+        if !grabbingEntity.next.griC!.grabbed.contains(grabbedEntityRef) {
             grabbingEntity.next.griC!.grabbed.append(grabbedEntityRef)
             grabbedEntity.next.graC!.grabState = .grabbed(grabber: grabbingEntityRef)
         }
@@ -113,6 +116,9 @@ struct GrabSystem: TopLevelSystem {
         let throwSpeed = getThrowSpeed(throwingEntity: throwingEntity, thrownEntity: thrownEntity)
         let throwAngularSpeed = getThrowAngularSpeed(throwingEntity: throwingEntity, thrownEntity: thrownEntity)
         let throwVelocity = CGPoint(magnitude: throwSpeed, directionFromOrigin: throwDirection)
+
+        // Adjust thrown entity's position so it's centered at the throwing entity
+        thrownEntity.next.locC!.position = throwingEntity.next.locC!.position
 
         // Adjust thrown entity's linear and angular velocity
         thrownEntity.next.dynC!.velocity = throwVelocity

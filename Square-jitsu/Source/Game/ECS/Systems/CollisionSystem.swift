@@ -22,7 +22,10 @@ struct CollisionSystem: EarlyTopLevelSystem {
 
     static func postTick(world: World) {}
 
+    var isRunningOnSpawn: Bool = false
+
     mutating func tickOnSpawn() {
+        isRunningOnSpawn = true
         tick()
     }
 
@@ -111,7 +114,7 @@ struct CollisionSystem: EarlyTopLevelSystem {
     }
 
     private mutating func handleSolidCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
-        if entity.prev.docC?.destroyOnSolidCollision ?? false {
+        if !isRunningOnSpawn && entity.prev.docC?.destroyOnSolidCollision ?? false {
             world.remove(entity: entity)
             entity.next.docC!.isRemoved = true
         }
@@ -343,7 +346,7 @@ struct CollisionSystem: EarlyTopLevelSystem {
 
     private mutating func handleCollisionWith(entity otherEntity: Entity, fractionOnTrajectory: CGFloat) {
         // Destroy if necessary
-        if destroyOnEntityCollisionWith(otherEntity: otherEntity) {
+        if !isRunningOnSpawn && destroyOnEntityCollisionWith(otherEntity: otherEntity) {
             world.remove(entity: entity)
             entity.next.docC!.isRemoved = true
         }

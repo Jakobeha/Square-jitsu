@@ -34,6 +34,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var tileDescriptions: TileTypeMap<String>
 
     // Functional info
+    var playerInputSpeedMultiplier: CGFloat
     var tileDamage: TileTypeMap<CGFloat>
     var knockback: TileTypeMap<CGFloat>
     var entityData: TileTypeMap<Entity.Components>
@@ -46,7 +47,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
 
     typealias AsSetting = StructSetting<WorldSettings>
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, glossTexture: SKTexture, glossyTileViews: TileTypePred, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, glossTexture: SKTexture, glossyTileViews: TileTypePred, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
         self.glossTexture = glossTexture
@@ -59,6 +60,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
         self.entityGrabColors = entityGrabColors
         self.amountScreenShakesWhenEntityCollides = amountScreenShakesWhenEntityCollides
         self.tileDescriptions = tileDescriptions
+        self.playerInputSpeedMultiplier = playerInputSpeedMultiplier
         self.tileDamage = tileDamage
         self.knockback = knockback
         self.entityData = entityData
@@ -82,6 +84,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
             "entityGrabColors": TileTypeMapSetting<SKColor> { ColorSetting() },
             "amountScreenShakesWhenEntityCollides": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...4) },
             "tileDescriptions": TileTypeMapSetting<String> { StringSetting() },
+            "playerInputSpeedMultiplier": CGFloatRangeSetting(0...1),
             "tileDamage": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...1) },
             "knockback": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...128) },
             "entityData": TileTypeMapSetting<Entity.Components> { Entity.Components.newSetting() },

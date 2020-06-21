@@ -6,13 +6,19 @@
 import SpriteKit
 
 struct NinjaComponent: SingleSettingCodable, Codable {
+    enum ActionState: Equatable {
+        case idle
+        case doJump(direction: Angle)
+        case doThrow(direction: Angle)
+    }
+
     var jumpSpeed: CGFloat
     var jumpAngularSpeed: UnclampedAngle
     /// # of possible jumps after jumping off of a solid without a background,
     /// but whenever the ninja jumps off a background this decreases anyways
     var minNumJumpsWithoutBackground: Int
 
-    var actionState: NinjaActionState = .idle
+    var actionState: ActionState = .idle
     /// Current # of possible jumps without a background,
     /// but whenever the ninja jumps off a background this decreases anyways
     var numJumpsWithoutBackgroundRemaining: Int = 0

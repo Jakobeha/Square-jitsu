@@ -8,6 +8,8 @@ import SpriteKit
 class World: ReadonlyWorld {
     private let loader: WorldLoader
     let settings: WorldSettings
+
+    // region chunks and associated data
     /// Chunks which are only partially loaded.
     /// Peek-loading does not trigger observers or create metadata,
     /// and trying to access a tile in a peeked chunk will finish loading it
@@ -19,18 +21,33 @@ class World: ReadonlyWorld {
         chunks.mapValues { $0 as ReadonlyChunk }
     }
     private var persistentChunkData: [WorldChunkPos:GamePersistentChunkData] = [:]
+    // endregion
 
+    // region entities and associated data
     private(set) var entities: [Entity] = []
 
     /// Chunks whose bounds intersect this won't be unloaded
     var boundingBoxToPreventUnload: CGRect = CGRect.null
+    // endregion
 
-    var speed: CGFloat = 1 {
+    // region speed
+    var playerInputSpeedMultiplier: CGFloat = 1 {
+        didSet { redetermineSpeed() }
+    }
+    private func redetermineSpeed() {
+        speed = playerInputSpeedMultiplier
+    }
+    /// Computed from the speed multipliers (add more for new effects which change speed)
+    private(set) var speed: CGFloat = 1 {
         didSet {
-            _didChangeSpeed.publish()
+            if speed != oldValue {
+                _didChangeSpeed.publish()
+            }
         }
     }
+    // endregion
 
+    // region player
     var playerBehavior: PlayerSpawnBehavior? = nil {
         willSet {
             assert(playerBehavior == nil, "playerMetadata can only be assigned once")
@@ -46,7 +63,9 @@ class World: ReadonlyWorld {
     /// ... and also because it's easy
     let playerCamera: PlayerCamera
     let playerInput: PlayerInput
+    // endregion
 
+    // region observables
     private let _didReset: Publisher<()> = Publisher()
     private let _didUnloadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
     private let _didLoadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
@@ -62,6 +81,7 @@ class World: ReadonlyWorld {
     var didRemoveEntity: Observable<Entity> { Observable(publisher: _didRemoveEntity) }
     var didChangeSpeed: Observable<()> { Observable(publisher: _didChangeSpeed) }
     var didTick: Observable<()> { Observable(publisher: _didTick) }
+    // endregion
 
     // region init
     init(loader: WorldLoader, settings: WorldSettings, userSettings: UserSettings) {
@@ -109,7 +129,6 @@ class World: ReadonlyWorld {
         peekedChunks = [:]
         chunks = [:]
         persistentChunkData = [:]
-        speed = 1
         entitiesToAdd = []
         entitiesToRemove = []
         // Remove all entities except player
@@ -499,6 +518,13 @@ class World: ReadonlyWorld {
         if !entitiesToRemove.contains(entity) {
             entitiesToRemove.append(entity)
         }
+    }
+
+    /// Necessary for grabs, although it's bad programming
+    func expiditeAdd(entity: Entity) {
+        assert(entitiesToAdd.contains(entity))
+        addNow(entity: entity)
+        entitiesToAdd.removeIfPresent(entity)
     }
 
     func runActions() {
