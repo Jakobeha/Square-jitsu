@@ -22,6 +22,8 @@ final class WorldSettings: SingleSettingCodable, Codable {
     // Display info
     var tileViewTemplates: TileTypeMap<TileViewTemplate>
     var entityViewTemplates: TileTypeMap<EntityViewTemplate>
+    let glossTexture: SKTexture
+    let glossyTileViews: TileTypePred
     var entityZPositions: TileTypeMap<CGFloat>
     var rotateTileViewBasedOnOrientation: TileTypeMap<Bool>
     var entityViewScaleModes: TileTypeMap<ScaleMode>
@@ -44,9 +46,11 @@ final class WorldSettings: SingleSettingCodable, Codable {
 
     typealias AsSetting = StructSetting<WorldSettings>
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, glossTexture: SKTexture, glossyTileViews: TileTypePred, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, tileViewFadeDurations: TileTypeMap<TimeInterval>, entityViewFadeDurations: TileTypeMap<TimeInterval>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
+        self.glossTexture = glossTexture
+        self.glossyTileViews = glossyTileViews
         self.entityZPositions = entityZPositions
         self.rotateTileViewBasedOnOrientation = rotateTileViewBasedOnOrientation
         self.entityViewScaleModes = entityViewScaleModes
@@ -68,6 +72,8 @@ final class WorldSettings: SingleSettingCodable, Codable {
         StructSetting(requiredFields: [
             "tileViewTemplates": TileTypeMapSetting<TileViewTemplate> { TileViewTemplateSetting() },
             "entityViewTemplates": TileTypeMapSetting<EntityViewTemplate> { EntityViewTemplateSetting() },
+            "glossTexture": TextureSetting(),
+            "glossyTileViews": TileTypePredSetting(),
             "entityZPositions": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(-TileType.zPositionUpperBound...TileType.zPositionUpperBound) },
             "rotateTileViewBasedOnOrientation": TileTypeMapSetting<Bool> { BoolSetting() },
             "entityViewScaleModes": TileTypeMapSetting<ScaleMode> { ScaleMode.newSetting() },

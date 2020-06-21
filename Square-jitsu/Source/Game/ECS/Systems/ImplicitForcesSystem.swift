@@ -17,25 +17,25 @@ struct ImplicitForcesSystem: TopLevelSystem {
     static func postTick(world: World) {}
 
     func tick() {
-        if entity.prev.imfC != nil && shouldApplyForces {
-            if entity.prev.colC != nil {
-                if entity.prev.colC!.overlappingTypes.contains(layer: TileLayer.solid) {
-                    let solidFrictionMultiplier = 1 - entity.prev.imfC!.solidFriction
-                    if entity.prev.colC!.adjacentSides.hasVertical {
+        if entity.next.imfC != nil && shouldApplyForces {
+            if entity.next.colC != nil {
+                if entity.next.colC!.overlappingTypes.contains(layer: TileLayer.solid) {
+                    let solidFrictionMultiplier = 1 - entity.next.imfC!.solidFriction
+                    if entity.next.colC!.adjacentSides.hasVertical {
                         entity.next.dynC!.velocity.x *= solidFrictionMultiplier
                     }
-                    if entity.prev.colC!.adjacentSides.hasHorizontal {
+                    if entity.next.colC!.adjacentSides.hasHorizontal {
                         entity.next.dynC!.velocity.y *= solidFrictionMultiplier
                     }
                 }
-                if entity.prev.colC!.overlappingTypes.contains(layer: TileLayer.iceSolid) && !entity.prev.colC!.overlappingTypes.contains(layer: TileLayer.solid) {
-                    let minSpeedOnIce = entity.prev.imfC!.minSpeedOnIce
-                    if entity.prev.colC!.adjacentSides.hasVertical && !entity.prev.colC!.adjacentSides.hasHorizontal {
+                if entity.next.colC!.overlappingTypes.contains(layer: TileLayer.iceSolid) && !entity.next.colC!.overlappingTypes.contains(layer: TileLayer.solid) {
+                    let minSpeedOnIce = entity.next.imfC!.minSpeedOnIce
+                    if entity.next.colC!.adjacentSides.hasVertical && !entity.next.colC!.adjacentSides.hasHorizontal {
                         if entity.next.dynC!.velocity.x.magnitude < minSpeedOnIce {
                             entity.next.dynC!.velocity.x = entity.next.dynC!.velocity.x < 0 ? -minSpeedOnIce : minSpeedOnIce
                         }
                     }
-                    if entity.prev.colC!.adjacentSides.hasHorizontal && !entity.prev.colC!.adjacentSides.hasVertical {
+                    if entity.next.colC!.adjacentSides.hasHorizontal && !entity.next.colC!.adjacentSides.hasVertical {
                         if entity.next.dynC!.velocity.y.magnitude < minSpeedOnIce {
                             entity.next.dynC!.velocity.y = entity.next.dynC!.velocity.y < 0 ? -minSpeedOnIce : minSpeedOnIce
                         }
@@ -43,17 +43,17 @@ struct ImplicitForcesSystem: TopLevelSystem {
                 }
             }
             if isEntityInAir {
-                entity.next.dynC!.velocity.y -= entity.prev.imfC!.gravity * world.settings.fixedDeltaTime
+                entity.next.dynC!.velocity.y -= entity.next.imfC!.gravity * world.settings.fixedDeltaTime
                 entity.next.dynC!.angularVelocity *= 1 - entity.next.imfC!.aerialAngularFriction
             }
         }
     }
 
     private var shouldApplyForces: Bool {
-        !(entity.prev.graC?.grabState.isGrabbed ?? false)
+        !(entity.next.graC?.grabState.isGrabbed ?? false)
     }
 
     private var isEntityInAir: Bool {
-        entity.prev.colC == nil || !entity.prev.colC!.hasAdjacents
+        entity.next.colC == nil || !entity.next.colC!.hasAdjacents
     }
 }

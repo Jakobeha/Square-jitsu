@@ -45,7 +45,7 @@ class TileButton: UXView {
         backgroundNode = SKSpriteNode(texture: nil, color: SKColor.white, size: ButtonSize.tile.cgSize)
         backgroundNode.anchorPoint = UXSpriteAnchor
         backgroundNode.zPosition = 0
-        tilePreviewNode = settings.tileViewTemplates[tileType]?.generatePreviewNode(size: ButtonSize.tile.cgSize)
+        tilePreviewNode = settings.tileViewTemplates[tileType]?.generatePreviewNodeWithGloss(tileType: tileType, settings: settings, size: ButtonSize.tile.cgSize)
         tilePreviewNode?.zPosition = 1
         entityPreviewNode = settings.entityViewTemplates[tileType]?.generatePreviewNode(size: ButtonSize.tile.cgSize)
         entityPreviewNode?.zPosition = 2

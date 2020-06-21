@@ -225,6 +225,7 @@
 		6037266785E8743D99A7DF7A /* SideBasedOrientationSIV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722FA2D09C01B57E07D02 /* SideBasedOrientationSIV.swift */; };
 		60372668F522802ED0D1046A /* TouchPos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037235458C8E0A79F072CD8 /* TouchPos.swift */; };
 		6037268742F999E9E7BB6411 /* TileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037207424AF46F4BF526BF8 /* TileType.swift */; };
+		6037268F56F41D1F63EB8BE7 /* Effects in Resources */ = {isa = PBXBuildFile; fileRef = 60372F5FE8249C5F5D2B8EF7 /* Effects */; };
 		60372691D9D8ADB090434DD9 /* Solid_01000001.png in Resources */ = {isa = PBXBuildFile; fileRef = 603724F3AE01564E02A05F03 /* Solid_01000001.png */; };
 		6037269969984C3DFB297252 /* GameplayControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372AF7F0EDCF17DD0C1785 /* GameplayControlView.swift */; };
 		603726A925FD5FEEEF215DA0 /* BackgroundBricks_0010.png in Resources */ = {isa = PBXBuildFile; fileRef = 60372198E6FF29D51E07E7CE /* BackgroundBricks_0010.png */; };
@@ -895,6 +896,7 @@
 		60372F4A100AD5A8AB20CADA /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		60372F5AD7B1080FC145DD7C /* FixedUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FixedUpdater.swift; sourceTree = "<group>"; };
 		60372F5CCB5DE4204B32C031 /* Solid_00000101.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Solid_00000101.png; sourceTree = "<group>"; };
+		60372F5FE8249C5F5D2B8EF7 /* Effects */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; path = Effects; sourceTree = "<group>"; };
 		60372F67ECCAE0CABFCF6170 /* GridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		60372F78F69A159BD22BE6B5 /* ChunkDecodingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkDecodingError.swift; sourceTree = "<group>"; };
 		60372F8C49AC2D64B6F4CFF0 /* World.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = World.swift; sourceTree = "<group>"; };
@@ -1190,6 +1192,7 @@
 				60372565CF0DB32DD5424E00 /* Settings */,
 				60372D0EEE3B1A3EB5A953DE /* UI */,
 				603728B760649BB783A59B18 /* DeselectTiles.png */,
+				60372F5FE8249C5F5D2B8EF7 /* Effects */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -2006,6 +2009,7 @@
 				6037286AFF98A9D39934F36C /* Lava_1110.png in Resources */,
 				603722F28840378D141949C9 /* Lava_1111.png in Resources */,
 				6037215F5F30F8FA29F9EBAE /* LavaLaserTurret.png in Resources */,
+				6037268F56F41D1F63EB8BE7 /* Effects in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -63,7 +63,7 @@ class EditMoveView: UXView {
         } else {
             for pos3D in positions {
                 let tileType = editor.editableWorld.world[pos3D]
-                let tileView = TileView(world: editor.editableWorld.world, pos3D: pos3D, tileType: tileType, coordinates: .world)
+                let tileView = TileView(world: editor.editableWorld.world, pos3D: pos3D, tileType: tileType, coordinates: .world, glossMaskNode: nil)
                 tileView.placeIn(parent: tileViewsNode)
                 tileViews.append(tileView)
             }

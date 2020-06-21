@@ -37,13 +37,15 @@ class WorldController {
     func load(world: World) {
         unload()
 
-        let worldView = WorldView(world: world)
+        fatalError("TODO: Add gloss mask node")
+
+        /*let worldView = WorldView(world: world, glossMaskNode: <#TODO#>)
         worldView.placeIn(parent: parent)
         loaded = WorldModelView(world: world, worldView: worldView)
         updater.fixedDeltaTime = world.settings.fixedDeltaTime / world.speed
         world.didChangeSpeed.subscribe(observer: self, priority: .model) {
             self.updater.fixedDeltaTime = world.settings.fixedDeltaTime / world.speed
-        }
+        }*/
     }
 
     func unload() {

@@ -13,12 +13,12 @@ class NodeView<Node: SKNode>: View {
         super.init()
     }
 
-    final override func placeIn(parent: SKNode) {
+    override func placeIn(parent: SKNode) {
         super.placeIn(parent: parent)
         parent.addChild(node)
     }
 
-    final override func removeFromParent() {
+    override func removeFromParent() {
         super.removeFromParent()
         node.removeFromParent()
     }

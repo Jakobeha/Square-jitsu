@@ -9,9 +9,11 @@ class WorldView: NodeView<SKNode> {
     private var chunkViews: [WorldChunkPos:ChunkView] = [:]
     private var entityViews: [EntityView] = []
     private let world: ReadonlyWorld
+    private let glossMaskNode: SKNode?
 
-    init(world: ReadonlyWorld) {
+    init(world: ReadonlyWorld, glossMaskNode: SKNode?) {
         self.world = world
+        self.glossMaskNode = glossMaskNode
         super.init(node: SKNode())
 
         placeExisting()
@@ -62,7 +64,7 @@ class WorldView: NodeView<SKNode> {
 
     func placeChunkView(pos: WorldChunkPos, chunk: ReadonlyChunk) {
         assert(chunkViews[pos] == nil)
-        let chunkView = ChunkView(world: world, pos: pos, chunk: chunk)
+        let chunkView = ChunkView(world: world, pos: pos, chunk: chunk, glossMaskNode: glossMaskNode)
         chunkView.placeIn(parent: self.node)
         chunkViews[pos] = chunkView
     }

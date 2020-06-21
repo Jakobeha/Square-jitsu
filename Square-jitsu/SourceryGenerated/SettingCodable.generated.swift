@@ -397,6 +397,8 @@ extension WorldSettings {
         self.init(
             tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
+            glossTexture: setting.usedFieldSettings["glossTexture"]!.decodeDynamically(),
+            glossyTileViews: setting.usedFieldSettings["glossyTileViews"]!.decodeDynamically(),
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
             entityViewScaleModes: setting.usedFieldSettings["entityViewScaleModes"]!.decodeDynamically(),
@@ -419,6 +421,8 @@ extension WorldSettings {
         self.init(
             tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
+            glossTexture: setting.usedFieldSettings["glossTexture"]!.decodeDynamically(),
+            glossyTileViews: setting.usedFieldSettings["glossyTileViews"]!.decodeDynamically(),
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
             entityViewScaleModes: setting.usedFieldSettings["entityViewScaleModes"]!.decodeDynamically(),
@@ -440,6 +444,8 @@ extension WorldSettings {
     internal func encode(to setting: StructSetting<WorldSettings>) {
         self.tileViewTemplates.encodeDynamically(to: setting.allFieldSettings["tileViewTemplates"]!)
         self.entityViewTemplates.encodeDynamically(to: setting.allFieldSettings["entityViewTemplates"]!)
+        self.glossTexture.encodeDynamically(to: setting.allFieldSettings["glossTexture"]!)
+        self.glossyTileViews.encodeDynamically(to: setting.allFieldSettings["glossyTileViews"]!)
         self.entityZPositions.encodeDynamically(to: setting.allFieldSettings["entityZPositions"]!)
         self.rotateTileViewBasedOnOrientation.encodeDynamically(to: setting.allFieldSettings["rotateTileViewBasedOnOrientation"]!)
         self.entityViewScaleModes.encodeDynamically(to: setting.allFieldSettings["entityViewScaleModes"]!)

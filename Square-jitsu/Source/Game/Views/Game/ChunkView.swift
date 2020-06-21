@@ -10,13 +10,19 @@ class ChunkView: NodeView<SKNode> {
     private let world: ReadonlyWorld
     private let chunk: ReadonlyChunk
     private let worldChunkPos: WorldChunkPos
+    private let glossMaskNode: SKNode?
+    private let glossMaskChild: SKNode?
 
-    init(world: ReadonlyWorld, pos: WorldChunkPos, chunk: ReadonlyChunk) {
+    init(world: ReadonlyWorld, pos: WorldChunkPos, chunk: ReadonlyChunk, glossMaskNode: SKNode?) {
         self.world = world
         self.chunk = chunk
         worldChunkPos = pos
+        self.glossMaskNode = glossMaskNode
+        glossMaskChild = glossMaskNode == nil ? nil : SKNode()
         super.init(node: SKNode())
+
         node.position = worldChunkPos.originCgPoint * world.settings.tileViewWidthHeight
+        glossMaskChild?.position = worldChunkPos.originCgPoint * world.settings.tileViewWidthHeight
 
         placeExistingTiles(chunk: chunk)
         chunk.didChangeTile.subscribe(observer: self, priority: .view) { chunkTilePos3D, oldType in
@@ -27,6 +33,16 @@ class ChunkView: NodeView<SKNode> {
 
     required init?(coder: NSCoder) {
         fatalError("not implemented - views nodes shouldn't be serialized")
+    }
+
+    override func placeIn(parent: SKNode) {
+        super.placeIn(parent: parent)
+        glossMaskNode?.addChild(glossMaskChild!)
+    }
+
+    override func removeFromParent() {
+        super.removeFromParent()
+        glossMaskChild?.removeFromParent()
     }
 
     private func placeExistingTiles(chunk: ReadonlyChunk) {
@@ -51,7 +67,7 @@ class ChunkView: NodeView<SKNode> {
         assert(tileViews[chunkTilePos3D] == nil)
         let tileType = chunk[chunkTilePos3D]
         let worldTilePos3D = WorldTilePos3D(worldChunkPos: worldChunkPos, chunkTilePos3D: chunkTilePos3D)
-        let tileView = TileView(world: world, pos3D: worldTilePos3D, tileType: tileType, coordinates: .chunk)
+        let tileView = TileView(world: world, pos3D: worldTilePos3D, tileType: tileType, coordinates: .chunk, glossMaskNode: glossMaskChild)
         tileView.placeIn(parent: self.node)
         tileViews[chunkTilePos3D] = tileView
     }
