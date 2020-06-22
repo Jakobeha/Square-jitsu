@@ -63,10 +63,7 @@ struct GrabSystem: TopLevelSystem {
                 entity.next.graC!.grabState = .idle
             }
         case .thrown(thrower: _):
-            if entity.next.colC?.overlappingTypes.containsSolid ?? false {
-                // End throw
-                entity.next.graC!.grabState = .idle
-            }
+            break
         }
     }
 

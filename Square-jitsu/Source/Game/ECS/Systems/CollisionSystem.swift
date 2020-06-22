@@ -261,7 +261,10 @@ struct CollisionSystem: EarlyTopLevelSystem {
     }
 
     private static func entitiesShouldCollide1Way(_ lhs: Entity, _ rhs: Entity) -> Bool {
-        lhs.prev.graC?.grabState.grabbedOrThrownBy != rhs
+        !(lhs.next.graC?.grabState.isGrabbed ?? false) &&
+        lhs.prev.graC?.grabState.grabbedOrThrownBy != rhs &&
+        (lhs.prev.graC?.grabState.grabbedOrThrownBy == nil ||
+         lhs.prev.graC?.grabState.grabbedOrThrownBy != rhs.prev.graC?.grabState.grabbedOrThrownBy)
     }
 
     private func destroyOnEntityCollisionWith(otherEntity: Entity) -> Bool {

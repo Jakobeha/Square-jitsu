@@ -6,7 +6,9 @@
 import Foundation
 
 let SubCollisionSystems: [SubCollisionSystem.Type] = [
-    MatterSystem.self
+    DontClipSystem.self,
+    MatterSystem.self,
+    RicochetSystem.self
 ]
 
 /// System which runs immediately on collision

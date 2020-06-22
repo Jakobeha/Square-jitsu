@@ -16,8 +16,6 @@ struct MatterSystem: SubCollisionSystem {
 
     mutating func handleSolidCollisionWith(tileType: TileType, tilePosition: WorldTilePos, side: Side) {
         if entity.next.matC != nil {
-            let radiusSum = entity.next.locC!.radius + 0.5
-
             // We want to include knockback of other tiles at this position.
             // If there are multiple solid tiles (not currently possible) this would be run twice,
             // but that's ok
@@ -28,23 +26,15 @@ struct MatterSystem: SubCollisionSystem {
             var isJustCollidingWithoutKnockback = false
             switch side {
             case .east:
-                let xBarrier = tilePosition.cgPoint.x - radiusSum
-                entity.next.locC!.position.x = min(entity.next.locC!.position.x, xBarrier)
                 isJustCollidingWithoutKnockback = isAdjacentWithoutKnockback && entity.next.dynC!.velocity.x > CGFloat.epsilon
                 entity.next.dynC!.velocity.x = min(entity.next.dynC!.velocity.x, -knockback)
             case .north:
-                let yBarrier = tilePosition.cgPoint.y - radiusSum
-                entity.next.locC!.position.y = min(entity.next.locC!.position.y, yBarrier)
                 isJustCollidingWithoutKnockback = isAdjacentWithoutKnockback && entity.next.dynC!.velocity.y > CGFloat.epsilon
                 entity.next.dynC!.velocity.y = min(entity.next.dynC!.velocity.y, -knockback)
             case .west:
-                let xBarrier = tilePosition.cgPoint.x + radiusSum
-                entity.next.locC!.position.x = max(entity.next.locC!.position.x, xBarrier)
                 isJustCollidingWithoutKnockback = isAdjacentWithoutKnockback && entity.next.dynC!.velocity.x < -CGFloat.epsilon
                 entity.next.dynC!.velocity.x = max(entity.next.dynC!.velocity.x, knockback)
             case .south:
-                let yBarrier = tilePosition.cgPoint.y + radiusSum
-                entity.next.locC!.position.y = max(entity.next.locC!.position.y, yBarrier)
                 isJustCollidingWithoutKnockback = isAdjacentWithoutKnockback && entity.next.dynC!.velocity.y < -CGFloat.epsilon
                 entity.next.dynC!.velocity.y = max(entity.next.dynC!.velocity.y, -knockback)
             }

@@ -73,6 +73,8 @@ extension Entity.Components {
             ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
             docC: setting.usedFieldSettings["docC"]?.decodeDynamically(),
             cocC: setting.usedFieldSettings["cocC"]?.decodeDynamically(),
+            dciC: setting.usedFieldSettings["dciC"]?.decodeDynamically(),
+            ricC: setting.usedFieldSettings["ricC"]?.decodeDynamically(),
             matC: setting.usedFieldSettings["matC"]?.decodeDynamically(),
             griC: setting.usedFieldSettings["griC"]?.decodeDynamically(),
             graC: setting.usedFieldSettings["graC"]?.decodeDynamically(),
@@ -95,6 +97,8 @@ extension Entity.Components {
             ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
             docC: setting.usedFieldSettings["docC"]?.decodeDynamically(),
             cocC: setting.usedFieldSettings["cocC"]?.decodeDynamically(),
+            dciC: setting.usedFieldSettings["dciC"]?.decodeDynamically(),
+            ricC: setting.usedFieldSettings["ricC"]?.decodeDynamically(),
             matC: setting.usedFieldSettings["matC"]?.decodeDynamically(),
             griC: setting.usedFieldSettings["griC"]?.decodeDynamically(),
             graC: setting.usedFieldSettings["graC"]?.decodeDynamically(),
@@ -116,6 +120,8 @@ extension Entity.Components {
         self.ntlC?.encodeDynamically(to: setting.allFieldSettings["ntlC"]!)
         self.docC?.encodeDynamically(to: setting.allFieldSettings["docC"]!)
         self.cocC?.encodeDynamically(to: setting.allFieldSettings["cocC"]!)
+        self.dciC?.encodeDynamically(to: setting.allFieldSettings["dciC"]!)
+        self.ricC?.encodeDynamically(to: setting.allFieldSettings["ricC"]!)
         self.matC?.encodeDynamically(to: setting.allFieldSettings["matC"]!)
         self.griC?.encodeDynamically(to: setting.allFieldSettings["griC"]!)
         self.graC?.encodeDynamically(to: setting.allFieldSettings["graC"]!)
@@ -201,6 +207,26 @@ extension NinjaComponent {
         self.jumpSpeed.encodeDynamically(to: setting.allFieldSettings["jumpSpeed"]!)
         self.jumpAngularSpeed.encodeDynamically(to: setting.allFieldSettings["jumpAngularSpeed"]!)
         self.minNumJumpsWithoutBackground.encodeDynamically(to: setting.allFieldSettings["minNumJumpsWithoutBackground"]!)
+    }
+}
+extension RicochetComponent {
+    internal init(from setting: StructSetting<RicochetComponent>) {
+        self.init(
+            bounceMultiplier: setting.usedFieldSettings["bounceMultiplier"]!.decodeDynamically(),
+            numBouncesBeforeDestroy: setting.usedFieldSettings["numBouncesBeforeDestroy"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<RicochetComponent>) -> RicochetComponent {
+        self.init(
+            bounceMultiplier: setting.usedFieldSettings["bounceMultiplier"]!.decodeDynamically(),
+            numBouncesBeforeDestroy: setting.usedFieldSettings["numBouncesBeforeDestroy"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<RicochetComponent>) {
+        self.bounceMultiplier.encodeDynamically(to: setting.allFieldSettings["bounceMultiplier"]!)
+        self.numBouncesBeforeDestroy.encodeDynamically(to: setting.allFieldSettings["numBouncesBeforeDestroy"]!)
     }
 }
 extension Square4DeterminedByOrientationTileViewTemplate {

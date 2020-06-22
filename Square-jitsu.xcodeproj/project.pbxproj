@@ -25,6 +25,7 @@
 		603720327F3B9620432728F3 /* ReadonlyStatelessWorld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722AD824B3FF651B18F48 /* ReadonlyStatelessWorld.swift */; };
 		6037203EBD472373E4AB81BC /* TouchPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372BCBA37F5EB5757706CC /* TouchPhase.swift */; };
 		60372041E6C4B5BA2BD9BA1C /* VStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603728579873871FB8F45702 /* VStack.swift */; };
+		60372042394CC88BABD56FB5 /* DontClipSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037294CB4B87CF04B37F3F7 /* DontClipSystem.swift */; };
 		6037204CED70CF359FB7C77A /* EditorToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372BAE526AA818C0568DEF /* EditorToolsView.swift */; };
 		6037204FA75837851E5E6E5A /* Ice_11010111.png in Resources */ = {isa = PBXBuildFile; fileRef = 6037250B62916679352BEEC8 /* Ice_11010111.png */; };
 		603720518D1C9B765162C7EA /* Solid_00011111.png in Resources */ = {isa = PBXBuildFile; fileRef = 60372D6E8DCA2046A97C59ED /* Solid_00011111.png */; };
@@ -51,6 +52,7 @@
 		603720E6A5314424D69B299C /* WorldLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603729D266E508421F2C97DF /* WorldLoader.swift */; };
 		603720E8FA5EB0FBBB9AD848 /* Player.png in Resources */ = {isa = PBXBuildFile; fileRef = 603728110DB9E8439CBA919E /* Player.png */; };
 		603720EED3432D225D4AB28A /* LineSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603723E11DC58743C396CADA /* LineSegment.swift */; };
+		603720F2D1FC46C8C2A7B55D /* RicochetSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372250CD15FDAFA004AB08 /* RicochetSystem.swift */; };
 		603720F52E622C0A6DB38950 /* WorldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603729A31FCB3271BC2681B5 /* WorldView.swift */; };
 		603720FB4F041619E4B790F0 /* EarlyTopLevelSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722E7B847797CF9112643 /* EarlyTopLevelSystem.swift */; };
 		60372101B8F874A5CC437011 /* TileViewTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603723F348193B5877F20CB0 /* TileViewTemplate.swift */; };
@@ -219,6 +221,7 @@
 		603726472E753F1825BC0B74 /* Ice_00010100.png in Resources */ = {isa = PBXBuildFile; fileRef = 6037282F17815F498A95AB26 /* Ice_00010100.png */; };
 		60372647D1F4701D604CF6A6 /* Ice_01111100.png in Resources */ = {isa = PBXBuildFile; fileRef = 60372386FB14A80F3BB9441F /* Ice_01111100.png */; };
 		603726595BD652B713EB5066 /* CGFloatRangeSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603724AB7DE27E369907A743 /* CGFloatRangeSetting.swift */; };
+		60372664F7AFAC0A6321DF67 /* RicochetComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372239B0F0F38D19727AE2 /* RicochetComponent.swift */; };
 		60372666C6CAF39159D47AF9 /* LineLocationComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603720BE7548D121B6270DC8 /* LineLocationComponent.swift */; };
 		6037266785E8743D99A7DF7A /* SideBasedOrientationSIV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722FA2D09C01B57E07D02 /* SideBasedOrientationSIV.swift */; };
 		60372668F522802ED0D1046A /* TouchPos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037235458C8E0A79F072CD8 /* TouchPos.swift */; };
@@ -241,6 +244,7 @@
 		6037274631C23DF0A057539E /* Solid_11010101.png in Resources */ = {isa = PBXBuildFile; fileRef = 60372217A589D9F4697353BC /* Solid_11010101.png */; };
 		6037275694D7684C16376B9D /* JSONCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037226B5AA7EEBF0070E4CD /* JSONCodable.swift */; };
 		6037275AFA3A3D268DD35DAF /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603729FDCDC4EAF261B9F930 /* TileView.swift */; };
+		603727642DB972B37D0613EE /* DontClipComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372132FE3A072F6B7623B3 /* DontClipComponent.swift */; };
 		603727694D205735F583D62F /* Solid_00000100.png in Resources */ = {isa = PBXBuildFile; fileRef = 60372FB56646AFC9DC59F292 /* Solid_00000100.png */; };
 		603727728A2A966E71BE4EE0 /* Ice_00010111.png in Resources */ = {isa = PBXBuildFile; fileRef = 60372C73AD413F7D3E0952B4 /* Ice_00010111.png */; };
 		603727852C0A45885BD93EB2 /* LaserEntityViewTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372C90870D34E979C230CF /* LaserEntityViewTemplate.swift */; };
@@ -503,6 +507,7 @@
 		60372118DD994B1C6A773C06 /* AutoCodable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoCodable.generated.swift; sourceTree = "<group>"; };
 		603721204BAAB0820693BC46 /* Solid_01000100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Solid_01000100.png; sourceTree = "<group>"; };
 		60372128E100698592D8A7C2 /* MatterSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatterSystem.swift; sourceTree = "<group>"; };
+		60372132FE3A072F6B7623B3 /* DontClipComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DontClipComponent.swift; sourceTree = "<group>"; };
 		6037214559A700826101975B /* Button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		6037214635569CED9362BC60 /* DenseEnumMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DenseEnumMap.swift; sourceTree = "<group>"; };
 		60372146CC14CBAFDE4818B7 /* Observable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
@@ -537,8 +542,10 @@
 		60372229DDAE142810904378 /* Solid_01110001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Solid_01110001.png; sourceTree = "<group>"; };
 		6037223142119F23E29681F8 /* UXCompoundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UXCompoundView.swift; sourceTree = "<group>"; };
 		6037223952A7586649D113A3 /* ReadonlyChunk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadonlyChunk.swift; sourceTree = "<group>"; };
+		60372239B0F0F38D19727AE2 /* RicochetComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RicochetComponent.swift; sourceTree = "<group>"; };
 		6037223CF0D9EB83F1247597 /* UnclampedAngleSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnclampedAngleSetting.swift; sourceTree = "<group>"; };
 		6037223F741865F34BF4A360 /* EditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		60372250CD15FDAFA004AB08 /* RicochetSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RicochetSystem.swift; sourceTree = "<group>"; };
 		6037225AE5F1E6EB728EEF54 /* Ice_11111111.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Ice_11111111.png; sourceTree = "<group>"; };
 		603722693ECFCC9453F85B58 /* GrabSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GrabSystem.swift; sourceTree = "<group>"; };
 		6037226B5AA7EEBF0070E4CD /* JSONCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONCodable.swift; sourceTree = "<group>"; };
@@ -743,6 +750,7 @@
 		60372923EE2506C293607B34 /* Int.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
 		60372926244ED4E5A6BA5331 /* CollectionSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionSetting.swift; sourceTree = "<group>"; };
 		60372934FE5C210592CDE444 /* Ice_01000001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Ice_01000001.png; sourceTree = "<group>"; };
+		6037294CB4B87CF04B37F3F7 /* DontClipSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DontClipSystem.swift; sourceTree = "<group>"; };
 		6037295112924C209684B2A2 /* ImplicitForcesSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImplicitForcesSystem.swift; sourceTree = "<group>"; };
 		60372954AE3142E75683F354 /* TileTypeSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileTypeSetting.swift; sourceTree = "<group>"; };
 		60372956BADBA2EBA00E5739 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -1376,6 +1384,8 @@
 				60372D7FFC6C9B8CF7E1D4F7 /* CreateOnCollideComponent.swift */,
 				6037283DC0BD4DE4A9CD8440 /* MatterComponent.swift */,
 				60372FF78EBEC02010A0F231 /* AINinjaComponent.swift */,
+				60372239B0F0F38D19727AE2 /* RicochetComponent.swift */,
+				60372132FE3A072F6B7623B3 /* DontClipComponent.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1463,6 +1473,8 @@
 				603722CC6A995DDE8C59D480 /* AINinjaSystem.swift */,
 				60372AD25453BD94903782F5 /* ShakeOnCollideSystem.swift */,
 				603722E7B847797CF9112643 /* EarlyTopLevelSystem.swift */,
+				60372250CD15FDAFA004AB08 /* RicochetSystem.swift */,
+				6037294CB4B87CF04B37F3F7 /* DontClipSystem.swift */,
 			);
 			path = Systems;
 			sourceTree = "<group>";
@@ -2295,6 +2307,10 @@
 				6037283A4D880E119DA3E839 /* AINinjaSystem.swift in Sources */,
 				60372321461A2BBE2227DC75 /* ShakeOnCollideSystem.swift in Sources */,
 				603720FB4F041619E4B790F0 /* EarlyTopLevelSystem.swift in Sources */,
+				60372664F7AFAC0A6321DF67 /* RicochetComponent.swift in Sources */,
+				603720F2D1FC46C8C2A7B55D /* RicochetSystem.swift in Sources */,
+				603727642DB972B37D0613EE /* DontClipComponent.swift in Sources */,
+				60372042394CC88BABD56FB5 /* DontClipSystem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

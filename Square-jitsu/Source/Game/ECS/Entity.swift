@@ -18,6 +18,8 @@ class Entity: EqualityIsIdentity {
         var ntlC: NearTileComponent?
         var docC: DestroyOnCollideComponent?
         var cocC: CreateOnCollideComponent?
+        var dciC: DontClipComponent?
+        var ricC: RicochetComponent?
         var matC: MatterComponent?
         var griC: GrabbingComponent?
         var graC: GrabbableComponent?
@@ -36,8 +38,10 @@ class Entity: EqualityIsIdentity {
                 "colC": CodableStructSetting<CollisionComponent>(),
                 "ntlC": CodableStructSetting<NearTileComponent>(),
                 "imfC": CodableStructSetting<ImplicitForcesComponent>(),
+                "dciC": CodableStructSetting<DontClipComponent>(),
                 "docC": CodableStructSetting<DestroyOnCollideComponent>(),
                 "cocC": CodableStructSetting<CreateOnCollideComponent>(),
+                "ricC": RicochetComponent.newSetting(),
                 "matC": MatterComponent.newSetting(),
                 "griC": CodableStructSetting<GrabbingComponent>(),
                 "graC": CodableStructSetting<GrabbableComponent>(),
@@ -63,9 +67,11 @@ class Entity: EqualityIsIdentity {
             "colC": ([["locC", "lilC"]], []),
             "ntlC": ([["locC"]], []),
             "imfC": ([["dynC"], ["locC"]], []),
+            "dciC": ([["colC"], ["locC"]], []),
             "docC": ([["dynC"], ["locC"]], []),
             "cocC": ([["colC"]], []),
-            "matC": ([["dynC"], ["locC"]], []),
+            "ricC": ([["dciC"], ["colC"], ["dynC"]], []),
+            "matC": ([["dciC"], ["dynC"], ["locC"]], []),
             "griC": ([["colC"], ["dynC"], ["locC"]], []),
             "graC": ([["dynC"], ["locC"]], []),
             "turC": ([["dynC"], ["locC"]], []),

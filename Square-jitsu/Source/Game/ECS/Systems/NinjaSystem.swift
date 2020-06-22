@@ -64,7 +64,7 @@ struct NinjaSystem: TopLevelSystem {
             entity.next.nijC!.numJumpsWithoutBackgroundRemaining = entity.next.nijC!.minNumJumpsWithoutBackground
         } else {
             // Technically this is cleared somewhere else if on solid anyways...
-            entity.next.nijC!.backgroundTypesUsed.formUnion(overlappingBackgroundTypes)
+            entity.next.nijC!.backgroundTypesUsed = overlappingBackgroundTypes
 
             if entity.next.nijC!.numJumpsWithoutBackgroundRemaining > 0 {
                 entity.next.nijC!.numJumpsWithoutBackgroundRemaining -= 1

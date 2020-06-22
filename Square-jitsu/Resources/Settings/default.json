@@ -5,7 +5,7 @@
         "type": "diamond4",
         "textureBase": "Background",
         "adjoiningTypes": [
-          "background"
+          "background/0"
         ],
         "semiAdjoiningTypes": [
           "background/0",
@@ -16,7 +16,7 @@
         "type": "diamond4",
         "textureBase": "BackgroundBricks",
         "adjoiningTypes": [
-          "background"
+          "background/1"
         ],
         "semiAdjoiningTypes": [
           "background/1",
@@ -321,6 +321,7 @@
         "aerialAngularFriction": 0.02083333333
       },
       "colC": {},
+      "dciC": {},
       "matC": {"mass": 1},
       "ntlC": {"nearRadiusExtra": 0.5},
       "griC": {
@@ -348,6 +349,7 @@
         "aerialAngularFriction": 0.02083333333
       },
       "colC": {},
+      "dciC": {},
       "matC": {"mass": 1},
       "ntlC": {"nearRadiusExtra": 0.5},
       "helC": {"maxHealth": 1},
@@ -369,8 +371,10 @@
     "shuriken": [{
       "locC": {"radius": 0.5},
       "dynC": {"dynamicKnockbackMultiplier": 0.5},
-      "docC": {"destroyOnEntityCollision": false, "destroyOnSolidCollision": true},
-      "matC": {"mass": 1},
+      "colC": {},
+      "dciC": {},
+      "docC": {"destroyOnEntityCollision": true, "destroyOnSolidCollision": false},
+      "ricC": {"bounceMultiplier": 1, "numBouncesBeforeDestroy": 3},
       "graC": {"thrownSpeedMultiplier": 2},
       "toxC": {"damage": 0.25, "safeTypes": []}
     }],

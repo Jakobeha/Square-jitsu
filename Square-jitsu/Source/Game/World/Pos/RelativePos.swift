@@ -3,9 +3,13 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 struct RelativePos: Equatable, Hashable {
     let x: Int
     let y: Int
+
+    var toCgPoint: CGPoint {
+        CGPoint(x: x, y: y)
+    }
 }

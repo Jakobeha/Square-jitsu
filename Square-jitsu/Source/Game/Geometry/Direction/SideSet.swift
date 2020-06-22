@@ -29,6 +29,11 @@ struct SideSet: MonoidOptionSet, Equatable, Hashable, CaseIterable {
         String(rawValue, radix: 2).leftPadding(toLength: 4, withPad: "0")
     }
 
+    var asActualSet: Set<Side> {
+        get { Set(Side.allCases.filter { side in self.contains(side.toSet) }) }
+        set { self = newValue.map { side in side.toSet }.reduce() }
+    }
+
     var first: Side? {
         Side.allCases.first { side in self.contains(side.toSet) }
     }
