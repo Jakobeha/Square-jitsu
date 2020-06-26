@@ -47,7 +47,7 @@ class PlayerSpawnBehavior: EmptyTileBehavior<Never> {
         // Spawn the player
         let pos = loadInfo!.playerSpawnPos
         let world = loadInfo!.playerSpawnWorld
-        return Entity.newForSpawnTile(type: TileType.player, world: world, pos: pos)
+        return Entity.spawnForTile(type: TileType.player, world: world, pos: pos)
     }
 
     func revert(world: World, pos3D: WorldTilePos3D) {

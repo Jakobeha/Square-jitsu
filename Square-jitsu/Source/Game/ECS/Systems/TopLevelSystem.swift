@@ -28,6 +28,7 @@ let TopLevelSystems: [TopLevelSystem.Type] = [
     TurretSystem.self,
     // Must be after CollisionSystem
     DamageSystem.self,
+    LifetimeSystem.self,
     // Must be last
     LoadPositionSystem.self
 ]

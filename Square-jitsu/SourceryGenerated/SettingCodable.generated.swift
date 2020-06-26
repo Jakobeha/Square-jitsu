@@ -38,6 +38,57 @@ extension AINinjaComponent {
         self.targetTypes.encodeDynamically(to: setting.allFieldSettings["targetTypes"]!)
     }
 }
+extension AnimatedByLifetimeEntityViewTemplate {
+    internal init(from setting: StructSetting<AnimatedByLifetimeEntityViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<AnimatedByLifetimeEntityViewTemplate>) -> AnimatedByLifetimeEntityViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<AnimatedByLifetimeEntityViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
+    }
+}
+extension CreateOnDestroyComponent {
+    internal init(from setting: StructSetting<CreateOnDestroyComponent>) {
+        self.init(
+            createdTileType: setting.usedFieldSettings["createdTileType"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<CreateOnDestroyComponent>) -> CreateOnDestroyComponent {
+        self.init(
+            createdTileType: setting.usedFieldSettings["createdTileType"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<CreateOnDestroyComponent>) {
+        self.createdTileType.encodeDynamically(to: setting.allFieldSettings["createdTileType"]!)
+    }
+}
+extension DestroyAfterLifetimeComponent {
+    internal init(from setting: StructSetting<DestroyAfterLifetimeComponent>) {
+        self.init(
+            maxLifetime: setting.usedFieldSettings["maxLifetime"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<DestroyAfterLifetimeComponent>) -> DestroyAfterLifetimeComponent {
+        self.init(
+            maxLifetime: setting.usedFieldSettings["maxLifetime"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<DestroyAfterLifetimeComponent>) {
+        self.maxLifetime.encodeDynamically(to: setting.allFieldSettings["maxLifetime"]!)
+    }
+}
 extension Diamond4TileViewTemplate {
     internal convenience init(from setting: StructSetting<Diamond4TileViewTemplate>) {
         self.init(
@@ -67,6 +118,8 @@ extension Entity.Components {
             locC: setting.usedFieldSettings["locC"]?.decodeDynamically(),
             lilC: setting.usedFieldSettings["lilC"]?.decodeDynamically(),
             larC: setting.usedFieldSettings["larC"]?.decodeDynamically(),
+            dalC: setting.usedFieldSettings["dalC"]?.decodeDynamically(),
+            codC: setting.usedFieldSettings["codC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
             colC: setting.usedFieldSettings["colC"]?.decodeDynamically(),
@@ -91,6 +144,8 @@ extension Entity.Components {
             locC: setting.usedFieldSettings["locC"]?.decodeDynamically(),
             lilC: setting.usedFieldSettings["lilC"]?.decodeDynamically(),
             larC: setting.usedFieldSettings["larC"]?.decodeDynamically(),
+            dalC: setting.usedFieldSettings["dalC"]?.decodeDynamically(),
+            codC: setting.usedFieldSettings["codC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
             colC: setting.usedFieldSettings["colC"]?.decodeDynamically(),
@@ -114,6 +169,8 @@ extension Entity.Components {
         self.locC?.encodeDynamically(to: setting.allFieldSettings["locC"]!)
         self.lilC?.encodeDynamically(to: setting.allFieldSettings["lilC"]!)
         self.larC?.encodeDynamically(to: setting.allFieldSettings["larC"]!)
+        self.dalC?.encodeDynamically(to: setting.allFieldSettings["dalC"]!)
+        self.codC?.encodeDynamically(to: setting.allFieldSettings["codC"]!)
         self.dynC?.encodeDynamically(to: setting.allFieldSettings["dynC"]!)
         self.imfC?.encodeDynamically(to: setting.allFieldSettings["imfC"]!)
         self.colC?.encodeDynamically(to: setting.allFieldSettings["colC"]!)

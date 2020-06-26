@@ -88,6 +88,12 @@
         "texture": "Shuriken"
       }
     ],
+    "bomb": [
+      {
+        "type": "static",
+        "texture": "Bomb"
+      }
+    ],
     "turret": [
       {
         "type": "turret",
@@ -134,6 +140,16 @@
       {
         "type": "static",
         "texture": "Shuriken"
+      }
+    ],
+    "bomb": [
+      {
+        "type": "static",
+        "texture": "Bomb"
+      },
+      {
+        "type": "static",
+        "texture": "BombActive"
       }
     ],
     "enemy": [
@@ -223,6 +239,12 @@
           "alpha": 1
         }
       }
+    ],
+    "explosion": [
+      {
+        "type": "animated-by-lifetime",
+        "textureBase": "Explosion"
+      }
     ]
   },
   "entityZPositions": {
@@ -298,8 +320,10 @@
     "player": [""],
     "enemy": ["Default"],
     "shuriken": ["Default"],
+    "bomb": ["Default"],
     "projectile": ["Bullet", "Laser"],
-    "turret": ["Default", "Burst", "Laser", "Lava-Laser"]
+    "turret": ["Default", "Burst", "Laser", "Lava-Laser"],
+    "explosion": ["Default"]
   },
   "playerInputSpeedMultiplier": 0.0625,
   "tileDamage": {
@@ -307,7 +331,8 @@
   },
   "knockback": {
     "lava": [4],
-    "projectile": [null, 8]
+    "projectile": [null, 2],
+    "explosion": [8]
   },
   "entityData": {
     "player": [{
@@ -326,7 +351,8 @@
       "ntlC": {"nearRadiusExtra": 0.5},
       "griC": {
         "grabbableTypes": [
-          "shuriken"
+          "shuriken",
+          "bomb"
         ],
         "grabOffset": [0.25, -0.25],
         "throwSpeed": 16,
@@ -370,6 +396,7 @@
     }],
     "shuriken": [{
       "locC": {"radius": 0.5},
+      "dalC": {"maxLifetime": 8},
       "dynC": {"dynamicKnockbackMultiplier": 0.5},
       "colC": {},
       "dciC": {},
@@ -378,9 +405,27 @@
       "graC": {"thrownSpeedMultiplier": 2},
       "toxC": {"damage": 0.25, "safeTypes": []}
     }],
+    "bomb": [{
+      "locC": {"radius": 0.5},
+      "dalC": {"maxLifetime": 3},
+      "codC": {"createdTileType": "explosion"},
+      "dynC": {"dynamicKnockbackMultiplier": 0.75},
+      "imfC": {
+        "gravity": 0.5,
+        "minSpeedOnIce": 0,
+        "solidFriction": 0.015625,
+        "aerialAngularFriction": 0.0625
+      },
+      "colC": {},
+      "dciC": {},
+      "docC": {"destroyOnEntityCollision": true, "destroyOnSolidCollision": false},
+      "ricC": {"bounceMultiplier": 1, "numBouncesBeforeDestroy": 2},
+      "graC": {"thrownSpeedMultiplier": 1}
+    }],
     "projectile": [
       {
         "locC": {"radius": 0.0833},
+        "dalC": {"maxLifetime": 8},
         "dynC": {"dynamicKnockbackMultiplier": 0.5},
         "docC": {"destroyOnEntityCollision": true, "destroyOnSolidCollision": true},
         "toxC": {"damage": 0.125, "safeTypes": []}
@@ -463,7 +508,13 @@
           "delayWhenTargetFoundBeforeFire": 1
         }
       }
-    ]
+    ],
+    "explosion": [{
+      "locC": {"radius": 2},
+      "dalC": {"maxLifetime": 1},
+      "colC": {},
+      "toxC": {"damage": 0.25, "safeTypes": []}
+    }]
   },
   "entitySpawnRadius": {
     "enemy": [5]
@@ -504,6 +555,7 @@
     "lava": [0],
     "enemy": [0],
     "shuriken": [0],
+    "bomb": [0],
     "turret": [0, 1, 2, 3]
   }
 }

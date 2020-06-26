@@ -221,16 +221,17 @@ class EditorTools {
             if hasEditMoveState {
                 // Perform a move with the selected tiles
                 editMoveState = editMoveState.afterTouchDown(firstTouchPos: touchPos)
-                if editAction.mode == .move {
-                    // We need to synchronize before hiding, we don't put it in temporarilyHide
-                    // because it would be misleading
-                    world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
-                    world.temporarilyHide(positions: editAction.selectedPositions)
-                }
             } else {
                 // Perform a select
                 editSelection = editSelection.afterTouchDown(firstTouchPos: touchPos)
             }
+        }
+
+        if hasEditMoveState && editMoveState.isStarted && editAction.mode == .move {
+            // We need to synchronize before hiding, we don't put it in temporarilyHide
+            // because it would be misleading
+            world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+            world.temporarilyHide(positions: editAction.selectedPositions)
         }
     }
 

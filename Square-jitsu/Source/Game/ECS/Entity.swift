@@ -12,6 +12,8 @@ class Entity: EqualityIsIdentity {
         var locC: LocationComponent?
         var lilC: LineLocationComponent?
         var larC: LoadAroundComponent?
+        var dalC: DestroyAfterLifetimeComponent?
+        var codC: CreateOnDestroyComponent?
         var dynC: MovingComponent?
         var imfC: ImplicitForcesComponent?
         var colC: CollisionComponent?
@@ -34,6 +36,8 @@ class Entity: EqualityIsIdentity {
                 "locC": CodableStructSetting<LocationComponent>(),
                 "lilC": CodableStructSetting<LineLocationComponent>(),
                 "larC": CodableStructSetting<LoadAroundComponent>(),
+                "dalC": DestroyAfterLifetimeComponent.newSetting(),
+                "codC": CreateOnDestroyComponent.newSetting(),
                 "dynC": MovingComponent.newSetting(),
                 "colC": CodableStructSetting<CollisionComponent>(),
                 "ntlC": CodableStructSetting<NearTileComponent>(),
@@ -63,6 +67,7 @@ class Entity: EqualityIsIdentity {
         private static let componentDependenciesAndConflictsCNF: [String:([[String]], [String])] = [
             "lilC": ([], ["locC"]),
             "larC": ([["locC"]], []),
+            "codC": ([["locC"]], []),
             "dynC": ([["locC"]], []),
             "colC": ([["locC", "lilC"]], []),
             "ntlC": ([["locC"]], []),
@@ -110,27 +115,27 @@ class Entity: EqualityIsIdentity {
         }
     }
 
-    @discardableResult static func newForSpawnTile(type: TileType, world: World, pos: WorldTilePos3D) -> Entity {
-        new(type: type, world: world, pos: pos.pos.cgPoint)
+    @discardableResult static func spawnForTile(type: TileType, world: World, pos: WorldTilePos3D) -> Entity {
+        spawn(type: type, world: world, pos: pos.pos.cgPoint)
     }
 
-    @discardableResult static func new(type: TileType, world: World, pos: LineSegment) -> Entity {
-        new(type: type, world: world) { components in
+    @discardableResult static func spawn(type: TileType, world: World, pos: LineSegment) -> Entity {
+        spawn(type: type, world: world) { components in
             components.lilC!.position = pos
         }
     }
 
-    @discardableResult static func new(type: TileType, world: World, pos: CGPoint) -> Entity {
-        new(type: type, world: world) { components in
+    @discardableResult static func spawn(type: TileType, world: World, pos: CGPoint) -> Entity {
+        spawn(type: type, world: world) { components in
             components.locC!.position = pos
         }
     }
 
-    @discardableResult static func new(type: TileType, world: World) -> Entity {
-        new(type: type, world: world) { _ in }
+    @discardableResult static func spawn(type: TileType, world: World) -> Entity {
+        spawn(type: type, world: world) { _ in }
     }
 
-    @discardableResult static func new(type: TileType, world: World, configure: (inout Components) -> ()) -> Entity {
+    @discardableResult static func spawn(type: TileType, world: World, configure: (inout Components) -> ()) -> Entity {
         var components = world.settings.entityData[type]!
         configure(&components)
         let entity = Entity(type: type, components: components)

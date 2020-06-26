@@ -30,7 +30,7 @@ function process8AtlasesOfType(typeName, typeComposeImplementation) {
             cp.execSync(`convert \\
               \\( ${outDirPath}/temp_${partGrid[0][0]}.png ${outDirPath}/temp_${partGrid[0][1]}.png +append \\) \\
               \\( ${outDirPath}/temp_${partGrid[1][0]}.png ${outDirPath}/temp_${partGrid[1][1]}.png +append \\) \\
-            -append ${outDirPath}/${name}_${patternFromAdjacents}.png`)
+            -append ${outDirPath}/${patternFromAdjacents}.png`)
         }
 
         typeComposeImplementation(composeImage)

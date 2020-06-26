@@ -219,7 +219,7 @@ struct TurretSystem: TopLevelSystem {
     }
 
     private func fireProjectile() {
-        let projectile = Entity.new(type: entity.next.turC!.whatToFire, world: world, configure: configureProjectile)
+        let projectile = Entity.spawn(type: entity.next.turC!.whatToFire, world: world, configure: configureProjectile)
 
         if entity.next.turC!.howToFire.isContinuous {
             entity.next.turC!.fireState = .isFiringContinuous(projectile: EntityRef(projectile))

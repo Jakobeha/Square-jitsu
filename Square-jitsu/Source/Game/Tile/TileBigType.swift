@@ -23,10 +23,14 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
     case player
     case enemy
     case shuriken
+    case bomb
     case projectile
 
     // Entity / tile hybrids (both tile and entity representations are used)
     case turret
+
+    // Explosion - should be last so it's displatyed over everything else
+    case explosion
 
     // region pattern matching
     var layer: TileLayer {
@@ -41,14 +45,14 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
             return .iceSolid
         case .lava:
             return .toxicEdge
-        case .player, .enemy, .shuriken, .projectile, .turret:
+        case .player, .enemy, .shuriken, .bomb, .projectile, .turret, .explosion:
             return .entity
         }
     }
 
     func newMetadataSetting() -> SerialSetting {
         switch self {
-        case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice, .lava, .player, .enemy, .shuriken, .projectile:
+        case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice, .lava, .player, .enemy, .shuriken, .bomb, .projectile, .explosion:
             return NeverSetting()
         case .turret:
             return TurretMetadata.newSetting()
@@ -59,14 +63,15 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         switch self {
         case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice, .lava:
             return nil
-        case .projectile:
-            // Not a tile
+        case .projectile, .explosion:
+            // Can still be called on bad maps, so we don't error
+            Logger.warn("newBehavior called on non-tile \(self)")
             return nil
         case .player:
             return PlayerSpawnBehavior()
         case .enemy:
             return SingleSpawnInRadiusBehavior()
-        case .shuriken:
+        case .shuriken, .bomb:
             return SpawnOnGrabBehavior()
         case .turret:
             return TurretBehavior()

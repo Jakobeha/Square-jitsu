@@ -464,7 +464,6 @@ class World: ReadonlyWorld {
     }
 
     private func removeNow(entity: Entity) {
-
         // Set entity world
         assert(entity.world === self, "entity isn't in this world")
         entity.world = nil
@@ -532,6 +531,10 @@ class World: ReadonlyWorld {
             addNow(entity: entity)
         }
         entitiesToAdd.removeAll()
+
+        for system in OnDestroySystems {
+            system.onDestroy(entities: entitiesToRemove)
+        }
         for entity in entitiesToRemove {
             removeNow(entity: entity)
         }

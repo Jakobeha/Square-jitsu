@@ -9,7 +9,8 @@ class EntityViewTemplateSetting: UnionSetting {
     static var options: [USOGenerator] = [
         USOGenerator(SettingOptionRecognizerByName("static"), StaticEntityViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("turret"), TurretEntityViewTemplate.newSetting),
-        USOGenerator(SettingOptionRecognizerByName("laser"), LaserEntityViewTemplate.newSetting)
+        USOGenerator(SettingOptionRecognizerByName("laser"), LaserEntityViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("animated-by-lifetime"), AnimatedByLifetimeEntityViewTemplate.newSetting)
     ]
 
     init() { super.init(options: EntityViewTemplateSetting.options.map { $0.newOption() }) }

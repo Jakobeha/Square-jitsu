@@ -20,7 +20,7 @@ class AbstractSpawnBehavior<Metadata: TileMetadata>: EmptyTileBehavior<Metadata>
 
     @discardableResult func spawn(world: World, pos: WorldTilePos3D) -> Entity {
         let myTileType = world[pos]
-        let entity = Entity.newForSpawnTile(type: myTileType, world: world, pos: pos)
+        let entity = Entity.spawnForTile(type: myTileType, world: world, pos: pos)
         mySpawnedEntities.append(entity)
         _didSpawn.publish(entity)
 

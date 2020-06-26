@@ -8,11 +8,22 @@ import SpriteKit
 enum TextureSet {
     case fromBaseName(String)
 
+    var count: Int {
+        switch self {
+        case .fromBaseName(let baseName):
+            return Bundle.main.urls(forResourcesWithExtension: nil, subdirectory: baseName)!.count
+        }
+    }
+
     subscript(name: String) -> SKTexture {
         switch self {
         case .fromBaseName(let baseName):
-            let textureName = "\(baseName)_\(name)"
+            let textureName = "\(baseName)/\(name)"
             return SKTexture(imageNamed: textureName)
         }
+    }
+
+    subscript(nameAsIndex: Int) -> SKTexture {
+        self[String(nameAsIndex)]
     }
 }

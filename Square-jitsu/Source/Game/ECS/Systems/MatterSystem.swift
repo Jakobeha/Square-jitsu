@@ -62,8 +62,9 @@ struct MatterSystem: SubCollisionSystem {
 
             if MatterSystem.isEntitySemiSolid(entity: otherEntity) {
                 if doesEntityReverseVelocities(entity: otherEntity) {
-                    if entity.next.dynC!.velocity.projectedOnto(angle: directionAwayFromOtherEntity) < 0 {
-                        entity.next.dynC!.velocity *= -1
+                    let knockback = world.settings.knockback[otherEntity.type] ?? 0
+                    if entity.next.dynC!.velocity.projectedOnto(angle: directionAwayFromOtherEntity) < knockback {
+                        entity.next.dynC!.velocity = CGPoint(magnitude: knockback, directionFromOrigin: directionAwayFromOtherEntity)
                     }
                 } else {
                     entity.next.dynC!.velocity = CGPoint.zero
@@ -89,10 +90,6 @@ struct MatterSystem: SubCollisionSystem {
                 // is hard)
                 // stopHandlingCollisions = true
             }
-
-            let staticKnockbackAmount = world.settings.knockback[otherEntity.type] ?? 0
-            let staticKnockback = CGPoint(magnitude: staticKnockbackAmount, directionFromOrigin: directionAway)
-            entity.next.dynC!.velocity += staticKnockback
 
             if otherEntity.next.dynC != nil {
                 // We need to use prev because the other entity might have already been affected by this one
@@ -123,10 +120,10 @@ struct MatterSystem: SubCollisionSystem {
     }
 
     private static func isEntitySemiSolid(entity: Entity) -> Bool {
-        !(entity.next.docC?.destroyOnEntityCollision ?? false)
+        entity.next.matC != nil || entity.world!.settings.knockback[entity.type] != nil
     }
 
     private func doesEntityReverseVelocities(entity: Entity) -> Bool {
-        MatterSystem.isEntitySemiSolid(entity: entity) && entity.next.matC == nil && world.settings.knockback[entity.type] == 0
+        MatterSystem.isEntitySemiSolid(entity: entity) && entity.next.matC == nil
     }
 }
