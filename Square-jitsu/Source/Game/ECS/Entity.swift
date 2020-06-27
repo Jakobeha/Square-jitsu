@@ -15,6 +15,7 @@ class Entity: EqualityIsIdentity {
         var dalC: DestroyAfterLifetimeComponent?
         var codC: CreateOnDestroyComponent?
         var dynC: MovingComponent?
+        var accC: AccelerationComponent?
         var imfC: ImplicitForcesComponent?
         var colC: CollisionComponent?
         var ntlC: NearTileComponent?
@@ -39,11 +40,12 @@ class Entity: EqualityIsIdentity {
                 "dalC": DestroyAfterLifetimeComponent.newSetting(),
                 "codC": CreateOnDestroyComponent.newSetting(),
                 "dynC": MovingComponent.newSetting(),
+                "accC": AccelerationComponent.newSetting(),
                 "colC": CodableStructSetting<CollisionComponent>(),
                 "ntlC": CodableStructSetting<NearTileComponent>(),
                 "imfC": CodableStructSetting<ImplicitForcesComponent>(),
                 "dciC": CodableStructSetting<DontClipComponent>(),
-                "docC": CodableStructSetting<DestroyOnCollideComponent>(),
+                "docC": DestroyOnCollideComponent.newSetting(),
                 "cocC": CodableStructSetting<CreateOnCollideComponent>(),
                 "ricC": RicochetComponent.newSetting(),
                 "matC": MatterComponent.newSetting(),
@@ -69,6 +71,7 @@ class Entity: EqualityIsIdentity {
             "larC": ([["locC"]], []),
             "codC": ([["locC"]], []),
             "dynC": ([["locC"]], []),
+            "accC": ([["dynC"]], []),
             "colC": ([["locC", "lilC"]], []),
             "ntlC": ([["locC"]], []),
             "imfC": ([["dynC"], ["locC"]], []),

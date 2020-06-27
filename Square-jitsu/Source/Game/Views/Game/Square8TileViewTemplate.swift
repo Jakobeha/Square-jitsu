@@ -31,6 +31,8 @@ final class Square8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     let textureBase: TextureSet
     let adjoiningTypes: TileTypePred
 
+    var fadeAction: SKAction? { nil }
+
     private lazy var textures: DenseEnumMap<CornerSet, SKTexture> = DenseEnumMap { cornerSet in
         let coalescedSet = Square8TileViewTemplate.getCoalescedForSharedTexture(cornerSet: cornerSet)
         return Square8TileViewTemplate.getTexture(base: textureBase, cornerSet: coalescedSet)

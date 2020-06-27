@@ -112,11 +112,13 @@ extension CGPoint {
     }
 
     var magnitude: CGFloat {
-        hypot(x, y)
+        get { hypot(x, y) }
+        set { self = CGPoint(magnitude: newValue, directionFromOrigin: directionFromOrigin) }
     }
 
     var directionFromOrigin: Angle {
-        Angle(radians: atan2(y, x))
+        get { Angle(radians: atan2(y, x)) }
+        set { self = CGPoint(magnitude: magnitude, directionFromOrigin: newValue) }
     }
 
     var normalized: CGPoint {

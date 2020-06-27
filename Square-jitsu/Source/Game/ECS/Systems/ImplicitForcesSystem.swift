@@ -17,35 +17,58 @@ struct ImplicitForcesSystem: TopLevelSystem {
     static func postTick(world: World) {}
 
     func tick() {
-        if entity.next.imfC != nil && shouldApplyForces {
-            if entity.next.colC != nil {
-                if entity.next.colC!.overlappingTypes.contains(layer: TileLayer.solid) {
-                    let solidFrictionMultiplier = 1 - entity.next.imfC!.solidFriction
-                    if entity.next.colC!.adjacentSides.hasVertical {
-                        entity.next.dynC!.velocity.x *= solidFrictionMultiplier
-                    }
-                    if entity.next.colC!.adjacentSides.hasHorizontal {
-                        entity.next.dynC!.velocity.y *= solidFrictionMultiplier
-                    }
+        if shouldApplyForces {
+            if entity.next.imfC != nil {
+                if entity.next.colC != nil {
+                    applyFriction()
+                    preventIceTrap()
                 }
-                if entity.next.colC!.overlappingTypes.contains(layer: TileLayer.iceSolid) && !entity.next.colC!.overlappingTypes.contains(layer: TileLayer.solid) {
-                    let minSpeedOnIce = entity.next.imfC!.minSpeedOnIce
-                    if entity.next.colC!.adjacentSides.hasVertical && !entity.next.colC!.adjacentSides.hasHorizontal {
-                        if entity.next.dynC!.velocity.x.magnitude < minSpeedOnIce {
-                            entity.next.dynC!.velocity.x = entity.next.dynC!.velocity.x < 0 ? -minSpeedOnIce : minSpeedOnIce
-                        }
-                    }
-                    if entity.next.colC!.adjacentSides.hasHorizontal && !entity.next.colC!.adjacentSides.hasVertical {
-                        if entity.next.dynC!.velocity.y.magnitude < minSpeedOnIce {
-                            entity.next.dynC!.velocity.y = entity.next.dynC!.velocity.y < 0 ? -minSpeedOnIce : minSpeedOnIce
-                        }
-                    }
+                applyGravity()
+            }
+            if entity.next.accC != nil {
+                accelerate()
+            }
+        }
+    }
+
+    private func applyFriction() {
+        if entity.next.colC!.overlappingTypes.contains(layer: TileLayer.solid) {
+            let solidFrictionMultiplier = 1 - entity.next.imfC!.solidFriction
+            if entity.next.colC!.adjacentSides.hasVertical {
+                entity.next.dynC!.velocity.x *= solidFrictionMultiplier
+            }
+            if entity.next.colC!.adjacentSides.hasHorizontal {
+                entity.next.dynC!.velocity.y *= solidFrictionMultiplier
+            }
+        }
+    }
+
+    private func preventIceTrap() {
+        if entity.next.colC!.overlappingTypes.contains(layer: TileLayer.iceSolid) && !entity.next.colC!.overlappingTypes.contains(layer: TileLayer.solid) {
+            let minSpeedOnIce = entity.next.imfC!.minSpeedOnIce
+            if entity.next.colC!.adjacentSides.hasVertical && !entity.next.colC!.adjacentSides.hasHorizontal {
+                if entity.next.dynC!.velocity.x.magnitude < minSpeedOnIce {
+                    entity.next.dynC!.velocity.x = entity.next.dynC!.velocity.x < 0 ? -minSpeedOnIce : minSpeedOnIce
                 }
             }
-            if isEntityInAir {
-                entity.next.dynC!.velocity.y -= entity.next.imfC!.gravity * world.settings.fixedDeltaTime
-                entity.next.dynC!.angularVelocity *= 1 - entity.next.imfC!.aerialAngularFriction
+            if entity.next.colC!.adjacentSides.hasHorizontal && !entity.next.colC!.adjacentSides.hasVertical {
+                if entity.next.dynC!.velocity.y.magnitude < minSpeedOnIce {
+                    entity.next.dynC!.velocity.y = entity.next.dynC!.velocity.y < 0 ? -minSpeedOnIce : minSpeedOnIce
+                }
             }
+        }
+    }
+
+    private func applyGravity() {
+        if isEntityInAir {
+            entity.next.dynC!.velocity.y -= entity.next.imfC!.gravity * world.settings.fixedDeltaTime
+            entity.next.dynC!.angularVelocity *= 1 - entity.next.imfC!.aerialAngularFriction
+        }
+    }
+
+    private func accelerate() {
+        if entity.next.dynC!.velocity.magnitude > CGFloat.epsilon {
+            entity.next.dynC!.velocity.magnitude += entity.next.accC!.acceleration * world.settings.fixedDeltaTime
         }
     }
 

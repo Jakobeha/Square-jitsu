@@ -14,6 +14,8 @@ struct TurretEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
     let chargingCircleOffset: CGPoint
     let chargingCircleColor: SKColor
 
+    var fadeAction: SKAction? { nil }
+
     func generateNode(entity: Entity) -> SKNode {
         assert(entity.next.turC != nil, "turret entity view is only allowed on turret entities")
 
@@ -34,6 +36,8 @@ struct TurretEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
     }
 
     func tick(entity: Entity, node: SKNode) {
+        base.tick(entity: entity, node: node)
+
         let chargingCircleNode = node.childNode(withName: TurretEntityViewTemplate.chargingCircleName)! as! SKShapeNode
         updateChargingCircle(entity: entity, chargingCircleNode: chargingCircleNode)
     }

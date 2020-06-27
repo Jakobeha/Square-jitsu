@@ -5,10 +5,20 @@
 
 import Foundation
 
-struct CreateOnCollideComponent: SettingCodableByCodable, Codable {
-    var createdTileType: TileType
+struct CreateOnCollideComponent: SingleSettingCodable, Codable {
+    var createdType: TileType
 
+    // region encoding and decoding
     enum CodingKeys: String, CodingKey {
-        case createdTileType
+        case createdType
     }
+
+    typealias AsSetting = StructSetting<CreateOnCollideComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [
+            "createdType": TileTypeSetting()
+        ], optionalFields: [:])
+    }
+    // endregion
 }

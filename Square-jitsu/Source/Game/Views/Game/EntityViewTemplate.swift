@@ -6,6 +6,8 @@
 import SpriteKit
 
 protocol EntityViewTemplate: DynamicSettingCodable {
+    var fadeAction: SKAction? { get }
+
     func generateNode(entity: Entity) -> SKNode
     func generatePreviewNode(size: CGSize) -> SKNode
 

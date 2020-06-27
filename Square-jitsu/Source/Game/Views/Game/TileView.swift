@@ -57,9 +57,9 @@ class TileView: OptionalNodeView {
     override func removeFromParent() {
         glossMaskChild?.removeFromParent()
 
-        if let fadeDuration = settings.tileViewFadeDurations[tileType] {
+        if let fadeAction = template?.fadeAction {
             node?.zPosition += TileType.fadingZPositionOffset
-            node?.run(SKAction.fadeOut(withDuration: fadeDuration)) {
+            node?.run(fadeAction) {
                 super.removeFromParent()
                 self.template?.didRemoveFromParent(node: self.node!)
             }

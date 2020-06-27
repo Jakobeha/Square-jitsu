@@ -8,6 +8,8 @@ import SpriteKit
 struct StaticTileViewTemplate: TileViewTemplate, SingleSettingCodable {
     let texture: SKTexture
 
+    var fadeAction: SKAction? { nil }
+
     func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }

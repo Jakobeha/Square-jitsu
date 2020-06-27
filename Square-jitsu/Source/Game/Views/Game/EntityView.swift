@@ -52,9 +52,9 @@ class EntityView: OptionalNodeView {
     }
 
     override func removeFromParent() {
-        if let fadeDuration = settings.entityViewFadeDurations[entity.type] {
+        if let fadeAction = template?.fadeAction {
             node?.zPosition += TileType.fadingZPositionOffset
-            node?.run(SKAction.fadeOut(withDuration: fadeDuration)) {
+            node?.run(fadeAction) {
                 super.removeFromParent()
             }
         } else {

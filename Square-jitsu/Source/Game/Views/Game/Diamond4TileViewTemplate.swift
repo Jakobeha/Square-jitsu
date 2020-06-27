@@ -42,6 +42,8 @@ final class Diamond4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         return Diamond4TileViewTemplate.getTexture(base: textureBase, sideSet: coalescedSet)
     }
 
+    var fadeAction: SKAction? { nil }
+
     /// - Parameters:
     ///   - base: Texture set with all textures
     ///   - adjoiningTypes: Will always be considered adjoining sides

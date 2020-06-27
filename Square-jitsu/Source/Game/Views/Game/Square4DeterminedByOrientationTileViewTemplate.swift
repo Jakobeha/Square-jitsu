@@ -21,6 +21,8 @@ final class Square4DeterminedByOrientationTileViewTemplate: TileViewTemplate, Si
         return Square4DeterminedByOrientationTileViewTemplate.getTexture(base: textureBase, sideSet: sideSet)
     }
 
+    var fadeAction: SKAction? { nil }
+
     /// - Parameters:
     ///   - base: Texture set with all textures
     init(textureBase: TextureSet) {

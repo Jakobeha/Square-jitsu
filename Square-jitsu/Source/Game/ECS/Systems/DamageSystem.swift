@@ -77,12 +77,8 @@ struct DamageSystem: TopLevelSystem {
     }
 
     func handle(entity otherEntity: Entity) {
-        // We need to check if other toxic entities collided with this entity,
-        // because either of the entities might not be physical
         if DamageSystem.isToxic(toxicEntity: otherEntity, damagedEntity: entity) {
             DamageSystem.damage(toxicEntity: otherEntity, damagedEntity: entity)
-        } else if DamageSystem.isToxic(toxicEntity: entity, damagedEntity: otherEntity) {
-            DamageSystem.damage(toxicEntity: entity, damagedEntity: otherEntity)
         }
     }
 

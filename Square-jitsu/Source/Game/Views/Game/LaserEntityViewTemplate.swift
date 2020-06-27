@@ -9,6 +9,8 @@ struct LaserEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
     let color: SKColor
     let thickness: CGFloat
 
+    var fadeAction: SKAction? { nil }
+
     func generateNode(entity: Entity) -> SKNode {
         assert(entity.next.lilC != nil, "laser entity view is only allowed on entities with line positions")
 

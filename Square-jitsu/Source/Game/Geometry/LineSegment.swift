@@ -252,9 +252,12 @@ struct LineSegment: Codable {
             let safeCapsuleRadius = assumedCapsuleRadius + slopeExtension
             let xs = start.x > end.x ? FBRange(maxX, minX) : FBRange(minX, maxX)
             return xs.flatMap { x -> [WorldTilePos] in
+                let isFirstX = x == (start.x > end.x ? maxX : minX)
                 let yOnSelf = unclampedYAt(x: CGFloat(x))
-                let minY = Int(round(yOnSelf - safeCapsuleRadius))
-                let maxY = Int(round(yOnSelf + safeCapsuleRadius))
+                let minYCapsuleRadius = isFirstX && start.y < end.y + CGFloat.epsilon ? assumedCapsuleRadius : safeCapsuleRadius
+                let maxYCapsuleRadius = isFirstX && start.y > end.y - CGFloat.epsilon ? assumedCapsuleRadius : safeCapsuleRadius
+                let minY = Int(round(yOnSelf - minYCapsuleRadius))
+                let maxY = Int(round(yOnSelf + maxYCapsuleRadius))
                 let ys = start.y > end.y ? FBRange(maxY, minY) : FBRange(minY, maxY)
                 return ys.map { y in
                     WorldTilePos(x: x, y: y)
@@ -267,9 +270,12 @@ struct LineSegment: Codable {
             let safeCapsuleRadius = assumedCapsuleRadius + slopeExtension
             let ys = start.y > end.y ? FBRange(maxY, minY) : FBRange(minY, maxY)
             return ys.flatMap { y -> [WorldTilePos] in
+                let isFirstY = y == (start.y > end.y ? maxY : minY)
                 let xOnSelf = unclampedXAt(y: CGFloat(y))
-                let minX = Int(round(xOnSelf - safeCapsuleRadius))
-                let maxX = Int(round(xOnSelf + safeCapsuleRadius))
+                let minXCapsuleRadius = isFirstY && start.x < end.x + CGFloat.epsilon ? assumedCapsuleRadius : safeCapsuleRadius
+                let maxXCapsuleRadius = isFirstY && start.x > end.x - CGFloat.epsilon ? assumedCapsuleRadius : safeCapsuleRadius
+                let minX = Int(round(xOnSelf - minXCapsuleRadius))
+                let maxX = Int(round(xOnSelf + maxXCapsuleRadius))
                 let xs = start.x > end.x ? FBRange(maxX, minX) : FBRange(minX, maxX)
                 return xs.map { x in
                     WorldTilePos(x: x, y: y)

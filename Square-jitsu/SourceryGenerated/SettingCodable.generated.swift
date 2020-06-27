@@ -38,6 +38,23 @@ extension AINinjaComponent {
         self.targetTypes.encodeDynamically(to: setting.allFieldSettings["targetTypes"]!)
     }
 }
+extension AccelerationComponent {
+    internal init(from setting: StructSetting<AccelerationComponent>) {
+        self.init(
+            acceleration: setting.usedFieldSettings["acceleration"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<AccelerationComponent>) -> AccelerationComponent {
+        self.init(
+            acceleration: setting.usedFieldSettings["acceleration"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<AccelerationComponent>) {
+        self.acceleration.encodeDynamically(to: setting.allFieldSettings["acceleration"]!)
+    }
+}
 extension AnimatedByLifetimeEntityViewTemplate {
     internal init(from setting: StructSetting<AnimatedByLifetimeEntityViewTemplate>) {
         self.init(
@@ -55,21 +72,61 @@ extension AnimatedByLifetimeEntityViewTemplate {
         self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
     }
 }
+extension AnimatedOnDeathEntityViewTemplate {
+    internal init(from setting: StructSetting<AnimatedOnDeathEntityViewTemplate>) {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            dyingTextureBase: setting.usedFieldSettings["dyingTextureBase"]!.decodeDynamically(),
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<AnimatedOnDeathEntityViewTemplate>) -> AnimatedOnDeathEntityViewTemplate {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            dyingTextureBase: setting.usedFieldSettings["dyingTextureBase"]!.decodeDynamically(),
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<AnimatedOnDeathEntityViewTemplate>) {
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
+        self.dyingTextureBase.encodeDynamically(to: setting.allFieldSettings["dyingTextureBase"]!)
+        self.duration.encodeDynamically(to: setting.allFieldSettings["duration"]!)
+    }
+}
+extension CreateOnCollideComponent {
+    internal init(from setting: StructSetting<CreateOnCollideComponent>) {
+        self.init(
+            createdType: setting.usedFieldSettings["createdType"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<CreateOnCollideComponent>) -> CreateOnCollideComponent {
+        self.init(
+            createdType: setting.usedFieldSettings["createdType"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<CreateOnCollideComponent>) {
+        self.createdType.encodeDynamically(to: setting.allFieldSettings["createdType"]!)
+    }
+}
 extension CreateOnDestroyComponent {
     internal init(from setting: StructSetting<CreateOnDestroyComponent>) {
         self.init(
-            createdTileType: setting.usedFieldSettings["createdTileType"]!.decodeDynamically()
+            createdType: setting.usedFieldSettings["createdType"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<CreateOnDestroyComponent>) -> CreateOnDestroyComponent {
         self.init(
-            createdTileType: setting.usedFieldSettings["createdTileType"]!.decodeDynamically()
+            createdType: setting.usedFieldSettings["createdType"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<CreateOnDestroyComponent>) {
-        self.createdTileType.encodeDynamically(to: setting.allFieldSettings["createdTileType"]!)
+        self.createdType.encodeDynamically(to: setting.allFieldSettings["createdType"]!)
     }
 }
 extension DestroyAfterLifetimeComponent {
@@ -87,6 +144,29 @@ extension DestroyAfterLifetimeComponent {
 
     internal func encode(to setting: StructSetting<DestroyAfterLifetimeComponent>) {
         self.maxLifetime.encodeDynamically(to: setting.allFieldSettings["maxLifetime"]!)
+    }
+}
+extension DestroyOnCollideComponent {
+    internal init(from setting: StructSetting<DestroyOnCollideComponent>) {
+        self.init(
+            destroyOnEntityCollision: setting.usedFieldSettings["destroyOnEntityCollision"]!.decodeDynamically(),
+            destroyOnSolidCollision: setting.usedFieldSettings["destroyOnSolidCollision"]!.decodeDynamically(),
+            ignoredTypes: setting.usedFieldSettings["ignoredTypes"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<DestroyOnCollideComponent>) -> DestroyOnCollideComponent {
+        self.init(
+            destroyOnEntityCollision: setting.usedFieldSettings["destroyOnEntityCollision"]!.decodeDynamically(),
+            destroyOnSolidCollision: setting.usedFieldSettings["destroyOnSolidCollision"]!.decodeDynamically(),
+            ignoredTypes: setting.usedFieldSettings["ignoredTypes"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<DestroyOnCollideComponent>) {
+        self.destroyOnEntityCollision.encodeDynamically(to: setting.allFieldSettings["destroyOnEntityCollision"]!)
+        self.destroyOnSolidCollision.encodeDynamically(to: setting.allFieldSettings["destroyOnSolidCollision"]!)
+        self.ignoredTypes.encodeDynamically(to: setting.allFieldSettings["ignoredTypes"]!)
     }
 }
 extension Diamond4TileViewTemplate {
@@ -121,6 +201,7 @@ extension Entity.Components {
             dalC: setting.usedFieldSettings["dalC"]?.decodeDynamically(),
             codC: setting.usedFieldSettings["codC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
+            accC: setting.usedFieldSettings["accC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
             colC: setting.usedFieldSettings["colC"]?.decodeDynamically(),
             ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
@@ -147,6 +228,7 @@ extension Entity.Components {
             dalC: setting.usedFieldSettings["dalC"]?.decodeDynamically(),
             codC: setting.usedFieldSettings["codC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
+            accC: setting.usedFieldSettings["accC"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
             colC: setting.usedFieldSettings["colC"]?.decodeDynamically(),
             ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
@@ -172,6 +254,7 @@ extension Entity.Components {
         self.dalC?.encodeDynamically(to: setting.allFieldSettings["dalC"]!)
         self.codC?.encodeDynamically(to: setting.allFieldSettings["codC"]!)
         self.dynC?.encodeDynamically(to: setting.allFieldSettings["dynC"]!)
+        self.accC?.encodeDynamically(to: setting.allFieldSettings["accC"]!)
         self.imfC?.encodeDynamically(to: setting.allFieldSettings["imfC"]!)
         self.colC?.encodeDynamically(to: setting.allFieldSettings["colC"]!)
         self.ntlC?.encodeDynamically(to: setting.allFieldSettings["ntlC"]!)
@@ -187,6 +270,46 @@ extension Entity.Components {
         self.turC?.encodeDynamically(to: setting.allFieldSettings["turC"]!)
         self.nijC?.encodeDynamically(to: setting.allFieldSettings["nijC"]!)
         self.anjC?.encodeDynamically(to: setting.allFieldSettings["anjC"]!)
+    }
+}
+extension FadeOnDeathEntityViewTemplate {
+    internal init(from setting: StructSetting<FadeOnDeathEntityViewTemplate>) {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<FadeOnDeathEntityViewTemplate>) -> FadeOnDeathEntityViewTemplate {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<FadeOnDeathEntityViewTemplate>) {
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
+        self.duration.encodeDynamically(to: setting.allFieldSettings["duration"]!)
+    }
+}
+extension FadeOnRemoveTileViewTemplate {
+    internal init(from setting: StructSetting<FadeOnRemoveTileViewTemplate>) {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<FadeOnRemoveTileViewTemplate>) -> FadeOnRemoveTileViewTemplate {
+        self.init(
+            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<FadeOnRemoveTileViewTemplate>) {
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
+        self.duration.encodeDynamically(to: setting.allFieldSettings["duration"]!)
     }
 }
 extension LaserEntityViewTemplate {
@@ -485,8 +608,6 @@ extension WorldSettings {
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
             entityViewScaleModes: setting.usedFieldSettings["entityViewScaleModes"]!.decodeDynamically(),
-            tileViewFadeDurations: setting.usedFieldSettings["tileViewFadeDurations"]!.decodeDynamically(),
-            entityViewFadeDurations: setting.usedFieldSettings["entityViewFadeDurations"]!.decodeDynamically(),
             entityGrabColors: setting.usedFieldSettings["entityGrabColors"]!.decodeDynamically(),
             amountScreenShakesWhenEntityCollides: setting.usedFieldSettings["amountScreenShakesWhenEntityCollides"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
@@ -510,8 +631,6 @@ extension WorldSettings {
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
             entityViewScaleModes: setting.usedFieldSettings["entityViewScaleModes"]!.decodeDynamically(),
-            tileViewFadeDurations: setting.usedFieldSettings["tileViewFadeDurations"]!.decodeDynamically(),
-            entityViewFadeDurations: setting.usedFieldSettings["entityViewFadeDurations"]!.decodeDynamically(),
             entityGrabColors: setting.usedFieldSettings["entityGrabColors"]!.decodeDynamically(),
             amountScreenShakesWhenEntityCollides: setting.usedFieldSettings["amountScreenShakesWhenEntityCollides"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
@@ -534,8 +653,6 @@ extension WorldSettings {
         self.entityZPositions.encodeDynamically(to: setting.allFieldSettings["entityZPositions"]!)
         self.rotateTileViewBasedOnOrientation.encodeDynamically(to: setting.allFieldSettings["rotateTileViewBasedOnOrientation"]!)
         self.entityViewScaleModes.encodeDynamically(to: setting.allFieldSettings["entityViewScaleModes"]!)
-        self.tileViewFadeDurations.encodeDynamically(to: setting.allFieldSettings["tileViewFadeDurations"]!)
-        self.entityViewFadeDurations.encodeDynamically(to: setting.allFieldSettings["entityViewFadeDurations"]!)
         self.entityGrabColors.encodeDynamically(to: setting.allFieldSettings["entityGrabColors"]!)
         self.amountScreenShakesWhenEntityCollides.encodeDynamically(to: setting.allFieldSettings["amountScreenShakesWhenEntityCollides"]!)
         self.tileDescriptions.encodeDynamically(to: setting.allFieldSettings["tileDescriptions"]!)

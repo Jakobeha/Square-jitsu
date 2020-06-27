@@ -14,7 +14,7 @@ struct CreateOnDestroySystem: OnDestroySystem {
 
     mutating func onDestroy() {
         if entity.next.codC != nil {
-            let createdTileType = entity.next.codC!.createdTileType
+            let createdTileType = entity.next.codC!.createdType
             Entity.spawn(type: createdTileType, world: world, pos: entity.next.locC!.position)
         }
     }

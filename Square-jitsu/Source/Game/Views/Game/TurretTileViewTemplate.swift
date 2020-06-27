@@ -9,6 +9,8 @@ struct TurretTileViewTemplate: TileViewTemplate, SingleSettingCodable {
     let base: TileViewTemplate
     let turretTexture: SKTexture
 
+    var fadeAction: SKAction? { nil }
+    
     func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         assert(tileType.bigType == .turret, "TurretTileViewTemplate is only allowed on turret tiles")
 

@@ -17,10 +17,16 @@ struct LifetimeSystem: TopLevelSystem {
 
     func tick() {
         if entity.next.dalC != nil {
-            incrementLifetime()
+            if shouldIncrementLifetime {
+                incrementLifetime()
+            }
         }
     }
 
+    private var shouldIncrementLifetime: Bool {
+        !(entity.next.graC?.grabState.isGrabbed ?? false)
+    }
+    
     private func incrementLifetime() {
         assert(entity.next.dalC != nil)
         entity.next.dalC!.lifetime += world.settings.fixedDeltaTime

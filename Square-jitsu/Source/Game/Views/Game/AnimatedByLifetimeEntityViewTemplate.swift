@@ -11,9 +11,9 @@ struct AnimatedByLifetimeEntityViewTemplate: EntityViewTemplate, SingleSettingCo
     // sourcery: nonSetting
     let numTextures: Int
 
-    var previewTexture: SKTexture {
-        textureBase[0]
-    }
+    var previewTexture: SKTexture { textureBase[0] }
+
+    var fadeAction: SKAction? { nil }
 
     init(textureBase: TextureSet) {
         self.textureBase = textureBase
@@ -37,7 +37,8 @@ struct AnimatedByLifetimeEntityViewTemplate: EntityViewTemplate, SingleSettingCo
     private func getTextureFor(entity: Entity) -> SKTexture {
         assert(entity.next.dalC != nil, "animated-by-lifetime entity view requires the entity to have a lifetime component (dalC)")
 
-        let lifetimeFraction = entity.next.dalC!.lifetime / entity.next.dalC!.maxLifetime
+        let lifetimeFractionUnclamped = entity.next.dalC!.lifetime / entity.next.dalC!.maxLifetime
+        let lifetimeFraction = CGFloat.clamp(lifetimeFractionUnclamped, min: 0, max: 1)
         let textureIndexFraction = lifetimeFraction * CGFloat(numTextures)
         let textureIndex = Int(textureIndexFraction.rounded(.down))
 
@@ -49,7 +50,7 @@ struct AnimatedByLifetimeEntityViewTemplate: EntityViewTemplate, SingleSettingCo
 
     static func newSetting() -> StructSetting<AnimatedByLifetimeEntityViewTemplate> {
         StructSetting(requiredFields: [
-            "textureBase": DeferredSetting { TextureSetSetting() }
+            "textureBase": TextureSetSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }
     // endregion

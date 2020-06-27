@@ -1,23 +1,24 @@
 //
-// Created by Jakob Hain on 6/26/20.
+// Created by Jakob Hain on 5/4/20.
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
 import SpriteKit
 
-struct CreateOnDestroyComponent: SingleSettingCodable, Codable {
-    var createdType: TileType
+struct AccelerationComponent: SingleSettingCodable, Codable {
+    /// In tiles/sec^2
+    var acceleration: CGFloat
 
     // region encoding and decoding
     enum CodingKeys: CodingKey {
-        case createdType
+        case acceleration
     }
 
-    typealias AsSetting = StructSetting<CreateOnDestroyComponent>
+    typealias AsSetting = StructSetting<AccelerationComponent>
 
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
-            "createdType": TileTypeSetting()
+            "acceleration": CGFloatRangeSetting(0...32)
         ], optionalFields: [:])
     }
     // endregion

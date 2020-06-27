@@ -5,9 +5,10 @@
 
 import Foundation
 
-struct DestroyOnCollideComponent: SettingCodableByCodable, Codable {
+struct DestroyOnCollideComponent: SingleSettingCodable, Codable {
     var destroyOnEntityCollision: Bool
     var destroyOnSolidCollision: Bool
+    var ignoredTypes: TileTypePred
 
     var ignoredEntities: Set<EntityRef> = []
     var isRemoved: Bool = false
@@ -16,6 +17,17 @@ struct DestroyOnCollideComponent: SettingCodableByCodable, Codable {
     enum CodingKeys: String, CodingKey {
         case destroyOnEntityCollision
         case destroyOnSolidCollision
+        case ignoredTypes
+    }
+
+    typealias AsSetting = StructSetting<DestroyOnCollideComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [
+            "destroyOnEntityCollision": BoolSetting(),
+            "destroyOnSolidCollision": BoolSetting(),
+            "ignoredTypes": TileTypePredSetting()
+        ], optionalFields: [:])
     }
     // endregion
 }

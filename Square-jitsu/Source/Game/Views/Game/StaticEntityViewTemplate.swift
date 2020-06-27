@@ -10,6 +10,8 @@ struct StaticEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
 
     let texture: SKTexture
 
+    var fadeAction: SKAction? { nil }
+
     func generateNode(entity: Entity) -> SKNode {
         SKSpriteNode(texture: texture)
     }

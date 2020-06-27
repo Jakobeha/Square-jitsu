@@ -270,7 +270,8 @@ struct CollisionSystem: EarlyTopLevelSystem {
     private func destroyOnEntityCollisionWith(otherEntity: Entity) -> Bool {
         entity.next.docC != nil &&
         entity.next.docC!.destroyOnEntityCollision &&
-        !(entity.next.docC?.ignoredEntities.contains(EntityRef(otherEntity)) ?? false)
+        !entity.next.docC!.ignoredTypes.contains(otherEntity.type) &&
+        !entity.next.docC!.ignoredEntities.contains(EntityRef(otherEntity))
     }
     // endregion
 

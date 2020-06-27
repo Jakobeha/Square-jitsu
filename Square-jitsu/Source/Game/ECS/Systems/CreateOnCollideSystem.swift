@@ -27,7 +27,7 @@ struct CreateOnCollideSystem: TopLevelSystem {
     }
 
     private func createTileIfNecessaryAt(side: Side, pos: WorldTilePos) {
-        var tileType: TileType = entity.next.cocC!.createdTileType
+        var tileType: TileType = entity.next.cocC!.createdType
         tileType.orientation.asSideSet.insert(side.toSet)
         world.tryCreateTilePersistent(pos: pos, type: tileType)
     }

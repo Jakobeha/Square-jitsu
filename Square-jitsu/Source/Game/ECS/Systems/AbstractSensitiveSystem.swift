@@ -11,18 +11,27 @@ protocol AbstractSensitiveSystem: TopLevelSystem {
     static func getSensitivePositions(components: Entity.Components) -> [WorldTilePos]
 }
 
-fileprivate var AllPrevSensitivePositions: Set<WorldTilePos> = Set()
-fileprivate var AllNextSensitivePositions: Set<WorldTilePos> = Set()
+fileprivate var AllPrevSensitivePositions: [ObjectIdentifier:Set<WorldTilePos>] = [:]
+fileprivate var AllNextSensitivePositions: [ObjectIdentifier:Set<WorldTilePos>] = [:]
 
 extension AbstractSensitiveSystem {
+    private static var allPrevSensitivePositions: Set<WorldTilePos> {
+        get { AllPrevSensitivePositions[ObjectIdentifier(Self.self)] ?? [] }
+        set { AllPrevSensitivePositions[ObjectIdentifier(Self.self)] = newValue }
+    }
+
+    private static var allNextSensitivePositions: Set<WorldTilePos> {
+        get { AllNextSensitivePositions[ObjectIdentifier(Self.self)] ?? [] }
+        set { AllNextSensitivePositions[ObjectIdentifier(Self.self)] = newValue }
+    }
+    
     static func preTick(world: World) {
-        AllPrevSensitivePositions = Set()
-        AllNextSensitivePositions = Set()
+        allPrevSensitivePositions = allNextSensitivePositions
+        allNextSensitivePositions = []
     }
 
     func tick() {
-        AllPrevSensitivePositions.formUnion(Self.getSensitivePositions(components: entity.prev))
-        AllNextSensitivePositions.formUnion(Self.getSensitivePositions(components: entity.next))
+        Self.allNextSensitivePositions.formUnion(Self.getSensitivePositions(components: entity.next))
     }
 
     static func postTick(world: World) {
@@ -31,14 +40,14 @@ extension AbstractSensitiveSystem {
     }
 
     private static func turnOffNoLongerSensitiveTiles(world: World) {
-        let noLongerSensitivePositions = AllPrevSensitivePositions.subtracting(AllNextSensitivePositions)
+        let noLongerSensitivePositions = allPrevSensitivePositions.subtracting(allNextSensitivePositions)
         for position in noLongerSensitivePositions {
             updateTileAt(world: world, position: position, isOn: false)
         }
     }
 
     private static func turnOnNewSensitiveTiles(world: World) {
-        let newSensitivePositions = AllNextSensitivePositions.subtracting(AllPrevSensitivePositions)
+        let newSensitivePositions = allNextSensitivePositions.subtracting(allPrevSensitivePositions)
         for position in newSensitivePositions {
             updateTileAt(world: world, position: position, isOn: true)
         }
