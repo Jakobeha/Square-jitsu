@@ -78,6 +78,11 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
             } else {
                 type.orientation = TileOrientation.none
             }
+        case .atBackgroundBorder:
+            let sidesWithAdjacentBackground = getBackgroundAdjacentSidesTo(pos: pos)
+            let alreadyOccupiedSides = getOccupiedTileSidesAt(pos: pos, tileLayer: type.bigType.layer)
+            let orientationSides = sidesWithAdjacentBackground.inverted.subtracting(alreadyOccupiedSides)
+            type.orientation = TileOrientation(sideSet: orientationSides)
         case .atSolidBorder:
             let sidesWithAdjacentSolid = getSolidAdjacentSidesTo(pos: pos)
             let alreadyOccupiedSides = getOccupiedTileSidesAt(pos: pos, tileLayer: type.bigType.layer)

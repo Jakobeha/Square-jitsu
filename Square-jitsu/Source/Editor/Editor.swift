@@ -140,7 +140,7 @@ class Editor: EditorToolsDelegate {
             fatalError("orientation isn't side-based")
         case .directionAdjacentToSolid:
             return TileOrientation(side: side)
-        case .atSolidBorder:
+        case .atBackgroundBorder, .atSolidBorder:
             var orientation = type.orientation
             orientation.asSideSet.insert(side.toSet)
             return orientation
@@ -162,7 +162,7 @@ class Editor: EditorToolsDelegate {
         case .directionAdjacentToSolid:
             // Can't remove because there is only one side
             return type.orientation
-        case .atSolidBorder:
+        case .atBackgroundBorder, .atSolidBorder:
             var orientation = type.orientation
             orientation.asSideSet.remove(side.toSet)
             return orientation

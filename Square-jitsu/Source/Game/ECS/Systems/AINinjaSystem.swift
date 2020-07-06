@@ -111,9 +111,9 @@ struct AINinjaSystem: TopLevelSystem {
             targetDirection - entity.next.anjC!.firstJumpAngle.toUnclamped
         ]
         let jumpDirection = possibleJumpDirections.first { possibleJumpDirection in
-            entity.next.colC!.adjacentSides.isDisjoint(with: possibleJumpDirection.quadrantCorner.toNearestSides)
+            entity.next.colC!.adjacentSides.isDisjoint(with: possibleJumpDirection.quadrantCorner.nearestSides)
         } ?? possibleJumpDirections.first { possibleJumpDirection in
-            !entity.next.colC!.adjacentSides.contains(possibleJumpDirection.quadrantCorner.toNearestSides)
+            !entity.next.colC!.adjacentSides.contains(possibleJumpDirection.quadrantCorner.nearestSides)
         }
 
         return jumpDirection

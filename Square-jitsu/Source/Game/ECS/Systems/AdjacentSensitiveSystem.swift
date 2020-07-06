@@ -6,7 +6,11 @@
 import SpriteKit
 
 struct AdjacentSensitiveSystem: AbstractSensitiveSystem {
-    static let sensitiveType: TileBigType = TileBigType.adjacentSensitiveSolid
+    static let sensitiveTypes: TileTypePred = TileTypePred([
+        .adjacentSensitiveSolid,
+        .dashEdge,
+        .springEdge
+    ])
 
     let entity: Entity
 

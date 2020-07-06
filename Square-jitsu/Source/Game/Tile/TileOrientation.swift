@@ -14,6 +14,10 @@ struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
         Side(rawValue: Int(rawValue))!
     }
 
+    var asCorner: Corner {
+        Corner(rawValue: Int(rawValue))!
+    }
+
     var asSideSet: SideSet {
         get { SideSet(rawValue: rawValue) }
         set { self = TileOrientation(sideSet: newValue) }
@@ -21,6 +25,10 @@ struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
 
     init(side: Side) {
         self.rawValue = UInt8(side.rawValue)
+    }
+
+    init(corner: Corner) {
+        self.rawValue = UInt8(corner.rawValue)
     }
 
     init(sideSet: SideSet) {

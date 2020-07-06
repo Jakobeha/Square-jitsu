@@ -5,29 +5,24 @@
 
 import SpriteKit
 
-struct FadeOnDeathEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
-    let base: EntityViewTemplate
+final class FadeOnDeathEntityViewTemplate: AugmentingEntityViewTemplate, SingleSettingCodable {
     let duration: CGFloat
 
-    var fadeAction: SKAction? {
+    override var fadeAction: SKAction? {
+        if let baseFadeAction = super.fadeAction {
+            return SKAction.group([myFadeAction, baseFadeAction])
+        } else {
+            return myFadeAction
+        }
+    }
+
+    private var myFadeAction: SKAction {
         SKAction.fadeOut(withDuration: TimeInterval(duration))
     }
 
-    init(base: EntityViewTemplate, duration: CGFloat) {
-        self.base = base
+    init(duration: CGFloat, base: EntityViewTemplate) {
         self.duration = duration
-    }
-
-    func generateNode(entity: Entity) -> SKNode {
-        base.generateNode(entity: entity)
-    }
-
-    func generatePreviewNode(size: CGSize) -> SKNode {
-        base.generatePreviewNode(size: size)
-    }
-
-    func tick(entity: Entity, node: SKNode) {
-        base.tick(entity: entity, node: node)
+        super.init(base: base)
     }
 
     // region encoding and decoding

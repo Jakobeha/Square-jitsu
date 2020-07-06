@@ -6,6 +6,8 @@
 import SpriteKit
 
 struct NinjaComponent: SingleSettingCodable, Codable {
+    static let maxOffsetFromOverriddenDirectionForJumpToStillOccur: Angle = Angle.right / 2
+
     enum ActionState: Equatable {
         case idle
         case doJump(direction: Angle)

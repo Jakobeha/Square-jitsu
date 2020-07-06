@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-final class Diamond4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
+final class Diamond4TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
     static func getCoalescedForSharedTexture(sideSet: SideSet) -> SideSet {
         if sideSet.contains([.east, .west]) || sideSet.contains([.north, .south]) {
             return SideSet.all
@@ -42,8 +42,6 @@ final class Diamond4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         return Diamond4TileViewTemplate.getTexture(base: textureBase, sideSet: coalescedSet)
     }
 
-    var fadeAction: SKAction? { nil }
-
     /// - Parameters:
     ///   - base: Texture set with all textures
     ///   - adjoiningTypes: Will always be considered adjoining sides
@@ -54,7 +52,7 @@ final class Diamond4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         self.semiAdjoiningTypes = semiAdjoiningTypes
     }
 
-    func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
+    override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         let alwaysAdjoiningSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
             adjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })
@@ -66,16 +64,12 @@ final class Diamond4TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
 
-    func generatePreviewNode(size: CGSize) -> SKNode {
+    override func generatePreviewNode(size: CGSize) -> SKNode {
         let texture = textures[[]]
         let node = SKSpriteNode(texture: texture, size: size)
         node.anchorPoint = UXSpriteAnchor
         return node
     }
-
-    func didPlaceInParent(node: SKNode) {}
-
-    func didRemoveFromParent(node: SKNode) {}
 
     // region encoding and decoding
     typealias AsSetting = StructSetting<Diamond4TileViewTemplate>

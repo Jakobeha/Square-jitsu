@@ -9,14 +9,22 @@ struct TileSmallType: Equatable, Hashable, LosslessStringConvertible {
     var value: UInt8
 
     var isOn: Bool {
-        get {
-            (value & 1) == 1
-        }
+        get { (value & 1) == 1 }
         set {
             if newValue {
                 value |= 1
             } else {
                 value &= ~1
+            }
+        }
+    }
+    var isClockwise: Bool {
+        get { (value & 2) == 2 }
+        set {
+            if newValue {
+                value |= 2
+            } else {
+                value &= ~2
             }
         }
     }

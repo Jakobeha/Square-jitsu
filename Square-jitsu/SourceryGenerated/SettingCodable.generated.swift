@@ -56,7 +56,7 @@ extension AccelerationComponent {
     }
 }
 extension AnimatedByLifetimeEntityViewTemplate {
-    internal init(from setting: StructSetting<AnimatedByLifetimeEntityViewTemplate>) {
+    internal convenience init(from setting: StructSetting<AnimatedByLifetimeEntityViewTemplate>) {
         self.init(
             textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
         )
@@ -73,26 +73,26 @@ extension AnimatedByLifetimeEntityViewTemplate {
     }
 }
 extension AnimatedOnDeathEntityViewTemplate {
-    internal init(from setting: StructSetting<AnimatedOnDeathEntityViewTemplate>) {
+    internal convenience init(from setting: StructSetting<AnimatedOnDeathEntityViewTemplate>) {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
             dyingTextureBase: setting.usedFieldSettings["dyingTextureBase"]!.decodeDynamically(),
-            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<AnimatedOnDeathEntityViewTemplate>) -> AnimatedOnDeathEntityViewTemplate {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
             dyingTextureBase: setting.usedFieldSettings["dyingTextureBase"]!.decodeDynamically(),
-            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<AnimatedOnDeathEntityViewTemplate>) {
-        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
         self.dyingTextureBase.encodeDynamically(to: setting.allFieldSettings["dyingTextureBase"]!)
         self.duration.encodeDynamically(to: setting.allFieldSettings["duration"]!)
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
 extension CreateOnCollideComponent {
@@ -169,6 +169,26 @@ extension DestroyOnCollideComponent {
         self.ignoredTypes.encodeDynamically(to: setting.allFieldSettings["ignoredTypes"]!)
     }
 }
+extension DestructibleTileViewTemplate {
+    internal convenience init(from setting: StructSetting<DestructibleTileViewTemplate>) {
+        self.init(
+            destructionTexture: setting.usedFieldSettings["destructionTexture"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<DestructibleTileViewTemplate>) -> DestructibleTileViewTemplate {
+        self.init(
+            destructionTexture: setting.usedFieldSettings["destructionTexture"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<DestructibleTileViewTemplate>) {
+        self.destructionTexture.encodeDynamically(to: setting.allFieldSettings["destructionTexture"]!)
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
+    }
+}
 extension Diamond4TileViewTemplate {
     internal convenience init(from setting: StructSetting<Diamond4TileViewTemplate>) {
         self.init(
@@ -190,6 +210,23 @@ extension Diamond4TileViewTemplate {
         self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
         self.adjoiningTypes.encodeDynamically(to: setting.allFieldSettings["adjoiningTypes"]!)
         self.semiAdjoiningTypes.encodeDynamically(to: setting.allFieldSettings["semiAdjoiningTypes"]!)
+    }
+}
+extension Edge4TileViewTemplate {
+    internal convenience init(from setting: StructSetting<Edge4TileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<Edge4TileViewTemplate>) -> Edge4TileViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<Edge4TileViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
     }
 }
 extension Entity.Components {
@@ -273,47 +310,47 @@ extension Entity.Components {
     }
 }
 extension FadeOnDeathEntityViewTemplate {
-    internal init(from setting: StructSetting<FadeOnDeathEntityViewTemplate>) {
+    internal convenience init(from setting: StructSetting<FadeOnDeathEntityViewTemplate>) {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
-            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<FadeOnDeathEntityViewTemplate>) -> FadeOnDeathEntityViewTemplate {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
-            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<FadeOnDeathEntityViewTemplate>) {
-        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
         self.duration.encodeDynamically(to: setting.allFieldSettings["duration"]!)
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
 extension FadeOnRemoveTileViewTemplate {
-    internal init(from setting: StructSetting<FadeOnRemoveTileViewTemplate>) {
+    internal convenience init(from setting: StructSetting<FadeOnRemoveTileViewTemplate>) {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
-            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<FadeOnRemoveTileViewTemplate>) -> FadeOnRemoveTileViewTemplate {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
-            duration: setting.usedFieldSettings["duration"]!.decodeDynamically()
+            duration: setting.usedFieldSettings["duration"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<FadeOnRemoveTileViewTemplate>) {
-        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
         self.duration.encodeDynamically(to: setting.allFieldSettings["duration"]!)
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
 extension LaserEntityViewTemplate {
-    internal init(from setting: StructSetting<LaserEntityViewTemplate>) {
+    internal convenience init(from setting: StructSetting<LaserEntityViewTemplate>) {
         self.init(
             color: setting.usedFieldSettings["color"]!.decodeDynamically(),
             thickness: setting.usedFieldSettings["thickness"]!.decodeDynamically()
@@ -409,23 +446,6 @@ extension RicochetComponent {
         self.numBouncesBeforeDestroy.encodeDynamically(to: setting.allFieldSettings["numBouncesBeforeDestroy"]!)
     }
 }
-extension Square4DeterminedByOrientationTileViewTemplate {
-    internal convenience init(from setting: StructSetting<Square4DeterminedByOrientationTileViewTemplate>) {
-        self.init(
-            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
-        )
-    }
-
-    static internal func decode(from setting: StructSetting<Square4DeterminedByOrientationTileViewTemplate>) -> Square4DeterminedByOrientationTileViewTemplate {
-        self.init(
-            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
-        )
-    }
-
-    internal func encode(to setting: StructSetting<Square4DeterminedByOrientationTileViewTemplate>) {
-        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
-    }
-}
 extension Square8TileViewTemplate {
     internal convenience init(from setting: StructSetting<Square8TileViewTemplate>) {
         self.init(
@@ -447,7 +467,7 @@ extension Square8TileViewTemplate {
     }
 }
 extension StaticEntityViewTemplate {
-    internal init(from setting: StructSetting<StaticEntityViewTemplate>) {
+    internal convenience init(from setting: StructSetting<StaticEntityViewTemplate>) {
         self.init(
             texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
         )
@@ -464,7 +484,7 @@ extension StaticEntityViewTemplate {
     }
 }
 extension StaticTileViewTemplate {
-    internal init(from setting: StructSetting<StaticTileViewTemplate>) {
+    internal convenience init(from setting: StructSetting<StaticTileViewTemplate>) {
         self.init(
             texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
         )
@@ -533,32 +553,32 @@ extension TurretComponent {
     }
 }
 extension TurretEntityViewTemplate {
-    internal init(from setting: StructSetting<TurretEntityViewTemplate>) {
+    internal convenience init(from setting: StructSetting<TurretEntityViewTemplate>) {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
             maxChargingCircleRadius: setting.usedFieldSettings["maxChargingCircleRadius"]!.decodeDynamically(),
             minChargingCircleRadius: setting.usedFieldSettings["minChargingCircleRadius"]!.decodeDynamically(),
             chargingCircleOffset: setting.usedFieldSettings["chargingCircleOffset"]!.decodeDynamically(),
-            chargingCircleColor: setting.usedFieldSettings["chargingCircleColor"]!.decodeDynamically()
+            chargingCircleColor: setting.usedFieldSettings["chargingCircleColor"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<TurretEntityViewTemplate>) -> TurretEntityViewTemplate {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
             maxChargingCircleRadius: setting.usedFieldSettings["maxChargingCircleRadius"]!.decodeDynamically(),
             minChargingCircleRadius: setting.usedFieldSettings["minChargingCircleRadius"]!.decodeDynamically(),
             chargingCircleOffset: setting.usedFieldSettings["chargingCircleOffset"]!.decodeDynamically(),
-            chargingCircleColor: setting.usedFieldSettings["chargingCircleColor"]!.decodeDynamically()
+            chargingCircleColor: setting.usedFieldSettings["chargingCircleColor"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<TurretEntityViewTemplate>) {
-        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
         self.maxChargingCircleRadius.encodeDynamically(to: setting.allFieldSettings["maxChargingCircleRadius"]!)
         self.minChargingCircleRadius.encodeDynamically(to: setting.allFieldSettings["minChargingCircleRadius"]!)
         self.chargingCircleOffset.encodeDynamically(to: setting.allFieldSettings["chargingCircleOffset"]!)
         self.chargingCircleColor.encodeDynamically(to: setting.allFieldSettings["chargingCircleColor"]!)
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
 extension TurretMetadata {
@@ -579,23 +599,23 @@ extension TurretMetadata {
     }
 }
 extension TurretTileViewTemplate {
-    internal init(from setting: StructSetting<TurretTileViewTemplate>) {
+    internal convenience init(from setting: StructSetting<TurretTileViewTemplate>) {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
-            turretTexture: setting.usedFieldSettings["turretTexture"]!.decodeDynamically()
+            turretTexture: setting.usedFieldSettings["turretTexture"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<TurretTileViewTemplate>) -> TurretTileViewTemplate {
         self.init(
-            base: setting.usedFieldSettings["base"]!.decodeDynamically(),
-            turretTexture: setting.usedFieldSettings["turretTexture"]!.decodeDynamically()
+            turretTexture: setting.usedFieldSettings["turretTexture"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<TurretTileViewTemplate>) {
-        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
         self.turretTexture.encodeDynamically(to: setting.allFieldSettings["turretTexture"]!)
+        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
 extension WorldSettings {
@@ -603,6 +623,7 @@ extension WorldSettings {
         self.init(
             tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
+            edgeMaskTextureBase: setting.usedFieldSettings["edgeMaskTextureBase"]!.decodeDynamically(),
             glossTexture: setting.usedFieldSettings["glossTexture"]!.decodeDynamically(),
             glossyTileViews: setting.usedFieldSettings["glossyTileViews"]!.decodeDynamically(),
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
@@ -616,6 +637,9 @@ extension WorldSettings {
             knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
             entitySpawnRadius: setting.usedFieldSettings["entitySpawnRadius"]!.decodeDynamically(),
+            destructibleSolidInitialHealth: setting.usedFieldSettings["destructibleSolidInitialHealth"]!.decodeDynamically(),
+            dashEdgeBoostSpeed: setting.usedFieldSettings["dashEdgeBoostSpeed"]!.decodeDynamically(),
+            springEdgeBounceMultiplier: setting.usedFieldSettings["springEdgeBounceMultiplier"]!.decodeDynamically(),
             defaultTileMetadatas: setting.usedFieldSettings["defaultTileMetadatas"]!.decodeDynamically(),
             tileOrientationMeanings: setting.usedFieldSettings["tileOrientationMeanings"]!.decodeDynamically(),
             selectableTypes: setting.usedFieldSettings["selectableTypes"]!.decodeDynamically()
@@ -626,6 +650,7 @@ extension WorldSettings {
         self.init(
             tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
+            edgeMaskTextureBase: setting.usedFieldSettings["edgeMaskTextureBase"]!.decodeDynamically(),
             glossTexture: setting.usedFieldSettings["glossTexture"]!.decodeDynamically(),
             glossyTileViews: setting.usedFieldSettings["glossyTileViews"]!.decodeDynamically(),
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
@@ -639,6 +664,9 @@ extension WorldSettings {
             knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
             entitySpawnRadius: setting.usedFieldSettings["entitySpawnRadius"]!.decodeDynamically(),
+            destructibleSolidInitialHealth: setting.usedFieldSettings["destructibleSolidInitialHealth"]!.decodeDynamically(),
+            dashEdgeBoostSpeed: setting.usedFieldSettings["dashEdgeBoostSpeed"]!.decodeDynamically(),
+            springEdgeBounceMultiplier: setting.usedFieldSettings["springEdgeBounceMultiplier"]!.decodeDynamically(),
             defaultTileMetadatas: setting.usedFieldSettings["defaultTileMetadatas"]!.decodeDynamically(),
             tileOrientationMeanings: setting.usedFieldSettings["tileOrientationMeanings"]!.decodeDynamically(),
             selectableTypes: setting.usedFieldSettings["selectableTypes"]!.decodeDynamically()
@@ -648,6 +676,7 @@ extension WorldSettings {
     internal func encode(to setting: StructSetting<WorldSettings>) {
         self.tileViewTemplates.encodeDynamically(to: setting.allFieldSettings["tileViewTemplates"]!)
         self.entityViewTemplates.encodeDynamically(to: setting.allFieldSettings["entityViewTemplates"]!)
+        self.edgeMaskTextureBase.encodeDynamically(to: setting.allFieldSettings["edgeMaskTextureBase"]!)
         self.glossTexture.encodeDynamically(to: setting.allFieldSettings["glossTexture"]!)
         self.glossyTileViews.encodeDynamically(to: setting.allFieldSettings["glossyTileViews"]!)
         self.entityZPositions.encodeDynamically(to: setting.allFieldSettings["entityZPositions"]!)
@@ -661,6 +690,9 @@ extension WorldSettings {
         self.knockback.encodeDynamically(to: setting.allFieldSettings["knockback"]!)
         self.entityData.encodeDynamically(to: setting.allFieldSettings["entityData"]!)
         self.entitySpawnRadius.encodeDynamically(to: setting.allFieldSettings["entitySpawnRadius"]!)
+        self.destructibleSolidInitialHealth.encodeDynamically(to: setting.allFieldSettings["destructibleSolidInitialHealth"]!)
+        self.dashEdgeBoostSpeed.encodeDynamically(to: setting.allFieldSettings["dashEdgeBoostSpeed"]!)
+        self.springEdgeBounceMultiplier.encodeDynamically(to: setting.allFieldSettings["springEdgeBounceMultiplier"]!)
         self.defaultTileMetadatas.encodeDynamically(to: setting.allFieldSettings["defaultTileMetadatas"]!)
         self.tileOrientationMeanings.encodeDynamically(to: setting.allFieldSettings["tileOrientationMeanings"]!)
         self.selectableTypes.encodeDynamically(to: setting.allFieldSettings["selectableTypes"]!)

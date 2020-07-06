@@ -44,7 +44,8 @@
         "textureBase": "Solid",
         "adjoiningTypes": [
           "solid/0",
-          "ice/0"
+          "ice/0",
+          "destructibleSolid/0"
         ]
       }
     ],
@@ -62,19 +63,69 @@
         }
       }
     ],
+    "destructibleSolid": [
+      {
+        "type": "destructible",
+        "destructionTexture": "Destruction",
+        "base": {
+          "type": "square8",
+          "textureBase": "DestructibleSolid",
+          "adjoiningTypes": [
+            "solid/0",
+            "ice/0",
+            "destructibleSolid/0"
+          ]
+        }
+      }
+    ],
     "ice": [
       {
         "type": "square8",
         "textureBase": "Ice",
         "adjoiningTypes": [
           "solid/0",
-          "ice/0"
+          "ice/0",
+          "destructibleSolid/0"
         ]
+      }
+    ],
+    "solidEdge": [
+      {
+        "type": "edge4",
+        "textureBase": "SolidEdge"
+      }
+    ],
+    "dashEdge": [
+      {
+        "type": "edge4",
+        "textureBase": "DashCounterClockwiseOff"
+      },
+      {
+        "type": "edge4",
+        "textureBase": "DashCounterClockwiseOn"
+      },
+      {
+        "type": "edge4",
+        "textureBase": "DashClockwiseOff"
+      },
+      {
+        "type": "edge4",
+        "textureBase": "DashClockwiseOn"
+      }
+    ],
+    "springEdge": [
+      {
+        "type": "edge4",
+        "textureBase": "SpringOff"
+      },
+      {
+        "type": "edge4",
+        "textureBase": "SpringOn"
       }
     ],
     "lava": [
       {
-        "type": "square4-determinedByOrientation",
+        "type": "edge4",
         "textureBase": "Lava"
       }
     ],
@@ -361,6 +412,7 @@
       "aspectFill"
     ]
   },
+  "edgeMaskTextureBase": "EdgeMask",
   "glossTexture": "Effects/Gloss",
   "glossyTileViews": ["solid/0", "ice/0"],
   "entityGrabColors": {
@@ -386,15 +438,20 @@
     "overlapSensitiveBackground": ["Default-Off", "Default-On"],
     "solid": ["Default"],
     "adjacentSensitiveSolid": ["Default-Off", "Default-On"],
+    "destructibleSolid": ["Default"],
     "ice": ["Default"],
+    "backgroundDirectionBoost": ["Default"],
+    "solidEdge": ["Default"],
+    "dashEdge": ["Default-CounterClockwise-Off", "Default-CounterClockwise-On", "Default-Clockwise-Off", "Default-Clockwise-On"],
+    "springEdge": ["Default-Off", "Default-On"],
     "lava": ["Lava"],
     "player": [""],
     "enemy": ["Default"],
     "shuriken": ["Default"],
     "bomb": ["Default"],
     "projectile": ["Bullet", "Laser"],
-    "turret": ["Default", "Burst", "Rocket", "Laser", "Lava-Laser"],
-    "explosion": ["From Bomb", "From Rocket"]
+    "turret": ["Default", "Burst", "Rocket", "Laser", "LavaLaser"],
+    "explosion": ["From-Bomb", "From-Rocket"]
   },
   "playerInputSpeedMultiplier": 0.0625,
   "tileDamage": {
@@ -643,6 +700,15 @@
   "entitySpawnRadius": {
     "enemy": [5]
   },
+  "destructibleSolidInitialHealth": [
+    1
+  ],
+  "dashEdgeBoostSpeed":  [
+    16
+  ],
+  "springEdgeBounceMultiplier": [
+    1
+  ],
   "defaultTileMetadatas": {
     "turret": [
       {
@@ -660,6 +726,19 @@
     ]
   },
   "tileOrientationMeanings": {
+    "solidEdge": [
+      "atBackgroundBorder"
+    ],
+    "dashEdge": [
+      "atSolidBorder",
+      "atSolidBorder",
+      "atSolidBorder",
+      "atSolidBorder"
+    ],
+    "springEdge": [
+      "atSolidBorder",
+      "atSolidBorder"
+    ],
     "lava": [
       "atSolidBorder"
     ],
@@ -675,7 +754,11 @@
     "overlapSensitiveBackground": [0],
     "solid": [0],
     "adjacentSensitiveSolid": [0],
+    "destructibleSolid": [0],
     "ice": [0],
+    "solidEdge": [0],
+    "dashEdge": [0, 2],
+    "springEdge": [0],
     "lava": [0],
     "enemy": [0],
     "shuriken": [0],

@@ -9,11 +9,12 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
     case air
 
     case background
+    case backgroundDirectionBoost
 
     case solid
     case iceSolid
 
-    case toxicEdge
+    case edge
 
     case entity
 
@@ -24,12 +25,14 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
             return TileLayerSet.air
         case .background:
             return TileLayerSet.background
+        case .backgroundDirectionBoost:
+            return TileLayerSet.backgroundDirectionBoost
         case .solid:
             return TileLayerSet.solid
         case .iceSolid:
             return TileLayerSet.iceSolid
-        case .toxicEdge:
-            return TileLayerSet.toxicEdge
+        case .edge:
+            return TileLayerSet.edge
         case .entity:
             return TileLayerSet.entity
         }
@@ -37,51 +40,37 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
 
     var doTilesOccupySides: Bool {
         switch self {
-        case .toxicEdge:
+        case .edge:
             return true
-        case .air, .background, .solid, .iceSolid, .entity:
+        case .air, .background, .backgroundDirectionBoost, .solid, .iceSolid, .entity:
             return false
         }
     }
 
     var isSolid: Bool {
         switch self {
-        case .solid, .iceSolid:
+        case .solid, .iceSolid, .edge:
             return true
-        case .air, .background, .toxicEdge, .entity:
+        case .air, .background, .backgroundDirectionBoost, .entity:
             return false
         }
     }
 
+    private static let layerOverlapDMatrix: [[Bool]] = [
+        //                              .entity .edge .iceSolid .solid .backgroundDirectionBoost .background .air
+        /* .air                      */ [true,  true,      true,     true,  true,                     true,       true],
+        /* .background               */ [true,  true,      false,    false, true,                     false],
+        /* .backgroundDirectionBoost */ [true,  true,      false,    false, false],
+        /* .solid                    */ [false, true,     false,    false],
+        /* .iceSolid                 */ [false, true,     false],
+        /* .edge                     */ [true,  false],
+        /* .entity                   */ [false]
+    ]
+
     static func layersCanOverlap(_ lhs: TileLayer, _ rhs: TileLayer) -> Bool {
-        switch (lhs, rhs) {
-        case (.air, _), (_, .air):
-            return true
-        case (.background, .background):
-            return false
-        case (.background, .solid), (.solid, .background), (.background, .iceSolid), (.iceSolid, .background):
-            return false
-        case (.background, .toxicEdge), (.toxicEdge, .background), (.background, .entity), (.entity, .background):
-            return true
-        case (.solid, .solid):
-            return false
-        case (.solid, .iceSolid), (.iceSolid, .solid), (.solid, .entity), (.entity, .solid):
-            return false
-        case (.solid, .toxicEdge), (.toxicEdge, .solid):
-            return true
-        case (.iceSolid, .iceSolid):
-            return false
-        case (.iceSolid, .entity), (.entity, .iceSolid):
-            return false
-        case (.iceSolid, .toxicEdge), (.toxicEdge, .iceSolid):
-            return true
-        case (.toxicEdge, .toxicEdge):
-            return false
-        case (.toxicEdge, .entity), (.entity, .toxicEdge):
-            return false
-        case (.entity, .entity):
-            return false
-        }
+        lhs.rawValue < rhs.rawValue ?
+                layerOverlapDMatrix[lhs.rawValue][TileLayer.allCases.count - 1 - rhs.rawValue] :
+                layerOverlapDMatrix[rhs.rawValue][TileLayer.allCases.count - 1 - lhs.rawValue]
     }
     // endregion
 

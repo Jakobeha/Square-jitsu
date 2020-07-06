@@ -9,8 +9,9 @@ class TileViewTemplateSetting: UnionSetting {
     static var options: [USOGenerator] = [
         USOGenerator(SettingOptionRecognizerByName("static"), StaticTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("diamond4"), Diamond4TileViewTemplate.newSetting),
-        USOGenerator(SettingOptionRecognizerByName("square4-determinedByOrientation"), Square4DeterminedByOrientationTileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("edge4"), Edge4TileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("square8"), Square8TileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("destructible"), DestructibleTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("turret"), TurretTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("fade-on-remove"), FadeOnRemoveTileViewTemplate.newSetting)
     ]

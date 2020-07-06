@@ -5,28 +5,30 @@
 
 import SpriteKit
 
-struct StaticEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
-    typealias AsSetting = StructSetting<StaticEntityViewTemplate>
-
+final class StaticEntityViewTemplate: EmptyEntityViewTemplate, SingleSettingCodable {
     let texture: SKTexture
 
-    var fadeAction: SKAction? { nil }
+    init(texture: SKTexture) {
+        self.texture = texture
+    }
 
-    func generateNode(entity: Entity) -> SKNode {
+    override func generateNode(entity: Entity) -> SKNode {
         SKSpriteNode(texture: texture)
     }
 
-    func generatePreviewNode(size: CGSize) -> SKNode {
+    override func generatePreviewNode(size: CGSize) -> SKNode {
         let node = SKSpriteNode(texture: texture, size: size)
         node.anchorPoint = UXSpriteAnchor
         return node
     }
 
-    func tick(entity: Entity, node: SKNode) {}
+    // region encoding and decoding
+    typealias AsSetting = StructSetting<StaticEntityViewTemplate>
 
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "texture": TextureSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }
+    // endregion
 }

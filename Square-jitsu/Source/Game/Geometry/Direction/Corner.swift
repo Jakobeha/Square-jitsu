@@ -3,7 +3,7 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 enum Corner: Int, CaseIterable {
     static let numCorners: Int = 8
@@ -19,6 +19,15 @@ enum Corner: Int, CaseIterable {
 
     var toSet: CornerSet {
         CornerSet(rawValue: 1 << UInt8(rawValue))
+    }
+
+    var isActualCorner: Bool {
+        switch self {
+        case .east, .north, .west, .south:
+            return false
+        case .northEast, .northWest, .southEast, .southWest:
+            return true
+        }
     }
 
     var offset: RelativePos {
@@ -41,10 +50,14 @@ enum Corner: Int, CaseIterable {
             return RelativePos(x: 1, y: -1)
         }
     }
+
+    var directionFromCenter: Angle {
+        Angle.zero + (Angle.right.toUnclamped / 2 * CGFloat(rawValue))
+    }
     
     /// Returns itself if already a side,
     /// the adjacent sides if an actual corner
-    var toNearestSides: SideSet {
+    var nearestSides: SideSet {
         switch self {
         case .east:
             return [.east]
@@ -62,6 +75,29 @@ enum Corner: Int, CaseIterable {
             return [.south]
         case .southEast:
             return [.south, .east]
+        }
+    }
+
+    /// If this is an actual corner, returns the nearest sides as lhs and rhs in both possible orders.
+    /// Otherwise (if this is a side) returns an empty array
+    var nearestSidesCartesian: [(lhs: Side, rhs: Side)] {
+        switch self {
+        case .east:
+            return []
+        case .northEast:
+            return [(lhs: .north, rhs: .east), (lhs: .east, rhs: .north)]
+        case .north:
+            return []
+        case .northWest:
+            return [(lhs: .north, rhs: .west), (lhs: .west, rhs: .north)]
+        case .west:
+            return []
+        case .southWest:
+            return [(lhs: .south, rhs: .west), (lhs: .west, rhs: .south)]
+        case .south:
+            return []
+        case .southEast:
+            return [(lhs: .south, rhs: .east), (lhs: .east, rhs: .south)]
         }
     }
 }

@@ -72,11 +72,11 @@ struct CollisionSystem: EarlyTopLevelSystem {
     // region location component collision detection
     private mutating func handleTileCollisionsWithLocation() {
         for tilePosition in trajectoryNextFrame.capsuleCastTilePositions(capsuleRadius: entity.prev.locC!.radius) {
-            let tileTypes = world[tilePosition]
-            var isFirstAtPosition = true
-            for tileType in tileTypes {
-                handleCollisionWith(tileType: tileType, tilePosition: tilePosition, isFirstAtPosition: isFirstAtPosition)
-                isFirstAtPosition = false
+            for layer in 0..<Chunk.numLayers {
+                let pos3D = WorldTilePos3D(pos: tilePosition, layer: layer)
+                let tileType = world[pos3D]
+
+                handleCollisionWith(tileType: tileType, pos3D: pos3D)
                 if entityBlockedFromFurtherCollisions {
                     return // blocked by other collisions
                 }
@@ -84,10 +84,13 @@ struct CollisionSystem: EarlyTopLevelSystem {
         }
     }
 
-    private mutating func handleCollisionWith(tileType: TileType, tilePosition: WorldTilePos, isFirstAtPosition: Bool) {
+    private mutating func handleCollisionWith(tileType: TileType, pos3D: WorldTilePos3D) {
+        let tilePosition = pos3D.pos
+
         // Insert into overlapping types
         if entity.prev.colC != nil {
             entity.next.colC!.overlappingTypes.insert(tileType)
+            let isFirstAtPosition = pos3D.layer == 0
             if isFirstAtPosition {
                 assert(!entity.next.colC!.overlappingPositions.contains(tilePosition))
                 entity.next.colC!.overlappingPositions.append(tilePosition)
@@ -101,19 +104,24 @@ struct CollisionSystem: EarlyTopLevelSystem {
 
         // Handle if solid
         if tileType.isSolid {
-            handleSolidCollisionWith(tileType: tileType, tilePosition: tilePosition)
+            handleSolidCollisionWith(tileType: tileType, pos3D: pos3D)
         }
 
-        // Notify metadatas
-        for layer in 0..<Chunk.numLayers {
-            let pos3D = WorldTilePos3D(pos: tilePosition, layer: layer)
+        // Notify metadatas if this is a new collision
+        if !collidedOnLastFrameWith(tileType: tileType) {
             if let tileBehavior = world.getBehaviorAt(pos3D: pos3D) {
                 tileBehavior.onEntityCollide(entity: entity, pos: pos3D)
             }
         }
     }
 
-    private mutating func handleSolidCollisionWith(tileType: TileType, tilePosition: WorldTilePos) {
+    private func collidedOnLastFrameWith(tileType: TileType) -> Bool {
+        (entity.prev.colC?.overlappingTypes.contains(type: tileType) ?? false) ||
+        (entity.prev.docC?.isRemoved ?? false)
+    }
+
+    private mutating func handleSolidCollisionWith(tileType: TileType, pos3D: WorldTilePos3D) {
+        let tilePosition = pos3D.pos
         if !isRunningOnSpawn && entity.prev.docC?.destroyOnSolidCollision ?? false {
             world.remove(entity: entity)
             entity.next.docC!.isRemoved = true
@@ -131,13 +139,7 @@ struct CollisionSystem: EarlyTopLevelSystem {
             if calculateIfTileIsCorner(tilePosition: tilePosition, radiusSum: radiusSum) {
                 // Not a solid collision, prevent the other cases
             } else if let parallelSide = calculateIfMovingExactlyParallelAlongSideOf(tilePosition: tilePosition, radiusSum: radiusSum) {
-                entity.next.colC!.adjacentSides.insert(parallelSide.toSet)
-                entity.next.colC!.adjacentPositions.append(key: parallelSide, tilePosition)
-
-                // Handle sub-systems
-                for index in subCollisionSystems.indices {
-                    subCollisionSystems[index].handleSolidCollisionWith(tileType: tileType, tilePosition: tilePosition, side: parallelSide)
-                }
+                handleCollisionWith(tileType: tileType, pos3D: pos3D, side: parallelSide)
             } else if let hitAxis = calculateCollidedAxis(
                     trajectoryNextFrame: trajectoryNextFrame,
                     xIsLeft: xIsLeft,
@@ -147,24 +149,30 @@ struct CollisionSystem: EarlyTopLevelSystem {
                     tilePosition: tilePosition
             ) {
                 // Necessary so we don't override velocity - technically we collide this frame but we won't the next
-                var side: Side! = nil
-                switch hitAxis {
-                case .horizontal:
-                    // We hit from the x axis
-                    // Add side, move out of solid, cancel velocity
-                    side = xIsLeft ? Side.east : Side.west
-                    entity.next.colC!.adjacentSides.insert(side.toSet)
-                case .vertical:
-                    // We hit from the y axis
-                    // Add side, move out of solid, cancel velocity
-                    side = yIsBottom ? Side.north : Side.south
-                    entity.next.colC!.adjacentSides.insert(side.toSet)
-                }
-                entity.next.colC!.adjacentPositions.append(key: side, tilePosition)
+                let side: Side! = CollisionSystem.getSide(axis: hitAxis, xIsLeft: xIsLeft, yIsBottom: yIsBottom)
 
-                // Handle sub-systems
-                for index in subCollisionSystems.indices {
-                    subCollisionSystems[index].handleSolidCollisionWith(tileType: tileType, tilePosition: tilePosition, side: side)
+                handleCollisionWith(tileType: tileType, pos3D: pos3D, side: side)
+            }
+        }
+    }
+
+    private mutating func handleCollisionWith(tileType: TileType, pos3D: WorldTilePos3D, side: Side) {
+        // Check if the tile actually exists at this side
+        if tileType.occupiedSides.contains(side.opposite.toSet) {
+            let tilePosition = pos3D.pos
+
+            entity.next.colC!.adjacentSides.insert(side.toSet)
+            entity.next.colC!.adjacentPositions.append(key: side, pos3D.pos)
+
+            // Handle sub-systems
+            for index in subCollisionSystems.indices {
+                subCollisionSystems[index].handleSolidCollisionWith(tileType: tileType, tilePosition: tilePosition, side: side)
+            }
+
+            // Notify metadatas if this is a new collision at this (2D) position
+            if !collidedOnLastFrameWith(tileType: tileType) {
+                if let tileBehavior = world.getBehaviorAt(pos3D: pos3D) {
+                    tileBehavior.onEntitySolidCollide(entity: entity, pos: pos3D, side: side)
                 }
             }
         }
@@ -232,8 +240,8 @@ struct CollisionSystem: EarlyTopLevelSystem {
         let neverHitYBarrier = timeToYBarrier == nil
         let xSide = xIsLeft ? Side.west : Side.east
         let ySide = yIsBottom ? Side.south : Side.north
-        let adjacentXPosition = tilePosition + xSide.offset
-        let adjacentYPosition = tilePosition + ySide.offset
+        let adjacentXPosition = tilePosition + xSide.perpendicularOffset
+        let adjacentYPosition = tilePosition + ySide.perpendicularOffset
         let adjacentXIsBlocked = world[adjacentXPosition].contains { type in type.isSolid }
         let adjacentYIsBlocked = world[adjacentYPosition].contains { type in type.isSolid }
         let adjacentSides = entity.next.colC!.adjacentSides
@@ -253,6 +261,19 @@ struct CollisionSystem: EarlyTopLevelSystem {
         case (true, true):
             // This is inside of a corner (unless physics is broken) so we didn't actually hit it
             return nil
+        }
+    }
+
+    private static func getSide(axis: Axis, xIsLeft: Bool, yIsBottom: Bool) -> Side {
+        switch axis {
+        case .horizontal:
+            // We hit from the x axis
+            // Add side, move out of solid, cancel velocity
+            return xIsLeft ? Side.east : Side.west
+        case .vertical:
+            // We hit from the y axis
+            // Add side, move out of solid, cancel velocity
+            return yIsBottom ? Side.north : Side.south
         }
     }
 

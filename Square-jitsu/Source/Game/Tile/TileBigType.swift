@@ -15,8 +15,14 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
     case solid
     /// Solid which changes texture while an entity is collided with it
     case adjacentSensitiveSolid
+    case destructibleSolid
     case ice
 
+    case backgroundDirectionBoost
+
+    case solidEdge
+    case dashEdge
+    case springEdge
     case lava
 
     // Entities
@@ -37,22 +43,53 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         switch self {
         case .air:
             return .air
-        case .background, .overlapSensitiveBackground:
+        case .background,
+             .overlapSensitiveBackground:
             return .background
-        case .solid, .adjacentSensitiveSolid:
-            return .solid
+        case .solid,
+             .adjacentSensitiveSolid,
+             .destructibleSolid:
+             return .solid
         case .ice:
             return .iceSolid
-        case .lava:
-            return .toxicEdge
-        case .player, .enemy, .shuriken, .bomb, .projectile, .turret, .explosion:
+        case .backgroundDirectionBoost:
+            return .backgroundDirectionBoost
+        case .solidEdge,
+             .dashEdge,
+             .springEdge,
+             .lava:
+            return .edge
+        case .player,
+             .enemy,
+             .shuriken,
+             .bomb,
+             .projectile,
+             .turret,
+             .explosion:
             return .entity
         }
     }
 
     func newMetadataSetting() -> SerialSetting {
         switch self {
-        case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice, .lava, .player, .enemy, .shuriken, .bomb, .projectile, .explosion:
+        case .air,
+             .background,
+             .overlapSensitiveBackground,
+             .solid,
+             .adjacentSensitiveSolid,
+             .destructibleSolid,
+             .ice,
+             .backgroundDirectionBoost,
+             .solidEdge,
+             .dashEdge,
+             .springEdge,
+             .lava,
+             .player,
+             .enemy,
+             .shuriken,
+             .bomb,
+             .projectile,
+             .explosion:
             return NeverSetting()
         case .turret:
             return TurretMetadata.newSetting()
@@ -61,8 +98,22 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
 
     func newBehavior() -> TileBehavior? {
         switch self {
-        case .air, .background, .solid, .adjacentSensitiveSolid, .overlapSensitiveBackground, .ice, .lava:
+        case .air,
+             .background,
+             .solid,
+             .adjacentSensitiveSolid,
+             .overlapSensitiveBackground,
+             .ice,
+             .backgroundDirectionBoost,
+             .solidEdge,
+             .lava:
             return nil
+        case .destructibleSolid:
+            return DestructibleBehavior()
+        case .dashEdge:
+            return DashBehavior()
+        case .springEdge:
+            return SpringBehavior()
         case .projectile, .explosion:
             // Can still be called on bad maps, so we don't error
             Logger.warn("newBehavior called on non-tile \(self)")

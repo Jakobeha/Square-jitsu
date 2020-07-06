@@ -5,21 +5,29 @@
 
 import SpriteKit
 
-struct TurretEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
+final class TurretEntityViewTemplate: AugmentingEntityViewTemplate, SingleSettingCodable {
     private static let chargingCircleName: String = "chargingCircle"
 
-    let base: EntityViewTemplate
     let maxChargingCircleRadius: CGFloat
     let minChargingCircleRadius: CGFloat
     let chargingCircleOffset: CGPoint
     let chargingCircleColor: SKColor
 
-    var fadeAction: SKAction? { nil }
+    init(maxChargingCircleRadius: CGFloat, minChargingCircleRadius: CGFloat, chargingCircleOffset: CGPoint, chargingCircleColor: SKColor, base: EntityViewTemplate) {
+        self.maxChargingCircleRadius = maxChargingCircleRadius
+        self.minChargingCircleRadius = minChargingCircleRadius
+        self.chargingCircleOffset = chargingCircleOffset
+        self.chargingCircleColor = chargingCircleColor
+        super.init(base: base)
+    }
 
-    func generateNode(entity: Entity) -> SKNode {
-        assert(entity.next.turC != nil, "turret entity view is only allowed on turret entities")
+    override func generateNode(entity: Entity) -> SKNode {
+        guard entity.next.turC != nil else {
+            Logger.warnSettingsAreInvalid("turret entity view is only allowed on turret entities")
+            return super.generateNode(entity: entity)
+        }
 
-        let baseNode = base.generateNode(entity: entity)
+        let baseNode = super.generateNode(entity: entity)
 
         let chargingCircleNode = SKShapeNode()
         configureChargingCircle(entity: entity, chargingCircleNode: chargingCircleNode)
@@ -30,13 +38,13 @@ struct TurretEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
         return baseNode
     }
 
-    func generatePreviewNode(size: CGSize) -> SKNode {
+    override func generatePreviewNode(size: CGSize) -> SKNode {
         // Charging circle isn't in preview
-        base.generatePreviewNode(size: size)
+        super.generatePreviewNode(size: size)
     }
 
-    func tick(entity: Entity, node: SKNode) {
-        base.tick(entity: entity, node: node)
+    override func tick(entity: Entity, node: SKNode) {
+        super.tick(entity: entity, node: node)
 
         let chargingCircleNode = node.childNode(withName: TurretEntityViewTemplate.chargingCircleName)! as! SKShapeNode
         updateChargingCircle(entity: entity, chargingCircleNode: chargingCircleNode)

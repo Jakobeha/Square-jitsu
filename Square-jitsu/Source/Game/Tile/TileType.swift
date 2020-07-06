@@ -49,8 +49,11 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
 
     var isDefault: Bool { self == TileType.defaultValue }
 
+    /// - Note: If you change this, also change TileTypeSet.containsBackground
+    var isBackground: Bool { bigType.layer == .background }
+
     /// - Note: If you change this, also change TileTypeSet.containsSolid
-    var isSolid: Bool { bigType.layer == TileLayer.solid || bigType.layer == TileLayer.iceSolid }
+    var isSolid: Bool { bigType.layer == .solid || bigType.layer == .iceSolid || bigType == .solidEdge }
 
     var occupiedSides: SideSet {
         bigType.layer.doTilesOccupySides ? orientation.asSideSet : SideSet.all

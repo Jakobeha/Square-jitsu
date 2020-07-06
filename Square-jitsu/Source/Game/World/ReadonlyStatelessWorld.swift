@@ -35,6 +35,13 @@ extension ReadonlyStatelessWorld {
         pos.sideAdjacents.mapValues(transform: getTileLayersAt)
     }
 
+    func getBackgroundAdjacentSidesTo(pos: WorldTilePos) -> SideSet {
+        SideSet(pos.sideAdjacents.mapValues { adjacentPos in
+            let adjacentTileTypes = self[adjacentPos]
+            return adjacentTileTypes.contains { tileType in tileType.isBackground }
+        })
+    }
+
     func getSolidAdjacentSidesTo(pos: WorldTilePos) -> SideSet {
         SideSet(pos.sideAdjacents.mapValues { adjacentPos in
             let adjacentTileTypes = self[adjacentPos]

@@ -27,7 +27,7 @@ struct RicochetSystem: SubCollisionSystem {
     mutating func handleCollisionWith(entity otherEntity: Entity) {}
 
     private func bounceOffOfIfNecessary(side: Side) {
-        let speedInDirection = CGPoint.dot(entity.next.dynC!.velocity, side.offset.toCgPoint)
+        let speedInDirection = CGPoint.dot(entity.next.dynC!.velocity, side.perpendicularOffset.toCgPoint)
         if speedInDirection > 0 {
             bounceOffOf(side: side, speedInDirection: speedInDirection)
         }
@@ -47,7 +47,7 @@ struct RicochetSystem: SubCollisionSystem {
         }
 
         // Actually bounce (change velocity)
-        let velocityInDirection = side.offset.toCgPoint * speedInDirection
+        let velocityInDirection = side.perpendicularOffset.toCgPoint * speedInDirection
         entity.next.dynC!.velocity -= velocityInDirection * (1 + entity.next.ricC!.bounceMultiplier)
     }
 

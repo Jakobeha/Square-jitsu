@@ -41,6 +41,32 @@ enum Side: Int, CaseIterable {
         }
     }
 
+    var rotated90DegreesClockwise: Side {
+        switch self {
+        case .east:
+            return .south
+        case .north:
+            return .east
+        case .west:
+            return .north
+        case .south:
+            return .west
+        }
+    }
+
+    var rotated90DegreesCounterClockwise: Side {
+        switch self {
+        case .east:
+            return .north
+        case .north:
+            return .west
+        case .west:
+            return .south
+        case .south:
+            return .east
+        }
+    }
+
     var axis: Axis {
         switch self {
         case .east, .west:
@@ -50,7 +76,7 @@ enum Side: Int, CaseIterable {
         }
     }
 
-    var offset: RelativePos {
+    var perpendicularOffset: RelativePos {
         switch self {
         case .east:
             return RelativePos(x: 1, y: 0)
@@ -65,5 +91,28 @@ enum Side: Int, CaseIterable {
 
     var angle: Angle {
         Angle.right * CGFloat(rawValue)
+    }
+
+    func rotated90Degrees(isClockwise: Bool) -> Side {
+        isClockwise ? rotated90DegreesClockwise : rotated90DegreesCounterClockwise
+    }
+
+    /// Rotated 90° counter-clockwise the given number of times (clockwise if negative)
+    func rotated90Degrees(numTimes: Int) -> Side {
+        var result = self
+        if numTimes > 0 {
+            for _ in 0..<(numTimes % Side.allCases.count) {
+                result = result.rotated90DegreesCounterClockwise
+            }
+        } else if numTimes < 0 {
+            for _ in 0..<(-numTimes % Side.allCases.count) {
+                result = result.rotated90DegreesClockwise
+            }
+        }
+        return result
+    }
+
+    func getParallelOffset(isClockwise: Bool) -> RelativePos {
+        rotated90Degrees(isClockwise: isClockwise).perpendicularOffset
     }
 }

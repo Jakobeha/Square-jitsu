@@ -31,7 +31,11 @@ struct SideSet: MonoidOptionSet, Equatable, Hashable, CaseIterable {
 
     var asActualSet: Set<Side> {
         get { Set(Side.allCases.filter { side in self.contains(side.toSet) }) }
-        set { self = newValue.map { side in side.toSet }.reduce() }
+        set { self = SideSet(newValue) }
+    }
+
+    var count: Int {
+        Side.allCases.filter { side in self.contains(side.toSet) }.count
     }
 
     var first: Side? {
@@ -54,5 +58,31 @@ struct SideSet: MonoidOptionSet, Equatable, Hashable, CaseIterable {
             }
         }
         self.init(rawValue: this.rawValue)
+    }
+
+    init<SideCollection: Collection>(_ sides: SideCollection) where SideCollection.Element == Side {
+        self = sides.map { side in side.toSet }.reduce()
+    }
+
+    func rotated90Degrees(numTimes: Int) -> SideSet {
+        SideSet(asActualSet.map { side in side.rotated90Degrees(numTimes: numTimes)})
+    }
+
+    /// Example: Given 0, will return this set.
+    /// Given 1, will return this set unioned with itself rotated counter clockwise once.
+    /// Given 2, will return this set unioned with itself rotated counter clockwise once and unioned with itself rotated twice.
+    /// Given a negative number, behaves the same as given the absolute value except the rotations are clockwise
+    func unionRotated90DegreesUpTo(numTimes: Int) -> SideSet {
+        var result = self
+        if numTimes > 0 {
+            for rotationCount in 0..<(numTimes % 4) {
+                result.formUnion(rotated90Degrees(numTimes: rotationCount))
+            }
+        } else {
+            for rotationCount in 0..<(-numTimes % 4) {
+                result.formUnion(rotated90Degrees(numTimes: -rotationCount))
+            }
+        }
+        return result
     }
 }

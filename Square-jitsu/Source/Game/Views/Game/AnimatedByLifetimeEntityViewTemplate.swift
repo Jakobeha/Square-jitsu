@@ -5,32 +5,30 @@
 
 import SpriteKit
 
-struct AnimatedByLifetimeEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
+final class AnimatedByLifetimeEntityViewTemplate: EmptyEntityViewTemplate, SingleSettingCodable {
     let textureBase: TextureSet
 
     // sourcery: nonSetting
-    let numTextures: Int
+    private let numTextures: Int
 
-    var previewTexture: SKTexture { textureBase[0] }
-
-    var fadeAction: SKAction? { nil }
+    private var previewTexture: SKTexture { textureBase[0] }
 
     init(textureBase: TextureSet) {
         self.textureBase = textureBase
         numTextures = textureBase.count
     }
 
-    func generateNode(entity: Entity) -> SKNode {
+    override func generateNode(entity: Entity) -> SKNode {
         SKSpriteNode(texture: getTextureFor(entity: entity))
     }
 
-    func generatePreviewNode(size: CGSize) -> SKNode {
+    override func generatePreviewNode(size: CGSize) -> SKNode {
         let node = SKSpriteNode(texture: previewTexture, size: size)
         node.anchorPoint = UXSpriteAnchor
         return node
     }
 
-    func tick(entity: Entity, node: SKNode) {
+    override func tick(entity: Entity, node: SKNode) {
         (node as! SKSpriteNode).texture = getTextureFor(entity: entity)
     }
 

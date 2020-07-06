@@ -6,7 +6,7 @@
 import SpriteKit
 
 protocol AbstractSensitiveSystem: TopLevelSystem {
-    static var sensitiveType: TileBigType { get }
+    static var sensitiveTypes: TileTypePred { get }
 
     static func getSensitivePositions(components: Entity.Components) -> [WorldTilePos]
 }
@@ -56,7 +56,7 @@ extension AbstractSensitiveSystem {
     private static func updateTileAt(world: World, position: WorldTilePos, isOn: Bool) {
         let tileTypes = world[position]
         for (layer, tileType) in tileTypes.enumerated() {
-            if tileType.bigType == Self.sensitiveType {
+            if Self.sensitiveTypes.contains(tileType) {
                 let pos3D = WorldTilePos3D(pos: position, layer: layer)
                 var newTileType = tileType
                 newTileType.smallType.isOn = isOn

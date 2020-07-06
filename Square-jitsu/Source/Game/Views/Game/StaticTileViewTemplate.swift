@@ -5,24 +5,22 @@
 
 import SpriteKit
 
-struct StaticTileViewTemplate: TileViewTemplate, SingleSettingCodable {
+final class StaticTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
     let texture: SKTexture
 
-    var fadeAction: SKAction? { nil }
+    init(texture: SKTexture) {
+        self.texture = texture
+    }
 
-    func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
+    override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
 
-    func generatePreviewNode(size: CGSize) -> SKNode {
+    override func generatePreviewNode(size: CGSize) -> SKNode {
         let node = SKSpriteNode(texture: texture, size: size)
         node.anchorPoint = UXSpriteAnchor
         return node
     }
-
-    func didPlaceInParent(node: SKNode) {}
-
-    func didRemoveFromParent(node: SKNode) {}
 
     // region encoding and decoding
     typealias AsSetting = StructSetting<StaticTileViewTemplate>

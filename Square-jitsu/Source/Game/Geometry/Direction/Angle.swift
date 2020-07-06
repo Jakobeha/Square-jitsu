@@ -135,6 +135,10 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
         self.init(radians: degrees * Float.pi / 180)
     }
 
+    init(numRightAngleRotations: Int) {
+        self.init(radians: (Float.pi / 2) * Float(numRightAngleRotations))
+    }
+
     init(radians: Float) {
         self.radians = Angle.normalize(radians: radians)
     }

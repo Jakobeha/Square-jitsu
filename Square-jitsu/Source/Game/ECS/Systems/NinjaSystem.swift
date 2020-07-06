@@ -16,7 +16,7 @@ struct NinjaSystem: TopLevelSystem {
 
     static func postTick(world: World) {}
 
-    func tick() {
+    mutating func tick() {
         if entity.next.nijC != nil {
             switch entity.prev.nijC!.actionState {
             case .idle:
@@ -35,8 +35,8 @@ struct NinjaSystem: TopLevelSystem {
         }
     }
 
-    private func tryJump(direction: Angle) {
-        if canJump {
+    private mutating func tryJump(direction: Angle) {
+        if canJump(direction: direction) {
             jump(direction: direction)
         }
     }
@@ -47,11 +47,14 @@ struct NinjaSystem: TopLevelSystem {
         }
     }
 
-    private func jump(direction: Angle) {
+    private mutating func jump(direction: Angle) {
         assert(entity.prev.nijC != nil && entity.prev.dynC != nil)
+
+        let actualJumpDirection = getActualJumpDirection(intendedDirection: direction)
+
         entity.next.dynC!.velocity = CGPoint(
             magnitude: entity.prev.nijC!.jumpSpeed,
-            directionFromOrigin: direction
+            directionFromOrigin: actualJumpDirection
         )
         if isNearOrOnSolid {
             // Since angular velocity would be 0 on solid,
@@ -72,7 +75,25 @@ struct NinjaSystem: TopLevelSystem {
         }
     }
 
-    private var canJump: Bool {
+    private mutating func getActualJumpDirection(intendedDirection: Angle) -> Angle {
+        overriddenJumpDirections.isEmpty ? intendedDirection : overriddenJumpDirections.first { overriddenJumpDirection in
+            let offsetFromDirection = overriddenJumpDirection - intendedDirection
+            return offsetFromDirection.isAbsoluteSmallerThan(angle: NinjaComponent.maxOffsetFromOverriddenDirectionForJumpToStillOccur)
+        }!
+    }
+
+    private mutating func canJump(direction: Angle) -> Bool {
+        canJumpInAnyDirection && couldJumpInSpecificDirection(direction: direction)
+    }
+
+    private mutating func couldJumpInSpecificDirection(direction: Angle) -> Bool {
+        overriddenJumpDirections.isEmpty ? true : overriddenJumpDirections.contains { overriddenJumpDirection in
+            let offsetFromDirection = overriddenJumpDirection - direction
+            return offsetFromDirection.isAbsoluteSmallerThan(angle: NinjaComponent.maxOffsetFromOverriddenDirectionForJumpToStillOccur)
+        }
+    }
+
+    private var canJumpInAnyDirection: Bool {
         isNearOrOnSolid || isOnUnusedBackground || entity.next.nijC!.numJumpsWithoutBackgroundRemaining > 0
     }
 
@@ -83,7 +104,7 @@ struct NinjaSystem: TopLevelSystem {
     private var isNearOrOnSolid: Bool {
         let nearTypes = entity.prev.ntlC!.nearTypes
         let onTypes = entity.prev.colC!.overlappingTypes
-        return (nearTypes.contains(layer: .solid) && !onTypes.contains(layer: .toxicEdge)) || onTypes.contains(layer: .solid)
+        return (nearTypes.contains(layer: .solid) && !onTypes.contains(bigType: .lava)) || onTypes.contains(layer: .solid)
     }
 
     private var isOnUnusedBackground: Bool {
@@ -92,6 +113,12 @@ struct NinjaSystem: TopLevelSystem {
     }
 
     private var overlappingBackgroundTypes: Set<TileType> {
-        entity.prev.colC!.overlappingTypes[TileLayer.background]
+        entity.prev.colC!.overlappingTypes[.background]
     }
+
+    private lazy var overriddenJumpDirections: [Angle] = {
+        entity.next.colC!.overlappingTypes.getOrientationsWith(bigType: .backgroundDirectionBoost).map { orientation in
+            orientation.asCorner.directionFromCenter
+        }
+    }()
 }

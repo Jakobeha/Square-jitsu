@@ -26,6 +26,7 @@ function process8AtlasesOfType(typeName, typeComposeImplementation) {
         // (these are temporary and we combine them in different ways to form the final images)
         cp.execSync(`convert ${inFilePath} +gravity -crop 96x96 ${outDirPath}/temp_%d.png`)
 
+        // An abstraction to compose the chunks for the implementation
         function composeImage(patternFromAdjacents, partGrid) {
             cp.execSync(`convert \\
               \\( ${outDirPath}/temp_${partGrid[0][0]}.png ${outDirPath}/temp_${partGrid[0][1]}.png +append \\) \\
@@ -33,12 +34,15 @@ function process8AtlasesOfType(typeName, typeComposeImplementation) {
             -append ${outDirPath}/${patternFromAdjacents}.png`)
         }
 
+        // Create the composed chunks using the implementation
         typeComposeImplementation(composeImage)
 
+        // Remove the temporary chunks
         const tempFilePaths = glob.sync(`${outDirPath}/temp_*.png`, null)
         for (const tempFilePath of tempFilePaths) {
             fs.unlinkSync(tempFilePath)
         }
+
         console.log(`Done ${name}`)
     }
     console.log(`Done ${typeName}s`)
@@ -106,6 +110,24 @@ process8AtlasesOfType("4Diamond", composeImage => {
     composeImage("1111", [[5, 6], [9, 10]])
 })
 process8AtlasesOfType("4Square", composeImage => {
+    composeImage("0000", [[0, 3], [12, 15]])
+    composeImage("1000", [[0, 3], [8, 11]])
+    composeImage("0100", [[1, 3], [13, 15]])
+    composeImage("0010", [[4, 7], [12, 15]])
+    composeImage("0001", [[0, 2], [12, 14]])
+    composeImage("1100", [[1, 3], [9, 11]])
+    composeImage("0110", [[5, 7], [13, 15]])
+    composeImage("0011", [[4, 6], [12, 14]])
+    composeImage("1001", [[0, 2], [8, 10]])
+    composeImage("1010", [[4, 7], [8, 11]])
+    composeImage("0101", [[1, 2], [13, 14]])
+    composeImage("0111", [[5, 6], [13, 14]])
+    composeImage("1011", [[4, 6], [8, 10]])
+    composeImage("1101", [[1, 2], [9, 10]])
+    composeImage("1110", [[5, 7], [9, 11]])
+    composeImage("1111", [[5, 6], [9, 10]])
+})
+process8AtlasesOfType("4Edge", composeImage => {
     composeImage("0000", [[0, 3], [12, 15]])
     composeImage("1000", [[0, 3], [8, 11]])
     composeImage("0100", [[1, 3], [13, 15]])

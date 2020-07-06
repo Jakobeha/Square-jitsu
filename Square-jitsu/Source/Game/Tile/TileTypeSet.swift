@@ -6,29 +6,39 @@
 import Foundation
 
 struct TileTypeSet {
-    private var deconstructedTypeMap: [TileBigType:Set<TileSmallType>] = [:]
+    private var smallTypesPerBigType: [TileBigType:Set<TileSmallType>] = [:]
+    private var orientationsPerBigType: [TileBigType:Set<TileOrientation>] = [:]
     private var typesPerLayer: [TileLayer:Set<TileType>] = [:]
 
+    var containsBackground: Bool {
+        contains(layer: .background)
+    }
+
     var containsSolid: Bool {
-        contains(layer: TileLayer.solid) || contains(layer: TileLayer.iceSolid)
+        contains(layer: .solid) || contains(layer: .iceSolid) || contains(bigType: .solidEdge)
     }
 
     init() {}
 
     func contains(type: TileType) -> Bool {
-        deconstructedTypeMap[type.bigType]?.contains(type.smallType) ?? false
+        smallTypesPerBigType[type.bigType]?.contains(type.smallType) ?? false &&
+        orientationsPerBigType[type.bigType]!.contains(type.orientation)
     }
 
     func contains(bigType: TileBigType) -> Bool {
-        deconstructedTypeMap[bigType] != nil
+        smallTypesPerBigType[bigType] != nil
     }
 
     func contains(layer: TileLayer) -> Bool {
         typesPerLayer[layer] != nil
     }
 
-    subscript(bigType: TileBigType) -> Set<TileSmallType> {
-        deconstructedTypeMap[bigType] ?? []
+    func getSmallTypesWith(bigType: TileBigType) -> Set<TileSmallType> {
+        smallTypesPerBigType[bigType] ?? []
+    }
+
+    func getOrientationsWith(bigType: TileBigType) -> Set<TileOrientation> {
+        orientationsPerBigType[bigType] ?? []
     }
 
     subscript(layer: TileLayer) -> Set<TileType> {
@@ -36,15 +46,14 @@ struct TileTypeSet {
     }
 
     mutating func insert(_ type: TileType) {
-        var typesForBigType = deconstructedTypeMap.getOrInsert(type.bigType) { [] }
-        typesForBigType.insert(type.smallType)
-        deconstructedTypeMap[type.bigType] = typesForBigType
-
+        smallTypesPerBigType.append(key: type.bigType, type.smallType)
+        orientationsPerBigType.append(key: type.bigType, type.orientation)
         typesPerLayer.append(key: type.bigType.layer, type)
     }
 
     mutating func removeAll() {
-        deconstructedTypeMap.removeAll()
+        smallTypesPerBigType.removeAll()
+        orientationsPerBigType.removeAll()
         typesPerLayer.removeAll()
     }
 }

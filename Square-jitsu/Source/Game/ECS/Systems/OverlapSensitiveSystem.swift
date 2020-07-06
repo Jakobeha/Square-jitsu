@@ -6,7 +6,9 @@
 import SpriteKit
 
 struct OverlapSensitiveSystem: AbstractSensitiveSystem {
-    static let sensitiveType: TileBigType = TileBigType.overlapSensitiveBackground
+    static let sensitiveTypes: TileTypePred = TileTypePred([
+        .overlapSensitiveBackground
+    ])
 
     let entity: Entity
 

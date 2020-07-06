@@ -5,28 +5,24 @@
 
 import SpriteKit
 
-struct FadeOnRemoveTileViewTemplate: TileViewTemplate, SingleSettingCodable {
-    let base: TileViewTemplate
+final class FadeOnRemoveTileViewTemplate: AugmentingTileViewTemplate, SingleSettingCodable {
     let duration: CGFloat
 
-    var fadeAction: SKAction? {
+    override var fadeAction: SKAction? {
+        if let baseFadeAction = super.fadeAction {
+            return SKAction.group([myFadeAction, baseFadeAction])
+        } else {
+            return myFadeAction
+        }
+    }
+
+    private var myFadeAction: SKAction {
         SKAction.fadeOut(withDuration: TimeInterval(duration))
     }
 
-    func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
-        base.generateNode(world: world, pos3D: pos3D, tileType: tileType)
-    }
-
-    func generatePreviewNode(size: CGSize) -> SKNode {
-        base.generatePreviewNode(size: size)
-    }
-
-    func didPlaceInParent(node: SKNode) {
-        base.didPlaceInParent(node: node)
-    }
-
-    func didRemoveFromParent(node: SKNode) {
-        base.didRemoveFromParent(node: node)
+    init(duration: CGFloat, base: TileViewTemplate) {
+        self.duration = duration
+        super.init(base: base)
     }
 
     // region encoding and decoding

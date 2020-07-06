@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-protocol TileViewTemplate: DynamicSettingCodable {
+protocol TileViewTemplate {
     var fadeAction: SKAction? { get }
 
     func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode

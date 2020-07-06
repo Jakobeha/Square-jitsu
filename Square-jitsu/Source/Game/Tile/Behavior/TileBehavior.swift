@@ -18,6 +18,7 @@ protocol TileBehavior: AnyObject {
     /// This is guaranteed to be called before all other on... handlers except onCreate
     func onFirstLoad(world: World, pos: WorldTilePos3D)
     func onEntityCollide(entity: Entity, pos: WorldTilePos3D)
+    func onEntitySolidCollide(entity: Entity, pos: WorldTilePos3D, side: Side)
     func tick(world: World, pos: WorldTilePos3D)
     /// Revert any game-persistent state, keep permanent state.
     /// `x.revert()` may do more than `x = x.clonePermanent()`,

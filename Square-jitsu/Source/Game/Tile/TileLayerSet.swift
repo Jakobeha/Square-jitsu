@@ -9,11 +9,12 @@ struct TileLayerSet: OptionSet {
     static let air: TileLayerSet = TileLayerSet(rawValue: 1 << 0)
 
     static let background: TileLayerSet = TileLayerSet(rawValue: 1 << 1)
+    static let backgroundDirectionBoost: TileLayerSet = TileLayerSet(rawValue: 1 << 1)
 
     static let solid: TileLayerSet = TileLayerSet(rawValue: 1 << 2)
     static let iceSolid: TileLayerSet = TileLayerSet(rawValue: 1 << 3)
 
-    static let toxicEdge: TileLayerSet = TileLayerSet(rawValue: 1 << 4)
+    static let edge: TileLayerSet = TileLayerSet(rawValue: 1 << 4)
 
     static let entity: TileLayerSet = TileLayerSet(rawValue: 1 << 5)
 

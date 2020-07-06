@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-protocol EntityViewTemplate: DynamicSettingCodable {
+protocol EntityViewTemplate {
     var fadeAction: SKAction? { get }
 
     func generateNode(entity: Entity) -> SKNode

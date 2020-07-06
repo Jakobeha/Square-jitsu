@@ -107,7 +107,7 @@ struct WorldTilePos: Equatable, Hashable {
     }
 
     var sideAdjacents: DenseEnumMap<Side, WorldTilePos> {
-        DenseEnumMap { side in self + side.offset }
+        DenseEnumMap { side in self + side.perpendicularOffset }
     }
 
     init(worldChunkPos: WorldChunkPos, chunkTilePos: ChunkTilePos) {

@@ -24,6 +24,7 @@ class EmptyTileBehavior<Metadata: TileMetadata>: TileBehavior {
 
     func onFirstLoad(world: World, pos: WorldTilePos3D) {}
     func onEntityCollide(entity: Entity, pos: WorldTilePos3D) {}
+    func onEntitySolidCollide(entity: Entity, pos: WorldTilePos3D, side: Side) {}
     func tick(world: World, pos: WorldTilePos3D) {}
     func revert(world: World, pos: WorldTilePos3D) {}
 

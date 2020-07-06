@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-final class Square8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
+final class Square8TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
     static func getCoalescedForSharedTexture(cornerSet: CornerSet) -> CornerSet {
         var coalescedSet = cornerSet
         if !cornerSet.contains(.east) {
@@ -31,8 +31,6 @@ final class Square8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
     let textureBase: TextureSet
     let adjoiningTypes: TileTypePred
 
-    var fadeAction: SKAction? { nil }
-
     private lazy var textures: DenseEnumMap<CornerSet, SKTexture> = DenseEnumMap { cornerSet in
         let coalescedSet = Square8TileViewTemplate.getCoalescedForSharedTexture(cornerSet: cornerSet)
         return Square8TileViewTemplate.getTexture(base: textureBase, cornerSet: coalescedSet)
@@ -43,7 +41,7 @@ final class Square8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         self.adjoiningTypes = adjoiningTypes
     }
 
-    func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
+    override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         let adjoiningCorners = CornerSet(pos3D.pos.cornerAdjacents.mapValues { adjacentPos in
             adjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })
@@ -51,16 +49,12 @@ final class Square8TileViewTemplate: TileViewTemplate, SingleSettingCodable {
         return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
 
-    func generatePreviewNode(size: CGSize) -> SKNode {
+    override func generatePreviewNode(size: CGSize) -> SKNode {
         let texture = textures[[]]
         let node = SKSpriteNode(texture: texture, size: size)
         node.anchorPoint = UXSpriteAnchor
         return node
     }
-
-    func didPlaceInParent(node: SKNode) {}
-
-    func didRemoveFromParent(node: SKNode) {}
 
     // region encoding and decoding
     typealias AsSetting = StructSetting<Square8TileViewTemplate>

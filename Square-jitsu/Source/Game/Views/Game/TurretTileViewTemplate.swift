@@ -5,16 +5,21 @@
 
 import SpriteKit
 
-struct TurretTileViewTemplate: TileViewTemplate, SingleSettingCodable {
-    let base: TileViewTemplate
+final class TurretTileViewTemplate: AugmentingTileViewTemplate, SingleSettingCodable {
     let turretTexture: SKTexture
 
-    var fadeAction: SKAction? { nil }
-    
-    func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
-        assert(tileType.bigType == .turret, "TurretTileViewTemplate is only allowed on turret tiles")
+    init(turretTexture: SKTexture, base: TileViewTemplate) {
+        self.turretTexture = turretTexture
+        super.init(base: base)
+    }
 
-        let baseNode = base.generateNode(world: world, pos3D: pos3D, tileType: tileType)
+    override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
+        guard tileType.bigType == .turret else {
+            Logger.log("TurretTileViewTemplate is only allowed on turret tiles")
+            return super.generateNode(world: world, pos3D: pos3D, tileType: tileType)
+        }
+
+        let baseNode = super.generateNode(world: world, pos3D: pos3D, tileType: tileType)
 
         let turretBehavior = world.getBehaviorAt(pos3D: pos3D)! as! TurretBehavior
 
@@ -42,16 +47,6 @@ struct TurretTileViewTemplate: TileViewTemplate, SingleSettingCodable {
             turretNode.angle = metadata.initialTurretDirectionRelativeToAnchor
         }
     }
-
-    func generatePreviewNode(size: CGSize) -> SKNode {
-        // The turret entity will already be rendered on top of the preview,
-        // so we don't need to add it here
-        base.generatePreviewNode(size: size)
-    }
-
-    func didPlaceInParent(node: SKNode) {}
-
-    func didRemoveFromParent(node: SKNode) {}
 
     // region encoding and decoding
     typealias AsSetting = StructSetting<TurretTileViewTemplate>

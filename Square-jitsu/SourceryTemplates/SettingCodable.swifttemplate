@@ -8,7 +8,7 @@ func toString(_ literal: String) -> String {
 <%_ for type in types.all
           where (type.implements["SettingCodable"] != nil &&
                  type.typealiases["AsSetting"]?.typeName.generic?.name == "StructSetting") {
-    let variables = type.storedVariables.filter({ $0.defaultValue == nil && $0.annotations["nonSetting"] == nil }) -%>
+    let variables = type.allVariables.filter({ !$0.isStatic && !$0.isComputed && $0.defaultValue == nil && $0.annotations["nonSetting"] == nil }) -%>
 extension <%= type.name %> {
     <%= type.accessLevel %> <%_ if type is Class { %> convenience<%_ } %> init(from setting: StructSetting<<%= type.name %>>) {
         self.init(

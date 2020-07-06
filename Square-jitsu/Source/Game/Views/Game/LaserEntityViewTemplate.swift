@@ -5,14 +5,20 @@
 
 import SpriteKit
 
-struct LaserEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
+final class LaserEntityViewTemplate: EmptyEntityViewTemplate, SingleSettingCodable {
     let color: SKColor
     let thickness: CGFloat
 
-    var fadeAction: SKAction? { nil }
+    init(color: SKColor, thickness: CGFloat) {
+        self.color = color
+        self.thickness = thickness
+    }
 
-    func generateNode(entity: Entity) -> SKNode {
-        assert(entity.next.lilC != nil, "laser entity view is only allowed on entities with line positions")
+    override func generateNode(entity: Entity) -> SKNode {
+        guard entity.next.lilC != nil else {
+            Logger.warnSettingsAreInvalid("laser entity view is only allowed on entities with line positions")
+            return super.generateNode(entity: entity)
+        }
 
         let node = SKShapeNode(path: generatePath(entity: entity))
         configure(node: node, tileWidthHeight: entity.world!.settings.tileViewWidthHeight)
@@ -20,7 +26,7 @@ struct LaserEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
         return node
     }
 
-    func generatePreviewNode(size: CGSize) -> SKNode {
+    override func generatePreviewNode(size: CGSize) -> SKNode {
         let previewLine = LineSegment(start: CGPoint(x: size.width / 2, y: 0), end: CGPoint(x: size.width / 2, y: size.height))
 
         let node = SKShapeNode(path: CGPath.of(line: previewLine))
@@ -34,10 +40,10 @@ struct LaserEntityViewTemplate: EntityViewTemplate, SingleSettingCodable {
         node.lineWidth = thickness * tileWidthHeight
     }
 
-    func tick(entity: Entity, node: SKNode) {
-        let node = node as! SKShapeNode
-
-        node.path = generatePath(entity: entity)
+    override func tick(entity: Entity, node: SKNode) {
+        // Should be non-nil unless there are bad settings (and we warn if so)
+        let node = node as? SKShapeNode
+        node?.path = generatePath(entity: entity)
     }
 
     private func generatePath(entity: Entity) -> CGPath {

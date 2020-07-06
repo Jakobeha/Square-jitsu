@@ -15,6 +15,9 @@ struct CornerSet: OptionSet, Equatable, Hashable, CaseIterable {
     static let south: CornerSet = CornerSet(rawValue: 1 << 6)
     static let southEast: CornerSet = CornerSet(rawValue: 1 << 7)
 
+    static let all: CornerSet = [.east, .northEast, .north, .northWest, .west, .southWest, .south, .southEast]
+    static let allActualCorners: CornerSet = [.northEast, .northWest, .southWest, .southEast]
+
     static let allCases: [CornerSet] = ((0 as UInt8)...(255 as UInt8)).map { CornerSet(rawValue: $0) }
 
     let rawValue: UInt8
@@ -35,5 +38,15 @@ struct CornerSet: OptionSet, Equatable, Hashable, CaseIterable {
             }
         }
         self.init(rawValue: this.rawValue)
+    }
+
+    func filter(_ predicate: (Corner) throws -> Bool) rethrows -> CornerSet {
+        var filtered: CornerSet = []
+        for corner in Corner.allCases {
+            if try contains(corner.toSet) && predicate(corner) {
+                filtered.insert(corner.toSet)
+            }
+        }
+        return filtered
     }
 }
