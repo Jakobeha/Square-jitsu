@@ -9,6 +9,7 @@ import Foundation
 enum TileOrientationMeaning: Int, CaseIterable, Codable, LosslessStringConvertibleEnum, HasDefault {
     case unused
     case directionAdjacentToSolid
+    case directionToCorner
     case atBackgroundBorder
     case atSolidBorder
 

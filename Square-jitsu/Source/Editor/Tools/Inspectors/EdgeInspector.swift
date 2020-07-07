@@ -5,7 +5,7 @@
 
 import Foundation
 
-class EdgeInspector: SideBasedOrientationInspector {
+final class EdgeInspector: SideBasedOrientationInspector {
     override func isTileConnectableToSide(tileAtPosition: TileAtPosition, side: Side) -> Bool {
         let allowBackgrounds = world.settings.tileOrientationMeanings[tileAtPosition.type] != .atBackgroundBorder
         let allowSolids = world.settings.tileOrientationMeanings[tileAtPosition.type] != .atSolidBorder

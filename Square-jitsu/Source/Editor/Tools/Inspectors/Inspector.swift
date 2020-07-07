@@ -5,8 +5,9 @@
 
 import Foundation
 
-class Inspector {
+final class Inspector {
     let adjacentToSolidInspector: AdjacentToSolidInspector?
+    let directionToCornerInspector: DirectionToCornerInspector?
     let edgeInspector: EdgeInspector?
     let turretInspector: TurretInspector?
 
@@ -27,6 +28,9 @@ class Inspector {
 
         adjacentToSolidInspector = createSubInspectorIfNecessary(type: AdjacentToSolidInspector.self) { tileType in
             (world.settings.tileOrientationMeanings[tileType] ?? .unused) == .directionAdjacentToSolid
+        }
+        directionToCornerInspector = createSubInspectorIfNecessary(type: DirectionToCornerInspector.self) { tileType in
+            (world.settings.tileOrientationMeanings[tileType] ?? .unused) == .directionToCorner
         }
         edgeInspector = createSubInspectorIfNecessary(type: EdgeInspector.self) { tileType in
             tileType.bigType.layer.doTilesOccupySides

@@ -136,7 +136,7 @@ class Editor: EditorToolsDelegate {
 
     private func addSideToOrientationInType(type: TileType, side: Side) -> TileOrientation {
         switch settings.tileOrientationMeanings[type] ?? .unused {
-        case .unused:
+        case .unused, .directionToCorner:
             fatalError("orientation isn't side-based")
         case .directionAdjacentToSolid:
             return TileOrientation(side: side)
@@ -157,7 +157,7 @@ class Editor: EditorToolsDelegate {
 
     private func tryRemoveSideToOrientationInType(type: TileType, side: Side) -> TileOrientation {
         switch settings.tileOrientationMeanings[type] ?? .unused {
-        case .unused:
+        case .unused, .directionToCorner:
             fatalError("orientation isn't side-based")
         case .directionAdjacentToSolid:
             // Can't remove because there is only one side
@@ -166,6 +166,41 @@ class Editor: EditorToolsDelegate {
             var orientation = type.orientation
             orientation.asSideSet.remove(side.toSet)
             return orientation
+        }
+    }
+
+    func connectTilesToCorner(tiles: [TileAtPosition], corner: Corner) {
+        for tileAtPosition in tiles {
+            var newTileType = tileAtPosition.type
+            newTileType.orientation = addCornerToOrientationInType(type: newTileType, corner: corner)
+            editableWorld[tileAtPosition.position] = newTileType
+        }
+    }
+
+    private func addCornerToOrientationInType(type: TileType, corner: Corner) -> TileOrientation {
+        switch settings.tileOrientationMeanings[type] ?? .unused {
+        case .unused, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder:
+            fatalError("orientation isn't corner-based")
+        case .directionToCorner:
+            return TileOrientation(corner: corner)
+        }
+    }
+
+    func disconnectTilesToCorner(tiles: [TileAtPosition], corner: Corner) {
+        for tileAtPosition in tiles {
+            var newTileType = tileAtPosition.type
+            newTileType.orientation = tryRemoveCornerToOrientationInType(type: newTileType, corner: corner)
+            editableWorld[tileAtPosition.position] = newTileType
+        }
+    }
+
+    private func tryRemoveCornerToOrientationInType(type: TileType, corner: Corner) -> TileOrientation {
+        switch settings.tileOrientationMeanings[type] ?? .unused {
+        case .unused, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder:
+            fatalError("orientation isn't corner-based")
+        case .directionToCorner:
+            // Can't remove because there is only one side
+            return type.orientation
         }
     }
 

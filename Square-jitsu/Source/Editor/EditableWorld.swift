@@ -78,6 +78,17 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
             } else {
                 type.orientation = TileOrientation.none
             }
+        case .directionToCorner:
+            let preferredCorner = pos.sideAdjacents.values.compactMap { adjacentPos -> Corner? in
+                let adjacentTypes = self[adjacentPos]
+                let adjacentSameTypeIgnoringOrientation = adjacentTypes.first { adjacentType in
+                    adjacentType.withDefaultOrientation == type.withDefaultOrientation
+                }
+                return adjacentSameTypeIgnoringOrientation?.orientation.asCorner
+            }.first
+            if let preferredCorner = preferredCorner {
+                type.orientation = TileOrientation(corner: preferredCorner)
+            }
         case .atBackgroundBorder:
             let sidesWithAdjacentBackground = getBackgroundAdjacentSidesTo(pos: pos)
             let alreadyOccupiedSides = getOccupiedTileSidesAt(pos: pos, tileLayer: type.bigType.layer)

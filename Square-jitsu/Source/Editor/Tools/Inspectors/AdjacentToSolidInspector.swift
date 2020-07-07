@@ -5,7 +5,7 @@
 
 import Foundation
 
-class AdjacentToSolidInspector: SideBasedOrientationInspector {
+final class AdjacentToSolidInspector: SideBasedOrientationInspector {
     override func isTileConnectableToSide(tileAtPosition: TileAtPosition, side: Side) -> Bool {
         world.getSolidAdjacentSidesTo(pos: tileAtPosition.position.pos).contains(side.toSet)
     }

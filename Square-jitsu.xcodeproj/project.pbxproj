@@ -37,6 +37,7 @@
 		60372088D28E5B6B4C66132E /* BurstTurret.png in Resources */ = {isa = PBXBuildFile; fileRef = 60372E23324F314F02C316FB /* BurstTurret.png */; };
 		6037209F2E61AFB8C3E7B446 /* AutoEncodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372E9A1188C108CEB3644A /* AutoEncodable.swift */; };
 		603720A74C1D8956A66DF787 /* TileTypeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037258A83C086CE17FC8696 /* TileTypeMap.swift */; };
+		603720B2887D940450EE9129 /* CornerFacingTileViewTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037254AE82F694FBCA7B74F /* CornerFacingTileViewTemplate.swift */; };
 		603720B8B15FDFFB18FAEDD7 /* UI in Resources */ = {isa = PBXBuildFile; fileRef = 60372D0EEE3B1A3EB5A953DE /* UI */; };
 		603720BB12FE7EA191F0CEE3 /* ImplicitForcesComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603727E4B6D2FF1AFD0BB622 /* ImplicitForcesComponent.swift */; };
 		603720C5A4833A2ECE15456A /* UXView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037234C257E405502D4E8EB /* UXView.swift */; };
@@ -54,6 +55,7 @@
 		60372101B8F874A5CC437011 /* TileViewTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603723F348193B5877F20CB0 /* TileViewTemplate.swift */; };
 		603721081DC52C1F76E28C38 /* AdjacentToSolidInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037245CA2D4DEBACF505653 /* AdjacentToSolidInspector.swift */; };
 		6037210FD315A60767837E7C /* ChunkTilePos3D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603723EB298C8C4C31775F9C /* ChunkTilePos3D.swift */; };
+		6037211A90CCA957B05D43B7 /* CornerBasedOrientationSIV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603725B8D6B40C6DC05D5018 /* CornerBasedOrientationSIV.swift */; };
 		60372125DF2FB2566A36CFBA /* World.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372F8C49AC2D64B6F4CFF0 /* World.swift */; };
 		6037213284F584B57B434325 /* EditActionMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372A1412DC6F2DF6B111C8 /* EditActionMode.swift */; };
 		60372144A8D6B49FCFD7D51B /* SettingOptionRecognizerByName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603729071315EC41B193F008 /* SettingOptionRecognizerByName.swift */; };
@@ -111,6 +113,7 @@
 		60372361DFC4A4A4B419FFFC /* SpringOn in Resources */ = {isa = PBXBuildFile; fileRef = 60372B74FF7AA91F98C6B518 /* SpringOn */; };
 		603723683B3974F8856ED637 /* UnionSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372A30580A3E352A1BD5D3 /* UnionSetting.swift */; };
 		603723798B593271CC8B91CD /* OptionalNodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037246FD96FDD9B83095B66 /* OptionalNodeView.swift */; };
+		60372382C79533EBF4676D42 /* CornerBasedOrientationInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603727780F81638A1811C238 /* CornerBasedOrientationInspector.swift */; };
 		60372397882ED45239F65971 /* Enemy.png in Resources */ = {isa = PBXBuildFile; fileRef = 603723705863956B0FF9663C /* Enemy.png */; };
 		6037239A416204225885ED54 /* SolidEdge in Resources */ = {isa = PBXBuildFile; fileRef = 603722F0E25341847E00EB64 /* SolidEdge */; };
 		603723ACC8AF38E189318B41 /* NodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603727DFB4B8AF579946C4E6 /* NodeView.swift */; };
@@ -358,6 +361,7 @@
 		60372FDEE311B8838B3CD898 /* NearCollisionSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372B5C59E944EBFF3A67F8 /* NearCollisionSystem.swift */; };
 		60372FE1F636CF86EBB61B01 /* EditorToolsSelectModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603721D6B50603D3B6C16FA0 /* EditorToolsSelectModeView.swift */; };
 		60372FE6CF477CED9F3C1FD7 /* FadeOnDeathEntityViewTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037238F50FEEA60F3E58929 /* FadeOnDeathEntityViewTemplate.swift */; };
+		60372FEDE15646148ABD592E /* DirectionToCornerInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603723A05C3F84D8326899DC /* DirectionToCornerInspector.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -477,6 +481,7 @@
 		6037238F50FEEA60F3E58929 /* FadeOnDeathEntityViewTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FadeOnDeathEntityViewTemplate.swift; sourceTree = "<group>"; };
 		60372395324CC77AB6AD4019 /* TestOnBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TestOnBackground.png; sourceTree = "<group>"; };
 		6037239A648933677DCF3FDD /* BasicTurret.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BasicTurret.png; sourceTree = "<group>"; };
+		603723A05C3F84D8326899DC /* DirectionToCornerInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectionToCornerInspector.swift; sourceTree = "<group>"; };
 		603723A74864BBCB2355887F /* CGSize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGSize.swift; sourceTree = "<group>"; };
 		603723A76E8886EF469A3EF4 /* USOGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = USOGenerator.swift; sourceTree = "<group>"; };
 		603723AF4202D6524E42E42F /* CornerSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CornerSet.swift; sourceTree = "<group>"; };
@@ -515,6 +520,7 @@
 		603725243908A142030CDF60 /* SpawnOnGrabBehavior.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpawnOnGrabBehavior.swift; sourceTree = "<group>"; };
 		603725454221FC6F401669AD /* TileSmallType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileSmallType.swift; sourceTree = "<group>"; };
 		6037254A934645C83DA5F185 /* ButtonSize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonSize.swift; sourceTree = "<group>"; };
+		6037254AE82F694FBCA7B74F /* CornerFacingTileViewTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CornerFacingTileViewTemplate.swift; sourceTree = "<group>"; };
 		6037254EE8CE82E058CBC515 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
 		603725646D3734A14FBF03CE /* AnimatedOnDeathEntityViewTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimatedOnDeathEntityViewTemplate.swift; sourceTree = "<group>"; };
 		6037256DE3B77ED586586CAC /* EntityView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityView.swift; sourceTree = "<group>"; };
@@ -527,6 +533,7 @@
 		603725A69B981894018A709D /* CreateOnDestroyComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateOnDestroyComponent.swift; sourceTree = "<group>"; };
 		603725A818775108F2F92364 /* SerialWorldVersion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerialWorldVersion.swift; sourceTree = "<group>"; };
 		603725A99658744905AA867C /* WorldDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorldDocument.swift; sourceTree = "<group>"; };
+		603725B8D6B40C6DC05D5018 /* CornerBasedOrientationSIV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CornerBasedOrientationSIV.swift; sourceTree = "<group>"; };
 		603725E2C7CDBA4E4952AF0D /* Never.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Never.swift; sourceTree = "<group>"; };
 		6037260087AD070442393B87 /* Square_jitsuUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Square_jitsuUITests.swift; sourceTree = "<group>"; };
 		6037261157DE7559AFC17E65 /* BackgroundWorldLoaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundWorldLoaders.swift; sourceTree = "<group>"; };
@@ -555,6 +562,7 @@
 		6037272D6E614FEC8B3DFF3D /* LosslessStringConvertibleEnum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LosslessStringConvertibleEnum.swift; sourceTree = "<group>"; };
 		60372752C64A25A1F1486503 /* TileButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileButton.swift; sourceTree = "<group>"; };
 		603727699DBD404AB9DEE3D0 /* TextureSetSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextureSetSetting.swift; sourceTree = "<group>"; };
+		603727780F81638A1811C238 /* CornerBasedOrientationInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CornerBasedOrientationInspector.swift; sourceTree = "<group>"; };
 		60372781DAA99988D4804B71 /* SettingCodableByCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingCodableByCodable.swift; sourceTree = "<group>"; };
 		6037278678523747482069C6 /* SettingCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingCodable.swift; sourceTree = "<group>"; };
 		603727912FF3D213FEDCC702 /* Rocket.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Rocket.png; sourceTree = "<group>"; };
@@ -888,6 +896,7 @@
 				603727C705A372DEA28E1474 /* LabeledSIV.swift */,
 				603722FA2D09C01B57E07D02 /* SideBasedOrientationSIV.swift */,
 				603727E4545849C8DFF970A8 /* TurretSIV.swift */,
+				603725B8D6B40C6DC05D5018 /* CornerBasedOrientationSIV.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -972,6 +981,7 @@
 				60372E18C88BB314B1761FC0 /* EmptyTileViewTemplate.swift */,
 				60372F52C92BDCC11D30D2EF /* EmptyEntityViewTemplate.swift */,
 				60372719CA9D260CFADE0BA9 /* AugmentingEntityViewTemplate.swift */,
+				6037254AE82F694FBCA7B74F /* CornerFacingTileViewTemplate.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -1134,6 +1144,8 @@
 				6037230E6465BF8EFA4AAE6F /* SubInspector.swift */,
 				60372275206B25CBA164F068 /* EdgeInspector.swift */,
 				60372964EF507F924FC37072 /* SideBasedOrientationInspector.swift */,
+				603727780F81638A1811C238 /* CornerBasedOrientationInspector.swift */,
+				603723A05C3F84D8326899DC /* DirectionToCornerInspector.swift */,
 			);
 			path = Inspectors;
 			sourceTree = "<group>";
@@ -1915,6 +1927,10 @@
 				60372D7645C6BD693929A9F1 /* EmptyTileViewTemplate.swift in Sources */,
 				60372076B33488D513B46240 /* EmptyEntityViewTemplate.swift in Sources */,
 				6037285E1C6353B18598DA76 /* AugmentingEntityViewTemplate.swift in Sources */,
+				603720B2887D940450EE9129 /* CornerFacingTileViewTemplate.swift in Sources */,
+				60372382C79533EBF4676D42 /* CornerBasedOrientationInspector.swift in Sources */,
+				60372FEDE15646148ABD592E /* DirectionToCornerInspector.swift in Sources */,
+				6037211A90CCA957B05D43B7 /* CornerBasedOrientationSIV.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

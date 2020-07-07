@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-class TurretInspector: SubInspector {
+final class TurretInspector: SubInspector {
     private let tiles: [TileAtPosition]
     private let world: ReadonlyStatelessWorld
     private weak var delegate: EditorToolsDelegate? = nil

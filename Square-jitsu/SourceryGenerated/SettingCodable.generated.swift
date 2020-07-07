@@ -95,6 +95,23 @@ extension AnimatedOnDeathEntityViewTemplate {
         self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
+extension CornerFacingTileViewTemplate {
+    internal convenience init(from setting: StructSetting<CornerFacingTileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<CornerFacingTileViewTemplate>) -> CornerFacingTileViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<CornerFacingTileViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
+    }
+}
 extension CreateOnCollideComponent {
     internal init(from setting: StructSetting<CreateOnCollideComponent>) {
         self.init(

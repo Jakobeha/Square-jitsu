@@ -33,7 +33,7 @@ final class AnimatedByLifetimeEntityViewTemplate: EmptyEntityViewTemplate, Singl
     }
 
     private func getTextureFor(entity: Entity) -> SKTexture {
-        assert(entity.next.dalC != nil, "animated-by-lifetime entity view requires the entity to have a lifetime component (dalC)")
+        assert(entity.next.dalC != nil, "animatedByLifetime entity view requires the entity to have a lifetime component (dalC)")
 
         let lifetimeFractionUnclamped = entity.next.dalC!.lifetime / entity.next.dalC!.maxLifetime
         let lifetimeFraction = CGFloat.clamp(lifetimeFractionUnclamped, min: 0, max: 1)
