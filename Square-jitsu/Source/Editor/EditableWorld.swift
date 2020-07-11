@@ -13,12 +13,13 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
     let world: World
     private let worldFile: WorldFile
 
+    var worldUrl: URL { worldFile.url }
     var settings: WorldSettings { worldFile.settings }
     var didGetErrorInWorldFile: Observable<Error> { worldFile.didGetError }
 
-    init(worldFile: WorldFile, userSettings: UserSettings) {
+    init(worldFile: WorldFile, userSettings: UserSettings, conduit: WorldConduit?) {
         let worldLoader = WorldLoaderFromFile(file: worldFile)
-        world = World(loader: worldLoader, settings: worldFile.settings, userSettings: userSettings)
+        world = World(loader: worldLoader, settings: worldFile.settings, userSettings: userSettings, conduit: conduit)
         self.worldFile = worldFile
     }
 

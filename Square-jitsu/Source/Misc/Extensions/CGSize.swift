@@ -38,6 +38,10 @@ extension CGSize {
         CGSize(width: lhs.width / scale, height: lhs.height / scale)
     }
 
+    static func /(lhs: CGSize, rhs: CGSize) -> CGSize {
+        CGSize(width: lhs.width / rhs.width, height: lhs.height / rhs.height)
+    }
+
     var minValue: CGFloat {
         min(width, height)
     }

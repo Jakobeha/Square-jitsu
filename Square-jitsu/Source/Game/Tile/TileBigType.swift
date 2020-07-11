@@ -38,6 +38,10 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
     // Explosion - should be last so it's displatyed over everything else
     case explosion
 
+    case image
+    case portal
+    case button
+
     // region pattern matching
     var layer: TileLayer {
         switch self {
@@ -46,14 +50,18 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
         case .background,
              .overlapSensitiveBackground:
             return .background
+        case .backgroundDirectionBoost:
+            return .backgroundDirectionBoost
+        case .image,
+             .portal:
+            return .free
         case .solid,
              .adjacentSensitiveSolid,
-             .destructibleSolid:
+             .destructibleSolid,
+             .button:
              return .solid
         case .ice:
             return .iceSolid
-        case .backgroundDirectionBoost:
-            return .backgroundDirectionBoost
         case .solidEdge,
              .dashEdge,
              .springEdge,
@@ -89,10 +97,15 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
              .shuriken,
              .bomb,
              .projectile,
-             .explosion:
+             .explosion,
+             .button:
             return NeverSetting()
         case .turret:
             return TurretMetadata.newSetting()
+        case .image:
+            return ImageMetadata.newSetting()
+        case .portal:
+            return PortalMetadata.newSetting()
         }
     }
 
@@ -126,6 +139,12 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
             return SpawnOnGrabBehavior()
         case .turret:
             return TurretBehavior()
+        case .image:
+            return ImageBehavior()
+        case .portal:
+            return PortalBehavior()
+        case .button:
+            return ButtonBehavior()
         }
     }
 

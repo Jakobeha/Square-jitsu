@@ -14,7 +14,7 @@ class SpringBehavior: EmptyTileBehavior<Never> {
 
     private func bounceEntity(entity: Entity, pos: WorldTilePos3D, side: Side) {
         let myType = entity.world![pos]
-        let settingIndex = Int(myType.smallType.value >> 1)
+        let settingIndex = Int(myType.smallType.rawValue >> 1)
         if let bounceMultiplier = entity.world!.settings.springEdgeBounceMultiplier.getIfPresent(at: settingIndex) {
             let actualBounceMultiplier = -bounceMultiplier
             // Check if entity is moving into the tile (otherwise don't bounce, if = 0 can't bounce anyways)

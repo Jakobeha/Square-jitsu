@@ -20,12 +20,12 @@ struct TileTypeMap<Value> {
 
     subscript(type: TileType) -> Value? {
         get {
-            _backing[type.bigType]?.getIfPresent(at: Int(type.smallType.value)) ?? nil
+            _backing[type.bigType]?.getIfPresent(at: Int(type.smallType.rawValue)) ?? nil
         }
         set {
             // inserts an empty map if setting empty to nil but who cares?
             var valuesAtBigType = _backing[type.bigType] ?? []
-            let index = Int(type.smallType.value)
+            let index = Int(type.smallType.rawValue)
             while (valuesAtBigType.count < index) {
                 valuesAtBigType.append(nil)
             }

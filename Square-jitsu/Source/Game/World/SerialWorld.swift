@@ -14,6 +14,17 @@ class SerialWorld {
         var positions: [WorldChunkPos]
         var chunks: [Chunk]
 
+        init(settings: String, backgroundName: String, chunksAtPositions: [WorldChunkPos:Chunk]) {
+            version = SerialWorldVersion.latest
+            self.settings = settings
+            self.background = backgroundName
+            // We want the closest positions to be encoded / decoded first,
+            // and chunk positions are explicitly ordered so that closer positions
+            // are usually "less than" further ones
+            positions = chunksAtPositions.keys.sorted { $0 < $1 }
+            chunks = positions.map { position in chunksAtPositions[position]! }
+        }
+
         func finishDecodingChunks() -> [WorldChunkPos: Chunk] {
             [WorldChunkPos: Chunk](uniqueKeysWithValues: zip(positions, chunks))
         }
@@ -33,15 +44,13 @@ class SerialWorld {
             }
         }
 
-        init(settings: String, backgroundName: String, chunksAtPositions: [WorldChunkPos:Chunk]) {
-            version = SerialWorldVersion.latest
-            self.settings = settings
-            self.background = backgroundName
-            // We want the closest positions to be encoded / decoded first,
-            // and chunk positions are explicitly ordered so that closer positions
-            // are usually "less than" further ones
-            positions = chunksAtPositions.keys.sorted { $0 < $1 }
-            chunks = positions.map { position in chunksAtPositions[position]! }
+        mutating func update() throws {
+            if version < SerialWorldVersion.latest {
+                // Currently there is nothing we need to update
+
+                // Update recorded version
+                version = SerialWorldVersion.latest
+            }
         }
     }
 
@@ -59,8 +68,9 @@ class SerialWorld {
     }
 
     init(from data: Data) throws {
-        let serialized = try SerialWorld.decoder.decode(Serialized.self, from: data)
+        var serialized = try SerialWorld.decoder.decode(Serialized.self, from: data)
         try serialized.validate()
+        try serialized.update()
 
         settingsName = serialized.settings
         backgroundName = serialized.background

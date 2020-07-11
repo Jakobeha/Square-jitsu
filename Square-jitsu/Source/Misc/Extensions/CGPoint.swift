@@ -70,6 +70,15 @@ extension CGPoint {
         lhs.y /= scale
     }
 
+    static func /(lhs: CGPoint, scale: CGSize) -> CGPoint {
+        CGPoint(x: lhs.x / scale.width, y: lhs.y / scale.height)
+    }
+
+    static func /=(lhs: inout CGPoint, scale: CGSize) {
+        lhs.x /= scale.width
+        lhs.y /= scale.height
+    }
+
     static func %(lhs: CGPoint, modulo: CGFloat) -> CGPoint {
         CGPoint(x: lhs.x % modulo, y: lhs.y % modulo)
     }

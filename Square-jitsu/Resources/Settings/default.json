@@ -1,76 +1,76 @@
 {
-  "tileViewTemplates": {
-    "background": [
+  "tileViewTemplates" : {
+    "background" : [
       {
-        "type": "diamond4",
-        "textureBase": "Background",
-        "adjoiningTypes": [
+        "type" : "diamond4",
+        "textureBase" : "Background",
+        "adjoiningTypes" : [
           "background/0"
         ],
-        "semiAdjoiningTypes": [
+        "semiAdjoiningTypes" : [
           "background/0",
           "Layer.solid"
         ]
       },
       {
-        "type": "diamond4",
-        "textureBase": "BackgroundBricks",
-        "adjoiningTypes": [
+        "type" : "diamond4",
+        "textureBase" : "BackgroundBricks",
+        "adjoiningTypes" : [
           "background/1"
         ],
-        "semiAdjoiningTypes": [
+        "semiAdjoiningTypes" : [
           "background/1",
           "Layer.solid"
         ]
       }
     ],
-    "overlapSensitiveBackground": [
+    "overlapSensitiveBackground" : [
       {
-        "type": "static",
-        "texture": "TestOffBackground"
+        "type" : "static",
+        "texture" : "TestOffBackground"
       },
       {
-        "type": "fadeOnRemove",
-        "duration": 0.5,
-        "base": {
-          "type": "static",
-          "texture": "TestOnBackground"
+        "type" : "fadeOnRemove",
+        "duration" : 0.5,
+        "base" : {
+          "type" : "static",
+          "texture" : "TestOnBackground"
         }
       }
     ],
-    "solid": [
+    "solid" : [
       {
-        "type": "square8",
-        "textureBase": "Solid",
-        "adjoiningTypes": [
+        "type" : "square8",
+        "textureBase" : "Solid",
+        "adjoiningTypes" : [
           "solid/0",
           "ice/0",
           "destructibleSolid/0"
         ]
       }
     ],
-    "adjacentSensitiveSolid": [
+    "adjacentSensitiveSolid" : [
       {
-        "type": "static",
-        "texture": "TestOffSolid"
+        "type" : "static",
+        "texture" : "TestOffSolid"
       },
       {
-        "type": "fadeOnRemove",
-        "duration": 0.5,
-        "base": {
-          "type": "static",
-          "texture": "TestOnSolid"
+        "type" : "fadeOnRemove",
+        "duration" : 0.5,
+        "base" : {
+          "type" : "static",
+          "texture" : "TestOnSolid"
         }
       }
     ],
-    "destructibleSolid": [
+    "destructibleSolid" : [
       {
-        "type": "destructible",
-        "destructionTexture": "Destruction",
-        "base": {
-          "type": "square8",
-          "textureBase": "DestructibleSolid",
-          "adjoiningTypes": [
+        "type" : "destructible",
+        "destructionTexture" : "Destruction",
+        "base" : {
+          "type" : "square8",
+          "textureBase" : "DestructibleSolid",
+          "adjoiningTypes" : [
             "solid/0",
             "ice/0",
             "destructibleSolid/0"
@@ -78,701 +78,1019 @@
         }
       }
     ],
-    "ice": [
+    "ice" : [
       {
-        "type": "square8",
-        "textureBase": "Ice",
-        "adjoiningTypes": [
+        "type" : "square8",
+        "textureBase" : "Ice",
+        "adjoiningTypes" : [
           "solid/0",
           "ice/0",
           "destructibleSolid/0"
         ]
       }
     ],
-    "backgroundDirectionBoost": [
+    "backgroundDirectionBoost" : [
       {
-        "type": "cornerFacing",
-        "textureBase": "BackgroundDirectionBoost"
+        "type" : "cornerFacing",
+        "textureBase" : "BackgroundDirectionBoost"
       }
     ],
-    "solidEdge": [
+    "solidEdge" : [
       {
-        "type": "edge4",
-        "textureBase": "SolidEdge"
+        "type" : "edge4",
+        "textureBase" : "SolidEdge"
       }
     ],
-    "dashEdge": [
+    "dashEdge" : [
       {
-        "type": "edge4",
-        "textureBase": "DashCounterClockwiseOff"
+        "type" : "edge4",
+        "textureBase" : "DashCounterClockwiseOff"
       },
       {
-        "type": "edge4",
-        "textureBase": "DashCounterClockwiseOn"
+        "type" : "edge4",
+        "textureBase" : "DashCounterClockwiseOn"
       },
       {
-        "type": "edge4",
-        "textureBase": "DashClockwiseOff"
+        "type" : "edge4",
+        "textureBase" : "DashClockwiseOff"
       },
       {
-        "type": "edge4",
-        "textureBase": "DashClockwiseOn"
+        "type" : "edge4",
+        "textureBase" : "DashClockwiseOn"
       }
     ],
-    "springEdge": [
+    "springEdge" : [
       {
-        "type": "edge4",
-        "textureBase": "SpringOff"
+        "type" : "edge4",
+        "textureBase" : "SpringOff"
       },
       {
-        "type": "edge4",
-        "textureBase": "SpringOn"
+        "type" : "edge4",
+        "textureBase" : "SpringOn"
       }
     ],
-    "lava": [
+    "lava" : [
       {
-        "type": "edge4",
-        "textureBase": "Lava"
+        "type" : "edge4",
+        "textureBase" : "Lava"
       }
     ],
-    "player": [
+    "player" : [
       {
-        "type": "static",
-        "texture": "Player"
+        "type" : "static",
+        "texture" : "Player"
       }
     ],
-    "enemy": [
+    "enemy" : [
       {
-        "type": "static",
-        "texture": "Enemy"
+        "type" : "static",
+        "texture" : "Enemy"
       }
     ],
-    "shuriken": [
+    "shuriken" : [
       {
-        "type": "static",
-        "texture": "Shuriken"
+        "type" : "static",
+        "texture" : "Shuriken"
       }
     ],
-    "bomb": [
+    "bomb" : [
       {
-        "type": "static",
-        "texture": "Bomb"
+        "type" : "static",
+        "texture" : "Bomb"
       }
     ],
-    "turret": [
+    "turret" : [
       {
-        "type": "turret",
-        "base": {
-          "type": "static",
-          "texture": "TurretAnchor"
+        "type" : "turret",
+        "base" : {
+          "type" : "static",
+          "texture" : "TurretAnchor"
         },
-        "turretTexture": "BasicTurret"
+        "turretTexture" : "BasicTurret"
       },
       {
-        "type": "turret",
-        "base": {
-          "type": "static",
-          "texture": "TurretAnchor"
+        "type" : "turret",
+        "base" : {
+          "type" : "static",
+          "texture" : "TurretAnchor"
         },
-        "turretTexture": "BurstTurret"
+        "turretTexture" : "BurstTurret"
       },
       {
-        "type": "turret",
-        "base": {
-          "type": "static",
-          "texture": "TurretAnchor"
+        "type" : "turret",
+        "base" : {
+          "type" : "static",
+          "texture" : "TurretAnchor"
         },
-        "turretTexture": "RocketTurret"
+        "turretTexture" : "RocketTurret"
       },
       {
-        "type": "turret",
-        "base": {
-          "type": "static",
-          "texture": "TurretAnchor"
+        "type" : "turret",
+        "base" : {
+          "type" : "static",
+          "texture" : "TurretAnchor"
         },
-        "turretTexture": "LaserTurret"
+        "turretTexture" : "LaserTurret"
       },
       {
-        "type": "turret",
-        "base": {
-          "type": "static",
-          "texture": "TurretAnchor"
+        "type" : "turret",
+        "base" : {
+          "type" : "static",
+          "texture" : "TurretAnchor"
         },
-        "turretTexture": "LavaLaserTurret"
+        "turretTexture" : "LavaLaserTurret"
+      }
+    ],
+    "image" : [
+      {
+        "type" : "macroImage"
+      }
+    ],
+    "portal" : [
+      {
+        "type" : "macro",
+        "texture" : "BluePortal",
+        "sizeInTiles" : [
+          2,
+          2
+        ]
+      },
+      {
+        "type" : "macro",
+        "texture" : "GreenPortal",
+        "sizeInTiles" : [
+          2,
+          2
+        ]
+      },
+      {
+        "type" : "macro",
+        "texture" : "RedPortal",
+        "sizeInTiles" : [
+          2,
+          2
+        ]
+      }
+    ],
+    "button" : [
+      {
+        "type" : "static",
+        "texture" : "TileUI/Buttons/Play"
+      },
+      {
+        "type" : "static",
+        "texture" : "TileUI/Buttons/Edit"
+      },
+      {
+        "type" : "static",
+        "texture" : "TileUI/Buttons/Settings"
       }
     ]
   },
-  "entityViewTemplates": {
-    "player": [
+  "entityViewTemplates" : {
+    "player" : [
       {
-        "type": "fadeOnDeath",
-        "duration": 1,
-        "base": {
-          "type": "static",
-          "texture": "Player"
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "static",
+          "texture" : "Player"
         }
       }
     ],
-    "shuriken": [
+    "shuriken" : [
       {
-        "type": "fadeOnDeath",
-        "duration": 1,
-        "base": {
-          "type": "static",
-          "texture": "Shuriken"
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "static",
+          "texture" : "Shuriken"
         }
       }
     ],
-    "bomb": [
+    "bomb" : [
       {
-        "type": "static",
-        "texture": "Bomb"
+        "type" : "static",
+        "texture" : "Bomb"
       },
       {
-        "type": "static",
-        "texture": "BombActive"
+        "type" : "static",
+        "texture" : "BombActive"
       }
     ],
-    "enemy": [
+    "enemy" : [
       {
-        "type": "fadeOnDeath",
-        "duration": 1,
-        "base": {
-          "type": "static",
-          "texture": "Enemy"
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "static",
+          "texture" : "Enemy"
         }
       }
     ],
-    "projectile": [
+    "projectile" : [
       {
-        "type": "static",
-        "texture": "Projectile"
+        "type" : "static",
+        "texture" : "Projectile"
       },
       {
-        "type": "static",
-        "texture": "Rocket"
+        "type" : "static",
+        "texture" : "Rocket"
       },
       {
-        "type": "laser",
-        "color": {
-          "hue": 0,
-          "saturation": 0,
-          "brightness": 1,
-          "alpha": 1
+        "type" : "laser",
+        "color" : {
+          "hue" : 0,
+          "saturation" : 0,
+          "brightness" : 1,
+          "alpha" : 1
         },
-        "thickness": 0.125
+        "thickness" : 0.125
       }
     ],
-    "turret": [
+    "turret" : [
       {
-        "type": "fadeOnDeath",
-        "duration": 1,
-        "base": {
-          "type": "turret",
-          "base": {
-            "type": "static",
-            "texture": "BasicTurret"
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "turret",
+          "base" : {
+            "type" : "static",
+            "texture" : "BasicTurret"
           },
-          "maxChargingCircleRadius": 0.5,
-          "minChargingCircleRadius": 0.125,
-          "chargingCircleOffset": [
+          "maxChargingCircleRadius" : 0.5,
+          "minChargingCircleRadius" : 0.125,
+          "chargingCircleOffset" : [
             0.4375,
             0
           ],
-          "chargingCircleColor": {
-            "hue": 0,
-            "saturation": 0,
-            "brightness": 1,
-            "alpha": 1
+          "chargingCircleColor" : {
+            "hue" : 0,
+            "saturation" : 0,
+            "brightness" : 1,
+            "alpha" : 1
           }
         }
       },
       {
-        "type": "fadeOnDeath",
-        "duration": 1,
-        "base": {
-          "type": "turret",
-          "base": {
-            "type": "static",
-            "texture": "BurstTurret"
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "turret",
+          "base" : {
+            "type" : "static",
+            "texture" : "BurstTurret"
           },
-          "maxChargingCircleRadius": 0.5,
-          "minChargingCircleRadius": 0.125,
-          "chargingCircleOffset": [
+          "maxChargingCircleRadius" : 0.5,
+          "minChargingCircleRadius" : 0.125,
+          "chargingCircleOffset" : [
             0.4375,
             0
           ],
-          "chargingCircleColor": {
-            "hue": 0,
-            "saturation": 0,
-            "brightness": 1,
-            "alpha": 1
+          "chargingCircleColor" : {
+            "hue" : 0,
+            "saturation" : 0,
+            "brightness" : 1,
+            "alpha" : 1
           }
         }
       },
       {
-        "type": "fadeOnDeath",
-        "duration": 1,
-        "base": {
-          "type": "turret",
-          "base": {
-            "type": "static",
-            "texture": "RocketTurret"
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "turret",
+          "base" : {
+            "type" : "static",
+            "texture" : "RocketTurret"
           },
-          "maxChargingCircleRadius": 0.5,
-          "minChargingCircleRadius": 0.125,
-          "chargingCircleOffset": [
+          "maxChargingCircleRadius" : 0.5,
+          "minChargingCircleRadius" : 0.125,
+          "chargingCircleOffset" : [
             0.4375,
             0
           ],
-          "chargingCircleColor": {
-            "hue": 0,
-            "saturation": 0,
-            "brightness": 1,
-            "alpha": 1
+          "chargingCircleColor" : {
+            "hue" : 0,
+            "saturation" : 0,
+            "brightness" : 1,
+            "alpha" : 1
           }
         }
       },
       {
-        "type": "fadeOnDeath",
-        "duration": 1,
-        "base": {
-          "type": "turret",
-          "base": {
-            "type": "static",
-            "texture": "LaserTurret"
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "turret",
+          "base" : {
+            "type" : "static",
+            "texture" : "LaserTurret"
           },
-          "maxChargingCircleRadius": 0.5,
-          "minChargingCircleRadius": 0.125,
-          "chargingCircleOffset": [
+          "maxChargingCircleRadius" : 0.5,
+          "minChargingCircleRadius" : 0.125,
+          "chargingCircleOffset" : [
             0.4375,
             0
           ],
-          "chargingCircleColor": {
-            "hue": 0,
-            "saturation": 0,
-            "brightness": 1,
-            "alpha": 1
+          "chargingCircleColor" : {
+            "hue" : 0,
+            "saturation" : 0,
+            "brightness" : 1,
+            "alpha" : 1
           }
         }
       },
       {
-        "type": "fadeOnDeath",
-        "duration": 1,
-        "base": {
-          "type": "turret",
-          "base": {
-            "type": "static",
-            "texture": "LavaLaserTurret"
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "turret",
+          "base" : {
+            "type" : "static",
+            "texture" : "LavaLaserTurret"
           },
-          "maxChargingCircleRadius": 0.5,
-          "minChargingCircleRadius": 0.125,
-          "chargingCircleOffset": [
+          "maxChargingCircleRadius" : 0.5,
+          "minChargingCircleRadius" : 0.125,
+          "chargingCircleOffset" : [
             0.4375,
             0
           ],
-          "chargingCircleColor": {
-            "hue": 0,
-            "saturation": 0,
-            "brightness": 1,
-            "alpha": 1
+          "chargingCircleColor" : {
+            "hue" : 0,
+            "saturation" : 0,
+            "brightness" : 1,
+            "alpha" : 1
           }
         }
       }
     ],
-    "explosion": [
+    "explosion" : [
       {
-        "type": "animatedOnDeath",
-        "dyingTextureBase": "Explosion",
-        "duration": 1,
-        "base": {
-          "type": "static",
-          "texture": "Explosion/0"
+        "type" : "animatedOnDeath",
+        "dyingTextureBase" : "Explosion",
+        "duration" : 1,
+        "base" : {
+          "type" : "static",
+          "texture" : "Explosion/0"
         }
       },
       {
-        "type": "animatedOnDeath",
-        "dyingTextureBase": "Explosion",
-        "duration": 1,
-        "base": {
-          "type": "static",
-          "texture": "Explosion/0"
+        "type" : "animatedOnDeath",
+        "dyingTextureBase" : "Explosion",
+        "duration" : 1,
+        "base" : {
+          "type" : "static",
+          "texture" : "Explosion/0"
         }
       }
     ]
   },
-  "entityZPositions": {
-    "projectile": [null, 1.999]
+  "entityZPositions" : {
+    "projectile" : [
+      null,
+      1.999
+    ]
   },
-  "rotateTileViewBasedOnOrientation": {
-    "turret": [
+  "rotateTileViewBasedOnOrientation" : {
+    "turret" : [
       true,
       true,
       true,
       true
     ]
   },
-  "entityViewScaleModes": {
-    "projectile": [
+  "entityViewScaleModes" : {
+    "projectile" : [
       "aspectFill",
       "aspectFill"
     ]
   },
-  "edgeMaskTextureBase": "EdgeMask",
-  "glossTexture": "Effects/Gloss",
-  "glossyTileViews": ["solid/0", "ice/0"],
-  "entityGrabColors": {
-    "player": [{
-      "hue": 0.08333333333,
-      "saturation": 1,
-      "brightness": 1,
-      "alpha": 1
-    }],
-    "enemy": [{
-      "hue": 0,
-      "saturation": 1,
-      "brightness": 1,
-      "alpha": 1
-    }]
-  },
-  "amountScreenShakesWhenEntityCollides": {
-    "projectile": [0.03125, 0.125, 0.75]
-  },
-  "tileDescriptions": {
-    "air": [""],
-    "background": ["Default"],
-    "overlapSensitiveBackground": ["Default-Off", "Default-On"],
-    "solid": ["Default"],
-    "adjacentSensitiveSolid": ["Default-Off", "Default-On"],
-    "destructibleSolid": ["Default"],
-    "ice": ["Default"],
-    "backgroundDirectionBoost": ["Default"],
-    "solidEdge": ["Default"],
-    "dashEdge": ["Default-CounterClockwise-Off", "Default-CounterClockwise-On", "Default-Clockwise-Off", "Default-Clockwise-On"],
-    "springEdge": ["Default-Off", "Default-On"],
-    "lava": ["Lava"],
-    "player": [""],
-    "enemy": ["Default"],
-    "shuriken": ["Default"],
-    "bomb": ["Default"],
-    "projectile": ["Bullet", "Laser"],
-    "turret": ["Default", "Burst", "Rocket", "Laser", "LavaLaser"],
-    "explosion": ["From-Bomb", "From-Rocket"]
-  },
-  "playerInputSpeedMultiplier": 0.0625,
-  "tileDamage": {
-    "lava": [0.25]
-  },
-  "knockback": {
-    "lava": [4],
-    "projectile": [null, 2],
-    "explosion": [8]
-  },
-  "entityData": {
-    "player": [{
-      "locC": {"radius": 0.5},
-      "larC": {},
-      "dynC": {"dynamicKnockbackMultiplier": 0.25},
-      "imfC": {
-        "gravity": 0.25,
-        "minSpeedOnIce": 2,
-        "solidFriction": 0.015625,
-        "aerialAngularFriction": 0.02083333333
-      },
-      "colC": {},
-      "dciC": {},
-      "matC": {"mass": 1},
-      "ntlC": {"nearRadiusExtra": 0.5},
-      "griC": {
-        "grabbableTypes": [
-          "shuriken",
-          "bomb"
-        ],
-        "grabOffset": [0.25, -0.25],
-        "throwSpeed": 16,
-        "throwAngularSpeed": "90°"
-      },
-      "helC": {"maxHealth": 1},
-      "nijC": {
-        "jumpSpeed": 16,
-        "jumpAngularSpeed": "180°",
-        "minNumJumpsWithoutBackground": 0
-      }
-    }],
-    "enemy": [{
-      "locC": {"radius": 0.5},
-      "dynC": {"dynamicKnockbackMultiplier": 0.25},
-      "imfC": {
-        "gravity": 0.25,
-        "minSpeedOnIce": 2,
-        "solidFriction": 0.015625,
-        "aerialAngularFriction": 0.02083333333
-      },
-      "colC": {},
-      "dciC": {},
-      "matC": {"mass": 1},
-      "ntlC": {"nearRadiusExtra": 0.5},
-      "helC": {"maxHealth": 1},
-      "nijC": {
-        "jumpSpeed": 12,
-        "jumpAngularSpeed": "180°",
-        "minNumJumpsWithoutBackground": 3
-      },
-      "anjC": {
-        "incomingTargetDistanceBeforeFirstJump": 5,
-        "firstJumpAngle": "90°",
-        "distanceBeforeConsecutiveJumps": 4,
-        "distanceBeforeTargetLost": 7,
-        "minSpeedToNotWantStateChange": 2,
-        "minAngularSpeedToNotWantStateChange": "11.25°",
-        "targetTypes": ["player"]
-      }
-    }],
-    "shuriken": [{
-      "locC": {"radius": 0.5},
-      "dalC": {"maxLifetime": 8},
-      "dynC": {"dynamicKnockbackMultiplier": 0.5},
-      "colC": {},
-      "dciC": {},
-      "docC": {
-        "destroyOnEntityCollision": true,
-        "destroyOnSolidCollision": false,
-        "ignoredTypes": []
-      },
-      "ricC": {"bounceMultiplier": 1, "numBouncesBeforeDestroy": 3},
-      "graC": {"thrownSpeedMultiplier": 2},
-      "toxC": {"damage": 0.25, "safeTypes": []}
-    }],
-    "bomb": [{
-      "locC": {"radius": 0.5},
-      "dalC": {"maxLifetime": 3},
-      "codC": {"createdType": "explosion/0"},
-      "dynC": {"dynamicKnockbackMultiplier": 0.75},
-      "imfC": {
-        "gravity": 0.5,
-        "minSpeedOnIce": 0,
-        "solidFriction": 0.015625,
-        "aerialAngularFriction": 0.0625
-      },
-      "colC": {},
-      "dciC": {},
-      "docC": {
-        "destroyOnEntityCollision": true,
-        "destroyOnSolidCollision": false,
-        "ignoredTypes": []
-      },
-      "ricC": {"bounceMultiplier": 1, "numBouncesBeforeDestroy": 2},
-      "graC": {"thrownSpeedMultiplier": 1}
-    }],
-    "projectile": [
+  "edgeMaskTextureBase" : "EdgeMask",
+  "glossTexture" : "Effects/Gloss",
+  "glossyTileViews" : [
+    "solid/0",
+    "ice/0"
+  ],
+  "imagePlaceholderTexture": "ImagePlaceholder",
+  "entityGrabColors" : {
+    "player" : [
       {
-        "locC": {"radius": 0.0833},
-        "dalC": {"maxLifetime": 8},
-        "dynC": {"dynamicKnockbackMultiplier": 0.25},
-        "colC": {},
-        "docC": {
-          "destroyOnEntityCollision": true,
-          "destroyOnSolidCollision": true,
-          "ignoredTypes": ["projectile/0"]
-        },
-        "toxC": {"damage": 0.125, "safeTypes": []}
-      },
-      {
-        "locC": {"radius": 0.333},
-        "dalC": {"maxLifetime": 8},
-        "codC": {"createdType": "explosion/1"},
-        "dynC": {"dynamicKnockbackMultiplier": 0.25},
-        "accC": {"acceleration": 2},
-        "colC": {},
-        "docC": {
-          "destroyOnEntityCollision": true,
-          "destroyOnSolidCollision": true,
-          "ignoredTypes": ["projectile/1", "explosion/1"]
-        }
-      },
-      {
-        "lilC": {"thickness": 0.0625},
-        "colC": {},
-        "cocC": {"createdType": "lava"},
-        "toxC": {"damage": 0.5, "safeTypes": []}
+        "hue" : 0.08333333333,
+        "saturation" : 1,
+        "brightness" : 1,
+        "alpha" : 1
       }
     ],
-    "turret": [
+    "enemy" : [
       {
-        "locC": {"radius": 0.5},
-        "dynC": {"dynamicKnockbackMultiplier": 0},
-        "turC": {
-          "rotationPattern": {
-            "type": "rotateAtSpeed",
-            "speed": "80°"
-          },
-          "whoToTarget": ["player"],
-          "whenToFire": "fireOnSeek",
-          "howToFire": {
-            "type": "consistent",
-            "projectileSpeed": 24,
-            "delay": 0.05
-          },
-          "whatToFire": "projectile/0",
-          "delayWhenTargetFoundBeforeFire": 1
-        }
-      },
-      {
-        "locC": {"radius": 0.5},
-        "dynC": {"dynamicKnockbackMultiplier": 0},
-        "turC": {
-          "rotationPattern": {
-            "type": "rotateAtSpeed",
-            "speed": "80°"
-          },
-          "whoToTarget": ["player"],
-          "whenToFire": "fireOnSeek",
-          "howToFire": {
-            "type": "burst",
-            "projectileSpeed": 24,
-            "delayBetweenBursts": 0.5,
-            "numShotsInBurst": 3,
-            "delayInBurst": 0.025
-          },
-          "whatToFire": "projectile/0",
-          "delayWhenTargetFoundBeforeFire": 1
-        }
-      },
-      {
-        "locC": {"radius": 0.5},
-        "dynC": {"dynamicKnockbackMultiplier": 0},
-        "turC": {
-          "rotationPattern": {
-            "type": "rotateAtSpeed",
-            "speed": "80°"
-          },
-          "whoToTarget": ["player"],
-          "whenToFire": "fireOnSeek",
-          "howToFire": {
-            "type": "consistent",
-            "projectileSpeed": 4,
-            "delay": 0.25
-          },
-          "whatToFire": "projectile/1",
-          "delayWhenTargetFoundBeforeFire": 1
-        }
-      },
-      {
-        "locC": {"radius": 0.5},
-        "dynC": {"dynamicKnockbackMultiplier": 0},
-        "turC": {
-          "rotationPattern": {
-            "type": "rotateAtSpeed",
-            "speed": "40°"
-          },
-          "whoToTarget": ["player"],
-          "whenToFire": "fireOnSeek",
-          "howToFire": "continuous",
-          "whatToFire": "projectile/2",
-          "delayWhenTargetFoundBeforeFire": 1
-        }
-      },
-      {
-        "locC": {"radius": 0.5},
-        "dynC": {"dynamicKnockbackMultiplier": 0},
-        "turC": {
-          "rotationPattern": {
-            "type": "rotateAtSpeed",
-            "speed": "40°"
-          },
-          "whoToTarget": ["player"],
-          "whenToFire": "fireOnSeek",
-          "howToFire": "continuous",
-          "whatToFire": "projectile/2",
-          "delayWhenTargetFoundBeforeFire": 1
-        }
-      }
-    ],
-    "explosion": [
-      {
-        "locC": {"radius": 4},
-        "dalC": {"maxLifetime": 0},
-        "colC": {},
-        "toxC": {"damage": 0.5, "safeTypes": []}
-      },
-      {
-        "locC": {"radius": 2},
-        "dalC": {"maxLifetime": 0},
-        "colC": {},
-        "toxC": {"damage": 0.25, "safeTypes": []}
+        "hue" : 0,
+        "saturation" : 1,
+        "brightness" : 1,
+        "alpha" : 1
       }
     ]
   },
-  "entitySpawnRadius": {
-    "enemy": [5]
+  "amountScreenShakesWhenEntityCollides" : {
+    "projectile" : [
+      0.03125,
+      0.125,
+      0.75
+    ]
   },
-  "destructibleSolidInitialHealth": [
+  "tileDescriptions" : {
+    "air" : [
+      ""
+    ],
+    "background" : [
+      "Default"
+    ],
+    "overlapSensitiveBackground" : [
+      "Default-Off",
+      "Default-On"
+    ],
+    "solid" : [
+      "Default"
+    ],
+    "adjacentSensitiveSolid" : [
+      "Default-Off",
+      "Default-On"
+    ],
+    "destructibleSolid" : [
+      "Default"
+    ],
+    "ice" : [
+      "Default"
+    ],
+    "backgroundDirectionBoost" : [
+      "Default"
+    ],
+    "solidEdge" : [
+      "Default"
+    ],
+    "dashEdge" : [
+      "Default-CounterClockwise-Off",
+      "Default-CounterClockwise-On",
+      "Default-Clockwise-Off",
+      "Default-Clockwise-On"
+    ],
+    "springEdge" : [
+      "Default-Off",
+      "Default-On"
+    ],
+    "lava" : [
+      "Lava"
+    ],
+    "player" : [
+      ""
+    ],
+    "enemy" : [
+      "Default"
+    ],
+    "shuriken" : [
+      "Default"
+    ],
+    "bomb" : [
+      "Default"
+    ],
+    "projectile" : [
+      "Bullet",
+      "Laser"
+    ],
+    "turret" : [
+      "Default",
+      "Burst",
+      "Rocket",
+      "Laser",
+      "LavaLaser"
+    ],
+    "explosion" : [
+      "From-Bomb",
+      "From-Rocket"
+    ],
+    "image" : [
+      ""
+    ],
+    "portal" : [
+      "Blue",
+      "Green",
+      "Red"
+    ],
+    "button" : [
+      "Play",
+      "Edit",
+      "Settings"
+    ]
+  },
+  "playerInputSpeedMultiplier" : 0.0625,
+  "tileDamage" : {
+    "lava" : [
+      0.25
+    ]
+  },
+  "knockback" : {
+    "lava" : [
+      4
+    ],
+    "projectile" : [
+      null,
+      2
+    ],
+    "explosion" : [
+      8
+    ]
+  },
+  "entityData" : {
+    "player" : [
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "larC" : {},
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0.25
+        },
+        "imfC" : {
+          "gravity" : 0.25,
+          "minSpeedOnIce" : 2,
+          "solidFriction" : 0.015625,
+          "aerialAngularFriction" : 0.02083333333
+        },
+        "colC" : {},
+        "dciC" : {},
+        "matC" : {
+          "mass" : 1
+        },
+        "ntlC" : {
+          "nearRadiusExtra" : 0.5
+        },
+        "griC" : {
+          "grabbableTypes" : [
+            "shuriken",
+            "bomb"
+          ],
+          "grabOffset" : [
+            0.25,
+            -0.25
+          ],
+          "throwSpeed" : 16,
+          "throwAngularSpeed" : "90°"
+        },
+        "helC" : {
+          "maxHealth" : 1
+        },
+        "nijC" : {
+          "jumpSpeed" : 16,
+          "jumpAngularSpeed" : "180°",
+          "minNumJumpsWithoutBackground" : 0
+        }
+      }
+    ],
+    "enemy" : [
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0.25
+        },
+        "imfC" : {
+          "gravity" : 0.25,
+          "minSpeedOnIce" : 2,
+          "solidFriction" : 0.015625,
+          "aerialAngularFriction" : 0.02083333333
+        },
+        "colC" : {},
+        "dciC" : {},
+        "matC" : {
+          "mass" : 1
+        },
+        "ntlC" : {
+          "nearRadiusExtra" : 0.5
+        },
+        "helC" : {
+          "maxHealth" : 1
+        },
+        "nijC" : {
+          "jumpSpeed" : 12,
+          "jumpAngularSpeed" : "180°",
+          "minNumJumpsWithoutBackground" : 3
+        },
+        "anjC" : {
+          "incomingTargetDistanceBeforeFirstJump" : 5,
+          "firstJumpAngle" : "90°",
+          "distanceBeforeConsecutiveJumps" : 4,
+          "distanceBeforeTargetLost" : 7,
+          "minSpeedToNotWantStateChange" : 2,
+          "minAngularSpeedToNotWantStateChange" : "11.25°",
+          "targetTypes" : [
+            "player"
+          ]
+        }
+      }
+    ],
+    "shuriken" : [
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dalC" : {
+          "maxLifetime" : 8
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0.5
+        },
+        "colC" : {},
+        "dciC" : {},
+        "docC" : {
+          "destroyOnEntityCollision" : true,
+          "destroyOnSolidCollision" : false,
+          "ignoredTypes" : []
+        },
+        "ricC" : {
+          "bounceMultiplier" : 1,
+          "numBouncesBeforeDestroy" : 3
+        },
+        "graC" : {
+          "thrownSpeedMultiplier" : 2
+        },
+        "toxC" : {
+          "damage" : 0.25,
+          "safeTypes" : []
+        }
+      }
+    ],
+    "bomb" : [
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dalC" : {
+          "maxLifetime" : 3
+        },
+        "codC" : {
+          "createdType" : "explosion/0"
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0.75
+        },
+        "imfC" : {
+          "gravity" : 0.5,
+          "minSpeedOnIce" : 0,
+          "solidFriction" : 0.015625,
+          "aerialAngularFriction" : 0.0625
+        },
+        "colC" : {},
+        "dciC" : {},
+        "docC" : {
+          "destroyOnEntityCollision" : true,
+          "destroyOnSolidCollision" : false,
+          "ignoredTypes" : []
+        },
+        "ricC" : {
+          "bounceMultiplier" : 1,
+          "numBouncesBeforeDestroy" : 2
+        },
+        "graC" : {
+          "thrownSpeedMultiplier" : 1
+        }
+      }
+    ],
+    "projectile" : [
+      {
+        "locC" : {
+          "radius" : 0.0833
+        },
+        "dalC" : {
+          "maxLifetime" : 8
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0.25
+        },
+        "colC" : {},
+        "docC" : {
+          "destroyOnEntityCollision" : true,
+          "destroyOnSolidCollision" : true,
+          "ignoredTypes" : [
+            "projectile/0"
+          ]
+        },
+        "toxC" : {
+          "damage" : 0.125,
+          "safeTypes" : []
+        }
+      },
+      {
+        "locC" : {
+          "radius" : 0.333
+        },
+        "dalC" : {
+          "maxLifetime" : 8
+        },
+        "codC" : {
+          "createdType" : "explosion/1"
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0.25
+        },
+        "accC" : {
+          "acceleration" : 2
+        },
+        "colC" : {},
+        "docC" : {
+          "destroyOnEntityCollision" : true,
+          "destroyOnSolidCollision" : true,
+          "ignoredTypes" : [
+            "projectile/1",
+            "explosion/1"
+          ]
+        }
+      },
+      {
+        "lilC" : {
+          "thickness" : 0.0625
+        },
+        "colC" : {},
+        "cocC" : {
+          "createdType" : "lava"
+        },
+        "toxC" : {
+          "damage" : 0.5,
+          "safeTypes" : []
+        }
+      }
+    ],
+    "turret" : [
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0
+        },
+        "turC" : {
+          "rotationPattern" : {
+            "type" : "rotateAtSpeed",
+            "speed" : "80°"
+          },
+          "whoToTarget" : [
+            "player"
+          ],
+          "whenToFire" : "fireOnSeek",
+          "howToFire" : {
+            "type" : "consistent",
+            "projectileSpeed" : 24,
+            "delay" : 0.05
+          },
+          "whatToFire" : "projectile/0",
+          "delayWhenTargetFoundBeforeFire" : 1
+        }
+      },
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0
+        },
+        "turC" : {
+          "rotationPattern" : {
+            "type" : "rotateAtSpeed",
+            "speed" : "80°"
+          },
+          "whoToTarget" : [
+            "player"
+          ],
+          "whenToFire" : "fireOnSeek",
+          "howToFire" : {
+            "type" : "burst",
+            "projectileSpeed" : 24,
+            "delayBetweenBursts" : 0.5,
+            "numShotsInBurst" : 3,
+            "delayInBurst" : 0.025
+          },
+          "whatToFire" : "projectile/0",
+          "delayWhenTargetFoundBeforeFire" : 1
+        }
+      },
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0
+        },
+        "turC" : {
+          "rotationPattern" : {
+            "type" : "rotateAtSpeed",
+            "speed" : "80°"
+          },
+          "whoToTarget" : [
+            "player"
+          ],
+          "whenToFire" : "fireOnSeek",
+          "howToFire" : {
+            "type" : "consistent",
+            "projectileSpeed" : 4,
+            "delay" : 0.25
+          },
+          "whatToFire" : "projectile/1",
+          "delayWhenTargetFoundBeforeFire" : 1
+        }
+      },
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0
+        },
+        "turC" : {
+          "rotationPattern" : {
+            "type" : "rotateAtSpeed",
+            "speed" : "40°"
+          },
+          "whoToTarget" : [
+            "player"
+          ],
+          "whenToFire" : "fireOnSeek",
+          "howToFire" : "continuous",
+          "whatToFire" : "projectile/2",
+          "delayWhenTargetFoundBeforeFire" : 1
+        }
+      },
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0
+        },
+        "turC" : {
+          "rotationPattern" : {
+            "type" : "rotateAtSpeed",
+            "speed" : "40°"
+          },
+          "whoToTarget" : [
+            "player"
+          ],
+          "whenToFire" : "fireOnSeek",
+          "howToFire" : "continuous",
+          "whatToFire" : "projectile/2",
+          "delayWhenTargetFoundBeforeFire" : 1
+        }
+      }
+    ],
+    "explosion" : [
+      {
+        "locC" : {
+          "radius" : 4
+        },
+        "dalC" : {
+          "maxLifetime" : 0
+        },
+        "colC" : {},
+        "toxC" : {
+          "damage" : 0.5,
+          "safeTypes" : []
+        }
+      },
+      {
+        "locC" : {
+          "radius" : 2
+        },
+        "dalC" : {
+          "maxLifetime" : 0
+        },
+        "colC" : {},
+        "toxC" : {
+          "damage" : 0.25,
+          "safeTypes" : []
+        }
+      }
+    ]
+  },
+  "entitySpawnRadius" : {
+    "enemy" : [
+      5
+    ]
+  },
+  "destructibleSolidInitialHealth" : [
     1
   ],
-  "dashEdgeBoostSpeed":  [
+  "dashEdgeBoostSpeed" : [
     16
   ],
-  "springEdgeBounceMultiplier": [
+  "springEdgeBounceMultiplier" : [
     1
   ],
-  "defaultTileMetadatas": {
-    "turret": [
+  "defaultTileMetadatas" : {
+    "turret" : [
       {
-        "initialTurretDirectionRelativeToAnchor": "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°"
       },
       {
-        "initialTurretDirectionRelativeToAnchor": "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°"
       },
       {
-        "initialTurretDirectionRelativeToAnchor": "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°"
       },
       {
-        "initialTurretDirectionRelativeToAnchor": "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°"
       }
     ]
   },
-  "tileOrientationMeanings": {
-    "backgroundDirectionBoost": [
+  "tileOrientationMeanings" : {
+    "backgroundDirectionBoost" : [
       "directionToCorner"
     ],
-    "solidEdge": [
+    "solidEdge" : [
       "atBackgroundBorder"
     ],
-    "dashEdge": [
+    "dashEdge" : [
       "atSolidBorder",
       "atSolidBorder",
       "atSolidBorder",
       "atSolidBorder"
     ],
-    "springEdge": [
+    "springEdge" : [
       "atSolidBorder",
       "atSolidBorder"
     ],
-    "lava": [
+    "lava" : [
       "atSolidBorder"
     ],
-    "turret": [
+    "turret" : [
       "directionAdjacentToSolid",
       "directionAdjacentToSolid",
       "directionAdjacentToSolid",
       "directionAdjacentToSolid"
     ]
   },
-  "selectableTypes": {
-    "background": [0, 1],
-    "overlapSensitiveBackground": [0],
-    "solid": [0],
-    "adjacentSensitiveSolid": [0],
-    "destructibleSolid": [0],
-    "ice": [0],
-    "backgroundDirectionBoost": [0],
-    "solidEdge": [0],
-    "dashEdge": [0, 2],
-    "springEdge": [0],
-    "lava": [0],
-    "enemy": [0],
-    "shuriken": [0],
-    "bomb": [0],
-    "turret": [0, 1, 2, 3, 4]
+  "selectableTypes" : {
+    "background" : [
+      0,
+      1
+    ],
+    "overlapSensitiveBackground" : [
+      0
+    ],
+    "solid" : [
+      0
+    ],
+    "adjacentSensitiveSolid" : [
+      0
+    ],
+    "destructibleSolid" : [
+      0
+    ],
+    "ice" : [
+      0
+    ],
+    "backgroundDirectionBoost" : [
+      0
+    ],
+    "solidEdge" : [
+      0
+    ],
+    "dashEdge" : [
+      0,
+      2
+    ],
+    "springEdge" : [
+      0
+    ],
+    "lava" : [
+      0
+    ],
+    "enemy" : [
+      0
+    ],
+    "shuriken" : [
+      0
+    ],
+    "bomb" : [
+      0
+    ],
+    "turret" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "image" : [
+      0
+    ],
+    "portal" : [
+      0,
+      1,
+      2
+    ],
+    "button" : [
+      0,
+      1,
+      2
+    ]
   }
 }

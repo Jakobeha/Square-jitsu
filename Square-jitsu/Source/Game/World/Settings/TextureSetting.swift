@@ -6,32 +6,27 @@
 import SpriteKit
 
 class TextureSetting: SerialSetting {
-    private var textureName: String? = nil {
+    private var textureName: String = "Missing" {
         didSet {
-            if let textureName = textureName {
-                texture = SKTexture(imageNamed: textureName)
-            }
+            texture = SKTexture(imageNamed: textureName)
         }
     }
 
     fileprivate var texture: SKTexture? = nil
 
     func decodeWellFormed(from json: JSON) throws {
-        // TODO: Make sure texture exists first (and throw if it doesn't) and support more formats (e.g. urls)
-        textureName = try json.toString()
+        let jsonString = try json.toString()
+        let textureLocation = try TextureLocation(asString: jsonString)
+        texture = textureLocation.texture
     }
 
     func encodeWellFormed() throws -> JSON {
-        if let textureName = textureName {
-            return JSON(textureName)
-        } else {
-            fatalError("TODO not implemented")
-        }
+        JSON(textureName)
     }
 
     func validate() throws {}
 
-    func decodeDynamically<T>() -> T { texture! as! T }
+    func decodeDynamically<T>() -> T { texture as! T }
 }
 
 extension SKTexture: DynamicSettingCodable {

@@ -7,6 +7,7 @@ import SpriteKit
 
 enum TileLayer: Int, Comparable, CaseIterable, Codable {
     case air
+    case free
 
     case background
     case backgroundDirectionBoost
@@ -27,6 +28,8 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
             return TileLayerSet.background
         case .backgroundDirectionBoost:
             return TileLayerSet.backgroundDirectionBoost
+        case .free:
+            return TileLayerSet.free
         case .solid:
             return TileLayerSet.solid
         case .iceSolid:
@@ -42,7 +45,7 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
         switch self {
         case .edge:
             return true
-        case .air, .background, .backgroundDirectionBoost, .solid, .iceSolid, .entity:
+        case .air, .background, .backgroundDirectionBoost, .free, .solid, .iceSolid, .entity:
             return false
         }
     }
@@ -51,18 +54,19 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
         switch self {
         case .solid, .iceSolid, .edge:
             return true
-        case .air, .background, .backgroundDirectionBoost, .entity:
+        case .air, .background, .backgroundDirectionBoost, .free, .entity:
             return false
         }
     }
 
     private static let layerOverlapDMatrix: [[Bool]] = [
-        //                              .entity .edge .iceSolid .solid .backgroundDirectionBoost .background .air
-        /* .air                      */ [true,  true,      true,     true,  true,                     true,       true],
-        /* .background               */ [true,  true,      false,    false, true,                     false],
-        /* .backgroundDirectionBoost */ [true,  true,      false,    false, false],
-        /* .solid                    */ [false, true,     false,    false],
-        /* .iceSolid                 */ [false, true,     false],
+        //                              .entity .edge .iceSolid .solid overlay .backgroundDirectionBoost .background .air
+        /* .air                      */ [true,  true, true,     true,  true,   true,                     true,       true],
+        /* .background               */ [true,  true, false,    false, true,   true,                     false],
+        /* .backgroundDirectionBoost */ [true,  true, false,    false, true,   false],
+        /* .overlay                  */ [true,  true, true,     true],
+        /* .solid                    */ [false, true, false,    false],
+        /* .iceSolid                 */ [false, true, false],
         /* .edge                     */ [true,  false],
         /* .entity                   */ [false]
     ]

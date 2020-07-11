@@ -14,7 +14,9 @@ class TileViewTemplateSetting: UnionSetting {
         USOGenerator(SettingOptionRecognizerByName("cornerFacing"), CornerFacingTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("destructible"), DestructibleTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("turret"), TurretTileViewTemplate.newSetting),
-        USOGenerator(SettingOptionRecognizerByName("fadeOnRemove"), FadeOnRemoveTileViewTemplate.newSetting)
+        USOGenerator(SettingOptionRecognizerByName("fadeOnRemove"), FadeOnRemoveTileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("macro"), MacroTileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("macroImage"), MacroImageTileViewTemplate.newSetting)
     ]
 
     init() { super.init(options: TileViewTemplateSetting.options.map { $0.newOption() }) }

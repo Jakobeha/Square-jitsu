@@ -30,7 +30,8 @@ class WorldController {
         load(world: World(
             loader: DummyWorldLoader(),
             settings: WorldSettingsManager.default,
-            userSettings: userSettings
+            userSettings: userSettings,
+            conduit: nil
         ))
     }
 

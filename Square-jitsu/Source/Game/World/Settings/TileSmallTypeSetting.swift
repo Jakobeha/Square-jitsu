@@ -16,7 +16,7 @@ class TileSmallTypeSetting: SerialSetting {
     }
 
     func encodeWellFormed() throws -> JSON {
-        JSON(String(smallType.value))
+        JSON(String(smallType.rawValue))
     }
 
     func validate() throws {}

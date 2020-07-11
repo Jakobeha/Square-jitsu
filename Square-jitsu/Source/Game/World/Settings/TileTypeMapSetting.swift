@@ -25,7 +25,7 @@ class TileTypeMapSetting<Value>: SerialSetting {
             backing[bigType] = []
         }
 
-        let smallTypeIndex = Int(smallType.value)
+        let smallTypeIndex = Int(smallType.rawValue)
         while backing[bigType]!.count < smallTypeIndex {
             backing[bigType]!.append(nil)
         }
@@ -39,7 +39,7 @@ class TileTypeMapSetting<Value>: SerialSetting {
     }
 
     func haveNoValueSettingFor(bigType: TileBigType, smallType: TileSmallType) {
-        let smallTypeIndex = Int(smallType.value)
+        let smallTypeIndex = Int(smallType.rawValue)
         backing[bigType]?[smallTypeIndex] = nil
     }
 

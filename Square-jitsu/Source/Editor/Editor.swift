@@ -7,6 +7,7 @@ import SpriteKit
 
 /// Editor model class
 class Editor: EditorToolsDelegate {
+    let overlays: OverlayContainer = OverlayContainer()
     let editableWorld: EditableWorld
     let tools: EditorTools
     let editorCamera: Camera
@@ -30,9 +31,9 @@ class Editor: EditorToolsDelegate {
     var didChangeState: Observable<()> { Observable(publisher: _didChangeState) }
 
     /// Creates an editable world from the document and settings, and an editor for it
-    convenience init(worldDocument: WorldDocument, userSettings: UserSettings) {
+    convenience init(worldDocument: WorldDocument, userSettings: UserSettings, conduit: WorldConduit?) {
         let worldFile = worldDocument.file!
-        let editableWorld = EditableWorld(worldFile: worldFile, userSettings: userSettings)
+        let editableWorld = EditableWorld(worldFile: worldFile, userSettings: userSettings, conduit: conduit)
 
         self.init(editableWorld: editableWorld, undoManager: worldDocument.undoManager, userSettings: userSettings)
     }
@@ -220,38 +221,50 @@ class Editor: EditorToolsDelegate {
 
     // region touch forwarding
     func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
-        switch state {
-        case .playing:
-            editableWorld.world.playerInput.tracker.touchesBegan(touches, with: event, container: container)
-        case .editing:
-            tools.touchesBegan(touches, with: event, camera: currentCamera, container: container)
+        overlays.touchesBegan(touches, with: event, container: container)
+        if !overlays.preventTouchPropagation {
+            switch state {
+            case .playing:
+                editableWorld.world.playerInput.tracker.touchesBegan(touches, with: event, container: container)
+            case .editing:
+                tools.touchesBegan(touches, with: event, camera: currentCamera, container: container)
+            }
         }
     }
 
     func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
-        switch state {
-        case .playing:
-            editableWorld.world.playerInput.tracker.touchesMoved(touches, with: event, container: container)
-        case .editing:
-            tools.touchesMoved(touches, with: event, camera: currentCamera, container: container)
+        overlays.touchesMoved(touches, with: event, container: container)
+        if !overlays.preventTouchPropagation {
+            switch state {
+            case .playing:
+                editableWorld.world.playerInput.tracker.touchesMoved(touches, with: event, container: container)
+            case .editing:
+                tools.touchesMoved(touches, with: event, camera: currentCamera, container: container)
+            }
         }
     }
 
     func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
-        switch state {
-        case .playing:
-            editableWorld.world.playerInput.tracker.touchesEnded(touches, with: event, container: container)
-        case .editing:
-            tools.touchesEnded(touches, with: event, camera: currentCamera, container: container)
+        overlays.touchesEnded(touches, with: event, container: container)
+        if !overlays.preventTouchPropagation {
+            switch state {
+            case .playing:
+                editableWorld.world.playerInput.tracker.touchesEnded(touches, with: event, container: container)
+            case .editing:
+                tools.touchesEnded(touches, with: event, camera: currentCamera, container: container)
+            }
         }
     }
 
     func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?, container: SKScene) {
-        switch state {
-        case .playing:
-            editableWorld.world.playerInput.tracker.touchesCancelled(touches, with: event, container: container)
-        case .editing:
-            tools.touchesCancelled(touches, with: event, camera: currentCamera, container: container)
+        overlays.touchesCancelled(touches, with: event, container: container)
+        if !overlays.preventTouchPropagation {
+            switch state {
+            case .playing:
+                editableWorld.world.playerInput.tracker.touchesCancelled(touches, with: event, container: container)
+            case .editing:
+                tools.touchesCancelled(touches, with: event, camera: currentCamera, container: container)
+            }
         }
     }
     // endregion

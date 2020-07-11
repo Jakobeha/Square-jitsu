@@ -32,7 +32,7 @@ class DestructibleBehavior: EmptyTileBehavior<Never> {
 
     private func resetHealth(world: World, pos: WorldTilePos3D) {
         let myType = world[pos]
-        let settingIndex = Int(myType.smallType.value)
+        let settingIndex = Int(myType.smallType.rawValue)
         if let initialHealth = world.settings.destructibleSolidInitialHealth.getIfPresent(at: settingIndex) {
             health = initialHealth
         } else {

@@ -8,6 +8,11 @@ import SpriteKit
 class World: ReadonlyWorld {
     private let loader: WorldLoader
     let settings: WorldSettings
+    weak var _conduit: WorldConduit?
+
+    var conduit: WorldConduit {
+        _conduit ?? StubWorldConduit()
+    }
 
     // region chunks and associated data
     /// Chunks which are only partially loaded.
@@ -84,9 +89,10 @@ class World: ReadonlyWorld {
     // endregion
 
     // region init
-    init(loader: WorldLoader, settings: WorldSettings, userSettings: UserSettings) {
+    init(loader: WorldLoader, settings: WorldSettings, userSettings: UserSettings, conduit: WorldConduit?) {
         self.loader = loader
         self.settings = settings
+        _conduit = conduit
 
         playerCamera = PlayerCamera(userSettings: userSettings)
         playerInput = PlayerInput(userSettings: userSettings)

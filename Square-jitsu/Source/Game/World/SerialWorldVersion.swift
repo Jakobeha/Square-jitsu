@@ -5,10 +5,21 @@
 
 import Foundation
 
-enum SerialWorldVersion: String, Codable {
+enum SerialWorldVersion: String, Comparable, CaseIterable, Codable {
     case _0_1_0
+    case _0_1_1
 
-    static let latest: SerialWorldVersion = ._0_1_0
+    static let latest: SerialWorldVersion = ._0_1_1
+
+    // region ordering
+    static func <(lhs: SerialWorldVersion, rhs: SerialWorldVersion) -> Bool {
+        lhs.order < rhs.order
+    }
+
+    private var order: Int {
+        SerialWorldVersion.allCases.firstIndex(of: self)!
+    }
+    // endregion
 
     // region encoding and decoding
     init?(literal: String) {

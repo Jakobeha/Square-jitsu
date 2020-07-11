@@ -366,6 +366,26 @@ extension FadeOnRemoveTileViewTemplate {
         self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
+extension ImageMetadata {
+    internal init(from setting: StructSetting<ImageMetadata>) {
+        self.init(
+            imageTexture: setting.usedFieldSettings["imageTexture"]!.decodeDynamically(),
+            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<ImageMetadata>) -> ImageMetadata {
+        self.init(
+            imageTexture: setting.usedFieldSettings["imageTexture"]!.decodeDynamically(),
+            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<ImageMetadata>) {
+        self.imageTexture.encodeDynamically(to: setting.allFieldSettings["imageTexture"]!)
+        self.sizeInTiles.encodeDynamically(to: setting.allFieldSettings["sizeInTiles"]!)
+    }
+}
 extension LaserEntityViewTemplate {
     internal convenience init(from setting: StructSetting<LaserEntityViewTemplate>) {
         self.init(
@@ -384,6 +404,40 @@ extension LaserEntityViewTemplate {
     internal func encode(to setting: StructSetting<LaserEntityViewTemplate>) {
         self.color.encodeDynamically(to: setting.allFieldSettings["color"]!)
         self.thickness.encodeDynamically(to: setting.allFieldSettings["thickness"]!)
+    }
+}
+extension MacroImageTileViewTemplate {
+    internal convenience init(from setting: StructSetting<MacroImageTileViewTemplate>) {
+        self.init(
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<MacroImageTileViewTemplate>) -> MacroImageTileViewTemplate {
+        self.init(
+        )
+    }
+
+    internal func encode(to setting: StructSetting<MacroImageTileViewTemplate>) {
+    }
+}
+extension MacroTileViewTemplate {
+    internal convenience init(from setting: StructSetting<MacroTileViewTemplate>) {
+        self.init(
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically(),
+            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<MacroTileViewTemplate>) -> MacroTileViewTemplate {
+        self.init(
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically(),
+            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<MacroTileViewTemplate>) {
+        self.texture.encodeDynamically(to: setting.allFieldSettings["texture"]!)
+        self.sizeInTiles.encodeDynamically(to: setting.allFieldSettings["sizeInTiles"]!)
     }
 }
 extension MatterComponent {
@@ -441,6 +495,23 @@ extension NinjaComponent {
         self.jumpSpeed.encodeDynamically(to: setting.allFieldSettings["jumpSpeed"]!)
         self.jumpAngularSpeed.encodeDynamically(to: setting.allFieldSettings["jumpAngularSpeed"]!)
         self.minNumJumpsWithoutBackground.encodeDynamically(to: setting.allFieldSettings["minNumJumpsWithoutBackground"]!)
+    }
+}
+extension PortalMetadata {
+    internal init(from setting: StructSetting<PortalMetadata>) {
+        self.init(
+            relativePathToDestination: setting.usedFieldSettings["relativePathToDestination"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<PortalMetadata>) -> PortalMetadata {
+        self.init(
+            relativePathToDestination: setting.usedFieldSettings["relativePathToDestination"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<PortalMetadata>) {
+        self.relativePathToDestination.encodeDynamically(to: setting.allFieldSettings["relativePathToDestination"]!)
     }
 }
 extension RicochetComponent {
@@ -643,6 +714,7 @@ extension WorldSettings {
             edgeMaskTextureBase: setting.usedFieldSettings["edgeMaskTextureBase"]!.decodeDynamically(),
             glossTexture: setting.usedFieldSettings["glossTexture"]!.decodeDynamically(),
             glossyTileViews: setting.usedFieldSettings["glossyTileViews"]!.decodeDynamically(),
+            imagePlaceholderTexture: setting.usedFieldSettings["imagePlaceholderTexture"]!.decodeDynamically(),
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
             entityViewScaleModes: setting.usedFieldSettings["entityViewScaleModes"]!.decodeDynamically(),
@@ -670,6 +742,7 @@ extension WorldSettings {
             edgeMaskTextureBase: setting.usedFieldSettings["edgeMaskTextureBase"]!.decodeDynamically(),
             glossTexture: setting.usedFieldSettings["glossTexture"]!.decodeDynamically(),
             glossyTileViews: setting.usedFieldSettings["glossyTileViews"]!.decodeDynamically(),
+            imagePlaceholderTexture: setting.usedFieldSettings["imagePlaceholderTexture"]!.decodeDynamically(),
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
             entityViewScaleModes: setting.usedFieldSettings["entityViewScaleModes"]!.decodeDynamically(),
@@ -696,6 +769,7 @@ extension WorldSettings {
         self.edgeMaskTextureBase.encodeDynamically(to: setting.allFieldSettings["edgeMaskTextureBase"]!)
         self.glossTexture.encodeDynamically(to: setting.allFieldSettings["glossTexture"]!)
         self.glossyTileViews.encodeDynamically(to: setting.allFieldSettings["glossyTileViews"]!)
+        self.imagePlaceholderTexture.encodeDynamically(to: setting.allFieldSettings["imagePlaceholderTexture"]!)
         self.entityZPositions.encodeDynamically(to: setting.allFieldSettings["entityZPositions"]!)
         self.rotateTileViewBasedOnOrientation.encodeDynamically(to: setting.allFieldSettings["rotateTileViewBasedOnOrientation"]!)
         self.entityViewScaleModes.encodeDynamically(to: setting.allFieldSettings["entityViewScaleModes"]!)

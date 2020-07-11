@@ -10,6 +10,14 @@ class Logger {
         warn("the settings are invalid - \(item)")
     }
 
+    static func warnActionOnStubConduit(_ methodDescription: String) {
+        warn("action performed on stub conduit - \(methodDescription)")
+    }
+
+    static func warnInvalidActionOnConduit(_ description: String) {
+        warn("tried to perform invalid action on conduit - \(description)")
+    }
+
     static func warn(_ item: Any) {
         print("Warning: ", item)
     }

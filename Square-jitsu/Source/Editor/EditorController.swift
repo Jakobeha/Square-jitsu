@@ -8,12 +8,13 @@
 
 import SpriteKit
 
-class EditorController {
+class EditorController: WorldConduit {
     struct EditorModelView {
         let editor: Editor
         let editorView: EditorView
 
         var world: World { editor.editableWorld.world }
+        var worldUrl: URL { editor.editableWorld.worldUrl }
     }
 
     private static let testWorldFileName: String = "test"
@@ -32,24 +33,17 @@ class EditorController {
 
     func loadTestWorld() {
         // try! FileManager.default.removeItem(at: EditorController.testWorldUrl)
-        load(worldUrl: EditorController.testWorldUrl) { result in
-            switch result {
-            case .success(()):
-                Logger.log("Loaded test world")
-            case .failure(let error):
-                fatalError("Error loading test world: \(error)")
-            }
-        }
+        load(worldUrl: EditorController.testWorldUrl)
     }
 
-    func load(worldUrl: URL, completionHandler: @escaping (Result<(), Error>) -> ()) {
+    // region loading and unloading
+    func load(worldUrl: URL) {
         let document = WorldDocument(fileURL: worldUrl)
         document.open { succeeded in
             if succeeded {
                 self.load(worldDocument: document)
-                completionHandler(.success(()))
             } else {
-                completionHandler(.failure(WorldFileSyncError(action: "reading", error: nil)))
+                self.displayError(WorldFileSyncError(action: "reading", error: nil), context: "loading world")
             }
         }
     }
@@ -57,7 +51,7 @@ class EditorController {
     func load(worldDocument: WorldDocument) {
         unload()
 
-        let editor = Editor(worldDocument: worldDocument, userSettings: userSettings)
+        let editor = Editor(worldDocument: worldDocument, userSettings: userSettings, conduit: self)
         let editorView = EditorView(editor: editor, sceneSize: parent.size)
         editorView.placeIn(parent: parent)
         loaded = EditorModelView(editor: editor, editorView: editorView)
@@ -76,7 +70,9 @@ class EditorController {
 
         loaded = nil
     }
+    // endregion
 
+    // region updating
     /// Even if paused we still need to update to prevent accumulated ticks
     func update(_ currentTime: TimeInterval) {
         updater.update(currentTime)
@@ -85,4 +81,32 @@ class EditorController {
     private func tick() {
         loaded?.editor.tick()
     }
+    // endregion
+
+    private func displayError(_ error: Error, context: String) {
+        Logger.warn("Editor controller got error while \(context): \(error)")
+        loaded?.editor.overlays.present(Alert(message: "Editor controller got error while \(context)", subtext: error.localizedDescription, options: [ContinueAlertOption.continue]) { _ in })
+    }
+
+    // region conduit actions
+    func teleportTo(relativePath: String) {
+        if let loaded = loaded {
+            loaded.editor.overlays.present(Alert(message: "Open \(relativePath)?", subtext: "The current level will be saved", options: [StandardAlertOption.ok, .cancel]) { selectedOption in
+                switch selectedOption {
+                case .cancel:
+                    break
+                case .ok:
+                    let destinationUrl = loaded.worldUrl.appending(relativePath: relativePath)
+                    self.load(worldUrl: destinationUrl)
+                }
+            })
+        } else {
+            Logger.warn("Tried to teleport but no world is loaded")
+        }
+    }
+
+    func perform(buttonAction: TileButtonAction) {
+        Logger.warn("TODO: Implement button actions in EditorController, tried to perform '\(buttonAction)'")
+    }
+    // endregion
 }

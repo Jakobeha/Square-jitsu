@@ -39,8 +39,9 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
     static let fadingZPositionOffset: CGFloat = 0.5 / CGFloat(TileBigType.allCases.count)
 
     static func typesCanOverlap(_ lhs: TileType, _ rhs: TileType) -> Bool {
-        TileLayer.layersCanOverlap(lhs.bigType.layer, rhs.bigType.layer) ||
-        lhs.occupiedSides.isDisjoint(with: rhs.occupiedSides)
+        lhs != rhs &&
+        (TileLayer.layersCanOverlap(lhs.bigType.layer, rhs.bigType.layer) ||
+         lhs.occupiedSides.isDisjoint(with: rhs.occupiedSides))
     }
 
     var bigType: TileBigType

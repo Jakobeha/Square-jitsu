@@ -14,7 +14,7 @@ class DashBehavior: EmptyTileBehavior<Never> {
 
     private func boostEntity(entity: Entity, pos: WorldTilePos3D, side: Side) {
         let myType = entity.world![pos]
-        let settingIndex = Int(myType.smallType.value >> 2)
+        let settingIndex = Int(myType.smallType.rawValue >> 2)
         if let boostSpeed = entity.world!.settings.dashEdgeBoostSpeed.getIfPresent(at: settingIndex) {
             let isClockwise = myType.smallType.isClockwise
             let boostVelocity = side.getParallelOffset(isClockwise: isClockwise).toCgPoint * boostSpeed

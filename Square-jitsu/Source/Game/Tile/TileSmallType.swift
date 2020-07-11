@@ -6,40 +6,55 @@
 import Foundation
 
 struct TileSmallType: Equatable, Hashable, LosslessStringConvertible {
-    var value: UInt8
+    var rawValue: UInt8
 
     var isOn: Bool {
-        get { (value & 1) == 1 }
+        get { (rawValue & 1) == 1 }
         set {
             if newValue {
-                value |= 1
+                rawValue |= 1
             } else {
-                value &= ~1
+                rawValue &= ~1
             }
         }
     }
     var isClockwise: Bool {
-        get { (value & 2) == 2 }
+        get { (rawValue & 2) == 2 }
         set {
             if newValue {
-                value |= 2
+                rawValue |= 2
             } else {
-                value &= ~2
+                rawValue &= ~2
             }
         }
     }
 
-    init(_ value: UInt8) {
-        self.value = value
+    var asButtonAction: TileButtonAction {
+        if let asButtonAction = TileButtonAction(rawValue: rawValue) {
+            return asButtonAction
+        } else {
+            Logger.warn("tried to cast tile orientation to button action but no button action exists with this value: \(rawValue)")
+            return .play
+        }
     }
 
+    init(buttonAction: TileButtonAction) {
+        self.init(buttonAction.rawValue)
+    }
+
+    init(_ rawValue: UInt8) {
+        self.rawValue = rawValue
+    }
+
+    // region encoding and decoding
     init?(_ description: String) {
-        if let value = UInt8(description) {
-            self.init(value)
+        if let rawValue = UInt8(description) {
+            self.init(rawValue)
         } else {
             return nil
         }
     }
 
-    var description: String { value.description }
+    var description: String { rawValue.description }
+    // endregion
 }
