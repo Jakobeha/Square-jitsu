@@ -10,6 +10,8 @@ final class Inspector {
     let directionToCornerInspector: DirectionToCornerInspector?
     let edgeInspector: EdgeInspector?
     let turretInspector: TurretInspector?
+    let imageInspector: MacroMetadataInspector<ImageMetadata>?
+    let portalInspector: MacroMetadataInspector<PortalMetadata>?
 
     init(positions: Set<WorldTilePos3D>, world: ReadonlyStatelessWorld, delegate: EditorToolsDelegate?, undoManager: UndoManager) {
         let tiles = positions.map(world.getTileAt)
@@ -37,6 +39,12 @@ final class Inspector {
         }
         turretInspector = createSubInspectorIfNecessary(type: TurretInspector.self) { tileType in
             tileType.bigType == .turret
+        }
+        imageInspector = createSubInspectorIfNecessary(type: MacroMetadataInspector.self) { tileType in
+            tileType.bigType == .image
+        }
+        portalInspector = createSubInspectorIfNecessary(type: MacroMetadataInspector.self) { tileType in
+            tileType.bigType == .portal
         }
     }
 }

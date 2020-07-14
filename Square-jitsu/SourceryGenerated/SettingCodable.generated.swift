@@ -406,6 +406,26 @@ extension LaserEntityViewTemplate {
         self.thickness.encodeDynamically(to: setting.allFieldSettings["thickness"]!)
     }
 }
+extension MacroButtonTileViewTemplate {
+    internal convenience init(from setting: StructSetting<MacroButtonTileViewTemplate>) {
+        self.init(
+            foregroundTexture: setting.usedFieldSettings["foregroundTexture"]!.decodeDynamically(),
+            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<MacroButtonTileViewTemplate>) -> MacroButtonTileViewTemplate {
+        self.init(
+            foregroundTexture: setting.usedFieldSettings["foregroundTexture"]!.decodeDynamically(),
+            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<MacroButtonTileViewTemplate>) {
+        self.foregroundTexture.encodeDynamically(to: setting.allFieldSettings["foregroundTexture"]!)
+        self.sizeInTiles.encodeDynamically(to: setting.allFieldSettings["sizeInTiles"]!)
+    }
+}
 extension MacroImageTileViewTemplate {
     internal convenience init(from setting: StructSetting<MacroImageTileViewTemplate>) {
         self.init(

@@ -212,6 +212,13 @@ class Editor: EditorToolsDelegate {
             editableWorld.setMetadataAt(pos3D: pos3D, to: metadata)
         }
     }
+    
+    func setMetadataOf(tiles: [TileAtPosition], metadata: TileMetadata) {
+        for tileAtPosition in tiles {
+            let pos3D = tileAtPosition.position
+            editableWorld.setMetadataAt(pos3D: pos3D, to: metadata)
+        }
+    }
     // endregion
 
     private func didPerformAction() {

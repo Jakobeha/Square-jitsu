@@ -11,16 +11,16 @@ class EditorView: NodeView<SKNode> {
     private let worldCameraView: CameraView
     private let glossMaskView: CameraView
 
-    init(editor: Editor, sceneSize: CGSize) {
+    init(editor: Editor, scene: SJScene) {
         self.editor = editor
 
         let editorToolsView = EditorToolsView(editor: editor)
-        let editorUiView = UXTopLevelView(child: editorToolsView, sceneSize: sceneSize)
+        let editorUiView = UXTopLevelView(child: editorToolsView, scene: scene)
 
         let glossNode = SKCropNode()
         let glossMaskNode = SKNode()
         let glossMaskChildView = NodeView(node: glossMaskNode)
-        let glossSpriteNode = SKSpriteNode(texture: editor.settings.glossTexture, size: sceneSize)
+        let glossSpriteNode = SKSpriteNode(texture: editor.settings.glossTexture, size: scene.size)
         glossMaskView = CameraView(camera: editor.currentCamera, child: glossMaskChildView)
         glossSpriteNode.anchorPoint = CGPoint.zero
         glossNode.isUserInteractionEnabled = false

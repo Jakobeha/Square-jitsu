@@ -14,4 +14,5 @@ protocol EditorToolsDelegate: AnyObject {
     func connectTilesToCorner(tiles: [TileAtPosition], corner: Corner)
     func disconnectTilesToCorner(tiles: [TileAtPosition], corner: Corner)
     func setInitialTurretDirections(to initialTurretDirectionsAndPositions: Zip2Sequence<[Angle], [WorldTilePos3D]>)
+    func setMetadataOf(tiles: [TileAtPosition], metadata: TileMetadata)
 }

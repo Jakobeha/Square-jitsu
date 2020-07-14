@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: SKScene {
+class GameScene: SJScene {
     private let settings: UserSettings = UserSettings()
     override var size: CGSize {
         didSet { settings.screenSize = size }

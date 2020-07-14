@@ -77,5 +77,5 @@ class TileButton: UXView {
         entityPreviewNode?.alpha = previewNodeAlpha
     }
 
-    func set(sceneSize: CGSize) {}
+    func set(scene: SJScene) {}
 }

@@ -32,7 +32,7 @@ protocol UXView {
 
     var node: SKNode { get }
 
-    mutating func set(sceneSize: CGSize)
+    mutating func set(scene: SJScene)
 }
 
 extension UXView {

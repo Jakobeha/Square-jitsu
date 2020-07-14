@@ -11,6 +11,8 @@ class InspectorContainerView: UXView {
     private static let backgroundExtraSize: CGSize = CGSize.square(sideLength: 12)
 
     private let editorTools: EditorTools
+    private let worldUrl: URL
+    private let settings: WorldSettings
 
     let node: SKNode
     private let backgroundNode: SKSpriteNode
@@ -18,7 +20,9 @@ class InspectorContainerView: UXView {
         willSet { inspectorView?.set(parent: nil) }
         didSet {
             if let inspectorView = inspectorView {
-                inspectorView.set(sceneSize: sceneSize)
+                if let scene = scene {
+                    inspectorView.set(scene: scene)
+                }
                 inspectorView.set(parent: node)
                 inspectorView.node.zPosition = 1
                 backgroundNode.size = inspectorView.topLeft.toSize + inspectorView.size + InspectorContainerView.backgroundExtraSize
@@ -29,13 +33,19 @@ class InspectorContainerView: UXView {
         }
     }
 
-    private var sceneSize: CGSize = CGSize.zero {
-        didSet { inspectorView?.set(sceneSize: sceneSize) }
+    private weak var scene: SJScene? = nil {
+        didSet {
+            if let scene = scene {
+                inspectorView?.set(scene: scene)
+            }
+        }
     }
-    var size: CGSize { sceneSize }
+    var size: CGSize { scene?.size ?? CGSize.zero }
 
-    init(editorTools: EditorTools) {
+    init(editorTools: EditorTools, worldUrl: URL, settings: WorldSettings) {
         self.editorTools = editorTools
+        self.worldUrl = worldUrl
+        self.settings = settings
 
         node = SKNode()
         node.isHidden = true
@@ -55,13 +65,13 @@ class InspectorContainerView: UXView {
 
     private func updateInspectorView() {
         if let inspector = editorTools.inspector {
-            inspectorView = InspectorView(inspector: inspector)
+            inspectorView = InspectorView(inspector: inspector, worldUrl: worldUrl, settings: settings)
         } else {
             inspectorView = nil
         }
     }
 
-    func set(sceneSize: CGSize) {
-        self.sceneSize = sceneSize
+    func set(scene: SJScene) {
+        self.scene = scene
     }
 }

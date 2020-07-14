@@ -25,7 +25,7 @@ struct RePosition: UXView {
         get { wrapped.size }
     }
 
-    mutating func set(sceneSize: CGSize) {
-        wrapped.set(sceneSize: sceneSize)
+    mutating func set(scene: SJScene) {
+        wrapped.set(scene: scene)
     }
 }

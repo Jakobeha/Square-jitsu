@@ -126,5 +126,7 @@
 			</dict>
 		</dict>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app uses photo access to import images into levels</string>
 </dict>
 </plist>

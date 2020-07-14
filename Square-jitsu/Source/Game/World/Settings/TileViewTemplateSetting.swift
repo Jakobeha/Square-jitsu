@@ -16,7 +16,8 @@ class TileViewTemplateSetting: UnionSetting {
         USOGenerator(SettingOptionRecognizerByName("turret"), TurretTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("fadeOnRemove"), FadeOnRemoveTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("macro"), MacroTileViewTemplate.newSetting),
-        USOGenerator(SettingOptionRecognizerByName("macroImage"), MacroImageTileViewTemplate.newSetting)
+        USOGenerator(SettingOptionRecognizerByName("macroImage"), MacroImageTileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("macroButton"), MacroButtonTileViewTemplate.newSetting)
     ]
 
     init() { super.init(options: TileViewTemplateSetting.options.map { $0.newOption() }) }

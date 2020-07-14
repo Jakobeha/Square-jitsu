@@ -100,5 +100,5 @@ class Slider<Number: SliderNumber>: UXView {
         return Number.round(CGFloat.lerp(start: range.lowerBound.toFloat, end: range.upperBound.toFloat, t: fraction))
     }
 
-    func set(sceneSize: CGSize) {}
+    func set(scene: SJScene) {}
 }

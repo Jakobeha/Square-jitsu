@@ -14,10 +14,7 @@ class TextureLocationSetting: SerialSetting {
     }
 
     func encodeWellFormed() throws -> JSON {
-        switch textureLocation {
-        case .withName(let name):
-            return JSON(name)
-        }
+        JSON(textureLocation.description)
     }
 
     func validate() throws {}

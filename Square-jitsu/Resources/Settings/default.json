@@ -234,16 +234,28 @@
     ],
     "button" : [
       {
-        "type" : "static",
-        "texture" : "TileUI/Buttons/Play"
+        "type" : "macroButton",
+        "foregroundTexture" : "UI/Play",
+        "sizeInTiles" : [
+          2,
+          2
+        ]
       },
       {
-        "type" : "static",
-        "texture" : "TileUI/Buttons/Edit"
+        "type" : "macroButton",
+        "foregroundTexture" : "UI/Edit",
+        "sizeInTiles" : [
+          2,
+          2
+        ]
       },
       {
-        "type" : "static",
-        "texture" : "TileUI/Buttons/Settings"
+        "type" : "macroButton",
+        "foregroundTexture" : "UI/Settings",
+        "sizeInTiles" : [
+          2,
+          2
+        ]
       }
     ]
   },
@@ -997,6 +1009,23 @@
       },
       {
         "initialTurretDirectionRelativeToAnchor" : "-90°"
+      }
+    ],
+    "image": [
+      {
+        "imageTexture": "",
+        "sizeInTiles": [1, 1]
+      }
+    ],
+    "portal": [
+      {
+        "relativePathToDestination": ""
+      },
+      {
+        "relativePathToDestination": ""
+      },
+      {
+        "relativePathToDestination": ""
       }
     ]
   },

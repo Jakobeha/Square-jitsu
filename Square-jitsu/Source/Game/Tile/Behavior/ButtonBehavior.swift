@@ -7,8 +7,12 @@ import Foundation
 
 class ButtonBehavior: EmptyTileBehavior<PortalMetadata> {
     override func onEntityCollide(entity: Entity, pos: WorldTilePos3D) {
-        let myType = entity.world![pos]
+        performAction(world: entity.world!, pos3D: pos)
+    }
+
+    func performAction(world: ReadonlyWorld, pos3D: WorldTilePos3D) {
+        let myType = world[pos3D]
         let buttonAction = myType.smallType.asButtonAction
-        entity.world!.conduit.perform(buttonAction: buttonAction)
+        world.conduit.perform(buttonAction: buttonAction)
     }
 }

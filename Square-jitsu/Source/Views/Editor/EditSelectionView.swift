@@ -71,7 +71,7 @@ class EditSelectionView: UXView {
         pastSelectionNode.path = WorldTilePos.pathOfShapeMadeBy(positions: selectedPositions, scale: editor.settings.tileViewWidthHeight, offset: CGPoint.zero)
     }
 
-    func set(sceneSize: CGSize) {
-        self.sceneSize = sceneSize
+    func set(scene: SJScene) {
+        sceneSize = scene.size
     }
 }

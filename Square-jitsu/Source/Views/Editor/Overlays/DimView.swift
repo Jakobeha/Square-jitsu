@@ -21,7 +21,7 @@ class DimView: UXView {
         dimNode.anchorPoint = UXSpriteAnchor
     }
 
-    func set(sceneSize: CGSize) {
-        self.sceneSize = sceneSize
+    func set(scene: SJScene) {
+        sceneSize = scene.size
     }
 }

@@ -5,13 +5,18 @@
 
 import Foundation
 
+/// This protocol is actually only partially readonly,
+/// will probably change in the future
 protocol ReadonlyWorld: ReadonlyStatelessWorld {
+    // Exposes mutability via whatever the conduit allows
+    var conduit: WorldConduit { get }
+
     var readonlyChunks: [WorldChunkPos:ReadonlyChunk] { get }
 
-    // Exposes mutability via the behavior itself, not a problem now though
+    // Exposes mutability via the behavior itself
     func getBehaviorAt(pos3D: WorldTilePos3D) -> TileBehavior?
 
-    // Exposes mutability via `Entity#world` and the entity itself, not a problem now though
+    // Exposes mutability via `Entity#world` and the entity itself
     var entities: [Entity] { get }
 
     var didReset: Observable<()> { get }

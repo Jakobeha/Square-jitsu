@@ -59,8 +59,28 @@ class Button: UXView {
 
     var size: CGSize { buttonSize.cgSize }
 
-    init(
+    convenience init(
         textureName: String,
+        rouletteNextItemTextureName: String? = nil,
+        size: ButtonSize = .medium,
+        isEnabled: Bool = true,
+        isSelected: Bool = false,
+        tintHue: CGFloat? = nil,
+        action: @escaping () -> ()
+    ) {
+        self.init(
+            texture: SKTexture(imageNamed: textureName),
+            rouletteNextItemTextureName: rouletteNextItemTextureName,
+            size: size,
+            isEnabled: isEnabled,
+            isSelected: isSelected,
+            tintHue: tintHue,
+            action: action
+        )
+    }
+
+    init(
+        texture: SKTexture,
         rouletteNextItemTextureName: String? = nil,
         size: ButtonSize = .medium,
         isEnabled: Bool = true,
@@ -92,7 +112,6 @@ class Button: UXView {
         } else {
             rouletteNextItemNode = nil
         }
-        let texture = SKTexture(imageNamed: textureName)
         foregroundNode = SKSpriteNode(texture: texture, size: size.cgSize)
         foregroundNode.alpha = isEnabled ? 1 : Button.disabledForegroundAlpha
         foregroundNode.anchorPoint = UXSpriteAnchor
@@ -116,5 +135,5 @@ class Button: UXView {
         rouletteNextItemNode?.alpha = Button.foregroundAlpha(isEnabled: isEnabled) * Button.rouletteNextItemAlphaMultiplier
     }
 
-    func set(sceneSize: CGSize) {}
+    func set(scene: SJScene) {}
 }

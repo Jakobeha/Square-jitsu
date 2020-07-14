@@ -23,4 +23,22 @@ extension URL {
 
         return result
     }
+    
+    func relativePathTo(url otherUrl: URL) -> String {
+        assert(!isFileURL, "can't get relative path from file to another url")
+        
+        var myDifferentPathComponents = pathComponents
+        var otherDifferentPathComponents = otherUrl.pathComponents
+        while !myDifferentPathComponents.isEmpty && !otherDifferentPathComponents.isEmpty &&
+            myDifferentPathComponents.first! == otherDifferentPathComponents.first! {
+                myDifferentPathComponents.removeFirst()
+                otherDifferentPathComponents.removeFirst()
+        }
+        
+        if myDifferentPathComponents.isEmpty && otherDifferentPathComponents.isEmpty {
+            return "./"
+        } else {
+            return String(repeating: "../", count: myDifferentPathComponents.count) + otherDifferentPathComponents.joined(separator: "/")
+        }
+    }
 }

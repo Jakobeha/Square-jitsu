@@ -79,7 +79,7 @@ class EditMoveView: UXView {
         editor.editorCamera.inverseTransformUX(rootNode: node)
     }
 
-    func set(sceneSize: CGSize) {
-        self.sceneSize = sceneSize
+    func set(scene: SJScene) {
+        sceneSize = scene.size
     }
 }

@@ -94,7 +94,7 @@ class AlertView: UXView, OverlayView {
         node.addChild(optionContainerNode)
     }
 
-    func set(sceneSize: CGSize) {
-        node.position = (sceneSize / 2).toPoint
+    func set(scene: SJScene) {
+        node.position = (scene.size / 2).toPoint
     }
 }

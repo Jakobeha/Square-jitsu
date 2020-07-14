@@ -31,7 +31,7 @@ struct ReLayout: UXView {
         }
     }
 
-    mutating func set(sceneSize: CGSize) {
-        wrapped.set(sceneSize: sceneSize)
+    mutating func set(scene: SJScene) {
+        wrapped.set(scene: scene)
     }
 }

@@ -33,5 +33,5 @@ class Label: UXView {
         labelNode.verticalAlignmentMode = .top
     }
 
-    func set(sceneSize: CGSize) {}
+    func set(scene: SJScene) {}
 }

@@ -32,9 +32,9 @@ class Stack: UXView {
         )
     }
 
-    func set(sceneSize: CGSize) {
+    func set(scene: SJScene) {
         for index in children.indices {
-            children[index].set(sceneSize: sceneSize)
+            children[index].set(scene: scene)
         }
     }
 }

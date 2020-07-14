@@ -49,6 +49,13 @@ extension ReadonlyStatelessWorld {
         })
     }
 
+    /// Helper used in inspectors for macro tiles
+    func getSideAdjacentsOf(tilesAtPositions: [TileAtPosition]) -> [TileAtPosition] {
+        tilesAtPositions.flatMap { tileAtPosition in
+            self.getSideAdjacentsWithSameTypeAsTileAt(pos3D: tileAtPosition.position).map(self.getTileAt)
+        }
+    }
+
     /// Note: doesn't return nil for air
     func getSideAdjacentsWithSameTypeAsTileAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
         let type = self[pos3D]

@@ -14,10 +14,10 @@ class UXTopLevelView: View {
         set { child.zPosition = newValue }
     }
 
-    init(child: UXView, sceneSize: CGSize) {
+    init(child: UXView, scene: SJScene) {
         var child = child
-        child.topLeft = CGPoint(x: 0, y: -sceneSize.height)
-        child.set(sceneSize: sceneSize)
+        child.topLeft = CGPoint(x: 0, y: -scene.size.height)
+        child.set(scene: scene)
         self.child = child
     }
 

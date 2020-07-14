@@ -12,8 +12,12 @@ class UXCompoundView: UXView {
 
     var size: CGSize { body.size }
 
-    private var sceneSize: CGSize = CGSize.zero {
-        didSet { body.set(sceneSize: sceneSize) }
+    private(set) weak var scene: SJScene? = nil {
+        didSet {
+            if let scene = scene {
+                body?.set(scene: scene)
+            }
+        }
     }
 
     init() {
@@ -36,10 +40,12 @@ class UXCompoundView: UXView {
         body.topLeft = oldTopLeft
         body.zPosition = oldZPosition
         body.set(parent: oldParent)
-        body.set(sceneSize: sceneSize)
+        if let scene = scene {
+            body.set(scene: scene)
+        }
     }
 
-    final func set(sceneSize: CGSize) {
-        self.sceneSize = sceneSize
+    final func set(scene: SJScene) {
+        self.scene = scene
     }
 }

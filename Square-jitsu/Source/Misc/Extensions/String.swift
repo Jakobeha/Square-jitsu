@@ -6,6 +6,8 @@
 import Foundation
 
 extension String {
+    static var defaultTruncatedMaxLength: Int = 16
+
     static func encodeTuple(items: [String]) -> String {
         "(\(items.joined(separator: ",")))"
     }
@@ -18,6 +20,18 @@ extension String {
         } else {
             return nil
         }
+    }
+
+    /// If the string is longer than a certain length (`String.defaultTruncatedMaxLength`),
+    /// it will be truncated to the maximum length and '...' (the literal) will be added afterwards
+    var truncatedFancy: String {
+        getTruncatedFancyTo(maxLength: String.defaultTruncatedMaxLength)
+    }
+
+    /// If the string is longer than the maximum length,
+    /// it will be truncated to the maximum length and '...' (the literal) will be added afterwards
+    func getTruncatedFancyTo(maxLength: Int) -> String {
+        count <= maxLength ? self : "\(self[..<index(startIndex, offsetBy: maxLength)])..."
     }
 
     func leftPadding(toLength newLength: Int, withPad character: Character) -> String {

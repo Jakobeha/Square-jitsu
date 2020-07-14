@@ -60,11 +60,11 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
     }
 
     private static let layerOverlapDMatrix: [[Bool]] = [
-        //                              .entity .edge .iceSolid .solid overlay .backgroundDirectionBoost .background .air
-        /* .air                      */ [true,  true, true,     true,  true,   true,                     true,       true],
-        /* .background               */ [true,  true, false,    false, true,   true,                     false],
-        /* .backgroundDirectionBoost */ [true,  true, false,    false, true,   false],
-        /* .overlay                  */ [true,  true, true,     true],
+        //                              .entity .edge .iceSolid .solid .backgroundDirectionBoost .background .free .air
+        /* .air                      */ [true,  true, true,     true,  true,                     true,       true, true],
+        /* .free                     */ [true,  true, true,     true,  true,                     true,       true],
+        /* .background               */ [true,  true, false,    false, true,                     false],
+        /* .backgroundDirectionBoost */ [true,  true, false,    false, false],
         /* .solid                    */ [false, true, false,    false],
         /* .iceSolid                 */ [false, true, false],
         /* .edge                     */ [true,  false],

@@ -15,7 +15,7 @@ struct ImageMetadata: TileMetadata, SingleSettingCodable {
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "imageTexture": TextureLocationSetting(),
-            "sizeInTiles": CGSizeRangeSetting(width: 0...CGFloat(Chunk.widthHeight), height: 0...CGFloat(Chunk.widthHeight))
+            "sizeInTiles": CGSizeRangeSetting(width: 1...CGFloat(Chunk.widthHeight), height: 1...CGFloat(Chunk.widthHeight))
         ], optionalFields: [:])
     }
     // endregion

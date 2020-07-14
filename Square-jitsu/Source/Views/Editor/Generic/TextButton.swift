@@ -74,5 +74,5 @@ class TextButton: UXView {
         textNode.alpha = Button.foregroundAlpha(isEnabled: isEnabled)
     }
 
-    func set(sceneSize: CGSize) {}
+    func set(scene: SJScene) {}
 }

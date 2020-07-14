@@ -3,10 +3,14 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 class OverlayContainerView: UXCompoundView {
     private let overlayContainer: OverlayContainer
+
+    private var sceneSize: CGSize {
+        scene?.size ?? CGSize.zero
+    }
 
     init(overlayContainer: OverlayContainer) {
         self.overlayContainer = overlayContainer
@@ -22,7 +26,7 @@ class OverlayContainerView: UXCompoundView {
             let dimView = DimView()
             views.insert(dimView, at: 0)
         }
-        return ZStack(views)
+        return ZStack(views, topLeft: ConvertToUXCoords(size: sceneSize / 2).toPoint)
     }
 
     private func getOverlayViews() -> [OverlayView] {

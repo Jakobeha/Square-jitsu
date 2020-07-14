@@ -9,7 +9,7 @@ class Alert: EmptyBlockingOverlay {
     let message: String
     let subtext: String?
     let options: [AlertOption]
-    private let action: (AlertOption) -> Void
+    private let action: (AlertOption) -> ()
 
     init<Option: AlertOption>(message: String, subtext: String?, options: [Option], action: @escaping (Option) -> ()) {
         self.message = message

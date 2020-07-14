@@ -156,9 +156,22 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
             return true
         }
     }
+
+    private var explicitZPosition: CGFloat? {
+        switch self {
+        case .portal:
+            return TileBigType.player.zPosition - TileType.smallestZPositionOffset
+        default:
+            return nil
+        }
+    }
     // endregion
     
     var zPosition: CGFloat {
+        explicitZPosition ?? implicitZPosition
+    }
+
+    private var implicitZPosition: CGFloat {
         layer.zPosition + (CGFloat(rawValue) / CGFloat(TileBigType.allCases.count))
     }
 

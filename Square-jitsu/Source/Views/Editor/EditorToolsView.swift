@@ -22,14 +22,14 @@ class EditorToolsView: UXCompoundView {
         self.editor = editor
 
         overlayContainerView = OverlayContainerView(overlayContainer: editor.overlays)
-        inspectorContainerView = InspectorContainerView(editorTools: editor.tools)
+        inspectorContainerView = InspectorContainerView(editorTools: editor.tools, worldUrl: editor.editableWorld.worldUrl, settings: editor.settings)
         editMoveView = EditMoveView(editor: editor)
         editSelectionView = EditSelectionView(editor: editor)
-        actionView = EditorToolsActionView(editorTools: editor.tools, settings: editor.editableWorld.world.settings)
+        actionView = EditorToolsActionView(editorTools: editor.tools, settings: editor.settings)
         selectModeView = EditorToolsSelectModeView(editorTools: editor.tools)
         gameplayControlView = GameplayControlView(editor: editor)
         undoView = UndoView(undoManager: editor.undoManager)
-        gridView = GridView(camera: editor.editorCamera, settings: editor.editableWorld.world.settings)
+        gridView = GridView(camera: editor.editorCamera, settings: editor.settings)
         super.init()
 
         editor.didChangeState.subscribe(observer: self, priority: .view, handler: regenerateBody)

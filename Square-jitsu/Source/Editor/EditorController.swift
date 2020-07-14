@@ -21,11 +21,11 @@ class EditorController: WorldConduit {
     private static let testWorldUrl: URL = WorldFile.localUrl(baseName: testWorldFileName)
 
     private let userSettings: UserSettings
-    private let parent: SKScene
+    private let parent: SJScene
     private let updater: FixedUpdater = FixedUpdater()
     private(set) var loaded: EditorModelView? = nil
 
-    init(userSettings: UserSettings, parent: SKScene) {
+    init(userSettings: UserSettings, parent: SJScene) {
         self.userSettings = userSettings
         self.parent = parent
         updater.onTick = tick
@@ -52,7 +52,7 @@ class EditorController: WorldConduit {
         unload()
 
         let editor = Editor(worldDocument: worldDocument, userSettings: userSettings, conduit: self)
-        let editorView = EditorView(editor: editor, sceneSize: parent.size)
+        let editorView = EditorView(editor: editor, scene: parent)
         editorView.placeIn(parent: parent)
         loaded = EditorModelView(editor: editor, editorView: editorView)
 

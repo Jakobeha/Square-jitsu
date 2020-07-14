@@ -20,7 +20,7 @@ final class MacroTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
         let adjoiningSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
             world.peek(pos: adjacentPos).contains(tileType)
         })
-        if adjoiningSides.isDisjoint(with: [.north, .west]) {
+        if adjoiningSides.isDisjoint(with: [.south, .west]) {
             let node = SKSpriteNode(texture: texture, size: sizeInTiles * world.settings.tileViewWidthHeight)
             node.anchorPoint = (CGSize.square(sideLength: 0.5) / sizeInTiles).toPoint
             return node
@@ -41,7 +41,7 @@ final class MacroTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "texture": TextureSetting(),
-            "sizeInTiles": CGSizeRangeSetting(width: 0...CGFloat(Chunk.widthHeight), height: 0...CGFloat(Chunk.widthHeight))
+            "sizeInTiles": CGSizeRangeSetting(width: 1...CGFloat(Chunk.widthHeight), height: 1...CGFloat(Chunk.widthHeight))
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }
     // endregion

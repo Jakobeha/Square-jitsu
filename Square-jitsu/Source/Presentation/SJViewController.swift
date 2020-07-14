@@ -23,6 +23,7 @@ class SJViewController: UIViewController {
 
         // Create the scene
         let scene = EditorScene(size: view.bounds.size)
+        scene.viewController = self
         scene.scaleMode = .resizeFill
 
         // Present the scene

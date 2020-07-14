@@ -69,7 +69,7 @@ class GridView: UXView {
         gridNode.position %= settings.tileViewWidthHeight
     }
 
-    func set(sceneSize: CGSize) {
-        self.sceneSize = sceneSize
+    func set(scene: SJScene) {
+        sceneSize = scene.size
     }
 }
