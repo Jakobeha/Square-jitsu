@@ -7,7 +7,7 @@ import Foundation
 
 /// Abstract class - override isTileConnectableToSide and isTileConnectedToSide
 class SideBasedOrientationInspector: SubInspector {
-    private var tiles: [TileAtPosition]
+    var tiles: [TileAtPosition]
     let world: ReadonlyStatelessWorld
     private weak var delegate: EditorToolsDelegate? = nil
     private let undoManager: UndoManager
@@ -31,12 +31,11 @@ class SideBasedOrientationInspector: SubInspector {
         let tilesToChange = tilesConnectableToSide[side]
         if areTilesAlreadyConnected {
             delegate?.disconnectTilesToSide(tiles: tilesToChange, side: side)
-
         } else {
             delegate?.connectTilesToSide(tiles: tilesToChange, side: side)
         }
 
-        tiles = tiles.map(world.getUpdatedTileAtPosition)
+        reloadTiles()
         updateConnectedTileInfo()
 
         undoManager.registerUndo(withTarget: self) { this in

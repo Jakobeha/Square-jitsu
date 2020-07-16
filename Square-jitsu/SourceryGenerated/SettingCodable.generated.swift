@@ -211,7 +211,8 @@ extension Diamond4TileViewTemplate {
         self.init(
             textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
             adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically(),
-            semiAdjoiningTypes: setting.usedFieldSettings["semiAdjoiningTypes"]!.decodeDynamically()
+            semiAdjoiningTypes1: setting.usedFieldSettings["semiAdjoiningTypes1"]!.decodeDynamically(),
+            semiAdjoiningTypes2: setting.usedFieldSettings["semiAdjoiningTypes2"]!.decodeDynamically()
         )
     }
 
@@ -219,14 +220,16 @@ extension Diamond4TileViewTemplate {
         self.init(
             textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
             adjoiningTypes: setting.usedFieldSettings["adjoiningTypes"]!.decodeDynamically(),
-            semiAdjoiningTypes: setting.usedFieldSettings["semiAdjoiningTypes"]!.decodeDynamically()
+            semiAdjoiningTypes1: setting.usedFieldSettings["semiAdjoiningTypes1"]!.decodeDynamically(),
+            semiAdjoiningTypes2: setting.usedFieldSettings["semiAdjoiningTypes2"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<Diamond4TileViewTemplate>) {
         self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
         self.adjoiningTypes.encodeDynamically(to: setting.allFieldSettings["adjoiningTypes"]!)
-        self.semiAdjoiningTypes.encodeDynamically(to: setting.allFieldSettings["semiAdjoiningTypes"]!)
+        self.semiAdjoiningTypes1.encodeDynamically(to: setting.allFieldSettings["semiAdjoiningTypes1"]!)
+        self.semiAdjoiningTypes2.encodeDynamically(to: setting.allFieldSettings["semiAdjoiningTypes2"]!)
     }
 }
 extension Edge4TileViewTemplate {

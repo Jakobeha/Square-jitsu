@@ -30,6 +30,9 @@ enum TextureLocation: Decodable, Encodable, LosslessStringConvertible {
         guard let url = URL(string: asString) else {
             throw InvalidTextureLocationError.invalidUrl(asString)
         }
+        if url.scheme != "http" && url.scheme != "https" {
+            throw InvalidTextureLocationError.notHttpUrl(url)
+        }
         let downloaded = try TextureLocation.tryToDownloadAt(url: url)
         return .atUrl(url, downloaded: downloaded)
     }

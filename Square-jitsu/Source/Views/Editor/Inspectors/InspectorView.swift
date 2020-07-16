@@ -9,7 +9,7 @@ class InspectorView: UXCompoundView {
     private static let subInspectorPadding: CGFloat = 12
     private static let subInspectorSpacing: CGFloat = subInspectorPadding
     private static let emptyInspectorText: Label = Label(text: "Nothing to inspect")
-    static let maxInspectorWidth: CGFloat = 240
+    static let maxInspectorWidth: CGFloat = 384
 
     private let inspector: Inspector
     private let worldUrl: URL

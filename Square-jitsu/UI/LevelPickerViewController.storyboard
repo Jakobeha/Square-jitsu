@@ -10,7 +10,7 @@
         <!--Level Selector-->
         <scene sceneID="VT9-3w-6mH">
             <objects>
-                <navigationController title="Level Selector" id="JjE-OC-JpS" customClass="LevelSelectorViewController" customModule="Square_jitsu" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController title="Level Selector" id="JjE-OC-JpS" customClass="LevelPickerViewController" customModule="Square_jitsu" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="SVJ-hO-bdE">
                         <rect key="frame" x="0.0" y="0.0" width="736" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>

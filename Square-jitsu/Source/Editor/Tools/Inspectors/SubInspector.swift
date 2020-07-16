@@ -5,6 +5,15 @@
 
 import Foundation
 
-protocol SubInspector {
+protocol SubInspector: AnyObject {
+    var tiles: [TileAtPosition] { get set }
+    var world: ReadonlyStatelessWorld { get }
+
     init(tiles: [TileAtPosition], world: ReadonlyStatelessWorld, delegate: EditorToolsDelegate?, undoManager: UndoManager)
+}
+
+extension SubInspector {
+    func reloadTiles() {
+        tiles = tiles.map(world.getUpdatedTileAtPosition)
+    }
 }

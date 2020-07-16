@@ -27,7 +27,7 @@ func ImageLocationSelector(
                         } catch {
                             let errorAlert = UIAlertController(title: "Couldn't select image", message: error.localizedDescription, preferredStyle: .alert)
                             errorAlert.addAction(UIAlertAction(title: "Continue", style: .default))
-                            parentController.present(alert, animated: true)
+                            parentController.present(errorAlert, animated: true)
                         }
                     }
                 })
@@ -35,7 +35,7 @@ func ImageLocationSelector(
                 parentController.present(alert, animated: true)
             },
             LocationSelector.SelectionOption(label: "From URL") { selectLocation, parentController in
-                let alert = UIAlertController(title: "Enter built-in image url (http or https)", message: nil, preferredStyle: .alert)
+                let alert = UIAlertController(title: "Enter built-in image url", message: nil, preferredStyle: .alert)
                 alert.addTextField { textField in
                     textField.placeholder = "http://the.url/of/the.image"
                     textField.keyboardType = .URL
@@ -50,7 +50,7 @@ func ImageLocationSelector(
                         } catch {
                             let errorAlert = UIAlertController(title: "Couldn't select image", message: error.localizedDescription, preferredStyle: .alert)
                             errorAlert.addAction(UIAlertAction(title: "Continue", style: .default))
-                            parentController.present(alert, animated: true)
+                            parentController.present(errorAlert, animated: true)
                         }
                     }
                 })

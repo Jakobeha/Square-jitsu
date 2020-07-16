@@ -22,11 +22,12 @@ class ImageSIV: UXCompoundView {
         ) { newLocation in
             let newTexture = newLocation.texture
             let newSizeInTiles = newTexture.size() / self.settings.tileViewWidthHeight
-
             self.subInspector.metadata = ImageMetadata(
                 imageTexture: newLocation,
                 sizeInTiles: newSizeInTiles
             )
+
+            self.regenerateBody()
         }
     }
 }

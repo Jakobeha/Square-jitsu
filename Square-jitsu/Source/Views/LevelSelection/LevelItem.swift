@@ -31,6 +31,17 @@ enum LevelItem {
         }
     }
 
+    var url: URL? {
+        switch self {
+        case .newFolder, .newLevel, .upDirectory:
+            return nil
+        case .folder(name: _, let url):
+            return url
+        case .level(name: _, let url):
+            return url
+        }
+    }
+
     private var shortImageName: String {
         switch self {
         case .newFolder:

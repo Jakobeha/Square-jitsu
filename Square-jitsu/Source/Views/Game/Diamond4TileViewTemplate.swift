@@ -14,15 +14,15 @@ final class Diamond4TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodabl
         }
     }
 
-    static func resolve(semiAdjoiningSides: SideSet) -> SideSet {
+    static func resolve(semiAdjoiningSides: SideSet, preferClockwise: Bool) -> SideSet {
         if semiAdjoiningSides == [.south, .east, .north] {
-            return [.east, .north]
+            return preferClockwise ? [.south, .east] : [.east, .north]
         } else if semiAdjoiningSides == [.east, .north, .west] {
-            return [.north, .west]
+            return preferClockwise ? [.east, .north] : [.north, .west]
         } else if semiAdjoiningSides == [.north, .west, .south] {
-            return [.west, .south]
+            return preferClockwise ? [.south, .west] : [.west, .south]
         } else if semiAdjoiningSides == [.west, .south, .east] {
-            return [.south, .east]
+            return preferClockwise ? [.west, .south] : [.south, .east]
         } else {
             return semiAdjoiningSides
         }
@@ -35,8 +35,9 @@ final class Diamond4TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodabl
 
     let textureBase: TextureSet
     let adjoiningTypes: TileTypePred
-    let semiAdjoiningTypes: TileTypePred
-    
+    let semiAdjoiningTypes1: TileTypePred
+    let semiAdjoiningTypes2: TileTypePred
+
     private lazy var textures: DenseEnumMap<SideSet, SKTexture> = DenseEnumMap { sideSet in
         let coalescedSet = Diamond4TileViewTemplate.getCoalescedForSharedTexture(sideSet: sideSet)
         return Diamond4TileViewTemplate.getTexture(base: textureBase, sideSet: coalescedSet)
@@ -45,21 +46,28 @@ final class Diamond4TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodabl
     /// - Parameters:
     ///   - base: Texture set with all textures
     ///   - adjoiningTypes: Will always be considered adjoining sides
-    ///   - semiAdjoiningTypes: Will not adjoin in certain combinations - specifically, 3 consecutive semi-adjoining sides will be treated as 2 only adjoining sides
-    init(textureBase: TextureSet, adjoiningTypes: TileTypePred, semiAdjoiningTypes: TileTypePred) {
+    ///   - semiAdjoiningTypes1: Will not adjoin in certain combinations - specifically, 3 consecutive semi-adjoining sides will be treated as only the 2 most counter-clockwise ones
+    ///   - semiAdjoiningTypes1: Will not adjoin in certain combinations - specifically, 3 consecutive semi-adjoining sides will be treated as only the 2 most clockwise ones
+    init(textureBase: TextureSet, adjoiningTypes: TileTypePred, semiAdjoiningTypes1: TileTypePred, semiAdjoiningTypes2: TileTypePred) {
         self.textureBase = textureBase
         self.adjoiningTypes = adjoiningTypes
-        self.semiAdjoiningTypes = semiAdjoiningTypes
+        self.semiAdjoiningTypes1 = semiAdjoiningTypes1
+        self.semiAdjoiningTypes2 = semiAdjoiningTypes2
     }
 
     override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         let alwaysAdjoiningSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
             adjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })
-        let semiAdjoiningSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
-            semiAdjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
+        let semiAdjoiningSides1 = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
+            semiAdjoiningTypes1.contains(anyOf: world.peek(pos: adjacentPos))
         })
-        let adjoiningSides = alwaysAdjoiningSides.union(Diamond4TileViewTemplate.resolve(semiAdjoiningSides: semiAdjoiningSides))
+        let semiAdjoiningSides2 = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
+            semiAdjoiningTypes2.contains(anyOf: world.peek(pos: adjacentPos))
+        })
+        let adjoiningSides = alwaysAdjoiningSides
+            .union(Diamond4TileViewTemplate.resolve(semiAdjoiningSides: semiAdjoiningSides1, preferClockwise: false))
+            .union(Diamond4TileViewTemplate.resolve(semiAdjoiningSides: semiAdjoiningSides2, preferClockwise: true))
         let texture = textures[adjoiningSides]
         return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
@@ -78,7 +86,8 @@ final class Diamond4TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodabl
         StructSetting(requiredFields: [
             "textureBase": TextureSetSetting(),
             "adjoiningTypes": TileTypePredSetting(),
-            "semiAdjoiningTypes": TileTypePredSetting()
+            "semiAdjoiningTypes1": TileTypePredSetting(),
+            "semiAdjoiningTypes2": TileTypePredSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }
     // endregion

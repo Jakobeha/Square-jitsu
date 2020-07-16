@@ -11,11 +11,11 @@
         <!--Levels-->
         <scene sceneID="hXJ-13-WD5">
             <objects>
-                <collectionViewController storyboardIdentifier="LevelSelectorInDirectoryViewController" title="Levels" id="QbR-3Q-50y" customClass="LevelSelectorInDirectoryViewController" customModule="Square_jitsu" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="LevelSelectorInDirectoryViewController" title="Levels" id="QbR-3Q-50y" customClass="LevelPickerInDirectoryViewController" customModule="Square_jitsu" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" delaysContentTouches="NO" dataMode="prototypes" id="Clr-eU-h2r">
                         <rect key="frame" x="0.0" y="0.0" width="736" height="414"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.12" green="0.12" blue="0.12" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.125" green="0.125" blue="0.125" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="16" minimumInteritemSpacing="16" id="sJX-RX-Ttj">
                             <size key="itemSize" width="128" height="128"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -30,21 +30,29 @@
                                     <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TileButtonSelectedBorder.png" id="mZd-tC-ga9">
+                                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="UI/TileButtonSelectedBorder.png" id="mZd-tC-ga9">
                                             <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" systemColor="systemBlueColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <rect key="contentStretch" x="0.5" y="0.5" width="0.0" height="0.0"/>
                                         </imageView>
-                                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TileButtonPressedBorder.png" id="3TP-Zh-DgW">
+                                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="UI/TileButtonPressedBorder.png" id="3TP-Zh-DgW">
                                             <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" systemColor="systemBlueColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <rect key="contentStretch" x="0.5" y="0.5" width="0.0" height="0.0"/>
                                         </imageView>
-                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="UnknownIcon.png" id="snP-Yo-g58">
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="UI/Icons/UnknownIcon.png" id="snP-Yo-g58">
                                             <rect key="frame" x="16" y="3" width="96" height="97"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </imageView>
+                                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="UI/CutRibbon.png" translatesAutoresizingMaskIntoConstraints="NO" id="mr3-BE-x5u">
+                                            <rect key="frame" x="64" y="0.0" width="64" height="64"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
+                                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="UI/CopyRibbon.png" translatesAutoresizingMaskIntoConstraints="NO" id="uUG-pN-hJc">
+                                            <rect key="frame" x="64" y="0.0" width="64" height="64"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="128" translatesAutoresizingMaskIntoConstraints="NO" id="1tw-Mp-cTJ">
                                             <rect key="frame" x="0.0" y="100" width="128" height="23"/>
@@ -57,6 +65,8 @@
                                 </collectionViewCellContentView>
                                 <connections>
                                     <outlet property="backgroundView" destination="3TP-Zh-DgW" id="QHM-G3-viq"/>
+                                    <outlet property="copyRibbonImageView" destination="uUG-pN-hJc" id="Iae-B8-D1k"/>
+                                    <outlet property="cutRibbonImageView" destination="mr3-BE-x5u" id="f41-o9-OUa"/>
                                     <outlet property="iconImageView" destination="snP-Yo-g58" id="o9a-1p-kCI"/>
                                     <outlet property="label" destination="1tw-Mp-cTJ" id="jFb-CO-7I4"/>
                                     <outlet property="selectedBackgroundView" destination="mZd-tC-ga9" id="jjF-c3-aZd"/>
@@ -68,15 +78,22 @@
                             <outlet property="delegate" destination="QbR-3Q-50y" id="ogM-po-Kru"/>
                         </connections>
                     </collectionView>
-                    <navigationItem key="navigationItem" title="Levels" id="QHK-Cy-x5o">
+                    <navigationItem key="navigationItem" title="Loading..." leftItemsSupplementBackButton="YES" id="QHK-Cy-x5o">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="rsv-Yz-vCY">
                             <connections>
                                 <action selector="cancel" destination="QbR-3Q-50y" id="630-05-fyf"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="gVP-9c-tsP"/>
+                        <barButtonItem key="rightBarButtonItem" title="Paste" id="bDE-Cf-2KO">
+                            <connections>
+                                <action selector="paste" destination="QbR-3Q-50y" id="J8c-P5-r9V"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
+                    <connections>
+                        <outlet property="pasteButtonItem" destination="bDE-Cf-2KO" id="rFV-Yu-ERr"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Fp5-SB-ddg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -84,8 +101,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="TileButtonPressedBorder.png" width="32" height="32"/>
-        <image name="TileButtonSelectedBorder.png" width="32" height="32"/>
-        <image name="UnknownIcon.png" width="512" height="512"/>
+        <image name="UI/CopyRibbon.png" width="64" height="64"/>
+        <image name="UI/CutRibbon.png" width="64" height="64"/>
+        <image name="UI/Icons/UnknownIcon.png" width="512" height="512"/>
+        <image name="UI/TileButtonPressedBorder.png" width="32" height="32"/>
+        <image name="UI/TileButtonSelectedBorder.png" width="32" height="32"/>
     </resources>
 </document>

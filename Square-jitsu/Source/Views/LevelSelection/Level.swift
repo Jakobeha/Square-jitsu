@@ -9,7 +9,7 @@ struct Level {
     let url: URL
 
     var name: String {
-        (url.lastPathComponent as NSString).deletingPathExtension
+        url.deletingPathExtension().lastPathComponent
     }
 
     var toLevelItem: LevelItem {

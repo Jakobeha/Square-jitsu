@@ -5,12 +5,12 @@
 
 import Foundation
 
-class LevelSelectorInDirectory {
-    static func listFromRootUntil(url: URL) throws -> [LevelSelectorInDirectory] {
-        var elements: [LevelSelectorInDirectory] = []
+class LevelPickerInDirectory {
+    static func listFromRootUntil(url: URL) throws -> [LevelPickerInDirectory] {
+        var elements: [LevelPickerInDirectory] = []
         var currentUrl = url
         while !(elements.last?.isRoot ?? false) {
-            elements.append(try LevelSelectorInDirectory(url: currentUrl))
+            elements.append(try LevelPickerInDirectory(url: currentUrl))
             currentUrl.deleteLastPathComponent()
         }
         elements.reverse()

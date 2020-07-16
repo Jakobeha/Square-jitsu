@@ -3,45 +3,56 @@
     "background" : [
       {
         "type" : "diamond4",
-        "textureBase" : "Background",
+        "textureBase" : "Tiles/BackgroundGreen",
         "adjoiningTypes" : [
           "background/0"
         ],
-        "semiAdjoiningTypes" : [
+        "semiAdjoiningTypes1" : [
           "background/0",
+          "Layer.solid"
+        ],
+        "semiAdjoiningTypes2": []
+      },
+      {
+        "type" : "diamond4",
+        "textureBase" : "Tiles/BackgroundGrey",
+        "adjoiningTypes" : [
+          "background/0"
+        ],
+        "semiAdjoiningTypes1": [],
+        "semiAdjoiningTypes2" : [
+          "background/1",
           "Layer.solid"
         ]
       },
       {
         "type" : "diamond4",
-        "textureBase" : "BackgroundBricks",
+        "textureBase" : "Tiles/BackgroundBricks",
         "adjoiningTypes" : [
           "background/1"
         ],
-        "semiAdjoiningTypes" : [
-          "background/1",
-          "Layer.solid"
-        ]
+        "semiAdjoiningTypes1": [],
+        "semiAdjoiningTypes2": []
       }
     ],
     "overlapSensitiveBackground" : [
       {
         "type" : "static",
-        "texture" : "TestOffBackground"
+        "texture" : "Tiles/TestOffBackground"
       },
       {
         "type" : "fadeOnRemove",
         "duration" : 0.5,
         "base" : {
           "type" : "static",
-          "texture" : "TestOnBackground"
+          "texture" : "Tiles/TestOnBackground"
         }
       }
     ],
     "solid" : [
       {
         "type" : "square8",
-        "textureBase" : "Solid",
+        "textureBase" : "Tiles/Solid",
         "adjoiningTypes" : [
           "solid/0",
           "ice/0",
@@ -52,24 +63,24 @@
     "adjacentSensitiveSolid" : [
       {
         "type" : "static",
-        "texture" : "TestOffSolid"
+        "texture" : "Tiles/TestOffSolid"
       },
       {
         "type" : "fadeOnRemove",
         "duration" : 0.5,
         "base" : {
           "type" : "static",
-          "texture" : "TestOnSolid"
+          "texture" : "Tiles/TestOnSolid"
         }
       }
     ],
     "destructibleSolid" : [
       {
         "type" : "destructible",
-        "destructionTexture" : "Destruction",
+        "destructionTexture" : "Tiles/Destruction",
         "base" : {
           "type" : "square8",
-          "textureBase" : "DestructibleSolid",
+          "textureBase" : "Tiles/DestructibleSolid",
           "adjoiningTypes" : [
             "solid/0",
             "ice/0",
@@ -81,7 +92,7 @@
     "ice" : [
       {
         "type" : "square8",
-        "textureBase" : "Ice",
+        "textureBase" : "Tiles/Ice",
         "adjoiningTypes" : [
           "solid/0",
           "ice/0",
@@ -92,71 +103,71 @@
     "backgroundDirectionBoost" : [
       {
         "type" : "cornerFacing",
-        "textureBase" : "BackgroundDirectionBoost"
+        "textureBase" : "Tiles/BackgroundDirectionBoost"
       }
     ],
     "solidEdge" : [
       {
         "type" : "edge4",
-        "textureBase" : "SolidEdge"
+        "textureBase" : "Tiles/SolidEdge"
       }
     ],
     "dashEdge" : [
       {
         "type" : "edge4",
-        "textureBase" : "DashCounterClockwiseOff"
+        "textureBase" : "Tiles/DashCounterClockwiseOff"
       },
       {
         "type" : "edge4",
-        "textureBase" : "DashCounterClockwiseOn"
+        "textureBase" : "Tiles/DashCounterClockwiseOn"
       },
       {
         "type" : "edge4",
-        "textureBase" : "DashClockwiseOff"
+        "textureBase" : "Tiles/DashClockwiseOff"
       },
       {
         "type" : "edge4",
-        "textureBase" : "DashClockwiseOn"
+        "textureBase" : "Tiles/DashClockwiseOn"
       }
     ],
     "springEdge" : [
       {
         "type" : "edge4",
-        "textureBase" : "SpringOff"
+        "textureBase" : "Tiles/SpringOff"
       },
       {
         "type" : "edge4",
-        "textureBase" : "SpringOn"
+        "textureBase" : "Tiles/SpringOn"
       }
     ],
     "lava" : [
       {
         "type" : "edge4",
-        "textureBase" : "Lava"
+        "textureBase" : "Tiles/Lava"
       }
     ],
     "player" : [
       {
         "type" : "static",
-        "texture" : "Player"
+        "texture" : "Tiles/Player"
       }
     ],
     "enemy" : [
       {
         "type" : "static",
-        "texture" : "Enemy"
+        "texture" : "Tiles/Enemy"
       }
     ],
     "shuriken" : [
       {
         "type" : "static",
-        "texture" : "Shuriken"
+        "texture" : "Tiles/Shuriken"
       }
     ],
     "bomb" : [
       {
         "type" : "static",
-        "texture" : "Bomb"
+        "texture" : "Tiles/Bomb"
       }
     ],
     "turret" : [
@@ -164,41 +175,41 @@
         "type" : "turret",
         "base" : {
           "type" : "static",
-          "texture" : "TurretAnchor"
+          "texture" : "Tiles/Turret/Anchor"
         },
-        "turretTexture" : "BasicTurret"
+        "turretTexture" : "Tiles/Turret/BasicHead"
       },
       {
         "type" : "turret",
         "base" : {
           "type" : "static",
-          "texture" : "TurretAnchor"
+          "texture" : "Tiles/Turret/Anchor"
         },
-        "turretTexture" : "BurstTurret"
+        "turretTexture" : "Tiles/Turret/BurstHead"
       },
       {
         "type" : "turret",
         "base" : {
           "type" : "static",
-          "texture" : "TurretAnchor"
+          "texture" : "Tiles/Turret/Anchor"
         },
-        "turretTexture" : "RocketTurret"
+        "turretTexture" : "Tiles/Turret/RocketHead"
       },
       {
         "type" : "turret",
         "base" : {
           "type" : "static",
-          "texture" : "TurretAnchor"
+          "texture" : "Tiles/Turret/Anchor"
         },
-        "turretTexture" : "LaserTurret"
+        "turretTexture" : "Tiles/Turret/LaserHead"
       },
       {
         "type" : "turret",
         "base" : {
           "type" : "static",
-          "texture" : "TurretAnchor"
+          "texture" : "Tiles/Turret/Anchor"
         },
-        "turretTexture" : "LavaLaserTurret"
+        "turretTexture" : "Tiles/Turret/LavaLaserHead"
       }
     ],
     "image" : [
@@ -209,7 +220,7 @@
     "portal" : [
       {
         "type" : "macro",
-        "texture" : "BluePortal",
+        "texture" : "Tiles/BluePortal",
         "sizeInTiles" : [
           2,
           2
@@ -217,7 +228,7 @@
       },
       {
         "type" : "macro",
-        "texture" : "GreenPortal",
+        "texture" : "Tiles/GreenPortal",
         "sizeInTiles" : [
           2,
           2
@@ -225,7 +236,7 @@
       },
       {
         "type" : "macro",
-        "texture" : "RedPortal",
+        "texture" : "Tiles/RedPortal",
         "sizeInTiles" : [
           2,
           2
@@ -266,7 +277,7 @@
         "duration" : 1,
         "base" : {
           "type" : "static",
-          "texture" : "Player"
+          "texture" : "Tiles/Player"
         }
       }
     ],
@@ -276,18 +287,18 @@
         "duration" : 1,
         "base" : {
           "type" : "static",
-          "texture" : "Shuriken"
+          "texture" : "Tiles/Shuriken"
         }
       }
     ],
     "bomb" : [
       {
         "type" : "static",
-        "texture" : "Bomb"
+        "texture" : "Tiles/Bomb"
       },
       {
         "type" : "static",
-        "texture" : "BombActive"
+        "texture" : "Tiles/BombActive"
       }
     ],
     "enemy" : [
@@ -296,18 +307,18 @@
         "duration" : 1,
         "base" : {
           "type" : "static",
-          "texture" : "Enemy"
+          "texture" : "Tiles/Enemy"
         }
       }
     ],
     "projectile" : [
       {
         "type" : "static",
-        "texture" : "Projectile"
+        "texture" : "Tiles/Projectile"
       },
       {
         "type" : "static",
-        "texture" : "Rocket"
+        "texture" : "Tiles/Rocket"
       },
       {
         "type" : "laser",
@@ -328,7 +339,7 @@
           "type" : "turret",
           "base" : {
             "type" : "static",
-            "texture" : "BasicTurret"
+            "texture" : "Tiles/Turret/BasicHead"
           },
           "maxChargingCircleRadius" : 0.5,
           "minChargingCircleRadius" : 0.125,
@@ -351,7 +362,7 @@
           "type" : "turret",
           "base" : {
             "type" : "static",
-            "texture" : "BurstTurret"
+            "texture" : "Tiles/Turret/BurstHead"
           },
           "maxChargingCircleRadius" : 0.5,
           "minChargingCircleRadius" : 0.125,
@@ -374,7 +385,7 @@
           "type" : "turret",
           "base" : {
             "type" : "static",
-            "texture" : "RocketTurret"
+            "texture" : "Tiles/Turret/RocketHead"
           },
           "maxChargingCircleRadius" : 0.5,
           "minChargingCircleRadius" : 0.125,
@@ -397,7 +408,7 @@
           "type" : "turret",
           "base" : {
             "type" : "static",
-            "texture" : "LaserTurret"
+            "texture" : "Tiles/Turret/LaserHead"
           },
           "maxChargingCircleRadius" : 0.5,
           "minChargingCircleRadius" : 0.125,
@@ -420,7 +431,7 @@
           "type" : "turret",
           "base" : {
             "type" : "static",
-            "texture" : "LavaLaserTurret"
+            "texture" : "Tiles/Turret/LavaLaserHead"
           },
           "maxChargingCircleRadius" : 0.5,
           "minChargingCircleRadius" : 0.125,
@@ -440,20 +451,20 @@
     "explosion" : [
       {
         "type" : "animatedOnDeath",
-        "dyingTextureBase" : "Explosion",
+        "dyingTextureBase" : "Tiles/Explosion",
         "duration" : 1,
         "base" : {
           "type" : "static",
-          "texture" : "Explosion/0"
+          "texture" : "Tiles/Explosion/0"
         }
       },
       {
         "type" : "animatedOnDeath",
-        "dyingTextureBase" : "Explosion",
+        "dyingTextureBase" : "Tiles/Explosion",
         "duration" : 1,
         "base" : {
           "type" : "static",
-          "texture" : "Explosion/0"
+          "texture" : "Tiles/Explosion/0"
         }
       }
     ]
@@ -478,13 +489,13 @@
       "aspectFill"
     ]
   },
-  "edgeMaskTextureBase" : "EdgeMask",
+  "edgeMaskTextureBase" : "Tiles/EdgeMask",
   "glossTexture" : "Effects/Gloss",
   "glossyTileViews" : [
     "solid/0",
     "ice/0"
   ],
-  "imagePlaceholderTexture": "ImagePlaceholder",
+  "imagePlaceholderTexture": "Tiles/ImagePlaceholder",
   "entityGrabColors" : {
     "player" : [
       {
@@ -515,7 +526,9 @@
       ""
     ],
     "background" : [
-      "Default"
+      "SolidGreen",
+      "SolidGrey",
+      "Bricks"
     ],
     "overlapSensitiveBackground" : [
       "Default-Off",
@@ -1059,7 +1072,8 @@
   "selectableTypes" : {
     "background" : [
       0,
-      1
+      1,
+      2
     ],
     "overlapSensitiveBackground" : [
       0

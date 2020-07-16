@@ -22,6 +22,8 @@ class PortalSIV: UXCompoundView {
             selectedLocation: subInspector.metadata.relativePathToDestination
         ) { newLocation in
             self.subInspector.metadata = PortalMetadata(relativePathToDestination: newLocation)
+
+            self.regenerateBody()
         }
     }
 }

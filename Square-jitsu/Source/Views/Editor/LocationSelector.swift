@@ -9,9 +9,9 @@ fileprivate let LocationSelectorHeight: CGFloat = 48
 fileprivate let LocationSelectorBackgroundTexture: SKTexture = SKTexture(imageNamed: "UI/LocationSelectorBackground")
 fileprivate let LocationSelectorPressedBackgroundTexture: SKTexture = SKTexture(imageNamed: "UI/LocationSelectorBackgroundPressed")
 fileprivate let LocationSelectorBackgroundCenterRect: CGRect = CGRect(origin: CGPoint(x: 0.25, y: 0.5), size: CGSize.zero)
-fileprivate let LocationSelectorPadding: CGFloat = 4
+fileprivate let LocationSelectorPadding: CGFloat = 15
 fileprivate let LocationSelectorFontName: String = Label.fontName
-fileprivate let LocationSelectorFontSize: CGFloat = 24
+fileprivate let LocationSelectorFontSize: CGFloat = 18
 fileprivate let LocationSelectorFontColor: SKColor = Label.fontColor
 
 class LocationSelector<Location: CustomStringConvertible>: UXView {
@@ -61,7 +61,7 @@ class LocationSelector<Location: CustomStringConvertible>: UXView {
         selectedTextNode.fontName = LocationSelectorFontName
         selectedTextNode.fontSize = LocationSelectorFontSize
         selectedTextNode.fontColor = LocationSelectorFontColor
-        selectedTextNode.position = CGPoint(x: LocationSelectorPadding, y: LocationSelectorPadding)
+        selectedTextNode.position = ConvertToUXCoords(point: CGPoint(x: LocationSelectorPadding, y: LocationSelectorPadding))
         selectedTextNode.horizontalAlignmentMode = .left
         selectedTextNode.verticalAlignmentMode = .top
         selectedTextNode.zPosition = 1

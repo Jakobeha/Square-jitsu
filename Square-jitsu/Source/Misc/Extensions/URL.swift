@@ -6,6 +6,12 @@
 import Foundation
 
 extension URL {
+    /// Drops the path components up to and including and app's sandbox directory.
+    /// e.g. "/private/var/mobile/Containers/Data/Application/.../Documents" becomes "Documents"
+    var localPathComponents: ArraySlice<String> {
+        pathComponents.drop { pathComponent in pathComponent != "Application" }.dropFirst(2)
+    }
+
     func appending(relativePath: String) -> URL {
         var result = self
 
@@ -25,20 +31,17 @@ extension URL {
     }
     
     func relativePathTo(url otherUrl: URL) -> String {
-        assert(!isFileURL, "can't get relative path from file to another url")
+        assert(hasDirectoryPath, "can't get relative path from file to another url")
         
-        var myDifferentPathComponents = pathComponents
-        var otherDifferentPathComponents = otherUrl.pathComponents
+        var myDifferentPathComponents = localPathComponents
+        var otherDifferentPathComponents = otherUrl.localPathComponents
         while !myDifferentPathComponents.isEmpty && !otherDifferentPathComponents.isEmpty &&
             myDifferentPathComponents.first! == otherDifferentPathComponents.first! {
-                myDifferentPathComponents.removeFirst()
-                otherDifferentPathComponents.removeFirst()
+            myDifferentPathComponents.removeFirst()
+            otherDifferentPathComponents.removeFirst()
         }
-        
-        if myDifferentPathComponents.isEmpty && otherDifferentPathComponents.isEmpty {
-            return "./"
-        } else {
-            return String(repeating: "../", count: myDifferentPathComponents.count) + otherDifferentPathComponents.joined(separator: "/")
-        }
+
+        return (myDifferentPathComponents.isEmpty ? "./" : String(repeating: "../", count: myDifferentPathComponents.count)) + 
+                otherDifferentPathComponents.joined(separator: "/")
     }
 }

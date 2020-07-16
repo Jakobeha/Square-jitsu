@@ -7,14 +7,36 @@ import UIKit
 
 class LevelItemCollectionViewCell: UICollectionViewCell {
     static let widthHeight: CGFloat = 128
-    
+    private static let iconAlphaWhileBeingCut: CGFloat = 0.5
+
     @IBOutlet private var label: UILabel! = nil
     @IBOutlet private var iconImageView: UIImageView! = nil
+    @IBOutlet private var cutRibbonImageView: UIImageView! = nil
+    @IBOutlet private var copyRibbonImageView: UIImageView! = nil
 
     var levelItem: LevelItem? = nil {
         didSet {
             label.text = levelItem?.label ?? LevelItem.loadingLabel
             iconImageView.image = levelItem?.icon ?? LevelItem.unknownIcon
+        }
+    }
+
+    var clipboardState: LevelItemClipboardState = .none {
+        didSet {
+            switch clipboardState {
+            case .none:
+                cutRibbonImageView.isHidden = true
+                copyRibbonImageView.isHidden = true
+                iconImageView.alpha = 1
+            case .beingCut:
+                cutRibbonImageView.isHidden = false
+                copyRibbonImageView.isHidden = true
+                iconImageView.alpha = LevelItemCollectionViewCell.iconAlphaWhileBeingCut
+            case .beingCopied:
+                cutRibbonImageView.isHidden = true
+                copyRibbonImageView.isHidden = false
+                iconImageView.alpha = 1
+            }
         }
     }
 
@@ -39,5 +61,6 @@ class LevelItemCollectionViewCell: UICollectionViewCell {
 
         levelItem = nil
         isHighlighted = false
+        clipboardState = .none
     }
 }

@@ -6,8 +6,8 @@
 import SpriteKit
 
 final class TurretInspector: SubInspector {
-    private let tiles: [TileAtPosition]
-    private let world: ReadonlyStatelessWorld
+    var tiles: [TileAtPosition]
+    let world: ReadonlyStatelessWorld
     private weak var delegate: EditorToolsDelegate? = nil
     private let undoManager: UndoManager
 
@@ -40,6 +40,7 @@ final class TurretInspector: SubInspector {
         delegate?.setInitialTurretDirections(
             to: zip(initialTurretDirections, tiles.map { tileAtPosition in tileAtPosition.position })
         )
+        reloadTiles()
         updateInitialTurretDirections()
 
         undoManager.registerUndo(withTarget: self) { this in

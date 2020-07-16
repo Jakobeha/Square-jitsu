@@ -7,7 +7,7 @@ import Foundation
 
 /// Abstract class - override isTileConnectableToCorner and isTileConnectedToCorner
 class CornerBasedOrientationInspector: SubInspector {
-    private var tiles: [TileAtPosition]
+    var tiles: [TileAtPosition]
     let world: ReadonlyStatelessWorld
     private weak var delegate: EditorToolsDelegate? = nil
     private let undoManager: UndoManager
@@ -31,12 +31,11 @@ class CornerBasedOrientationInspector: SubInspector {
         let tilesToChange = tilesConnectableToCorner[corner]
         if areTilesAlreadyConnected {
             delegate?.disconnectTilesToCorner(tiles: tilesToChange, corner: corner)
-
         } else {
             delegate?.connectTilesToCorner(tiles: tilesToChange, corner: corner)
         }
 
-        tiles = tiles.map(world.getUpdatedTileAtPosition)
+        reloadTiles()
         updateConnectedTileInfo()
 
         undoManager.registerUndo(withTarget: self) { this in
