@@ -1,7 +1,4 @@
 //
-//  GameScene.swift
-//  Square-jitsu
-//
 //  Created by Jakob Hain on 5/2/20.
 //  Copyright © 2020 Jakobeha. All rights reserved.
 //

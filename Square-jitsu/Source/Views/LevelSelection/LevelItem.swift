@@ -42,6 +42,39 @@ enum LevelItem {
         }
     }
 
+    var canBeRenamed: Bool {
+        switch self {
+        case .newFolder, .newLevel, .upDirectory:
+            return false
+        case .folder(name: _, url: _), .level(name: _, url: _):
+            return true
+        }
+    }
+
+    /// Returns the same item as this one except its label is renamed.
+    /// Raises a fatal error if the level item can't be renamed
+    func renamedTo(newName: String) -> LevelItem {
+        switch self {
+        case .newFolder, .newLevel, .upDirectory:
+            fatalError("tried to rename level item which can't be renamed: \(self)")
+        case .folder(name: _, let url):
+            return .folder(
+                name: newName,
+                url: url
+                    .deletingLastPathComponent()
+                    .appendingPathComponent(newName, isDirectory: true)
+            )
+        case .level(name: _, let url):
+            return .level(
+                name: newName,
+                url: url
+                    .deletingLastPathComponent()
+                    .appendingPathComponent(newName, isDirectory: false)
+                    .appendingPathExtension(url.pathExtension)
+            )
+        }
+    }
+
     private var shortImageName: String {
         switch self {
         case .newFolder:

@@ -54,7 +54,15 @@
                                             <rect key="frame" x="64" y="0.0" width="64" height="64"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="128" translatesAutoresizingMaskIntoConstraints="NO" id="1tw-Mp-cTJ">
+                                        <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Loading..." textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4e7-ae-aVK">
+                                            <rect key="frame" x="0.0" y="100" width="128" height="23"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            <gestureRecognizers/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" type="italicSystem" pointSize="16"/>
+                                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                        </textField>
+                                        <label opaque="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="128" translatesAutoresizingMaskIntoConstraints="NO" id="1tw-Mp-cTJ">
                                             <rect key="frame" x="0.0" y="100" width="128" height="23"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -62,13 +70,16 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
+                                    <gestureRecognizers/>
                                 </collectionViewCellContentView>
+                                <gestureRecognizers/>
                                 <connections>
                                     <outlet property="backgroundView" destination="3TP-Zh-DgW" id="QHM-G3-viq"/>
                                     <outlet property="copyRibbonImageView" destination="uUG-pN-hJc" id="Iae-B8-D1k"/>
                                     <outlet property="cutRibbonImageView" destination="mr3-BE-x5u" id="f41-o9-OUa"/>
                                     <outlet property="iconImageView" destination="snP-Yo-g58" id="o9a-1p-kCI"/>
                                     <outlet property="label" destination="1tw-Mp-cTJ" id="jFb-CO-7I4"/>
+                                    <outlet property="renameTextField" destination="4e7-ae-aVK" id="aOz-56-a52"/>
                                     <outlet property="selectedBackgroundView" destination="mZd-tC-ga9" id="jjF-c3-aZd"/>
                                 </connections>
                             </collectionViewCell>
@@ -92,7 +103,8 @@
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
                     <connections>
-                        <outlet property="pasteButtonItem" destination="bDE-Cf-2KO" id="rFV-Yu-ERr"/>
+                        <outlet property="cancelButton" destination="rsv-Yz-vCY" id="Uku-OE-EZ9"/>
+                        <outlet property="pasteButton" destination="bDE-Cf-2KO" id="rFV-Yu-ERr"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Fp5-SB-ddg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

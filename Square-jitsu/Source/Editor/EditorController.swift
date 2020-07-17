@@ -33,17 +33,25 @@ class EditorController: WorldConduit {
 
     func loadTestWorld() {
         // try! FileManager.default.removeItem(at: EditorController.testWorldUrl)
-        load(worldUrl: EditorController.testWorldUrl)
+        load(worldUrl: EditorController.testWorldUrl) { result in
+            switch result {
+            case .failure(let error):
+                self.displayError(error, context: "loading world")
+            case .success(()):
+                break
+            }
+        }
     }
 
     // region loading and unloading
-    func load(worldUrl: URL) {
+    func load(worldUrl: URL, completionHandler: @escaping (Result<(), WorldFileSyncError>) -> ()) {
         let document = WorldDocument(fileURL: worldUrl)
         document.open { succeeded in
             if succeeded {
                 self.load(worldDocument: document)
+                completionHandler(.success(()))
             } else {
-                self.displayError(WorldFileSyncError(action: "reading", error: nil), context: "loading world")
+                completionHandler(.failure(WorldFileSyncError(action: "reading", error: nil)))
             }
         }
     }
@@ -97,7 +105,14 @@ class EditorController: WorldConduit {
                     break
                 case .ok:
                     let destinationUrl = loaded.worldUrl.appending(relativePath: relativePath)
-                    self.load(worldUrl: destinationUrl)
+                    self.load(worldUrl: destinationUrl) { result in
+                        switch result {
+                        case .failure(let error):
+                            self.displayError(error, context: "loading world to teleport to")
+                        case .success(()):
+                            break
+                        }
+                    }
                 }
             })
         } else {

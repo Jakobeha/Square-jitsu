@@ -23,7 +23,7 @@ class Alert: EmptyBlockingOverlay {
 
     func selectOption(index: Int) {
         let selectedOption = options[index]
-        action(selectedOption)
         dismissIfVisible()
+        action(selectedOption)
     }
 }

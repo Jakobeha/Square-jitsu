@@ -95,6 +95,6 @@ class AlertView: UXView, OverlayView {
     }
 
     func set(scene: SJScene) {
-        node.position = (scene.size / 2).toPoint
+        node.position = ConvertToUXCoords(size: scene.size / 2).toPoint
     }
 }

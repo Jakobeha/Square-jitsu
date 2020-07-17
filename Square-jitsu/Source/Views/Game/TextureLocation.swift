@@ -10,7 +10,7 @@ enum TextureLocation: Decodable, Encodable, LosslessStringConvertible {
     case atUrl(URL, downloaded: UIImage)
     case embeddedUiImage(UIImage)
 
-    static let missing: TextureLocation = .builtin(name: "Missing")
+    static let missing: TextureLocation = .builtin(name: "Misc/Missing")
 
     private static let pngDataHeader: String = "data:png;base64,"
 

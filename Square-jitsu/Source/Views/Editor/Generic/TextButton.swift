@@ -56,7 +56,7 @@ class TextButton: UXView {
         textNode.fontColor = TextButton.fontColor
         textNode.horizontalAlignmentMode = .center
         textNode.verticalAlignmentMode = .center
-        textNode.position = (size / 2).toPoint
+        textNode.position = ConvertToUXCoords(size: size / 2).toPoint
         textNode.alpha = isEnabled ? 1 : Button.disabledForegroundAlpha
         textNode.zPosition = 2
         buttonNode = ButtonNode(size: size)

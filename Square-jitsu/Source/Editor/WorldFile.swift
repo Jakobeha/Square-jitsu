@@ -8,13 +8,15 @@ import Foundation
 /// API for reading and writing a world to a file. `SerialWorld` is the implementation.
 /// Currently mostly a wrapper for SerialWorld but in the future it might support not having to read the entire file
 class WorldFile: WritableStatelessWorld, CustomStringConvertible {
-    static let rootDirectoryUrl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    // We need to resolve symlinks to compare urls easier,
+    // because for some reason the URLs we get pseudo-randomly alternate between "/var/..." and "/private/var/..."
+    static let rootDirectoryUrl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.resolvingSymlinksInPath()
     static let fileExtension: String = "squarejitsu"
 
     static func localUrl(baseName: String) -> URL {
         rootDirectoryUrl.appendingPathComponent("\(baseName).\(fileExtension)")
     }
-
+    
     var url: URL
     private var readHandle: FileHandle
     private let isMutable: Bool

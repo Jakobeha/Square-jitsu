@@ -6,7 +6,7 @@
 import SpriteKit
 
 class TextureSetting: SerialSetting {
-    private var textureName: String = "Missing" {
+    private var textureName: String = "Misc/Missing" {
         didSet {
             texture = SKTexture(imageNamed: textureName)
         }

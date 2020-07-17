@@ -9,7 +9,29 @@ extension URL {
     /// Drops the path components up to and including and app's sandbox directory.
     /// e.g. "/private/var/mobile/Containers/Data/Application/.../Documents" becomes "Documents"
     var localPathComponents: ArraySlice<String> {
-        pathComponents.drop { pathComponent in pathComponent != "Application" }.dropFirst(2)
+        assert(isFileURL)
+        return pathComponents.drop { pathComponent in pathComponent != "Application" }.dropFirst(2)
+    }
+
+    /// This URL and all parents except those outside the application's sandbox,
+    /// in order starting with this one
+    var localAncestors: [URL] {
+        assert(isFileURL)
+        return (0..<localPathComponents.count).map(self.deletingLastPathComponents)
+    }
+
+    /// Deletes the last `n` path components
+    mutating func deleteLastPathComponents(_ n: Int) {
+        for _ in 0..<n {
+            deleteLastPathComponent()
+        }
+    }
+
+    /// Deletes the last `n` path components
+    func deletingLastPathComponents(_ n: Int) -> URL {
+        var result = self
+        result.deleteLastPathComponents(n)
+        return result
     }
 
     func appending(relativePath: String) -> URL {
@@ -33,8 +55,8 @@ extension URL {
     func relativePathTo(url otherUrl: URL) -> String {
         assert(hasDirectoryPath, "can't get relative path from file to another url")
         
-        var myDifferentPathComponents = localPathComponents
-        var otherDifferentPathComponents = otherUrl.localPathComponents
+        var myDifferentPathComponents = resolvingSymlinksInPath().pathComponents
+        var otherDifferentPathComponents = otherUrl.resolvingSymlinksInPath().pathComponents
         while !myDifferentPathComponents.isEmpty && !otherDifferentPathComponents.isEmpty &&
             myDifferentPathComponents.first! == otherDifferentPathComponents.first! {
             myDifferentPathComponents.removeFirst()

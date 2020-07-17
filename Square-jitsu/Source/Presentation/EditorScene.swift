@@ -1,7 +1,4 @@
 //
-//  GameScene.swift
-//  Square-jitsu
-//
 //  Created by Jakob Hain on 5/2/20.
 //  Copyright © 2020 Jakobeha. All rights reserved.
 //
@@ -10,11 +7,7 @@ import SpriteKit
 
 class EditorScene: SJScene {
     private let settings: UserSettings = UserSettings()
-    override var size: CGSize {
-        didSet { settings.screenSize = size }
-    }
-
-    private var editorController: EditorController? {
+    private(set) var editorController: EditorController! {
         willSet {
             if editorController != nil {
                 fatalError("worldController shouldn't be set twice")
@@ -22,24 +15,30 @@ class EditorScene: SJScene {
         }
     }
 
+    override var size: CGSize {
+        didSet { settings.screenSize = size }
+    }
+
     private var loadedEditor: Editor? {
-        editorController?.loaded?.editor
+        editorController.loaded?.editor
     }
 
     private var loadedWorld: World? {
-        editorController?.loaded?.world
+        editorController.loaded?.world
     }
 
-    override func sceneDidLoad() {
-        super.sceneDidLoad()
-        settings.screenSize = size
-
+    override init(size: CGSize) {
+        super.init(size: size)
         editorController = EditorController(userSettings: settings, parent: self)
-        editorController!.loadTestWorld()
+        settings.screenSize = size
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("EditorScene can't be encoded or decoded")
     }
 
     override func update(_ currentTime: TimeInterval) {
-        editorController?.update(currentTime)
+        editorController.update(currentTime)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

@@ -17,7 +17,7 @@ func WorldLocationSelector(
         selectionOptions: [
             LocationSelector.SelectionOption(label: "Local") { selectLocation, parentController in
                 do {
-                    let levelSelector = try LevelPickerViewController.new(initialUrl: currentWorldUrl.deletingLastPathComponent()) { levelUrl in
+                    let levelSelector = try LevelPickerViewController.new(initialUrl: currentWorldUrl.deletingLastPathComponent(), canCancel: true) { levelUrl in
                         let relativePath = currentWorldUrl.deletingLastPathComponent().relativePathTo(url: levelUrl)
                         selectAction(relativePath)
                     }

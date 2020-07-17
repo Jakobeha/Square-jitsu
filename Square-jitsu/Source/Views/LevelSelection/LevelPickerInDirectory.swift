@@ -26,7 +26,9 @@ class LevelPickerInDirectory {
     private(set) var levelItems: [LevelItem]!
 
     init(url: URL) throws {
-        self.url = url
+        // We need to resolve symlinks to compare urls easier,
+        // because for some reason the URLs we get pseudo-randomly alternate between "/var/..." and "/private/var/..."
+        self.url = url.resolvingSymlinksInPath()
 
         try reload()
     }

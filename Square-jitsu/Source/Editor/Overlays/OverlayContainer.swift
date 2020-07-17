@@ -9,9 +9,9 @@ class OverlayContainer {
     private(set) var overlays: [Overlay] = []
 
     private let _didPresentOverlay: Publisher<()> = Publisher()
-    private let _didDismissOverlay: Publisher<()> = Publisher()
+    private let _didDismissOverlay: Publisher<Int> = Publisher()
     var didPresentOverlay: Observable<()> { Observable(publisher: _didPresentOverlay) }
-    var didDismissOverlay: Observable<()> { Observable(publisher: _didDismissOverlay) }
+    var didDismissOverlay: Observable<Int> { Observable(publisher: _didDismissOverlay) }
 
     var preventTouchPropagation: Bool {
         overlays.contains { overlays in overlays.preventTouchPropagation }
@@ -23,12 +23,14 @@ class OverlayContainer {
     }
 
     func dismiss(_ overlay: Overlay) {
-        let overlayIndex = overlays.firstIndex { anOverlay in
+        guard let overlayIndex = overlays.firstIndex(where: { anOverlay in
             overlay === anOverlay
+        }) else {
+            fatalError("tried to dismiss overlay which isn't in the container: \(overlay)")
         }
-        assert(overlayIndex != nil, "tried to dismiss overlay which isn't in the container: \(overlay)")
-        overlays.remove(at: overlayIndex!)
-        _didDismissOverlay.publish()
+
+        overlays.remove(at: overlayIndex)
+        _didDismissOverlay.publish(overlayIndex)
     }
 
     // region touch forwarding

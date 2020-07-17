@@ -17,19 +17,21 @@ class OverlayContainerView: UXCompoundView {
         super.init()
 
         overlayContainer.didPresentOverlay.subscribe(observer: self, priority: .view, handler: regenerateBody)
-        overlayContainer.didDismissOverlay.subscribe(observer: self, priority: .view, handler: regenerateBody)
+        overlayContainer.didDismissOverlay.subscribe(observer: self, priority: .view) { dismissedIndex in
+            self.regenerateBody()
+        }
     }
 
     override func newBody() -> UXView {
         var views: [UXView] = getOverlayViews()
         if overlayContainer.preventTouchPropagation {
             let dimView = DimView()
-            views.insert(dimView, at: 0)
+            views.append(dimView)
         }
         return ZStack(views, topLeft: ConvertToUXCoords(size: sceneSize / 2).toPoint)
     }
 
     private func getOverlayViews() -> [OverlayView] {
-        overlayContainer.overlays.map(NewOverlayView)
+        overlayContainer.overlays.reversed().map(NewOverlayView)
     }
 }

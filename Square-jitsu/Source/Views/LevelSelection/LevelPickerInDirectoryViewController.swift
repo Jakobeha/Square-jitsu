@@ -5,35 +5,68 @@
 
 import UIKit
 
-class LevelPickerInDirectoryViewController: UICollectionViewController {
+class LevelPickerInDirectoryViewController: UICollectionViewController, LevelItemCollectionViewCellDelegate, UIViewControllerPreviewingDelegate {
     private static let storyboard = getDefaultStoryboard()
 
     private static let standardBackgroundColor: UIColor = UIColor(white: 0.125, alpha: 1)
     private static let editingBackgroundColor: UIColor = UIColor(white: 0.5, alpha: 1)
+    private static let errorPreviewViewController: UIViewController = LevelPreviewViewController.new(preview: WorldFilePreview.missingOrCorrupted)
 
-    static func new(model: LevelPickerInDirectory, delegate: LevelPickerInDirectoryDelegate?) -> LevelPickerInDirectoryViewController {
+    static func new(model: LevelPickerInDirectory, state: LevelPickerState, canCancel: Bool, delegate: LevelPickerInDirectoryDelegate?) -> LevelPickerInDirectoryViewController {
         let controller = storyboard.instantiateInitialViewController() as! LevelPickerInDirectoryViewController
+        controller.canCancel = canCancel
         // delegate set first in order to update cells better
         controller.delegate = delegate
+        controller.state = state
         controller.model = model
         return controller
+    }
+
+    var canCancel: Bool = true {
+        didSet {
+            updateCancelButton()
+        }
     }
 
     weak var delegate: LevelPickerInDirectoryDelegate? = nil {
         didSet {
             if model != nil {
-                updateSelectedCells()
+                updateSelectedCells(animated: false)
             }
         }
     }
 
     var state: LevelPickerState = .pick {
         didSet {
+            // Need to update some stuff even if model == nil,
+            // and nothing will be broken in that scenario,
+            // so no model != nil check
             updateIsEditing()
             updateEditButtonTitle()
-            updateSelectedCells()
+            updateSelectedCells(animated: true)
             updatePasteButton()
             updateCellsInClipboard()
+        }
+    }
+
+    private var urlBeingRenamed: URL? = nil {
+        willSet {
+            if urlBeingRenamed != nil {
+                if let cell = (collectionView.visibleCells as! [LevelItemCollectionViewCell]).first(where: { cell in
+                    cell.levelItem!.url == urlBeingRenamed
+                }) {
+                    cell.isRenaming = false
+                }
+            }
+        }
+        didSet {
+            if urlBeingRenamed != nil {
+                if let cell = (collectionView.visibleCells as! [LevelItemCollectionViewCell]).first(where: { cell in
+                    cell.levelItem!.url == urlBeingRenamed
+                }) {
+                    cell.isRenaming = true
+                }
+            }
         }
     }
 
@@ -44,7 +77,8 @@ class LevelPickerInDirectoryViewController: UICollectionViewController {
         }
     }
 
-    @IBOutlet private var pasteButtonItem: UIBarButtonItem! = nil
+    @IBOutlet private var cancelButton: UIBarButtonItem! = nil
+    @IBOutlet private var pasteButton: UIBarButtonItem! = nil
 
     private func tap(levelItem: LevelItem, select: Bool) {
         guard let delegate = delegate else {
@@ -58,9 +92,18 @@ class LevelPickerInDirectoryViewController: UICollectionViewController {
         case .newLevel:
             initiateCreateNewLevel()
         case .upDirectory:
-            delegate.moveUpDirectory()
+            delegate.moveUpDirectory(animated: true)
         case .folder(name: _, let url):
-            delegate.moveInto(levelFolder: LevelFolder(url: url))
+            if state.isEditing {
+                if select {
+                    delegate.select(url: url)
+                } else {
+                    delegate.deselect(url: url)
+                    delegate.moveInto(levelFolder: LevelFolder(url: url), animated: true)
+                }
+            } else {
+                delegate.moveInto(levelFolder: LevelFolder(url: url), animated: true)
+            }
         case .level(name: _, let url):
             if state.isEditing {
                 if select {
@@ -69,18 +112,36 @@ class LevelPickerInDirectoryViewController: UICollectionViewController {
                     delegate.deselect(url: url)
                 }
             } else {
-                delegate.pick(level: Level(url: url))
+                delegate.pick(level: Level(url: url), animated: true)
             }
         }
     }
-    
+
+    private func forceTap(levelItem: LevelItem, animated: Bool) {
+        guard let delegate = delegate else {
+            Logger.warn("no delegate assigned to level selector")
+            return
+        }
+
+        switch levelItem {
+        case .newFolder, .newLevel:
+            fatalError("can't force-tap new folder or new level actions because they don't create a 3d touch preview")
+        case .upDirectory:
+            delegate.moveUpDirectory(animated: animated)
+        case .folder(name: _, let url):
+            delegate.moveInto(levelFolder: LevelFolder(url: url), animated: animated)
+        case .level(name: _, let url):
+            delegate.pick(level: Level(url: url), animated: animated)
+        }
+    }
+
     @IBAction func cancel() {
         guard let delegate = delegate else {
             Logger.warn("no delegate assigned to level selector")
             return
         }
 
-        delegate.cancelPick()
+        delegate.cancelPick(animated: true)
     }
 
     @IBAction func paste() {
@@ -229,10 +290,38 @@ class LevelPickerInDirectoryViewController: UICollectionViewController {
         editButtonItem.possibleTitles = ["Select", "Edit", "Done"]
         editButtonItem.action = #selector(toggleEditing)
         updateEditButtonTitle()
+
+        if traitCollection.forceTouchCapability == .available {
+            registerForPreviewing(with: self, sourceView: collectionView)
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // Reload the model just in case it changed from last appearance
+        // (sometimes, but not always, happens)
+        do {
+            try model?.reload()
+        } catch {
+            Logger.warn("level picker failed to reload model")
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // There's a bug where if we don't call this,
+        // cells which should be selected won't be until we scroll
+        updateSelectedCells(animated: false)
     }
 
     private func updateTitle() {
         navigationItem.title = model?.url.lastPathComponent ?? "Loading..."
+    }
+
+    private func updateCancelButton() {
+        navigationItem.leftBarButtonItem = canCancel ? cancelButton : nil
     }
 
     // region collection view data source
@@ -254,11 +343,13 @@ class LevelPickerInDirectoryViewController: UICollectionViewController {
         let levelItem = model!.levelItems[indexPath.item]
         // Reuse identifier is hardcoded but it's also so in IB, so a constant wouldn't help
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "LevelItem", for: indexPath) as! LevelItemCollectionViewCell
+        cell.delegate = self
         cell.levelItem = levelItem
         if isLevelItemSelected(levelItem) {
             collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
         }
         cell.clipboardState = state.clipboard.getStateOf(levelItem: levelItem)
+        cell.isRenaming = urlBeingRenamed != nil && urlBeingRenamed == levelItem.url
         return cell
     }
     // endregion
@@ -285,6 +376,138 @@ class LevelPickerInDirectoryViewController: UICollectionViewController {
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
         }
     }
+    // endregion
+    
+    // region collection view cell delegate
+    func startRenaming(levelItem: LevelItem) {
+        assert(levelItem.canBeRenamed)
+        urlBeingRenamed = levelItem.url!
+    }
+
+    func rename(cell: LevelItemCollectionViewCell, newName: String) {
+        urlBeingRenamed = nil
+
+        let oldLevelItem = cell.levelItem!
+        if oldLevelItem.label != newName {
+            do {
+                let newLevelItem = oldLevelItem.renamedTo(newName: newName)
+
+                let oldUrl = oldLevelItem.url!
+                let newUrl = newLevelItem.url!
+
+                // Actually rename in the file system
+                try FileManager.default.moveItem(at: oldUrl, to: newUrl)
+
+                // Update the cell's name
+                cell.levelItem = newLevelItem
+            } catch {
+                let errorAlert = UIAlertController(title: "Error renaming \(oldLevelItem.label) to \(newName)", message: error.localizedDescription, preferredStyle: .alert)
+                errorAlert.addAction(UIAlertAction(title: "Continue", style: .default))
+                present(errorAlert, animated: true)
+            }
+        }
+    }
+    // endregion
+
+    // region 3d touch previewing
+    // Derived from https://stackoverflow.com/questions/51781903/3d-touch-registerforpreviewing-in-uicollectionviewcell
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        if let indexPath = collectionView.indexPathForItem(at: location),
+           let cell = collectionView.cellForItem(at: indexPath) as! LevelItemCollectionViewCell?,
+           hasPreviewFor(levelItem: cell.levelItem!) {
+            let levelItem = cell.levelItem!
+            let previewContentViewController = getPreviewViewControllerFor(levelItem: levelItem)
+            let previewViewController = LevelItemPreviewViewController.new(content: previewContentViewController, levelItem: levelItem)
+            previewViewController.previewActionItems = getPreviewActionItemsFor(levelItem: levelItem)
+            previewingContext.sourceRect = cell.frame
+            return previewViewController
+        } else {
+            return nil
+        }
+    }
+
+    private func hasPreviewFor(levelItem: LevelItem) -> Bool {
+        switch levelItem {
+        case .newFolder, .newLevel:
+            return false
+        case .upDirectory, .folder(name: _, url: _), .level(name: _, url: _):
+            return true
+        }
+    }
+
+    private func getPreviewViewControllerFor(levelItem: LevelItem) -> UIViewController {
+        guard let model = model else {
+            fatalError("level picker in directory tried to preview without model")
+        }
+
+        do {
+            switch levelItem {
+            case .newFolder, .newLevel:
+                fatalError("level item's type doesn't have a preview: \(levelItem)")
+            case .upDirectory:
+                let levelPickerInUpDirectory = try LevelPickerInDirectory(url: model.url.deletingLastPathComponent())
+                return LevelPickerInDirectoryViewController.new(model: levelPickerInUpDirectory, state: state, canCancel: canCancel, delegate: delegate)
+            case .folder(name: _, let url):
+                let levelPickerInFolder = try LevelPickerInDirectory(url: url)
+                return LevelPickerInDirectoryViewController.new(model: levelPickerInFolder, state: state, canCancel: canCancel, delegate: delegate)
+            case .level(name: _, let url):
+                let preview: UIImage
+                do {
+                    preview = try WorldFilePreview.readPreviewAt(url: url)
+                } catch {
+                    Logger.warn("failed to get preview for level at url '\(url)': \(error.localizedDescription)")
+                    preview = WorldFilePreview.missingOrCorrupted
+                }
+                return LevelPreviewViewController.new(preview: preview)
+            }
+        } catch {
+            Logger.warn("level picker in directory couldn't fetch data to preview \(levelItem): \(error.localizedDescription)")
+            return LevelPickerInDirectoryViewController.errorPreviewViewController
+        }
+    }
+
+    private func getPreviewActionItemsFor(levelItem: LevelItem) -> [UIPreviewActionItem] {
+        switch levelItem {
+        case .newFolder, .newLevel:
+            fatalError("level item's type doesn't have a preview: \(levelItem)")
+        case .upDirectory:
+            return [
+                UIPreviewAction(title: "Go Up", style: .selected) { _, _ in
+                    self.forceTap(levelItem: levelItem, animated: true)
+                }
+            ]
+        case .folder(name: _, let url):
+            return getPreviewActionItemsFor(levelItem: levelItem, url: url)
+        case .level(name: _, let url):
+            return getPreviewActionItemsFor(levelItem: levelItem, url: url)
+        }
+    }
+
+    private func getPreviewActionItemsFor(levelItem: LevelItem, url: URL) -> [UIPreviewActionItem] {
+        guard let delegate = delegate else {
+            Logger.warn("level picker in directory tried to get preview actions but it doesn't have a delegate, so it can't really perform any")
+            return []
+        }
+
+        return [
+            UIPreviewAction(title: "Open", style: .default) { _, _ in
+                self.forceTap(levelItem: levelItem, animated: true)
+            },
+            UIPreviewAction(title: "Rename", style: .default) { _, _ in
+                self.setupRenameFor(url: url)
+            },
+            UIPreviewAction(title: "Delete", style: .destructive) { _, _ in
+                delegate.delete(url: url)
+            }
+        ]
+    }
+
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        let previewViewController = viewControllerToCommit as! LevelItemPreviewViewController
+        let levelItem = previewViewController.levelItem
+        forceTap(levelItem: levelItem, animated: false)
+    }
+
     // endregion
 
     // region editing
@@ -343,15 +566,15 @@ class LevelPickerInDirectoryViewController: UICollectionViewController {
         }
     }
 
-    private func updateSelectedCells() {
+    private func updateSelectedCells(animated: Bool) {
         for indexPath in collectionView.indexPathsForVisibleItems {
             if let cell = collectionView.cellForItem(at: indexPath) as! LevelItemCollectionViewCell? {
                 let levelItem = cell.levelItem!
                 let shouldBeSelected = isLevelItemSelected(levelItem)
                 if shouldBeSelected && !cell.isSelected {
-                    collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+                    collectionView.selectItem(at: indexPath, animated: animated, scrollPosition: [])
                 } else if !shouldBeSelected && cell.isSelected {
-                    collectionView.deselectItem(at: indexPath, animated: true)
+                    collectionView.deselectItem(at: indexPath, animated: animated)
                 }
             }
         }
@@ -366,7 +589,7 @@ class LevelPickerInDirectoryViewController: UICollectionViewController {
         navigationItem.rightBarButtonItems =
                 state.clipboard.isEmpty ?
                 [editButtonItem] :
-                [editButtonItem, pasteButtonItem]
+                [editButtonItem, pasteButton]
     }
 
     private func updateCellsInClipboard() {
@@ -374,6 +597,12 @@ class LevelPickerInDirectoryViewController: UICollectionViewController {
             let levelItem = cell.levelItem!
             cell.clipboardState = state.clipboard.getStateOf(levelItem: levelItem)
         }
+    }
+    // endregion
+
+    // region renaming
+    func setupRenameFor(url: URL) {
+        urlBeingRenamed = url
     }
     // endregion
     // endregion

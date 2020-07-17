@@ -8,21 +8,33 @@ import UIKit
 class LevelPickerViewController: UINavigationController, LevelPickerInDirectoryDelegate {
     private static let storyboard = getDefaultStoryboard()
 
-    static func new(initialUrl: URL, onSelect: @escaping (URL) -> ()) throws -> LevelPickerViewController {
+    static func new(initialUrl: URL, canCancel: Bool, onSelect: @escaping (URL) -> ()) throws -> LevelPickerViewController {
         let controller = storyboard.instantiateInitialViewController() as! LevelPickerViewController
+        controller.canCancel = canCancel
         try controller.set(url: initialUrl)
         controller.onPick = onSelect
         return controller
     }
 
+    var canCancel: Bool = true {
+        didSet {
+            for levelPickerInDirectoryViewController in levelPickerInDirectoryViewControllers {
+                levelPickerInDirectoryViewController.canCancel = canCancel
+            }
+        }
+    }
     var onPick: ((URL) -> ())? = nil
+
+    private var levelPickerInDirectoryViewControllers: [LevelPickerInDirectoryViewController] {
+        viewControllers.compactMap { viewController in
+            viewController as? LevelPickerInDirectoryViewController
+        }
+    }
 
     private var state: LevelPickerState = .pick {
         didSet {
-            for viewController in viewControllers {
-                if let levelPickerInDirectoryViewController = viewController as? LevelPickerInDirectoryViewController {
-                    levelPickerInDirectoryViewController.state = state
-                }
+            for levelPickerInDirectoryViewController in levelPickerInDirectoryViewControllers {
+                levelPickerInDirectoryViewController.state = state
             }
         }
     }
@@ -33,28 +45,27 @@ class LevelPickerViewController: UINavigationController, LevelPickerInDirectoryD
     }
 
     private func getViewControllersFor(url: URL) throws -> [LevelPickerInDirectoryViewController] {
-        try LevelPickerInDirectory.listFromRootUntil(url: url).map { levelSelectorInDirectory in
-            let viewController = LevelPickerInDirectoryViewController.new(model: levelSelectorInDirectory, delegate: self)
-            viewController.state = state
-            return viewController
-        }
+        try LevelPickerInDirectory.listFromRootUntil(url: url).map(newLevelPickerInDirectoryViewController)
+    }
+
+    private func newLevelPickerInDirectoryViewController(model: LevelPickerInDirectory) -> LevelPickerInDirectoryViewController {
+        LevelPickerInDirectoryViewController.new(model: model, state: state, canCancel: canCancel, delegate: self)
     }
 
     // region level selector in directory delegate
-    func cancelPick() {
-        dismiss(animated: true)
+    func cancelPick(animated: Bool) {
+        dismiss(animated: animated)
     }
     
-    func moveUpDirectory() {
-        popViewController(animated: true)
+    func moveUpDirectory(animated: Bool) {
+        popViewController(animated: animated)
     }
 
-    func moveInto(levelFolder: LevelFolder) {
+    func moveInto(levelFolder: LevelFolder, animated: Bool) {
         do {
             let levelFolderPicker = try LevelPickerInDirectory(url: levelFolder.url)
-            let levelFolderViewController = LevelPickerInDirectoryViewController.new(model: levelFolderPicker, delegate: self)
-            levelFolderViewController.state = state
-            pushViewController(levelFolderViewController, animated: true)
+            let levelFolderViewController = newLevelPickerInDirectoryViewController(model: levelFolderPicker)
+            pushViewController(levelFolderViewController, animated: animated)
         } catch {
             let errorAlert = UIAlertController(title: "Error opening folder '\(levelFolder.name)", message: error.localizedDescription, preferredStyle: .alert)
             errorAlert.addAction(UIAlertAction(title: "Continue", style: .default))
@@ -62,9 +73,9 @@ class LevelPickerViewController: UINavigationController, LevelPickerInDirectoryD
         }
     }
 
-    func pick(level: Level) {
+    func pick(level: Level, animated: Bool) {
         onPick?(level.url)
-        dismiss(animated: true)
+        dismiss(animated: animated)
     }
 
     // region edit toggle
@@ -87,7 +98,7 @@ class LevelPickerViewController: UINavigationController, LevelPickerInDirectoryD
     // region edit actions
     func completeEditing() {
         assert(state.isEditing)
-        let selectedUrls = state.selectedUrls
+        let selectedUrls = state.selectedUrls.coalesced
 
         if selectedUrls.isEmpty {
             state = .pick
@@ -117,6 +128,19 @@ class LevelPickerViewController: UINavigationController, LevelPickerInDirectoryD
         state = .edit(selectedUrls: [], clipboard: .cut(urls: urls))
     }
 
+    func delete(url: URL) {
+        state.clipboard.urls.remove(url)
+        let fileManager = FileManager.default
+        do {
+            try fileManager.removeItem(at: url)
+            levelPickerInDirectoryViewControllers.last?.didDelete(urls: [url])
+        } catch {
+            let errorAlert = UIAlertController(title: "Failed to delete file", message: error.localizedDescription, preferredStyle: .alert)
+            errorAlert.addAction(UIAlertAction(title: "Continue", style: .default))
+            present(errorAlert, animated: true)
+        }
+    }
+
     private func delete(urls: Set<URL>) {
         state.clipboard.urls.subtract(urls)
         let fileManager = FileManager.default
@@ -124,9 +148,9 @@ class LevelPickerViewController: UINavigationController, LevelPickerInDirectoryD
             for url in urls {
                 try fileManager.removeItem(at: url)
             }
-            (viewControllers.last! as! LevelPickerInDirectoryViewController).didDelete(urls: urls)
+            levelPickerInDirectoryViewControllers.last?.didDelete(urls: urls)
         } catch {
-            let errorAlert = UIAlertController(title: "Failed to remove all files", message: error.localizedDescription, preferredStyle: .alert)
+            let errorAlert = UIAlertController(title: "Failed to delete all files", message: error.localizedDescription, preferredStyle: .alert)
             errorAlert.addAction(UIAlertAction(title: "Continue", style: .default))
             present(errorAlert, animated: true)
         }
