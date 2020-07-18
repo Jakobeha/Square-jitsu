@@ -21,11 +21,11 @@ class EditorController: WorldConduit {
     private static let testWorldUrl: URL = WorldFile.localUrl(baseName: testWorldFileName)
 
     private let userSettings: UserSettings
-    private let parent: SJScene
+    private weak var parent: EditorScene! = nil
     private let updater: FixedUpdater = FixedUpdater()
     private(set) var loaded: EditorModelView? = nil
 
-    init(userSettings: UserSettings, parent: SJScene) {
+    init(userSettings: UserSettings, parent: EditorScene) {
         self.userSettings = userSettings
         self.parent = parent
         updater.onTick = tick
@@ -97,6 +97,10 @@ class EditorController: WorldConduit {
     }
 
     // region conduit actions
+    func quit() {
+        parent.endGameSession()
+    }
+
     func teleportTo(relativePath: String) {
         if let loaded = loaded {
             loaded.editor.overlays.present(Alert(message: "Open \(relativePath)?", subtext: "The current level will be saved", options: [StandardAlertOption.ok, .cancel]) { selectedOption in
@@ -104,7 +108,8 @@ class EditorController: WorldConduit {
                 case .cancel:
                     break
                 case .ok:
-                    let destinationUrl = loaded.worldUrl.appending(relativePath: relativePath)
+                    loaded.editor.editableWorld.saveToDisk()
+                    let destinationUrl = loaded.worldUrl.deletingLastPathComponent().appending(relativePath: relativePath)
                     self.load(worldUrl: destinationUrl) { result in
                         switch result {
                         case .failure(let error):

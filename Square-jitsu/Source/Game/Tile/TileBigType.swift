@@ -35,7 +35,7 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
     // Entity / tile hybrids (both tile and entity representations are used)
     case turret
 
-    // Explosion - should be last so it's displatyed over everything else
+    // Explosion - should be last so it's displayed over everything else
     case explosion
 
     case image

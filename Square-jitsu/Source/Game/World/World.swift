@@ -8,7 +8,7 @@ import SpriteKit
 class World: ReadonlyWorld {
     private let loader: WorldLoader
     let settings: WorldSettings
-    weak var _conduit: WorldConduit?
+    private weak var _conduit: WorldConduit?
 
     var conduit: WorldConduit {
         _conduit ?? StubWorldConduit()
@@ -36,10 +36,15 @@ class World: ReadonlyWorld {
     // endregion
 
     // region speed
-    var playerInputSpeedMultiplier: CGFloat = 1 {
+    var playerInputSpeedLerp: CGFloat = 0 {
         didSet { redetermineSpeed() }
     }
     private func redetermineSpeed() {
+        let playerInputSpeedMultiplier = CGFloat.lerp(
+            start: 1,
+            end: settings.playerInputSpeedMultiplier,
+            t: playerInputSpeedLerp
+        )
         speed = playerInputSpeedMultiplier
     }
     /// Computed from the speed multipliers (add more for new effects which change speed)
@@ -274,6 +279,7 @@ class World: ReadonlyWorld {
     // endregion
 
     func tick() {
+        playerInput.tick()
         // Tick the camera before entities because we want it to see the previous position
         playerCamera.tick(world: self)
         runActions()

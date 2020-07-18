@@ -11,6 +11,7 @@ class AlertView: UXView, OverlayView {
     private static let size: CGSize = CGSize(width: 256, height: 256)
     private static let backgroundTexture: SKTexture = SKTexture(imageNamed: "UI/AlertBackground")
     private static let backgroundCenterRect: CGRect = CGRect(origin: CGPoint(x: 0.5, y: 0.5), size: CGSize.zero)
+    private static let labelPadding: CGFloat = 8
     private static let labelSpacing: CGFloat = 8
     private static let fontName: String = Label.fontName
     private static let fontSize: CGFloat = Label.fontSize
@@ -20,6 +21,8 @@ class AlertView: UXView, OverlayView {
         labelNode.fontSize = fontSize
         labelNode.fontColor = fontColor
         labelNode.horizontalAlignmentMode = .center
+        labelNode.preferredMaxLayoutWidth = size.width - (labelPadding * 2)
+        labelNode.numberOfLines = 0
         if isSubtext {
             labelNode.fontName = fontName
             labelNode.verticalAlignmentMode = .top

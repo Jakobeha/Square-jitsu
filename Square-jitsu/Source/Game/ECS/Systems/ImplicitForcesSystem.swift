@@ -28,6 +28,9 @@ struct ImplicitForcesSystem: TopLevelSystem {
             if entity.next.accC != nil {
                 accelerate()
             }
+            if entity.next.ac3C != nil {
+                accelerate3()
+            }
         }
     }
 
@@ -69,6 +72,13 @@ struct ImplicitForcesSystem: TopLevelSystem {
     private func accelerate() {
         if entity.next.dynC!.velocity.magnitude > CGFloat.epsilon {
             entity.next.dynC!.velocity.magnitude += entity.next.accC!.acceleration * world.settings.fixedDeltaTime
+        }
+    }
+
+    private func accelerate3() {
+        entity.next.ac3C!.acceleration += entity.next.ac3C!.jerk * world.settings.fixedDeltaTime
+        if entity.next.dynC!.velocity.magnitude > CGFloat.epsilon {
+            entity.next.dynC!.velocity.magnitude += entity.next.ac3C!.acceleration * world.settings.fixedDeltaTime
         }
     }
 

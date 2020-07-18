@@ -15,6 +15,8 @@ import Foundation
 /// Preferably, none of the methods should crash (instead display the issue or log a warning).
 /// Remember that world data can be corrupt, and users can even create invalid worlds using the in-game editor (to an extent)
 protocol WorldConduit: AnyObject {
+    func quit()
+
     func teleportTo(relativePath: String)
     func perform(buttonAction: TileButtonAction)
 }

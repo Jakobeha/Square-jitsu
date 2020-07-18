@@ -59,7 +59,6 @@ class PlayerInput {
     }
     init(userSettings: UserSettings) {
         self.userSettings = userSettings
-        tracker.didUpdateTouches.subscribe(observer: self, priority: .input, handler: tick)
     }
 
     func tick() {
@@ -80,7 +79,12 @@ class PlayerInput {
     }
 
     private func updateWorldSpeed() {
-        world.playerInputSpeedMultiplier = swipes.count == 0 ? 1 : world.settings.playerInputSpeedMultiplier
+        let hasPlayerInput = swipes.count != 0
+        let delta = world.settings.playerInputSpeedFractionChangePerSecond * world.settings.fixedDeltaTime
+        world.playerInputSpeedLerp =
+            hasPlayerInput ?
+            min(world.playerInputSpeedLerp + delta, 1) :
+            max(world.playerInputSpeedLerp - delta, 0)
     }
 
     private func performPrimary(swipe: Swipe, direction: Angle) {

@@ -6,7 +6,16 @@
 import Foundation
 
 class PortalBehavior: EmptyTileBehavior<PortalMetadata> {
+    private var teleported: Bool = false
+
     override func onEntityCollide(entity: Entity, pos: WorldTilePos3D) {
-        entity.world!.conduit.teleportTo(relativePath: metadata.relativePathToDestination)
+        if !teleported {
+            entity.world!.conduit.teleportTo(relativePath: metadata.relativePathToDestination)
+            teleported = true
+        }
+    }
+
+    override func revert(world: World, pos: WorldTilePos3D) {
+        teleported = false
     }
 }

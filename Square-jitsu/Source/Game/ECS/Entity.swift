@@ -16,6 +16,7 @@ class Entity: EqualityIsIdentity {
         var codC: CreateOnDestroyComponent?
         var dynC: MovingComponent?
         var accC: AccelerationComponent?
+        var ac3C: Acceleration3Component?
         var imfC: ImplicitForcesComponent?
         var colC: CollisionComponent?
         var ntlC: NearTileComponent?
@@ -41,6 +42,7 @@ class Entity: EqualityIsIdentity {
                 "codC": CreateOnDestroyComponent.newSetting(),
                 "dynC": MovingComponent.newSetting(),
                 "accC": AccelerationComponent.newSetting(),
+                "ac3C": Acceleration3Component.newSetting(),
                 "colC": CodableStructSetting<CollisionComponent>(),
                 "ntlC": CodableStructSetting<NearTileComponent>(),
                 "imfC": CodableStructSetting<ImplicitForcesComponent>(),
@@ -72,6 +74,7 @@ class Entity: EqualityIsIdentity {
             "codC": ([["locC"]], []),
             "dynC": ([["locC"]], []),
             "accC": ([["dynC"]], []),
+            "ac3C": ([["dynC"]], []),
             "colC": ([["locC", "lilC"]], []),
             "ntlC": ([["locC"]], []),
             "imfC": ([["dynC"], ["locC"]], []),

@@ -38,6 +38,23 @@ extension AINinjaComponent {
         self.targetTypes.encodeDynamically(to: setting.allFieldSettings["targetTypes"]!)
     }
 }
+extension Acceleration3Component {
+    internal init(from setting: StructSetting<Acceleration3Component>) {
+        self.init(
+            jerk: setting.usedFieldSettings["jerk"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<Acceleration3Component>) -> Acceleration3Component {
+        self.init(
+            jerk: setting.usedFieldSettings["jerk"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<Acceleration3Component>) {
+        self.jerk.encodeDynamically(to: setting.allFieldSettings["jerk"]!)
+    }
+}
 extension AccelerationComponent {
     internal init(from setting: StructSetting<AccelerationComponent>) {
         self.init(
@@ -259,6 +276,7 @@ extension Entity.Components {
             codC: setting.usedFieldSettings["codC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             accC: setting.usedFieldSettings["accC"]?.decodeDynamically(),
+            ac3C: setting.usedFieldSettings["ac3C"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
             colC: setting.usedFieldSettings["colC"]?.decodeDynamically(),
             ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
@@ -286,6 +304,7 @@ extension Entity.Components {
             codC: setting.usedFieldSettings["codC"]?.decodeDynamically(),
             dynC: setting.usedFieldSettings["dynC"]?.decodeDynamically(),
             accC: setting.usedFieldSettings["accC"]?.decodeDynamically(),
+            ac3C: setting.usedFieldSettings["ac3C"]?.decodeDynamically(),
             imfC: setting.usedFieldSettings["imfC"]?.decodeDynamically(),
             colC: setting.usedFieldSettings["colC"]?.decodeDynamically(),
             ntlC: setting.usedFieldSettings["ntlC"]?.decodeDynamically(),
@@ -312,6 +331,7 @@ extension Entity.Components {
         self.codC?.encodeDynamically(to: setting.allFieldSettings["codC"]!)
         self.dynC?.encodeDynamically(to: setting.allFieldSettings["dynC"]!)
         self.accC?.encodeDynamically(to: setting.allFieldSettings["accC"]!)
+        self.ac3C?.encodeDynamically(to: setting.allFieldSettings["ac3C"]!)
         self.imfC?.encodeDynamically(to: setting.allFieldSettings["imfC"]!)
         self.colC?.encodeDynamically(to: setting.allFieldSettings["colC"]!)
         self.ntlC?.encodeDynamically(to: setting.allFieldSettings["ntlC"]!)
@@ -518,6 +538,23 @@ extension NinjaComponent {
         self.jumpSpeed.encodeDynamically(to: setting.allFieldSettings["jumpSpeed"]!)
         self.jumpAngularSpeed.encodeDynamically(to: setting.allFieldSettings["jumpAngularSpeed"]!)
         self.minNumJumpsWithoutBackground.encodeDynamically(to: setting.allFieldSettings["minNumJumpsWithoutBackground"]!)
+    }
+}
+extension PersonEntityViewTemplate {
+    internal convenience init(from setting: StructSetting<PersonEntityViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<PersonEntityViewTemplate>) -> PersonEntityViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<PersonEntityViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
     }
 }
 extension PortalMetadata {
@@ -745,6 +782,7 @@ extension WorldSettings {
             amountScreenShakesWhenEntityCollides: setting.usedFieldSettings["amountScreenShakesWhenEntityCollides"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
             playerInputSpeedMultiplier: setting.usedFieldSettings["playerInputSpeedMultiplier"]!.decodeDynamically(),
+            playerInputSpeedFractionChangePerSecond: setting.usedFieldSettings["playerInputSpeedFractionChangePerSecond"]!.decodeDynamically(),
             tileDamage: setting.usedFieldSettings["tileDamage"]!.decodeDynamically(),
             knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
@@ -773,6 +811,7 @@ extension WorldSettings {
             amountScreenShakesWhenEntityCollides: setting.usedFieldSettings["amountScreenShakesWhenEntityCollides"]!.decodeDynamically(),
             tileDescriptions: setting.usedFieldSettings["tileDescriptions"]!.decodeDynamically(),
             playerInputSpeedMultiplier: setting.usedFieldSettings["playerInputSpeedMultiplier"]!.decodeDynamically(),
+            playerInputSpeedFractionChangePerSecond: setting.usedFieldSettings["playerInputSpeedFractionChangePerSecond"]!.decodeDynamically(),
             tileDamage: setting.usedFieldSettings["tileDamage"]!.decodeDynamically(),
             knockback: setting.usedFieldSettings["knockback"]!.decodeDynamically(),
             entityData: setting.usedFieldSettings["entityData"]!.decodeDynamically(),
@@ -800,6 +839,7 @@ extension WorldSettings {
         self.amountScreenShakesWhenEntityCollides.encodeDynamically(to: setting.allFieldSettings["amountScreenShakesWhenEntityCollides"]!)
         self.tileDescriptions.encodeDynamically(to: setting.allFieldSettings["tileDescriptions"]!)
         self.playerInputSpeedMultiplier.encodeDynamically(to: setting.allFieldSettings["playerInputSpeedMultiplier"]!)
+        self.playerInputSpeedFractionChangePerSecond.encodeDynamically(to: setting.allFieldSettings["playerInputSpeedFractionChangePerSecond"]!)
         self.tileDamage.encodeDynamically(to: setting.allFieldSettings["tileDamage"]!)
         self.knockback.encodeDynamically(to: setting.allFieldSettings["knockback"]!)
         self.entityData.encodeDynamically(to: setting.allFieldSettings["entityData"]!)

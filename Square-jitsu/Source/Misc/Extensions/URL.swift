@@ -35,6 +35,7 @@ extension URL {
     }
 
     func appending(relativePath: String) -> URL {
+        assert(hasDirectoryPath, "can't append relative path to a file URL")
         var result = self
 
         let relativePathComponents = relativePath.split(separator: "/")

@@ -19,6 +19,7 @@ class EditorScene: SJScene {
         didSet { settings.screenSize = size }
     }
 
+    // region shortcut properties
     private var loadedEditor: Editor? {
         editorController.loaded?.editor
     }
@@ -26,7 +27,9 @@ class EditorScene: SJScene {
     private var loadedWorld: World? {
         editorController.loaded?.world
     }
+    // endregion
 
+    // region initialization
     override init(size: CGSize) {
         super.init(size: size)
         editorController = EditorController(userSettings: settings, parent: self)
@@ -36,7 +39,28 @@ class EditorScene: SJScene {
     required init(coder: NSCoder) {
         fatalError("EditorScene can't be encoded or decoded")
     }
+    // endregion
 
+    // region game sessions
+    private var quitHandler: (() -> ())? = nil
+
+    func beginGameSession(_ newQuitHandler: @escaping () -> ()) {
+        assert(quitHandler == nil, "scene already has a quit handler assigned, and hasn't quit yet")
+        quitHandler = newQuitHandler
+    }
+
+    func endGameSession() {
+        guard let quitHandler = quitHandler else {
+            fatalError("scene isn't in a session (no quit handler)")
+        }
+
+        // A new session might begin in quitHandler
+        self.quitHandler = nil
+        quitHandler()
+    }
+    // endregion
+
+    // region forwarding
     override func update(_ currentTime: TimeInterval) {
         editorController.update(currentTime)
     }
@@ -60,4 +84,5 @@ class EditorScene: SJScene {
         super.touchesCancelled(touches, with: event)
         loadedEditor?.touchesCancelled(touches, with: event, container: self)
     }
+    // endregion
 }

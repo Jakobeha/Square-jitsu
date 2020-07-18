@@ -17,7 +17,7 @@ class TileView: OptionalNodeView {
             case .world:
                 node.position = pos3D.pos.cgPoint * world.settings.tileViewWidthHeight
             }
-            node.zPosition = tileType.bigType.layer.zPosition
+            node.zPosition = tileType.bigType.zPosition
             if world.settings.rotateTileViewBasedOnOrientation[tileType] ?? false {
                 node.angle = tileType.orientation.asSide.angle
             }

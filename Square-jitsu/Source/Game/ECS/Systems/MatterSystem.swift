@@ -39,7 +39,7 @@ struct MatterSystem: SubCollisionSystem {
                 entity.next.dynC!.velocity.y = max(entity.next.dynC!.velocity.y, -knockback)
             }
             if isAdjacentWithoutKnockback {
-                entity.next.locC!.rotation = entity.next.locC!.rotation.round(by: Angle.right)
+                entity.next.locC!.rotation = Angle.zero
                 if isJustCollidingWithoutKnockback {
                     entity.next.dynC!.angularVelocity = Angle.zero.toUnclamped
                 }

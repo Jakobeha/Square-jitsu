@@ -8,7 +8,7 @@
           "background/0"
         ],
         "semiAdjoiningTypes1" : [
-          "background/0",
+          "background",
           "Layer.solid"
         ],
         "semiAdjoiningTypes2": []
@@ -17,11 +17,11 @@
         "type" : "diamond4",
         "textureBase" : "Tiles/BackgroundGrey",
         "adjoiningTypes" : [
-          "background/0"
+          "background/1"
         ],
         "semiAdjoiningTypes1": [],
         "semiAdjoiningTypes2" : [
-          "background/1",
+          "background",
           "Layer.solid"
         ]
       },
@@ -29,7 +29,8 @@
         "type" : "diamond4",
         "textureBase" : "Tiles/BackgroundBricks",
         "adjoiningTypes" : [
-          "background/1"
+          "background/2",
+          "Layer.solid"
         ],
         "semiAdjoiningTypes1": [],
         "semiAdjoiningTypes2": []
@@ -149,7 +150,7 @@
     "player" : [
       {
         "type" : "static",
-        "texture" : "Tiles/Player"
+        "texture" : "Tiles/Player/South"
       }
     ],
     "enemy" : [
@@ -276,8 +277,8 @@
         "type" : "fadeOnDeath",
         "duration" : 1,
         "base" : {
-          "type" : "static",
-          "texture" : "Tiles/Player"
+          "type" : "person",
+          "textureBase" : "Tiles/Player"
         }
       }
     ],
@@ -472,7 +473,8 @@
   "entityZPositions" : {
     "projectile" : [
       null,
-      1.999
+      null,
+      3.999
     ]
   },
   "rotateTileViewBasedOnOrientation" : {
@@ -480,10 +482,14 @@
       true,
       true,
       true,
+      true,
       true
     ]
   },
   "entityViewScaleModes" : {
+    "player": [
+      "aspectFill"
+    ],
     "projectile" : [
       "aspectFill",
       "aspectFill"
@@ -517,8 +523,12 @@
   "amountScreenShakesWhenEntityCollides" : {
     "projectile" : [
       0.03125,
-      0.125,
+      0,
       0.75
+    ],
+    "explosion": [
+      0.5,
+      0.25
     ]
   },
   "tileDescriptions" : {
@@ -607,7 +617,8 @@
       "Settings"
     ]
   },
-  "playerInputSpeedMultiplier" : 0.0625,
+  "playerInputSpeedMultiplier" : 0.125,
+  "playerInputSpeedFractionChangePerSecond" : 2,
   "tileDamage" : {
     "lava" : [
       0.25
@@ -619,7 +630,8 @@
     ],
     "projectile" : [
       null,
-      2
+      null,
+      5
     ],
     "explosion" : [
       8
@@ -629,7 +641,7 @@
     "player" : [
       {
         "locC" : {
-          "radius" : 0.5
+          "radius" : 0.75
         },
         "larC" : {},
         "dynC" : {
@@ -666,7 +678,7 @@
         },
         "nijC" : {
           "jumpSpeed" : 16,
-          "jumpAngularSpeed" : "180°",
+          "jumpAngularSpeed" : "720°",
           "minNumJumpsWithoutBackground" : 0
         }
       }
@@ -769,12 +781,8 @@
         "dciC" : {},
         "docC" : {
           "destroyOnEntityCollision" : true,
-          "destroyOnSolidCollision" : false,
+          "destroyOnSolidCollision" : true,
           "ignoredTypes" : []
-        },
-        "ricC" : {
-          "bounceMultiplier" : 1,
-          "numBouncesBeforeDestroy" : 2
         },
         "graC" : {
           "thrownSpeedMultiplier" : 1
@@ -818,8 +826,8 @@
         "dynC" : {
           "dynamicKnockbackMultiplier" : 0.25
         },
-        "accC" : {
-          "acceleration" : 2
+        "ac3C" : {
+          "jerk" : 8
         },
         "colC" : {},
         "docC" : {
@@ -916,7 +924,7 @@
           "whenToFire" : "fireOnSeek",
           "howToFire" : {
             "type" : "consistent",
-            "projectileSpeed" : 4,
+            "projectileSpeed" : 1,
             "delay" : 0.25
           },
           "whatToFire" : "projectile/1",
@@ -1022,6 +1030,9 @@
       },
       {
         "initialTurretDirectionRelativeToAnchor" : "-90°"
+      },
+      {
+        "initialTurretDirectionRelativeToAnchor" : "-90°"
       }
     ],
     "image": [
@@ -1063,6 +1074,7 @@
       "atSolidBorder"
     ],
     "turret" : [
+      "directionAdjacentToSolid",
       "directionAdjacentToSolid",
       "directionAdjacentToSolid",
       "directionAdjacentToSolid",

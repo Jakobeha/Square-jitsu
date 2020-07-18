@@ -26,6 +26,7 @@ class Editor: EditorToolsDelegate {
     }
 
     var settings: WorldSettings { editableWorld.settings }
+    var conduit: WorldConduit { editableWorld.world.conduit }
 
     private let _didChangeState: Publisher<()> = Publisher()
     var didChangeState: Observable<()> { Observable(publisher: _didChangeState) }

@@ -8,6 +8,7 @@ import Foundation
 class EntityViewTemplateSetting: UnionSetting {
     static var options: [USOGenerator] = [
         USOGenerator(SettingOptionRecognizerByName("static"), StaticEntityViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("person"), PersonEntityViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("turret"), TurretEntityViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("laser"), LaserEntityViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("animatedByLifetime"), AnimatedByLifetimeEntityViewTemplate.newSetting),

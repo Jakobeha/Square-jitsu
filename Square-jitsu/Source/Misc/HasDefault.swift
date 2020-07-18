@@ -34,3 +34,9 @@ extension Dictionary: HasDefault {
 
     var isDefault: Bool { isEmpty }
 }
+
+extension String: HasDefault {
+    static var defaultValue: String { "" }
+
+    var isDefault: Bool { isEmpty }
+}

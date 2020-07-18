@@ -19,6 +19,7 @@ class OverlayContainer {
 
     func present(_ overlay: Overlay) {
         overlays.append(overlay)
+        overlay.didPresentIn(container: self)
         _didPresentOverlay.publish()
     }
 

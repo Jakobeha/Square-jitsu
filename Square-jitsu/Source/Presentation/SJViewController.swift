@@ -45,29 +45,42 @@ class SJViewController: UIViewController {
         assert(!started)
         started = true
 
-        guard let startModeString = ProcessInfo.processInfo.environment["START_MODE"] else {
-            fatalError("no start mode")
-        }
-        guard let startMode = SJStartMode(startModeString) else {
-            fatalError("invalid start mode: \(startModeString)")
-        }
+        let startMode = SJStartMode(ProcessInfo.processInfo.environment["START_MODE"]) ?? SJStartMode.default
 
         switch startMode {
         case .editorTestWorld:
-            scene.editorController.loadTestWorld()
+            loadTestWorld()
         case .editorLevelSelection:
-            let levelPicker = try! LevelPickerViewController.new(initialUrl: WorldFile.rootDirectoryUrl, canCancel: false) { pickedUrl in
-                self.scene.editorController.load(worldUrl: pickedUrl) { result in
-                    switch result {
-                    case .failure(let error):
-                        fatalError("failed to load initial world: \(error.localizedDescription)")
-                    case .success(()):
-                        break
-                    }
+            presentLevelPicker(animated: false)
+        }
+    }
+
+    private func loadTestWorld() {
+        scene.beginGameSession {
+            self.presentLevelPicker(animated: true)
+        }
+        scene.editorController.loadTestWorld()
+    }
+
+    private func presentLevelPicker(animated: Bool) {
+        let levelPicker = try! LevelPickerViewController.new(initialUrl: WorldFile.rootDirectoryUrl, canCancel: false) { pickedUrl in
+            self.scene.beginGameSession {
+                self.presentLevelPicker(animated: true)
+            }
+            self.scene.editorController.load(worldUrl: pickedUrl) { result in
+                switch result {
+                case .failure(let error):
+                    let errorAlert = UIAlertController(title: "Failed to load world", message: error.localizedDescription, preferredStyle: .alert)
+                    errorAlert.addAction(UIAlertAction(title: "Continue", style: .default))
+                    // Want to try to keep the level picker visible
+                    self.presentLevelPicker(animated: false)
+                    self.present(errorAlert, animated: true)
+                case .success(()):
+                    break
                 }
             }
-            present(levelPicker, animated: false)
         }
+        present(levelPicker, animated: false)
     }
 
     override var shouldAutorotate: Bool { true }

@@ -63,8 +63,8 @@ class EditorToolsView: UXCompoundView {
                     Button(textureName: "UI/Save", size: .small) { 
                         self.editor.editableWorld.saveToDisk()
                     },
-                    Button(textureName: "UI/Quit", size: .small) { 
-                        print("TODO") 
+                    Button(textureName: "UI/Quit", size: .small) {
+                        self.editor.conduit.quit()
                     }
                 ]),
                 gridView

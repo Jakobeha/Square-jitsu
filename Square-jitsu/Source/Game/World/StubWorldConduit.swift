@@ -8,6 +8,10 @@ import Foundation
 /// Doesn't actually perform the actions,
 /// instead warns that they can't be performed
 class StubWorldConduit: WorldConduit {
+    func quit() {
+        Logger.warnActionOnStubConduit("quit()")
+    }
+
     func teleportTo(relativePath: String) {
         Logger.warnActionOnStubConduit("teleportTo(relativePath: \(relativePath)")
     }
