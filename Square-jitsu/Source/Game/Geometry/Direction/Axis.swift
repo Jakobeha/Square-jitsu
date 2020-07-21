@@ -17,4 +17,13 @@ enum Axis {
             return AxisSet.vertical
         }
     }
+
+    var other: Axis {
+        switch self {
+        case .horizontal:
+            return .vertical
+        case .vertical:
+            return .horizontal
+        }
+    }
 }

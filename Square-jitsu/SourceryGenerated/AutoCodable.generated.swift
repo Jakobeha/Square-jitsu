@@ -16,6 +16,7 @@ extension TurretComponent.HowToFire {
         case delayBetweenBursts
         case numShotsInBurst
         case delayInBurst
+        case projectileEndTiles
     }
 
     internal init(from decoder: Decoder) throws {
@@ -38,7 +39,9 @@ extension TurretComponent.HowToFire {
             return
         }
         if container.allKeys.contains(.continuous), try container.decodeNil(forKey: .continuous) == false {
-            self = .continuous
+            let associatedValues = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .continuous)
+            let projectileEndTiles = try associatedValues.decode(TileTypePred.self, forKey: .projectileEndTiles)
+            self = .continuous(projectileEndTiles: projectileEndTiles)
             return
         }
         throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown enum case"))
@@ -58,8 +61,9 @@ extension TurretComponent.HowToFire {
             try associatedValues.encode(delayBetweenBursts, forKey: .delayBetweenBursts)
             try associatedValues.encode(numShotsInBurst, forKey: .numShotsInBurst)
             try associatedValues.encode(delayInBurst, forKey: .delayInBurst)
-        case .continuous:
-            _ = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .continuous)
+        case let .continuous(projectileEndTiles):
+            var associatedValues = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .continuous)
+            try associatedValues.encode(projectileEndTiles, forKey: .projectileEndTiles)
         }
     }
 

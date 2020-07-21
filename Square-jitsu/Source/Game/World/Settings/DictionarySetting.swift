@@ -75,7 +75,7 @@ class DictionarySetting<Key: LosslessStringConvertibleEnum & CaseIterable & Hash
         } as! T
     }
 
-    func encodeDynamically(dictionary: [Key:Value]) {
+    func encodeDynamically(_ dictionary: [Key:Value]) {
         setElementSettingKeysTo(keys: dictionary.keys)
         for (key, value) in dictionary {
             let valueSetting = settings[key]!
@@ -86,6 +86,6 @@ class DictionarySetting<Key: LosslessStringConvertibleEnum & CaseIterable & Hash
 
 extension Dictionary where Key: LosslessStringConvertibleEnum & CaseIterable {
     func encodeDynamically(to setting: SerialSetting) {
-        (setting as! DictionarySetting<Key, Value>).encodeDynamically(dictionary: self)
+        (setting as! DictionarySetting<Key, Value>).encodeDynamically(self)
     }
 }

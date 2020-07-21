@@ -75,6 +75,12 @@ class World: ReadonlyWorld {
     let playerInput: PlayerInput
     // endregion
 
+    /// The world itself doesn't handle editing and isn't affected by this,
+    /// except that certain views with editor-useful info which are normally invisible are shown
+    var showEditingIndicators: Bool = false {
+        didSet { _didChangeEditorIndicatorVisibility.publish() }
+    }
+
     // region observables
     private let _didReset: Publisher<()> = Publisher()
     private let _didUnloadChunk: Publisher<(pos: WorldChunkPos, chunk: ReadonlyChunk)> = Publisher()
@@ -83,6 +89,7 @@ class World: ReadonlyWorld {
     private let _didRemoveEntity: Publisher<Entity> = Publisher()
     private let _didChangeSpeed: Publisher<()> = Publisher()
     private let _didTick: Publisher<()> = Publisher()
+    private let _didChangeEditorIndicatorVisibility: Publisher<()> = Publisher()
     /// Other notifications won't be fired on reset, only this one
     var didReset: Observable<()> { Observable(publisher: _didReset) }
     var didUnloadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { Observable(publisher: _didUnloadChunk) }
@@ -91,6 +98,7 @@ class World: ReadonlyWorld {
     var didRemoveEntity: Observable<Entity> { Observable(publisher: _didRemoveEntity) }
     var didChangeSpeed: Observable<()> { Observable(publisher: _didChangeSpeed) }
     var didTick: Observable<()> { Observable(publisher: _didTick) }
+    var didChangeEditorIndicatorVisibility: Observable<()> { Observable(publisher: _didChangeEditorIndicatorVisibility) }
     // endregion
 
     // region init
@@ -281,7 +289,7 @@ class World: ReadonlyWorld {
     func tick() {
         playerInput.tick()
         // Tick the camera before entities because we want it to see the previous position
-        playerCamera.tick(world: self)
+        playerCamera.tick()
         runActions()
         tickMetadatas()
         tickEntities()

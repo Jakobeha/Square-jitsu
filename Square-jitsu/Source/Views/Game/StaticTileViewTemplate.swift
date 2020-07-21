@@ -16,7 +16,7 @@ final class StaticTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable 
         SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
 
-    override func generatePreviewNode(size: CGSize, settings: WorldSettings) -> SKNode {
+    override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
         let node = SKSpriteNode(texture: texture, size: size)
         node.anchorPoint = UXSpriteAnchor
         return node

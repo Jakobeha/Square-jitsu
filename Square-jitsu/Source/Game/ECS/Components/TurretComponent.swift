@@ -34,8 +34,10 @@ struct TurretComponent: SingleSettingCodable, Codable {
     enum HowToFire: AutoCodable, SingleSettingCodable {
         case consistent(projectileSpeed: CGFloat, delay: CGFloat)
         case burst(projectileSpeed: CGFloat, delayBetweenBursts: CGFloat, numShotsInBurst: Int, delayInBurst: CGFloat)
-        /// Always fire (e.g. with a laser)
-        case continuous
+        /// Fire a continuous projectile defined by a line (e.g. with a laser).
+        /// The line ends when it reaches a projectile defined in `projectileEndTiles`,
+        /// or after a set (long) distance
+        case continuous(projectileEndTiles: TileTypePred)
 
         var projectileSpeed: CGFloat? {
             switch self {
@@ -43,17 +45,27 @@ struct TurretComponent: SingleSettingCodable, Codable {
                 return projectileSpeed
             case .burst(let projectileSpeed, delayBetweenBursts: _, numShotsInBurst: _, delayInBurst: _):
                 return projectileSpeed
-            case .continuous:
+            case .continuous(projectileEndTiles: _):
                 return nil
             }
         }
 
         var isContinuous: Bool {
             switch self {
-            case .continuous:
+            case .continuous(projectileEndTiles: _):
                 return true
             default:
                 return false
+            }
+        }
+
+        /// Raises an error if this isn't continuous fire
+        var continuousProjectileEndTiles: TileTypePred {
+            switch self {
+            case .consistent(projectileSpeed: _, delay: _), .burst(projectileSpeed: _, delayBetweenBursts: _, numShotsInBurst: _, delayInBurst: _):
+                fatalError("firing method isn't continuous, so it doesn't have a predicate of projectile end tiles")
+            case .continuous(let projectileEndTiles):
+                return projectileEndTiles
             }
         }
 
@@ -72,7 +84,9 @@ struct TurretComponent: SingleSettingCodable, Codable {
                     "numShotsInBurst": IntRangeSetting(2...64),
                     "delayInBurst": CGFloatRangeSetting(0...16)
                 ],
-                "continuous": [:]
+                "continuous": [
+                    "projectileEndTiles": TileTypePredSetting()
+                ]
             ])
         }
         // endregion

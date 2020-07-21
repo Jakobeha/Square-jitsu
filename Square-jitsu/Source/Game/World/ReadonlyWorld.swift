@@ -19,6 +19,8 @@ protocol ReadonlyWorld: ReadonlyStatelessWorld {
     // Exposes mutability via `Entity#world` and the entity itself
     var entities: [Entity] { get }
 
+    var showEditingIndicators: Bool { get }
+
     var didReset: Observable<()> { get }
     var didUnloadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { get }
     var didLoadChunk: Observable<(pos: WorldChunkPos, chunk: ReadonlyChunk)> { get }
@@ -26,6 +28,7 @@ protocol ReadonlyWorld: ReadonlyStatelessWorld {
     var didRemoveEntity: Observable<Entity> { get }
     var didChangeSpeed: Observable<()> { get }
     var didTick: Observable<()> { get }
+    var didChangeEditorIndicatorVisibility: Observable<()> { get }
 
     func peek(pos: WorldTilePos) -> [TileType]
 }

@@ -207,20 +207,20 @@ extension DestructibleTileViewTemplate {
     internal convenience init(from setting: StructSetting<DestructibleTileViewTemplate>) {
         self.init(
             destructionTexture: setting.usedFieldSettings["destructionTexture"]!.decodeDynamically(),
-            base: setting.usedFieldSettings["base"]!.decodeDynamically()
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<DestructibleTileViewTemplate>) -> DestructibleTileViewTemplate {
         self.init(
             destructionTexture: setting.usedFieldSettings["destructionTexture"]!.decodeDynamically(),
-            base: setting.usedFieldSettings["base"]!.decodeDynamically()
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<DestructibleTileViewTemplate>) {
         self.destructionTexture.encodeDynamically(to: setting.allFieldSettings["destructionTexture"]!)
-        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
+        self.base?.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
 extension Diamond4TileViewTemplate {
@@ -373,20 +373,37 @@ extension FadeOnRemoveTileViewTemplate {
     internal convenience init(from setting: StructSetting<FadeOnRemoveTileViewTemplate>) {
         self.init(
             duration: setting.usedFieldSettings["duration"]!.decodeDynamically(),
-            base: setting.usedFieldSettings["base"]!.decodeDynamically()
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<FadeOnRemoveTileViewTemplate>) -> FadeOnRemoveTileViewTemplate {
         self.init(
             duration: setting.usedFieldSettings["duration"]!.decodeDynamically(),
-            base: setting.usedFieldSettings["base"]!.decodeDynamically()
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<FadeOnRemoveTileViewTemplate>) {
         self.duration.encodeDynamically(to: setting.allFieldSettings["duration"]!)
-        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
+        self.base?.encodeDynamically(to: setting.allFieldSettings["base"]!)
+    }
+}
+extension Free4TileViewTemplate {
+    internal convenience init(from setting: StructSetting<Free4TileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<Free4TileViewTemplate>) -> Free4TileViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<Free4TileViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
     }
 }
 extension ImageMetadata {
@@ -407,6 +424,26 @@ extension ImageMetadata {
     internal func encode(to setting: StructSetting<ImageMetadata>) {
         self.imageTexture.encodeDynamically(to: setting.allFieldSettings["imageTexture"]!)
         self.sizeInTiles.encodeDynamically(to: setting.allFieldSettings["sizeInTiles"]!)
+    }
+}
+extension IndicatedInEditorTileViewTemplate {
+    internal convenience init(from setting: StructSetting<IndicatedInEditorTileViewTemplate>) {
+        self.init(
+            editorIndicator: setting.usedFieldSettings["editorIndicator"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<IndicatedInEditorTileViewTemplate>) -> IndicatedInEditorTileViewTemplate {
+        self.init(
+            editorIndicator: setting.usedFieldSettings["editorIndicator"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<IndicatedInEditorTileViewTemplate>) {
+        self.editorIndicator.encodeDynamically(to: setting.allFieldSettings["editorIndicator"]!)
+        self.base?.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
 extension LaserEntityViewTemplate {
@@ -750,20 +787,40 @@ extension TurretTileViewTemplate {
     internal convenience init(from setting: StructSetting<TurretTileViewTemplate>) {
         self.init(
             turretTexture: setting.usedFieldSettings["turretTexture"]!.decodeDynamically(),
-            base: setting.usedFieldSettings["base"]!.decodeDynamically()
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<TurretTileViewTemplate>) -> TurretTileViewTemplate {
         self.init(
             turretTexture: setting.usedFieldSettings["turretTexture"]!.decodeDynamically(),
-            base: setting.usedFieldSettings["base"]!.decodeDynamically()
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<TurretTileViewTemplate>) {
         self.turretTexture.encodeDynamically(to: setting.allFieldSettings["turretTexture"]!)
-        self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
+        self.base?.encodeDynamically(to: setting.allFieldSettings["base"]!)
+    }
+}
+extension WithAlternatePreviewTileViewTemplate {
+    internal convenience init(from setting: StructSetting<WithAlternatePreviewTileViewTemplate>) {
+        self.init(
+            preview: setting.usedFieldSettings["preview"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<WithAlternatePreviewTileViewTemplate>) -> WithAlternatePreviewTileViewTemplate {
+        self.init(
+            preview: setting.usedFieldSettings["preview"]!.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<WithAlternatePreviewTileViewTemplate>) {
+        self.preview.encodeDynamically(to: setting.allFieldSettings["preview"]!)
+        self.base?.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
 extension WorldSettings {
@@ -868,7 +925,9 @@ extension TurretComponent.HowToFire {
                 delayInBurst: setting.selectedCaseFieldSettings["delayInBurst"]!.decodeDynamically()
             )
         case "continuous":
-            return TurretComponent.HowToFire.continuous
+            return TurretComponent.HowToFire.continuous(
+                projectileEndTiles: setting.selectedCaseFieldSettings["projectileEndTiles"]!.decodeDynamically()
+            )
         default:
             fatalError("Can't decode case with name because it doesn't exist: \(setting.selectedCase)")
         }
@@ -884,8 +943,8 @@ extension TurretComponent.HowToFire {
             delayBetweenBursts.encodeDynamically(to: setting.selectedCaseFieldSettings["delayBetweenBursts"]!)
             numShotsInBurst.encodeDynamically(to: setting.selectedCaseFieldSettings["numShotsInBurst"]!)
             delayInBurst.encodeDynamically(to: setting.selectedCaseFieldSettings["delayInBurst"]!)
-        case .continuous:
-            break
+        case .continuous(let projectileEndTiles):
+            projectileEndTiles.encodeDynamically(to: setting.selectedCaseFieldSettings["projectileEndTiles"]!)
         }
     }
 }

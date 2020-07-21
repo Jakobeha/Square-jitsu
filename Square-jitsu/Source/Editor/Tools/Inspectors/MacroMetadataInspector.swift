@@ -14,8 +14,12 @@ final class MacroMetadataInspector<Metadata: TileMetadata>: SubInspector {
     var metadata: Metadata {
         get { tiles.first!.metadata! as! Metadata }
         set {
-            delegate?.setMetadataOf(tiles: tiles, metadata: newValue)
-            reloadTiles()
+            let newTiles: [TileAtPosition] = tiles.map { tileAtPosition in
+                var newTile = tileAtPosition
+                newTile.metadata = newValue
+                return newTile
+            }
+            delegate?.overwrite(tiles: newTiles)
         }
     }
 
@@ -25,4 +29,6 @@ final class MacroMetadataInspector<Metadata: TileMetadata>: SubInspector {
         self.delegate = delegate
         self.undoManager = undoManager
     }
+    
+    func reloadTileInfo() {}
 }

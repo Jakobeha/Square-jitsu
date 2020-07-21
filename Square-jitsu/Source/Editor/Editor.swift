@@ -12,7 +12,10 @@ class Editor: EditorToolsDelegate {
     let tools: EditorTools
     let editorCamera: Camera
     var state: EditorState = .editing {
-        didSet { _didChangeState.publish() }
+        didSet {
+            editableWorld.world.showEditingIndicators = state.showEditingIndicators
+            _didChangeState.publish()
+        }
     }
     let undoManager: UndoManager
 
@@ -44,9 +47,11 @@ class Editor: EditorToolsDelegate {
         editorCamera = Camera(userSettings: userSettings)
         tools = EditorTools(world: editableWorld, editorCamera: editorCamera, undoManager: undoManager, userSettings: userSettings)
         self.undoManager = undoManager
-        
+
         editorCamera.world = editableWorld.world
         tools.delegate = self
+
+        editableWorld.world.showEditingIndicators = true
     }
 
     // region actions
@@ -77,7 +82,7 @@ class Editor: EditorToolsDelegate {
 
         didPerformAction()
         undoManager.registerUndo(withTarget: self) { this in
-            this.revertAction(originalTiles: originalTiles)
+            this.overwrite(tiles: originalTiles)
         }
     }
 
@@ -97,7 +102,7 @@ class Editor: EditorToolsDelegate {
 
         didPerformAction()
         undoManager.registerUndo(withTarget: self) { this in
-            this.revertAction(originalTiles: originalTiles)
+            this.overwrite(tiles: originalTiles)
         }
     }
 
@@ -110,99 +115,20 @@ class Editor: EditorToolsDelegate {
 
         didPerformAction()
         undoManager.registerUndo(withTarget: self) { this in
-            this.revertAction(originalTiles: originalTiles)
+            this.overwrite(tiles: originalTiles)
         }
     }
 
-    private func revertAction(originalTiles: [TileAtPosition]) {
-        let nowOriginalTiles: [TileAtPosition] = originalTiles.map(editableWorld.getUpdatedTileAtPosition)
+    func overwrite(tiles: [TileAtPosition]) {
+        let originalTiles: [TileAtPosition] = tiles.map(editableWorld.getUpdatedTileAtPosition)
 
-        for originalTile in originalTiles {
+        for originalTile in tiles {
             editableWorld.setTileAtPositionTo(originalTile)
         }
 
         didPerformAction()
         undoManager.registerUndo(withTarget: self) { this in
-            this.revertAction(originalTiles: nowOriginalTiles)
-        }
-    }
-
-    // region inspector actions
-    func connectTilesToSide(tiles: [TileAtPosition], side: Side) {
-        for tileAtPosition in tiles {
-            var newTileType = tileAtPosition.type
-            newTileType.orientation = addSideToOrientationInType(type: newTileType, side: side)
-            editableWorld[tileAtPosition.position] = newTileType
-        }
-    }
-
-    private func addSideToOrientationInType(type: TileType, side: Side) -> TileOrientation {
-        switch settings.tileOrientationMeanings[type] ?? .unused {
-        case .unused, .directionToCorner:
-            fatalError("orientation isn't side-based")
-        case .directionAdjacentToSolid:
-            return TileOrientation(side: side)
-        case .atBackgroundBorder, .atSolidBorder:
-            var orientation = type.orientation
-            orientation.asSideSet.insert(side.toSet)
-            return orientation
-        }
-    }
-
-    func disconnectTilesToSide(tiles: [TileAtPosition], side: Side) {
-        for tileAtPosition in tiles {
-            var newTileType = tileAtPosition.type
-            newTileType.orientation = tryRemoveSideToOrientationInType(type: newTileType, side: side)
-            editableWorld[tileAtPosition.position] = newTileType
-        }
-    }
-
-    private func tryRemoveSideToOrientationInType(type: TileType, side: Side) -> TileOrientation {
-        switch settings.tileOrientationMeanings[type] ?? .unused {
-        case .unused, .directionToCorner:
-            fatalError("orientation isn't side-based")
-        case .directionAdjacentToSolid:
-            // Can't remove because there is only one side
-            return type.orientation
-        case .atBackgroundBorder, .atSolidBorder:
-            var orientation = type.orientation
-            orientation.asSideSet.remove(side.toSet)
-            return orientation
-        }
-    }
-
-    func connectTilesToCorner(tiles: [TileAtPosition], corner: Corner) {
-        for tileAtPosition in tiles {
-            var newTileType = tileAtPosition.type
-            newTileType.orientation = addCornerToOrientationInType(type: newTileType, corner: corner)
-            editableWorld[tileAtPosition.position] = newTileType
-        }
-    }
-
-    private func addCornerToOrientationInType(type: TileType, corner: Corner) -> TileOrientation {
-        switch settings.tileOrientationMeanings[type] ?? .unused {
-        case .unused, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder:
-            fatalError("orientation isn't corner-based")
-        case .directionToCorner:
-            return TileOrientation(corner: corner)
-        }
-    }
-
-    func disconnectTilesToCorner(tiles: [TileAtPosition], corner: Corner) {
-        for tileAtPosition in tiles {
-            var newTileType = tileAtPosition.type
-            newTileType.orientation = tryRemoveCornerToOrientationInType(type: newTileType, corner: corner)
-            editableWorld[tileAtPosition.position] = newTileType
-        }
-    }
-
-    private func tryRemoveCornerToOrientationInType(type: TileType, corner: Corner) -> TileOrientation {
-        switch settings.tileOrientationMeanings[type] ?? .unused {
-        case .unused, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder:
-            fatalError("orientation isn't corner-based")
-        case .directionToCorner:
-            // Can't remove because there is only one side
-            return type.orientation
+            this.overwrite(tiles: originalTiles)
         }
     }
 
@@ -220,10 +146,10 @@ class Editor: EditorToolsDelegate {
             editableWorld.setMetadataAt(pos3D: pos3D, to: metadata)
         }
     }
-    // endregion
 
     private func didPerformAction() {
         editableWorld.world.runActions()
+        tools.inspector?.reload()
     }
     // endregion
 

@@ -26,15 +26,19 @@ class TileView: OptionalNodeView {
     }
 
     private let world: ReadonlyWorld
+    private let pos3D: WorldTilePos3D
     private let tileType: TileType
     private let template: TileViewTemplate?
     private let glossMaskNode: SKNode?
     private let glossMaskChild: SKNode?
 
+    private lazy var editorIndicatorNode: SKNode? = generateAndAddEditorIndicatorNode()
+
     private var settings: WorldSettings { world.settings }
 
     init(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType, coordinates: TileViewCoordinates, glossMaskNode: SKNode?) {
         self.world = world
+        self.pos3D = pos3D
         self.tileType = tileType
         template = world.settings.tileViewTemplates[tileType]
         self.glossMaskNode = glossMaskNode
@@ -42,8 +46,30 @@ class TileView: OptionalNodeView {
                 nil :
                 TileView.generateNode(template: template, world: world, pos3D: pos3D, tileType: tileType, coordinates: coordinates)
         super.init(node: TileView.generateNode(template: template, world: world, pos3D: pos3D, tileType: tileType, coordinates: coordinates))
+
+        updateEditorIndicator()
+        world.didChangeEditorIndicatorVisibility.subscribe(observer: self, priority: .view, handler: updateEditorIndicator)
     }
 
+    // region editor node
+    private func updateEditorIndicator() {
+        editorIndicatorNode?.isHidden = !world.showEditingIndicators
+    }
+
+    private func generateAndAddEditorIndicatorNode() -> SKNode? {
+        let editorIndicatorNode = template?.generateEditorIndicatorNode(world: world, pos3D: pos3D, tileType: tileType)
+        if let editorIndicatorNode = editorIndicatorNode {
+            // Need to subtract node's z-position because parent / child z-positions are additive,
+            // and we want the editor indicator's z-position to be (relative to the node's parent)
+            // at exactly TileType.editorIndicatorZPosition
+            editorIndicatorNode.zPosition = TileType.editorIndicatorZPosition - node!.zPosition
+            node!.addChild(editorIndicatorNode)
+        }
+        return editorIndicatorNode
+    }
+    // endregion
+
+    // region placement and removal
     override func placeIn(parent: SKNode) {
         super.placeIn(parent: parent)
         template?.didPlaceInParent(node: node!)
@@ -68,4 +94,5 @@ class TileView: OptionalNodeView {
             template?.didRemoveFromParent(node: node!)
         }
     }
+    // endregion
 }

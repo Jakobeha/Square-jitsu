@@ -9,7 +9,8 @@ protocol TileViewTemplate {
     var fadeAction: SKAction? { get }
 
     func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode
-    func generatePreviewNode(size: CGSize, settings: WorldSettings) -> SKNode
+    func generateEditorIndicatorNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode?
+    func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode
 
     func didPlaceInParent(node: SKNode)
     func didRemoveFromParent(node: SKNode)
@@ -17,14 +18,14 @@ protocol TileViewTemplate {
 
 extension TileViewTemplate {
     /// Adds gloss if necessary
-    func generatePreviewNodeWithGloss(tileType: TileType, settings: WorldSettings, size: CGSize) -> SKNode {
-        let baseNode = generatePreviewNode(size: size, settings: settings)
+    func generatePreviewNode(tileType: TileType, settings: WorldSettings, size: CGSize) -> SKNode {
+        let baseNode = generatePreviewNodeRaw(size: size, settings: settings)
         if settings.glossyTileViews.contains(tileType) {
             // Add gloss effect to preview
             baseNode.zPosition = 0
 
             let glossNode = SKCropNode()
-            let glossMask = generatePreviewNode(size: size, settings: settings)
+            let glossMask = generatePreviewNodeRaw(size: size, settings: settings)
             let glossImage = SKSpriteNode(texture: settings.glossTexture, size: size)
             glossImage.anchorPoint = UXSpriteAnchor
             glossNode.maskNode = glossMask

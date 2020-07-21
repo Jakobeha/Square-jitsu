@@ -100,6 +100,25 @@ extension CGPoint {
         x.isNaN && y.isNaN
     }
 
+    subscript(axis: Axis) -> CGFloat {
+        get {
+            switch axis {
+            case .horizontal:
+                return x
+            case .vertical:
+                return y
+            }
+        }
+        set {
+            switch axis {
+            case .horizontal:
+                x = newValue
+            case .vertical:
+                y = newValue
+            }
+        }
+    }
+
     init(magnitude: CGFloat, sideDirection: Side) {
         switch sideDirection {
         case .east:

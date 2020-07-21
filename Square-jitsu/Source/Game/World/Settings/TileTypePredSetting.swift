@@ -15,19 +15,39 @@ class TileTypePredSetting: SerialSetting {
             let typePredJsons = try json.toArray()
             pred = TileTypePred()
             for typePredJson in typePredJsons {
-                let typePredString = try typePredJson.toString()
-                if let tileLayerSubstring = typePredString.strip(prefix: "Layer.") {
-                    if let tileLayer = TileLayer(String(tileLayerSubstring)) {
-                        pred.containedLayers.insert(tileLayer)
-                    } else {
-                        throw DecodeSettingError.badFormat(expectedDescription: "layer")
-                    }
-                } else if let tileBigType = TileBigType(typePredString) {
-                    pred.containedBigTypes.insert(tileBigType)
-                } else if let tileType = TileType(typePredString) {
-                    pred.containedTypes.insert(tileType)
+                var typePredString = try typePredJson.toString()
+
+                if typePredString == "all" {
+                    pred.includedExceptExcluded.containsAll = true
                 } else {
-                    throw DecodeSettingError.badFormat(expectedDescription: "layer, big-type, or type")
+                    var pred1Way = pred.includedExceptExcluded
+                    var isExcluded = false
+
+                    if let negatedTypePredString = typePredString.strip(prefix: "-") {
+                        typePredString = String(negatedTypePredString)
+                        pred1Way = pred.excluded
+                        isExcluded = true
+                    }
+
+                    if let tileLayerSubstring = typePredString.strip(prefix: "Layer.") {
+                        if let tileLayer = TileLayer(String(tileLayerSubstring)) {
+                            pred1Way.containedLayers.insert(tileLayer)
+                        } else {
+                            throw DecodeSettingError.badFormat(expectedDescription: "layer")
+                        }
+                    } else if let tileBigType = TileBigType(typePredString) {
+                        pred1Way.containedBigTypes.insert(tileBigType)
+                    } else if let tileType = TileType(typePredString) {
+                        pred1Way.containedTypes.insert(tileType)
+                    } else {
+                        throw DecodeSettingError.badFormat(expectedDescription: "layer, big-type, or type")
+                    }
+
+                    if isExcluded {
+                        pred.excluded = pred1Way
+                    } else {
+                        pred.includedExceptExcluded = pred1Way
+                    }
                 }
             }
         }
@@ -37,18 +57,25 @@ class TileTypePredSetting: SerialSetting {
         if pred.containsAll {
             return JSON("all")
         } else {
-            var typePredJsons: [JSON] = []
-            for layer in pred.containedLayers {
-                typePredJsons.append(JSON(layer.description))
-            }
-            for bigType in pred.containedBigTypes {
-                typePredJsons.append(JSON(bigType.description))
-            }
-            for type in pred.containedTypes {
-                typePredJsons.append(JSON(type.descriptionDifferentFromBigType))
-            }
+            let typePredJsons: [JSON] =
+                encodeWellFormed1Way(pred.includedExceptExcluded, prefix: "") +
+                encodeWellFormed1Way(pred.excluded, prefix: "-")
             return JSON(typePredJsons)
         }
+    }
+
+    private func encodeWellFormed1Way(_ pred1Way: TileTypePred1Way, prefix: String) -> [JSON] {
+        var typePredJsons: [JSON] = []
+        for layer in pred1Way.containedLayers {
+            typePredJsons.append(JSON(prefix + layer.description))
+        }
+        for bigType in pred1Way.containedBigTypes {
+            typePredJsons.append(JSON(prefix + bigType.description))
+        }
+        for type in pred1Way.containedTypes {
+            typePredJsons.append(JSON(prefix + type.descriptionDifferentFromBigType))
+        }
+        return typePredJsons
     }
 
     func validate() throws {}

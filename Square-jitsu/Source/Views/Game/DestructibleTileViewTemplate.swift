@@ -10,7 +10,7 @@ final class DestructibleTileViewTemplate: AugmentingTileViewTemplate, SingleSett
 
     let destructionTexture: SKTexture
 
-    init(destructionTexture: SKTexture, base: TileViewTemplate) {
+    init(destructionTexture: SKTexture, base: TileViewTemplate?) {
         self.destructionTexture = destructionTexture
         super.init(base: base)
     }

@@ -12,6 +12,7 @@ enum TileOrientationMeaning: Int, CaseIterable, Codable, LosslessStringConvertib
     case directionToCorner
     case atBackgroundBorder
     case atSolidBorder
+    case freeSideSet
 
     static let defaultValue: TileOrientationMeaning = .unused
 

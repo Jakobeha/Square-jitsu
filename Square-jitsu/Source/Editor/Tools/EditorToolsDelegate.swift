@@ -9,10 +9,6 @@ protocol EditorToolsDelegate: AnyObject {
     func performPlaceAction(selectedPositions2D: Set<WorldTilePos>, selectedTileType: TileType)
     func performRemoveAction(selectedPositions: Set<WorldTilePos3D>)
     func performMoveAction(selectedPositions: Set<WorldTilePos3D>, distanceMoved: RelativePos, isCopy: Bool)
-    func connectTilesToSide(tiles: [TileAtPosition], side: Side)
-    func disconnectTilesToSide(tiles: [TileAtPosition], side: Side)
-    func connectTilesToCorner(tiles: [TileAtPosition], corner: Corner)
-    func disconnectTilesToCorner(tiles: [TileAtPosition], corner: Corner)
-    func setInitialTurretDirections(to initialTurretDirectionsAndPositions: Zip2Sequence<[Angle], [WorldTilePos3D]>)
-    func setMetadataOf(tiles: [TileAtPosition], metadata: TileMetadata)
+    /// Replaces the original tile and metadata at each given tile-at-position's position
+    func overwrite(tiles: [TileAtPosition])
 }

@@ -20,7 +20,7 @@ final class FadeOnRemoveTileViewTemplate: AugmentingTileViewTemplate, SingleSett
         SKAction.fadeOut(withDuration: TimeInterval(duration))
     }
 
-    init(duration: CGFloat, base: TileViewTemplate) {
+    init(duration: CGFloat, base: TileViewTemplate?) {
         self.duration = duration
         super.init(base: base)
     }

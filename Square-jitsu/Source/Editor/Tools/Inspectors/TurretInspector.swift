@@ -19,10 +19,10 @@ final class TurretInspector: SubInspector {
         self.delegate = delegate
         self.undoManager = undoManager
 
-        updateInitialTurretDirections()
+        reloadTileInfo()
     }
 
-    private func updateInitialTurretDirections() {
+    func reloadTileInfo() {
         initialTurretDirections = tiles.map { tileAtPosition in
             let turretMetadata = tileAtPosition.metadata! as! TurretMetadata
             return turretMetadata.initialTurretDirectionRelativeToAnchor
@@ -30,21 +30,13 @@ final class TurretInspector: SubInspector {
     }
 
     func setInitialTurretDirections(to initialTurretDirection: Angle) {
-        setInitialTurretDirections(to: Array(repeating: initialTurretDirection, count: initialTurretDirections.count))
-    }
-
-    func setInitialTurretDirections(to newInitialTurretDirections: [Angle]) {
-        let oldInitialTurretDirections = newInitialTurretDirections
-        initialTurretDirections = newInitialTurretDirections
-
-        delegate?.setInitialTurretDirections(
-            to: zip(initialTurretDirections, tiles.map { tileAtPosition in tileAtPosition.position })
-        )
-        reloadTiles()
-        updateInitialTurretDirections()
-
-        undoManager.registerUndo(withTarget: self) { this in
-            this.setInitialTurretDirections(to: oldInitialTurretDirections)
+        let newTiles: [TileAtPosition] = tiles.map { tileAtPosition in
+            var newTile = tileAtPosition
+            var newMetadata = newTile.metadata as! TurretMetadata
+            newMetadata.initialTurretDirectionRelativeToAnchor = initialTurretDirection
+            newTile.metadata = newMetadata
+            return newTile
         }
+        delegate?.overwrite(tiles: newTiles)
     }
 }

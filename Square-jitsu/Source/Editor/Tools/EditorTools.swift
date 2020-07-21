@@ -66,6 +66,10 @@ class EditorTools {
         }
     }
 
+    var interactedTiles: Set<WorldTilePos3D> {
+        editAction.selectedPositions.union(inspector?.positions ?? [])
+    }
+
     private let _didChangeEditSelectMode: Publisher<()> = Publisher()
     private let _didChangeEditSelection: Publisher<()> = Publisher()
     private let _didChangeEditActionMode: Publisher<()> = Publisher()
@@ -92,27 +96,12 @@ class EditorTools {
 
     // region selecting different modes
     func select(selectMode: EditSelectMode) {
-        let oldEditSelectMode = editSelection.mode
-
         editSelection = .none(mode: selectMode)
-
-        undoManager.registerUndo(withTarget: self) { this in
-            this.editSelection = .none(mode: oldEditSelectMode)
-        }
     }
 
     func select(actionMode: EditActionMode) {
-        undoManager.beginUndoGrouping()
-        let oldEditAction = editAction
-
         if actionMode != .place {
-            let oldOpenLayer = tileMenu.openLayer
-
             tileMenu.openLayer = nil
-
-            undoManager.registerUndo(withTarget: self) { this in
-                this.setInUndo(tileMenuOpenLayer: oldOpenLayer)
-            }
         }
 
         // Change edit action
@@ -131,11 +120,6 @@ class EditorTools {
         if actionMode.requiresSelection && !editSelection.mode.canInstantSelect && selectedPositions.isEmpty {
             select(selectMode: EditSelectMode.defaultInstantSelect)
         }
-
-        undoManager.registerUndo(withTarget: self) { this in
-            this.setInUndo(editAction: oldEditAction)
-        }
-        undoManager.endUndoGrouping()
     }
     // endregion
 
@@ -248,9 +232,6 @@ class EditorTools {
     private func afterTouchUp(touchPos: TouchPos) {
         edgePanTouchPos = nil
 
-        undoManager.beginUndoGrouping()
-        let oldEditAction = editAction
-
         if hasEditMoveState && editMoveState.isStarted {
             if editAction.mode == .move {
                 // We need to synchronize before showing, we don't put it in showTemporarilyHidden
@@ -269,14 +250,11 @@ class EditorTools {
             }
         } else if !hasEditMoveState && !editSelection.isNone {
             let selectedPositions = editSelection.getSelectedPositionsWithTilesAfterTouchUp(lastTouchPos: touchPos, world: world)
-            performCurrentAction(selectedPositions: selectedPositions)
+            if !selectedPositions.isEmpty {
+                performCurrentAction(selectedPositions: selectedPositions)
+            }
             editSelection = editSelection.endedOrCancelled
         }
-
-        undoManager.registerUndo(withTarget: self) { this in
-            this.setInUndo(editAction: oldEditAction)
-        }
-        undoManager.endUndoGrouping()
     }
 
     private func afterTouchCancel() {
@@ -291,6 +269,7 @@ class EditorTools {
             }
 
             editMoveState = .notStarted
+            editAction.selectedPositions = []
         } else {
             editSelection = editSelection.endedOrCancelled
         }
@@ -349,29 +328,7 @@ class EditorTools {
         TouchPos(uiTouch: uiTouch, camera: camera, settings: world.settings, container: container)
     }
     // endregion
-
-    // region undo operations
-    private func setInUndo(tileMenuOpenLayer newOpenLayer: TileLayer?) {
-        let oldOpenLayer = tileMenu.openLayer
-        tileMenu.openLayer = newOpenLayer
-
-        undoManager.registerUndo(withTarget: self) { this in
-            this.setInUndo(tileMenuOpenLayer: oldOpenLayer)
-        }
-    }
-
-    private func setInUndo(editAction newEditAction: EditAction) {
-        let newEditAction = newEditAction.lastStateBeforeTouchesBegan
-
-        let oldEditAction = editAction
-        editAction = newEditAction
-
-        undoManager.registerUndo(withTarget: self) { this in
-            this.setInUndo(editAction: oldEditAction)
-        }
-    }
-    // endregion
-
+    
     // region ticking
     func tick() {
         tryEdgePan()

@@ -63,7 +63,7 @@ class CollectionSetting<Collection: StrongerCollection>: SerialSetting {
         return collection as! T
     }
 
-    func encodeDynamically(collection: Collection) {
+    func encodeDynamically(_ collection: Collection) {
         resizeElementSettingsTo(count: collection.count)
         for (elementSetting, element) in zip(elementSettings, collection) {
             (element as! DynamicSettingCodable).encodeDynamically(to: elementSetting)
@@ -73,6 +73,6 @@ class CollectionSetting<Collection: StrongerCollection>: SerialSetting {
 
 extension StrongerCollection {
     func encodeDynamically(to setting: SerialSetting) {
-        (setting as! CollectionSetting<Self>).encodeDynamically(collection: self)
+        (setting as! CollectionSetting<Self>).encodeDynamically(self)
     }
 }

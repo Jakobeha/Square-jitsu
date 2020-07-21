@@ -11,8 +11,8 @@ class InspectorContainerView: UXView {
     private static let backgroundExtraSize: CGSize = CGSize.square(sideLength: 12)
 
     private let editorTools: EditorTools
+    private let world: ReadonlyStatelessWorld
     private let worldUrl: URL
-    private let settings: WorldSettings
 
     let node: SKNode
     private let backgroundNode: SKSpriteNode
@@ -42,10 +42,10 @@ class InspectorContainerView: UXView {
     }
     var size: CGSize { scene?.size ?? CGSize.zero }
 
-    init(editorTools: EditorTools, worldUrl: URL, settings: WorldSettings) {
+    init(editorTools: EditorTools, world: ReadonlyStatelessWorld, worldUrl: URL) {
         self.editorTools = editorTools
+        self.world = world
         self.worldUrl = worldUrl
-        self.settings = settings
 
         node = SKNode()
         node.isHidden = true
@@ -65,7 +65,7 @@ class InspectorContainerView: UXView {
 
     private func updateInspectorView() {
         if let inspector = editorTools.inspector {
-            inspectorView = InspectorView(inspector: inspector, worldUrl: worldUrl, settings: settings)
+            inspectorView = InspectorView(inspector: inspector, world: world, worldUrl: worldUrl)
         } else {
             inspectorView = nil
         }

@@ -21,7 +21,7 @@ class CornerBasedOrientationInspector: SubInspector {
         self.delegate = delegate
         self.undoManager = undoManager
 
-        updateConnectedTileInfo()
+        reloadTileInfo()
     }
 
     func connectTilesTo(corner: Corner) {
@@ -29,21 +29,18 @@ class CornerBasedOrientationInspector: SubInspector {
         let areTilesAlreadyConnected = !tilesConnectedToCorner[corner].isEmpty
 
         let tilesToChange = tilesConnectableToCorner[corner]
-        if areTilesAlreadyConnected {
-            delegate?.disconnectTilesToCorner(tiles: tilesToChange, corner: corner)
-        } else {
-            delegate?.connectTilesToCorner(tiles: tilesToChange, corner: corner)
+        let changedTiles: [TileAtPosition] = tilesToChange.map { tileToChange in
+            var changedTile = tileToChange
+            changedTile.type.orientation = areTilesAlreadyConnected ?
+                    self.removeCornerFromOrientation(type: tileToChange.type, corner: corner) :
+                    self.addCornerToOrientation(type: tileToChange.type, corner: corner)
+            return changedTile
         }
 
-        reloadTiles()
-        updateConnectedTileInfo()
-
-        undoManager.registerUndo(withTarget: self) { this in
-            this.connectTilesTo(corner: corner)
-        }
+        delegate?.overwrite(tiles: changedTiles)
     }
 
-    private func updateConnectedTileInfo() {
+    func reloadTileInfo() {
         tilesConnectableToCorner = DenseEnumMap { corner in
             tiles.filter { tileAtPosition in
                 self.isTileConnectableToCorner(tileAtPosition: tileAtPosition, corner: corner)
@@ -56,11 +53,34 @@ class CornerBasedOrientationInspector: SubInspector {
         }
     }
 
+    // region abstract methods
     func isTileConnectableToCorner(tileAtPosition: TileAtPosition, corner: Corner) -> Bool {
         fatalError("abstract method not implemented")
     }
-    
+
     func isTileConnectedToCorner(tileAtPosition: TileAtPosition, corner: Corner) -> Bool {
         fatalError("abstract method not implemented")
     }
+    // endregion
+
+    // region orientation changes
+    private func addCornerToOrientation(type: TileType, corner: Corner) -> TileOrientation {
+        switch world.settings.tileOrientationMeanings[type] ?? .unused {
+        case .unused, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder, .freeSideSet:
+            fatalError("orientation isn't corner-based")
+        case .directionToCorner:
+            return TileOrientation(corner: corner)
+        }
+    }
+
+    private func removeCornerFromOrientation(type: TileType, corner: Corner) -> TileOrientation {
+        switch world.settings.tileOrientationMeanings[type] ?? .unused {
+        case .unused, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder, .freeSideSet:
+            fatalError("orientation isn't corner-based")
+        case .directionToCorner:
+            // Can't remove because there is only one side
+            return type.orientation
+        }
+    }
+    // endregion
 }

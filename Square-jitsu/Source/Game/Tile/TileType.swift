@@ -36,8 +36,11 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
 
     /// All z-positions are less than this, adds 1 for custom z-positions in settings
     static let zPositionUpperBound: CGFloat = CGFloat(TileLayer.allCases.count) + 1
+    static let editorIndicatorZPosition = zPositionUpperBound - CGFloat.epsilon
     static let fadingZPositionOffset: CGFloat = 0.5 / CGFloat(TileBigType.allCases.count)
     static let smallestZPositionOffset: CGFloat = 0.25 / CGFloat(TileBigType.allCases.count)
+
+    static let unknownDescription: String = "???"
 
     static func typesCanOverlap(_ lhs: TileType, _ rhs: TileType) -> Bool {
         lhs != rhs &&

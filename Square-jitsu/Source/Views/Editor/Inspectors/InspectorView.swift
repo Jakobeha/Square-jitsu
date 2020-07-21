@@ -8,21 +8,24 @@ import SpriteKit
 class InspectorView: UXCompoundView {
     private static let subInspectorPadding: CGFloat = 12
     private static let subInspectorSpacing: CGFloat = subInspectorPadding
-    private static let emptyInspectorText: Label = Label(text: "Nothing to inspect")
     static let maxInspectorWidth: CGFloat = 384
 
     private let inspector: Inspector
+    private let world: ReadonlyStatelessWorld
     private let worldUrl: URL
-    private let settings: WorldSettings
+
+    private var settings: WorldSettings {
+        world.settings
+    }
 
     override var size: CGSize {
         super.size + CGSize.square(sideLength: InspectorView.subInspectorPadding)
     }
 
-    init(inspector: Inspector, worldUrl: URL, settings: WorldSettings) {
+    init(inspector: Inspector, world: ReadonlyStatelessWorld, worldUrl: URL) {
         self.inspector = inspector
+        self.world = world
         self.worldUrl = worldUrl
-        self.settings = settings
     }
 
     override func newBody() -> UXView {
@@ -34,12 +37,20 @@ class InspectorView: UXCompoundView {
     }
 
     private func getChildViews() -> [UXView] {
+        let tileNamesView = Label(text: tileNamesAsString)
         let subInspectorViews = getSubInspectorViews()
-        if subInspectorViews.isEmpty {
-            return [InspectorView.emptyInspectorText]
-        } else {
-            return subInspectorViews
-        }
+        return [tileNamesView] + subInspectorViews
+    }
+
+    private var tileNamesAsString: String {
+        tileNames.joined(separator: ", ")
+    }
+
+    private var tileNames: Set<String> {
+        Set(inspector.positions.map { position in
+            let tileType = self.world[position]
+            return self.settings.getUserFriendlyDescriptionOf(tileType: tileType)
+        })
     }
 
     private func getSubInspectorViews() -> [LabeledSIV] {
@@ -53,6 +64,9 @@ class InspectorView: UXCompoundView {
         }
         if let edgeInspector = inspector.edgeInspector {
             views.append(LabeledSIV(SideBasedOrientationSIV(edgeInspector), label: "Edges"))
+        }
+        if let freeSideSetInspector = inspector.freeSideSetInspector {
+            views.append(LabeledSIV(SideBasedOrientationSIV(freeSideSetInspector), label: "Sides"))
         }
         if let turretInspector = inspector.turretInspector {
             views.append(LabeledSIV(TurretSIV(turretInspector), label: "Turret initial angle"))

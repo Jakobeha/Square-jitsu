@@ -40,7 +40,7 @@ final class MacroButtonTileViewTemplate: EmptyTileViewTemplate, SingleSettingCod
         }
     }
 
-    override func generatePreviewNode(size: CGSize, settings: WorldSettings) -> SKNode {
+    override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
         let backgroundNode = SKSpriteNode(texture: Button.background, size: size)
         backgroundNode.centerRect = Button.backgroundCenterRect
         backgroundNode.anchorPoint = UXSpriteAnchor

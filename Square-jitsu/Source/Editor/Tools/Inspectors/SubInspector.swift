@@ -10,9 +10,16 @@ protocol SubInspector: AnyObject {
     var world: ReadonlyStatelessWorld { get }
 
     init(tiles: [TileAtPosition], world: ReadonlyStatelessWorld, delegate: EditorToolsDelegate?, undoManager: UndoManager)
+
+    func reloadTileInfo()
 }
 
 extension SubInspector {
+    func reload() {
+        reloadTiles()
+        reloadTileInfo()
+    }
+
     func reloadTiles() {
         tiles = tiles.map(world.getUpdatedTileAtPosition)
     }

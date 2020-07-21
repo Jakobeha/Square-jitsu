@@ -76,6 +76,16 @@ enum Side: Int, CaseIterable {
         }
     }
 
+    /// Whether this side is east (positive x) or north (positive y)
+    var isPositiveOnAxis: Bool {
+        switch self {
+        case .east, .north:
+            return true
+        case .west, .south:
+            return false
+        }
+    }
+
     var perpendicularOffset: RelativePos {
         switch self {
         case .east:

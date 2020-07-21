@@ -8,7 +8,7 @@ import SpriteKit
 class EditSelectionView: UXView {
     private static let fillColor: SKColor = SKColor(white: 1, alpha: 0.125)
     private static let currentSelectionStrokeColor: SKColor = SKColor(hue: 0.15, saturation: 1, brightness: 1, alpha: 1)
-    private static let pastSelectionStrokeColor: SKColor = SKColor(hue: 7.0 / 16, saturation: 1, brightness: 1, alpha: 1)
+    private static let interactedStrokeColor: SKColor = SKColor(hue: 7.0 / 16, saturation: 1, brightness: 1, alpha: 1)
     private static let lineWidth: CGFloat = 2
     private static let glowWidth: CGFloat = 4
 
@@ -16,7 +16,7 @@ class EditSelectionView: UXView {
 
     let node: SKNode = SKNode()
     private let currentSelectionNode: SKShapeNode
-    private let pastSelectionNode: SKShapeNode
+    private let interactedNode: SKShapeNode
 
     private var sceneSize: CGSize = CGSize.zero
     var size: CGSize { sceneSize }
@@ -25,29 +25,29 @@ class EditSelectionView: UXView {
         self.editor = editor
 
         currentSelectionNode = SKShapeNode()
-        pastSelectionNode = SKShapeNode()
+        interactedNode = SKShapeNode()
         currentSelectionNode.fillColor = EditSelectionView.fillColor
-        pastSelectionNode.fillColor = EditSelectionView.fillColor
+        interactedNode.fillColor = EditSelectionView.fillColor
         currentSelectionNode.strokeColor = EditSelectionView.currentSelectionStrokeColor
-        pastSelectionNode.strokeColor = EditSelectionView.pastSelectionStrokeColor
+        interactedNode.strokeColor = EditSelectionView.interactedStrokeColor
         currentSelectionNode.lineWidth = EditSelectionView.lineWidth
-        pastSelectionNode.lineWidth = EditSelectionView.lineWidth
+        interactedNode.lineWidth = EditSelectionView.lineWidth
         currentSelectionNode.glowWidth = EditSelectionView.glowWidth
-        pastSelectionNode.glowWidth = EditSelectionView.glowWidth
+        interactedNode.glowWidth = EditSelectionView.glowWidth
         // current selection over past selection
         currentSelectionNode.zPosition = 1
-        pastSelectionNode.zPosition = 0
+        interactedNode.zPosition = 0
         node.addChild(currentSelectionNode)
-        node.addChild(pastSelectionNode)
+        node.addChild(interactedNode)
 
         updateCurrentSelectionNodePath()
-        updatePastSelectionNodePath()
+        updateInteractedNodePath()
         updateNodePositionForCameraChange()
         editor.editorCamera.didChange.subscribe(observer: self, priority: .view) {
             self.updateNodePositionForCameraChange()
         }
         editor.tools.didChangeEditAction.subscribe(observer: self, priority: .view) {
-            self.updatePastSelectionNodePath()
+            self.updateInteractedNodePath()
         }
         editor.tools.didChangeEditSelection.subscribe(observer: self, priority: .view) {
             self.updateCurrentSelectionNodePath()
@@ -61,14 +61,14 @@ class EditSelectionView: UXView {
     private func updateCurrentSelectionNodePath() {
         let editSelection = editor.tools.editSelection
         let selectedPositions3D = editSelection.isNone ? [] : editSelection.getSelectedPositions(world: editor.editableWorld.world)
-        let selectedPositions = Set(selectedPositions3D.map { worldTilePos3d in worldTilePos3d.pos })
+        let selectedPositions = Set(selectedPositions3D.map { pos3D in pos3D.pos })
         currentSelectionNode.path = WorldTilePos.pathOfShapeMadeBy(positions: selectedPositions, scale: editor.settings.tileViewWidthHeight, offset: CGPoint.zero)
     }
 
-    private func updatePastSelectionNodePath() {
-        let selectedPositions3D = editor.tools.editAction.selectedPositions
-        let selectedPositions = Set(selectedPositions3D.map { worldTilePos3d in worldTilePos3d.pos })
-        pastSelectionNode.path = WorldTilePos.pathOfShapeMadeBy(positions: selectedPositions, scale: editor.settings.tileViewWidthHeight, offset: CGPoint.zero)
+    private func updateInteractedNodePath() {
+        let interactedPositions3D = editor.tools.interactedTiles
+        let interactedPositions = Set(interactedPositions3D.map { pos3D in pos3D.pos })
+        interactedNode.path = WorldTilePos.pathOfShapeMadeBy(positions: interactedPositions, scale: editor.settings.tileViewWidthHeight, offset: CGPoint.zero)
     }
 
     func set(scene: SJScene) {

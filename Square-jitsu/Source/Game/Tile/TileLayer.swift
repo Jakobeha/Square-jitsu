@@ -7,7 +7,6 @@ import SpriteKit
 
 enum TileLayer: Int, Comparable, CaseIterable, Codable {
     case air
-    case free
 
     case background
     case backgroundDirectionBoost
@@ -16,6 +15,8 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
     case iceSolid
 
     case edge
+
+    case free
 
     case entity
 
@@ -28,14 +29,14 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
             return TileLayerSet.background
         case .backgroundDirectionBoost:
             return TileLayerSet.backgroundDirectionBoost
-        case .free:
-            return TileLayerSet.free
         case .solid:
             return TileLayerSet.solid
         case .iceSolid:
             return TileLayerSet.iceSolid
         case .edge:
             return TileLayerSet.edge
+        case .free:
+            return TileLayerSet.free
         case .entity:
             return TileLayerSet.entity
         }
@@ -45,7 +46,7 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
         switch self {
         case .edge:
             return true
-        case .air, .background, .backgroundDirectionBoost, .free, .solid, .iceSolid, .entity:
+        case .air, .background, .backgroundDirectionBoost, .solid, .iceSolid, .free, .entity:
             return false
         }
     }
@@ -60,14 +61,14 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
     }
 
     private static let layerOverlapDMatrix: [[Bool]] = [
-        //                              .entity .edge .iceSolid .solid .backgroundDirectionBoost .background .free .air
-        /* .air                      */ [true,  true, true,     true,  true,                     true,       true, true],
-        /* .free                     */ [true,  true, true,     true,  true,                     true,       true],
-        /* .background               */ [true,  true, false,    false, true,                     false],
-        /* .backgroundDirectionBoost */ [true,  true, false,    false, false],
-        /* .solid                    */ [false, true, false,    false],
-        /* .iceSolid                 */ [false, true, false],
-        /* .edge                     */ [true,  false],
+        //                              .entity .free .edge .iceSolid .solid .backgroundDirectionBoost .background .air
+        /* .air                      */ [true,  true, true, true,     true,  true,                     true,       true],
+        /* .background               */ [true,  true, true, false,    false, true,                     false],
+        /* .backgroundDirectionBoost */ [true,  true, true, false,    false, false],
+        /* .solid                    */ [false, true, true, false,    false],
+        /* .iceSolid                 */ [false, true, true, false],
+        /* .edge                     */ [true,  true, false],
+        /* .free                     */ [true,  true],
         /* .entity                   */ [false]
     ]
 

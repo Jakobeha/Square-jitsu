@@ -49,8 +49,6 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>
     var selectableTypes: [TileBigType:[TileSmallType]]
 
-    typealias AsSetting = StructSetting<WorldSettings>
-
     init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, edgeMaskTextureBase: TextureSet, glossTexture: SKTexture, glossyTileViews: TileTypePred, imagePlaceholderTexture: SKTexture, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, playerInputSpeedFractionChangePerSecond: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, destructibleSolidInitialHealth: [CGFloat], dashEdgeBoostSpeed: [CGFloat], springEdgeBounceMultiplier: [CGFloat], defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
@@ -77,6 +75,9 @@ final class WorldSettings: SingleSettingCodable, Codable {
         self.tileOrientationMeanings = tileOrientationMeanings
         self.selectableTypes = selectableTypes
     }
+
+    // region encoding and decoding
+    typealias AsSetting = StructSetting<WorldSettings>
 
     static func newSetting() -> StructSetting<WorldSettings> {
         StructSetting(requiredFields: [
@@ -124,5 +125,33 @@ final class WorldSettings: SingleSettingCodable, Codable {
         let json = try worldSettingsSetting.encodeWellFormed()
 
         try container.encode(json)
+    }
+    // endregion
+
+    /// Miscellaneous helper which is only here because I don't know where else to put it.
+    /// Otherwise the settings object doesn't have helpers, just data
+    func getUserFriendlyDescriptionOf(tileType: TileType) -> String {
+        let bigTypeDescription = getUserFriendlyBigTypeDescriptionOf(bigType: tileType.bigType)
+        let smallTypeDescription = getUserFriendlySmallTypeDescriptionOf(tileType: tileType)
+        if smallTypeDescription.isEmpty {
+            return bigTypeDescription
+        } else {
+            return "\(smallTypeDescription) \(bigTypeDescription)"
+        }
+    }
+
+    private func getUserFriendlyBigTypeDescriptionOf(bigType: TileBigType) -> String {
+        bigType.description.camelCaseToSentenceCase
+    }
+
+    private func getUserFriendlySmallTypeDescriptionOf(tileType: TileType) -> String {
+        let description = tileDescriptions[tileType]
+        if let description = description {
+            return description
+        } else {
+            Logger.warnSettingsAreInvalid("tile type doesn't have a description: \(tileType)")
+            return TileType.unknownDescription
+        }
+
     }
 }

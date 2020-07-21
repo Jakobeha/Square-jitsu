@@ -9,46 +9,46 @@ import Foundation
 /// where a TileTypeSet must specify all of the specific types
 struct TileTypePred: Codable {
     static let all: TileTypePred = TileTypePred(containsAll: true)
+    static let none: TileTypePred = TileTypePred(containsAll: false)
 
-    var containedTypes: Set<TileType>
-    var containedBigTypes: Set<TileBigType>
-    var containedLayers: Set<TileLayer>
-    var containsAll: Bool
+    var includedExceptExcluded: TileTypePred1Way
+    var excluded: TileTypePred1Way
+
+    var containsAll: Bool {
+        includedExceptExcluded.containsAll && excluded.containsNone
+    }
 
     init() {
-        self.init([])
+        self.init(TileTypePred1Way([]))
     }
 
     init(_ containedLayers: Set<TileLayer>) {
-        self.init([], containedLayers)
+        self.init(TileTypePred1Way([], containedLayers))
     }
 
     init(_ containedBigTypes: Set<TileBigType>, _ containedLayers: Set<TileLayer> = []) {
-        self.init([], containedBigTypes, containedLayers)
+        self.init(TileTypePred1Way([], containedBigTypes, containedLayers))
     }
 
-    init(_ containedTypes: Set<TileType>, _ containedBigTypes: Set<TileBigType> = [], _ containedLayers: Set<TileLayer> = []) {
-        self.init(containedTypes, containedBigTypes, containedLayers, containsAll: false)
+    init(_ containedTypes: Set<TileType> = [], _ containedBigTypes: Set<TileBigType> = [], _ containedLayers: Set<TileLayer> = [], containsAll: Bool = false) {
+        self.init(TileTypePred1Way(containedTypes, containedBigTypes, containedLayers, containsAll: containsAll))
     }
 
-    private init(_ containedTypes: Set<TileType> = [], _ containedBigTypes: Set<TileBigType> = [], _ containedLayers: Set<TileLayer> = [], containsAll: Bool = false) {
-        self.containedTypes = containedTypes
-        self.containedBigTypes = containedBigTypes
-        self.containedLayers = containedLayers
-        self.containsAll = containsAll
+    init(_ included: TileTypePred1Way) {
+        includedExceptExcluded = included
+        excluded = TileTypePred1Way.none
+    }
+
+    init(included: TileTypePred1Way, excluded: TileTypePred1Way) {
+        includedExceptExcluded = included
+        self.excluded = excluded
     }
 
     func contains(_ type: TileType) -> Bool {
-        containedTypes.contains(type) ||
-        containedBigTypes.contains(type.bigType) ||
-        containedLayers.contains(type.bigType.layer) ||
-        containsAll
+        includedExceptExcluded.contains(type) && !excluded.contains(type)
     }
 
     func contains<OtherCollection: Collection>(anyOf types: OtherCollection) -> Bool where OtherCollection.Element == TileType {
-        containedTypes.contains(anyOf: types) ||
-        containedBigTypes.contains(anyOf: types.map { $0.bigType }) ||
-        containedLayers.contains(anyOf: types.map { $0.bigType.layer }) ||
-        containsAll
+        types.contains(where: contains)
     }
 }

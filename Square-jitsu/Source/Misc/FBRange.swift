@@ -11,17 +11,17 @@ struct FBRange: Sequence {
         typealias Element = Int
 
         private var current: Int
-        private let rhs: Int
+        private let end: Int
         private let step: Int
 
-        init(lhs: Int, rhs: Int) {
-            current = lhs
-            self.rhs = rhs
-            step = lhs <= rhs ? 1 : -1
+        init(start: Int, end: Int) {
+            current = start
+            self.end = end
+            step = start <= end ? 1 : -1
         }
 
         mutating func next() -> Element? {
-            if current == rhs + step {
+            if current == end + step {
                 return nil
             } else {
                 let result = current
@@ -31,15 +31,15 @@ struct FBRange: Sequence {
         }
     }
 
-    let lhs: Int
-    let rhs: Int
+    let start: Int
+    let end: Int
 
-    init(_ lhs: Int, _ rhs: Int) {
-        self.lhs = lhs
-        self.rhs = rhs
+    init(_ start: Int, _ end: Int) {
+        self.start = start
+        self.end = end
     }
 
     func makeIterator() -> Iterator {
-        Iterator(lhs: lhs, rhs: rhs)
+        Iterator(start: start, end: end)
     }
 }

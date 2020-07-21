@@ -34,6 +34,27 @@ extension String {
         count <= maxLength ? self : "\(self[..<index(startIndex, offsetBy: maxLength)])..."
     }
 
+    /// Example: "fooBarBaz" => "Foo bar baz"
+    var camelCaseToSentenceCase: String {
+        var words: [String] = []
+
+        var remaining = self
+        while let nextSplitIndex = remaining.firstIndex(where: { character in character.isUppercase }) {
+            let nextWordRange = ..<nextSplitIndex
+            // Only the first letter could be uppercase (in words which aren't the first).
+            // We want to make the first letter of these words lowercase,
+            // and we make the first word capitalized later
+            let nextWord = remaining[nextWordRange].localizedLowercase
+            words.append(nextWord)
+            remaining.removeSubrange(nextWordRange)
+        }
+        words.append(remaining)
+
+        words[0] = words[0].localizedCapitalized
+
+        return words.joined(separator: " ")
+    }
+
     func leftPadding(toLength newLength: Int, withPad character: Character) -> String {
         String(repeatElement(character, count: newLength - self.count)) + self
     }

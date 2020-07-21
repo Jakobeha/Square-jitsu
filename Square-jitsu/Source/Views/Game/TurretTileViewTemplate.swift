@@ -8,7 +8,7 @@ import SpriteKit
 final class TurretTileViewTemplate: AugmentingTileViewTemplate, SingleSettingCodable {
     let turretTexture: SKTexture
 
-    init(turretTexture: SKTexture, base: TileViewTemplate) {
+    init(turretTexture: SKTexture, base: TileViewTemplate?) {
         self.turretTexture = turretTexture
         super.init(base: base)
     }

@@ -28,7 +28,7 @@ final class CornerFacingTileViewTemplate: EmptyTileViewTemplate, SingleSettingCo
         return node
     }
 
-    override func generatePreviewNode(size: CGSize, settings: WorldSettings) -> SKNode {
+    override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
         let node = SKSpriteNode(texture: textureBase["East"], size: size)
         node.anchorPoint = UXSpriteAnchor
         return node

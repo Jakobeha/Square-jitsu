@@ -29,7 +29,7 @@ final class MacroTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
         }
     }
 
-    override func generatePreviewNode(size: CGSize, settings: WorldSettings) -> SKNode {
+    override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
         let node = SKSpriteNode(texture: texture, size: size)
         node.anchorPoint = UXSpriteAnchor
         return node

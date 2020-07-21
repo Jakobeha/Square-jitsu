@@ -236,12 +236,9 @@ struct LineSegment: Codable {
         let assumedCapsuleRadius = capsuleRadius + CGFloat.epsilon
         switch slope {
         case .thisIsAPoint(let this):
-            let minX = Int(round(this.x - assumedCapsuleRadius))
-            let maxX = Int(round(this.x + assumedCapsuleRadius))
-            let minY = Int(round(this.y - assumedCapsuleRadius))
-            let maxY = Int(round(this.y + assumedCapsuleRadius))
-            return (minX...maxX).flatMap { x in
-                (minY...maxY).map { y in
+            let bounds = WorldTileRect.around(center: this, radius: assumedCapsuleRadius)
+            return (bounds.minX...bounds.maxX).flatMap { x in
+                (bounds.minY...bounds.maxY).map { y in
                     WorldTilePos(x: x, y: y)
                 }
             }

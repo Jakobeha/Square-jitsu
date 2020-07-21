@@ -246,13 +246,19 @@ struct TurretSystem: TopLevelSystem {
         let projectileDirection = entity.next.locC!.rotation
 
         if projectileComponents.locC != nil {
+            assert(!entity.next.turC!.howToFire.isContinuous, "turret can't continuously fire tile with point location (locC)")
             projectileComponents.locC!.position = entity.next.locC!.position
             projectileComponents.locC!.rotation = projectileDirection
         } else if projectileComponents.lilC != nil {
+            assert(entity.next.turC!.howToFire.isContinuous, "in order to fire tile with line location (lilC), turret must fire continuously")
+            let projectileEndTiles = entity.next.turC!.howToFire.continuousProjectileEndTiles
+
             let projectileRay = Ray(start: entity.next.locC!.position, direction: projectileDirection)
-            let projectileEndHit = world.cast(ray: projectileRay, maxDistance: TurretComponent.maxLaserDistance) { tileType in
-                tileType.isSolid
-            }
+            let projectileEndHit = world.cast(
+                ray: projectileRay,
+                maxDistance: TurretComponent.maxLaserDistance,
+                hitPredicate: projectileEndTiles.contains
+            )
             if let projectileEndHit = projectileEndHit {
                 projectileComponents.lilC!.endEndpointHit = projectileEndHit
                 let projectileEndPosition = projectileEndHit.hitPoint

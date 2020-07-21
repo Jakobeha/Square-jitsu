@@ -70,7 +70,7 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
         var type = type
         let orientationMeaning = world.settings.tileOrientationMeanings[type] ?? .unused
         switch orientationMeaning {
-        case .unused:
+        case .unused, .freeSideSet:
             break
         case .directionAdjacentToSolid:
             let sidesWithAdjacentSolid = getSolidAdjacentSidesTo(pos: pos)

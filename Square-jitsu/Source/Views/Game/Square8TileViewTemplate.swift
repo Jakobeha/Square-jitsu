@@ -49,7 +49,7 @@ final class Square8TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable
         return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
     }
 
-    override func generatePreviewNode(size: CGSize, settings: WorldSettings) -> SKNode {
+    override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
         let texture = textures[[]]
         let node = SKSpriteNode(texture: texture, size: size)
         node.anchorPoint = UXSpriteAnchor

@@ -22,7 +22,7 @@ class EditorToolsView: UXCompoundView {
         self.editor = editor
 
         overlayContainerView = OverlayContainerView(overlayContainer: editor.overlays)
-        inspectorContainerView = InspectorContainerView(editorTools: editor.tools, worldUrl: editor.editableWorld.worldUrl, settings: editor.settings)
+        inspectorContainerView = InspectorContainerView(editorTools: editor.tools, world: editor.editableWorld.world, worldUrl: editor.editableWorld.worldUrl)
         editMoveView = EditMoveView(editor: editor)
         editSelectionView = EditSelectionView(editor: editor)
         actionView = EditorToolsActionView(editorTools: editor.tools, settings: editor.settings)

@@ -6,6 +6,7 @@
 import SpriteKit
 
 class TileButton: UXView {
+    private static let background: SKTexture = SKTexture(imageNamed: "UI/CheckerBackground")
     private static let pressedBorder: SKTexture = SKTexture(imageNamed: "UI/TileButtonPressedBorder")
     private static let selectedBorder: SKTexture = SKTexture(imageNamed: "UI/TileButtonSelectedBorder")
     private static let disabledAlpha: CGFloat = Button.disabledForegroundAlpha
@@ -42,10 +43,10 @@ class TileButton: UXView {
     init(tileType: TileType, settings: WorldSettings, isEnabled: Bool = true, isSelected: Bool = false, action: @escaping () -> ()) {
         self.isEnabled = isEnabled
         self.isSelected = isSelected
-        backgroundNode = SKSpriteNode(texture: nil, color: SKColor.white, size: ButtonSize.tile.cgSize)
+        backgroundNode = SKSpriteNode(texture: TileButton.background, size: ButtonSize.tile.cgSize)
         backgroundNode.anchorPoint = UXSpriteAnchor
         backgroundNode.zPosition = 0
-        tilePreviewNode = settings.tileViewTemplates[tileType]?.generatePreviewNodeWithGloss(tileType: tileType, settings: settings, size: ButtonSize.tile.cgSize)
+        tilePreviewNode = settings.tileViewTemplates[tileType]?.generatePreviewNode(tileType: tileType, settings: settings, size: ButtonSize.tile.cgSize)
         tilePreviewNode?.zPosition = 1
         entityPreviewNode = settings.entityViewTemplates[tileType]?.generatePreviewNode(size: ButtonSize.tile.cgSize, settings: settings)
         entityPreviewNode?.zPosition = 2

@@ -28,7 +28,7 @@ final class MacroImageTileViewTemplate: EmptyTileViewTemplate, SingleSettingCoda
         }
     }
 
-    override func generatePreviewNode(size: CGSize, settings: WorldSettings) -> SKNode {
+    override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
         let node = SKSpriteNode(texture: settings.imagePlaceholderTexture, size: size)
         node.anchorPoint = UXSpriteAnchor
         return node

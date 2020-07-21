@@ -57,7 +57,8 @@
         "adjoiningTypes" : [
           "solid/0",
           "ice/0",
-          "destructibleSolid/0"
+          "destructibleSolid/0",
+          "glassSolid/0"
         ]
       }
     ],
@@ -85,7 +86,8 @@
           "adjoiningTypes" : [
             "solid/0",
             "ice/0",
-            "destructibleSolid/0"
+            "destructibleSolid/0",
+            "glassSolid/0"
           ]
         }
       }
@@ -97,7 +99,8 @@
         "adjoiningTypes" : [
           "solid/0",
           "ice/0",
-          "destructibleSolid/0"
+          "destructibleSolid/0",
+          "glassSolid/0"
         ]
       }
     ],
@@ -215,17 +218,31 @@
     ],
     "image" : [
       {
-        "type" : "macroImage"
+        "type": "indicatedInEditor",
+        "editorIndicator": {
+          "type": "static",
+          "texture": "Tiles/EditorIndicators/Image"
+        },
+        "base": {
+          "type": "macroImage"
+        }
       }
     ],
     "portal" : [
       {
-        "type" : "macro",
-        "texture" : "Tiles/BluePortal",
-        "sizeInTiles" : [
-          2,
-          2
-        ]
+        "type": "indicatedInEditor",
+        "editorIndicator": {
+          "type": "static",
+          "texture": "Tiles/EditorIndicators/Portal"
+        },
+        "base": {
+          "type": "macro",
+          "texture": "Tiles/BluePortal",
+          "sizeInTiles": [
+            2,
+            2
+          ]
+        }
       },
       {
         "type" : "macro",
@@ -268,6 +285,35 @@
           2,
           2
         ]
+      }
+    ],
+    "glassSolid": [
+      {
+        "type": "square8",
+        "textureBase": "Tiles/GlassSolid",
+        "adjoiningTypes": [
+          "solid/0",
+          "ice/0",
+          "destructibleSolid/0",
+          "glassSolid/0"
+        ]
+      }
+    ],
+    "cameraBoundary": [
+      {
+        "type": "withAlternatePreview",
+        "preview": {
+          "type": "static",
+          "texture": "Tiles/EditorIndicators/CameraBoundary/1111"
+        },
+        "base": {
+          "type": "indicatedInEditor",
+          "editorIndicator": {
+            "type": "free4",
+            "textureBase": "Tiles/EditorIndicators/CameraBoundary"
+          },
+          "base": null
+        }
       }
     ]
   },
@@ -499,7 +545,8 @@
   "glossTexture" : "Effects/Gloss",
   "glossyTileViews" : [
     "solid/0",
-    "ice/0"
+    "ice/0",
+    "glassSolid"
   ],
   "imagePlaceholderTexture": "Tiles/ImagePlaceholder",
   "entityGrabColors" : {
@@ -590,6 +637,7 @@
     ],
     "projectile" : [
       "Bullet",
+      "Rocket",
       "Laser"
     ],
     "turret" : [
@@ -615,6 +663,12 @@
       "Play",
       "Edit",
       "Settings"
+    ],
+    "glassSolid": [
+      "Default"
+    ],
+    "cameraBoundary": [
+      ""
     ]
   },
   "playerInputSpeedMultiplier" : 0.125,
@@ -805,7 +859,8 @@
           "destroyOnEntityCollision" : true,
           "destroyOnSolidCollision" : true,
           "ignoredTypes" : [
-            "projectile/0"
+            "projectile/0",
+            "glassSolid/0"
           ]
         },
         "toxC" : {
@@ -947,7 +1002,10 @@
             "player"
           ],
           "whenToFire" : "fireOnSeek",
-          "howToFire" : "continuous",
+          "howToFire": {
+            "type": "continuous",
+            "projectileEndTiles": ["Layer.solid", "-glassSolid"]
+          },
           "whatToFire" : "projectile/2",
           "delayWhenTargetFoundBeforeFire" : 1
         }
@@ -968,7 +1026,10 @@
             "player"
           ],
           "whenToFire" : "fireOnSeek",
-          "howToFire" : "continuous",
+          "howToFire": {
+            "type": "continuous",
+            "projectileEndTiles": ["Layer.solid", "-glassSolid"]
+          },
           "whatToFire" : "projectile/2",
           "delayWhenTargetFoundBeforeFire" : 1
         }
@@ -1079,6 +1140,9 @@
       "directionAdjacentToSolid",
       "directionAdjacentToSolid",
       "directionAdjacentToSolid"
+    ],
+    "cameraBoundary": [
+      "freeSideSet"
     ]
   },
   "selectableTypes" : {
@@ -1146,6 +1210,12 @@
       0,
       1,
       2
+    ],
+    "glassSolid": [
+      0
+    ],
+    "cameraBoundary": [
+      0
     ]
   }
 }

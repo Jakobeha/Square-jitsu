@@ -20,8 +20,8 @@ class SideBasedOrientationInspector: SubInspector {
         self.world = world
         self.delegate = delegate
         self.undoManager = undoManager
-
-        updateConnectedTileInfo()
+        
+        reloadTileInfo()
     }
 
     func connectTilesTo(side: Side) {
@@ -29,21 +29,18 @@ class SideBasedOrientationInspector: SubInspector {
         let areTilesAlreadyConnected = !tilesConnectedToSide[side].isEmpty
 
         let tilesToChange = tilesConnectableToSide[side]
-        if areTilesAlreadyConnected {
-            delegate?.disconnectTilesToSide(tiles: tilesToChange, side: side)
-        } else {
-            delegate?.connectTilesToSide(tiles: tilesToChange, side: side)
+        let changedTiles: [TileAtPosition] = tilesToChange.map { tileToChange in
+            var changedTile = tileToChange
+            changedTile.type.orientation = areTilesAlreadyConnected ?
+                self.removeSideFromOrientation(type: tileToChange.type, side: side) :
+                self.addSideToOrientation(type: tileToChange.type, side: side)
+            return changedTile
         }
 
-        reloadTiles()
-        updateConnectedTileInfo()
-
-        undoManager.registerUndo(withTarget: self) { this in
-            this.connectTilesTo(side: side)
-        }
+        delegate?.overwrite(tiles: changedTiles)
     }
 
-    private func updateConnectedTileInfo() {
+    func reloadTileInfo() {
         tilesConnectableToSide = DenseEnumMap { side in
             tiles.filter { tileAtPosition in
                 self.isTileConnectableToSide(tileAtPosition: tileAtPosition, side: side)
@@ -56,6 +53,7 @@ class SideBasedOrientationInspector: SubInspector {
         }
     }
 
+    // region abstract methods
     func isTileConnectableToSide(tileAtPosition: TileAtPosition, side: Side) -> Bool {
         fatalError("abstract method not implemented")
     }
@@ -63,4 +61,34 @@ class SideBasedOrientationInspector: SubInspector {
     func isTileConnectedToSide(tileAtPosition: TileAtPosition, side: Side) -> Bool {
         fatalError("abstract method not implemented")
     }
+    // endregion
+
+    // region orientation changes
+    private func addSideToOrientation(type: TileType, side: Side) -> TileOrientation {
+        switch world.settings.tileOrientationMeanings[type] ?? .unused {
+        case .unused, .directionToCorner:
+            fatalError("orientation isn't side-based")
+        case .directionAdjacentToSolid:
+            return TileOrientation(side: side)
+        case .atBackgroundBorder, .atSolidBorder, .freeSideSet:
+            var orientation = type.orientation
+            orientation.asSideSet.insert(side.toSet)
+            return orientation
+        }
+    }
+
+    private func removeSideFromOrientation(type: TileType, side: Side) -> TileOrientation {
+        switch world.settings.tileOrientationMeanings[type] ?? .unused {
+        case .unused, .directionToCorner:
+            fatalError("orientation isn't side-based")
+        case .directionAdjacentToSolid:
+            // Can't remove because there is only one side
+            return type.orientation
+        case .atBackgroundBorder, .atSolidBorder, .freeSideSet:
+            var orientation = type.orientation
+            orientation.asSideSet.remove(side.toSet)
+            return orientation
+        }
+    }
+    // endregion
 }
