@@ -119,6 +119,12 @@ struct DamageSystem: TopLevelSystem {
         toxicEntity.next.graC?.grabState.grabbedOrThrownBy != damagedEntity
     }
 
+    static func isToxic(toxicEntity: Entity, damagedType: TileType) -> Bool {
+        toxicEntity.next.toxC != nil &&
+        toxicEntity.next.toxC!.affectsDestructibleTiles &&
+        !toxicEntity.next.toxC!.safeTypes.contains(damagedType)
+    }
+
     static func damage(toxicType: TileType, damagedEntity: Entity) {
         assert(isToxic(toxicType: toxicType, damagedEntity: damagedEntity))
         let damage = damagedEntity.world!.settings.tileDamage[toxicType]!

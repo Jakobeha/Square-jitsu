@@ -46,7 +46,7 @@ final class AnimatedByLifetimeEntityViewTemplate: EmptyEntityViewTemplate, Singl
     // region encoding and decoding
     typealias AsSetting = StructSetting<AnimatedByLifetimeEntityViewTemplate>
 
-    static func newSetting() -> StructSetting<AnimatedByLifetimeEntityViewTemplate> {
+    static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "textureBase": TextureSetSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])

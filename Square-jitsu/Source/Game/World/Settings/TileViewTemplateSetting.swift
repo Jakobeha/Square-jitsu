@@ -7,7 +7,9 @@ import Foundation
 
 class TileViewTemplateSetting: UnionSetting {
     static var options: [USOGenerator] = [
+        USOGenerator(SettingOptionRecognizerByName("color"), ColorTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("static"), StaticTileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("continuouslyAnimated"), ContinuouslyAnimatedTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("diamond4"), Diamond4TileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("square8"), Square8TileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("edge4"), Edge4TileViewTemplate.newSetting),
@@ -16,6 +18,7 @@ class TileViewTemplateSetting: UnionSetting {
         USOGenerator(SettingOptionRecognizerByName("destructible"), DestructibleTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("turret"), TurretTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("fadeOnRemove"), FadeOnRemoveTileViewTemplate.newSetting),
+        USOGenerator(SettingOptionRecognizerByName("glossy"), GlossyTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("macro"), MacroTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("macroImage"), MacroImageTileViewTemplate.newSetting),
         USOGenerator(SettingOptionRecognizerByName("macroButton"), MacroButtonTileViewTemplate.newSetting),

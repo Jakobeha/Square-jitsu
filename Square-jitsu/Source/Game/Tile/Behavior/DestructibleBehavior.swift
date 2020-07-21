@@ -20,7 +20,7 @@ class DestructibleBehavior: EmptyTileBehavior<Never> {
     override func onEntityCollide(entity: Entity, pos: WorldTilePos3D) {
         if entity.next.toxC != nil {
             let myType = entity.world![pos]
-            if !entity.next.toxC!.safeTypes.contains(myType) {
+            if DamageSystem.isToxic(toxicEntity: entity, damagedType: myType) {
                 receiveDamageFrom(entity: entity, pos3D: pos)
             }
         }

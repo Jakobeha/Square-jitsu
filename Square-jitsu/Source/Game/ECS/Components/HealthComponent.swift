@@ -5,9 +5,10 @@
 
 import SpriteKit
 
-struct HealthComponent: SettingCodableByCodable, Codable {
+struct HealthComponent: SingleSettingCodable, Codable {
     var maxHealth: CGFloat
 
+    // sourcery: nonSetting
     var health: CGFloat
 
     var isAlive: Bool { health > 0 }
@@ -27,7 +28,17 @@ struct HealthComponent: SettingCodableByCodable, Codable {
         try container.encode(maxHealth, forKey: .maxHealth)
     }
 
+    // region encoding and decoding
+    typealias AsSetting = StructSetting<HealthComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [
+            "maxHealth": CGFloatRangeSetting(0...128)
+        ], optionalFields: [:])
+    }
+
     enum CodingKeys: String, CodingKey {
         case maxHealth
     }
+    // endregion
 }

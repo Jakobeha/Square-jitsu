@@ -3,7 +3,7 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 /// This protocol is actually only partially readonly,
 /// will probably change in the future
@@ -12,6 +12,9 @@ protocol ReadonlyWorld: ReadonlyStatelessWorld {
     var conduit: WorldConduit { get }
 
     var readonlyChunks: [WorldChunkPos:ReadonlyChunk] { get }
+
+    /// Total number of ticks which occurred in the world since it loaded
+    var numTicksSoFar: UInt64 { get }
 
     // Exposes mutability via the behavior itself
     func getBehaviorAt(pos3D: WorldTilePos3D) -> TileBehavior?
@@ -31,4 +34,12 @@ protocol ReadonlyWorld: ReadonlyStatelessWorld {
     var didChangeEditorIndicatorVisibility: Observable<()> { get }
 
     func peek(pos: WorldTilePos) -> [TileType]
+}
+
+extension ReadonlyWorld {
+    /// Total time which occurred in the world.
+    /// This is proportional to the number of ticks which occurred so far
+    var elapsedTime: TimeInterval {
+        TimeInterval(numTicksSoFar) * TimeInterval(settings.fixedDeltaTime)
+    }
 }

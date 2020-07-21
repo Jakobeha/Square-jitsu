@@ -45,6 +45,9 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
     case glassSolid
     case cameraBoundary
 
+    case coin
+    case key
+
     // region pattern matching
     var layer: TileLayer {
         switch self {
@@ -55,10 +58,6 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
             return .background
         case .backgroundDirectionBoost:
             return .backgroundDirectionBoost
-        case .image,
-             .portal,
-             .cameraBoundary:
-            return .free
         case .solid,
              .adjacentSensitiveSolid,
              .destructibleSolid,
@@ -72,6 +71,12 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
              .springEdge,
              .lava:
             return .edge
+        case .image,
+             .portal,
+             .cameraBoundary:
+            return .free
+        case .coin, .key:
+            return .collectible
         case .player,
              .enemy,
              .shuriken,
@@ -105,7 +110,9 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
              .explosion,
              .button,
              .glassSolid,
-             .cameraBoundary:
+             .cameraBoundary,
+             .coin,
+             .key:
             return NeverSetting()
         case .turret:
             return TurretMetadata.newSetting()
@@ -127,10 +134,10 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
              .backgroundDirectionBoost,
              .solidEdge,
              .lava,
-             .glassSolid,
              .cameraBoundary:
             return nil
-        case .destructibleSolid:
+        case .destructibleSolid,
+             .glassSolid:
             return DestructibleBehavior()
         case .dashEdge:
             return DashBehavior()
@@ -154,6 +161,19 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
             return PortalBehavior()
         case .button:
             return ButtonBehavior()
+        case .coin, .key:
+            return CollectibleBehavior()
+        }
+    }
+
+    var asCollectibleType: CollectibleType? {
+        switch self {
+        case .coin:
+            return .coin
+        case .key:
+            return .key
+        default:
+            return nil
         }
     }
 

@@ -13,12 +13,20 @@ class EmptyTileViewTemplate: TileViewTemplate {
         SKNode()
     }
 
+    func generateGlossNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode? {
+        nil
+    }
+
     func generateEditorIndicatorNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode? {
         nil
     }
 
     func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
         SKNode()
+    }
+
+    func generateGlossPreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode? {
+        nil
     }
 
     func didPlaceInParent(node: SKNode) {}

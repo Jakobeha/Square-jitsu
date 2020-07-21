@@ -28,6 +28,8 @@ class World: ReadonlyWorld {
     private var persistentChunkData: [WorldChunkPos:GamePersistentChunkData] = [:]
     // endregion
 
+    private(set) var numTicksSoFar: UInt64 = 0
+
     // region entities and associated data
     private(set) var entities: [Entity] = []
 
@@ -293,7 +295,10 @@ class World: ReadonlyWorld {
         runActions()
         tickMetadatas()
         tickEntities()
+
         _didTick.publish()
+
+        numTicksSoFar += 1
     }
 
     // region tiles

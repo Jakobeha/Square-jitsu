@@ -52,14 +52,18 @@
     ],
     "solid" : [
       {
-        "type" : "square8",
-        "textureBase" : "Tiles/Solid",
-        "adjoiningTypes" : [
-          "solid/0",
-          "ice/0",
-          "destructibleSolid/0",
-          "glassSolid/0"
-        ]
+        "type": "glossy",
+        "explicitGlossTemplate": null,
+        "base": {
+          "type": "square8",
+          "textureBase": "Tiles/Solid",
+          "adjoiningTypes": [
+            "solid/0",
+            "ice/0",
+            "destructibleSolid/0",
+            "glassSolid/0"
+          ]
+        }
       }
     ],
     "adjacentSensitiveSolid" : [
@@ -94,14 +98,18 @@
     ],
     "ice" : [
       {
-        "type" : "square8",
-        "textureBase" : "Tiles/Ice",
-        "adjoiningTypes" : [
-          "solid/0",
-          "ice/0",
-          "destructibleSolid/0",
-          "glassSolid/0"
-        ]
+        "type": "glossy",
+        "explicitGlossTemplate": null,
+        "base": {
+          "type": "square8",
+          "textureBase": "Tiles/Ice",
+          "adjoiningTypes": [
+            "solid/0",
+            "ice/0",
+            "destructibleSolid/0",
+            "glassSolid/0"
+          ]
+        }
       }
     ],
     "backgroundDirectionBoost" : [
@@ -289,14 +297,30 @@
     ],
     "glassSolid": [
       {
-        "type": "square8",
-        "textureBase": "Tiles/GlassSolid",
-        "adjoiningTypes": [
-          "solid/0",
-          "ice/0",
-          "destructibleSolid/0",
-          "glassSolid/0"
-        ]
+        "type": "glossy",
+        "explicitGlossTemplate": {
+          "type": "color",
+          "color": {
+            "hue": 0,
+            "saturation": 0,
+            "brightness": 0,
+            "alpha": 1
+          }
+        },
+        "base": {
+          "type": "destructible",
+          "destructionTexture": "Tiles/Destruction",
+          "base": {
+            "type": "square8",
+            "textureBase": "Tiles/GlassSolid",
+            "adjoiningTypes": [
+              "solid/0",
+              "ice/0",
+              "destructibleSolid/0",
+              "glassSolid/0"
+            ]
+          }
+        }
       }
     ],
     "cameraBoundary": [
@@ -314,6 +338,20 @@
           },
           "base": null
         }
+      }
+    ],
+    "coin": [
+      {
+        "type": "continuouslyAnimated",
+        "textureBase": "Tiles/Coin",
+        "totalDuration": 1
+      }
+    ],
+    "key": [
+      {
+        "type": "continuouslyAnimated",
+        "textureBase": "Tiles/Key",
+        "totalDuration": 1
       }
     ]
   },
@@ -543,11 +581,6 @@
   },
   "edgeMaskTextureBase" : "Tiles/EdgeMask",
   "glossTexture" : "Effects/Gloss",
-  "glossyTileViews" : [
-    "solid/0",
-    "ice/0",
-    "glassSolid"
-  ],
   "imagePlaceholderTexture": "Tiles/ImagePlaceholder",
   "entityGrabColors" : {
     "player" : [
@@ -669,6 +702,12 @@
     ],
     "cameraBoundary": [
       ""
+    ],
+    "coin": [
+      "Default"
+    ],
+    "key": [
+      "Default"
     ]
   },
   "playerInputSpeedMultiplier" : 0.125,
@@ -730,6 +769,7 @@
         "helC" : {
           "maxHealth" : 1
         },
+        "ctrC": {},
         "nijC" : {
           "jumpSpeed" : 16,
           "jumpAngularSpeed" : "720°",
@@ -807,7 +847,8 @@
         },
         "toxC" : {
           "damage" : 0.25,
-          "safeTypes" : []
+          "safeTypes" : [],
+          "affectsDestructibleTiles": false
         }
       }
     ],
@@ -865,7 +906,8 @@
         },
         "toxC" : {
           "damage" : 0.125,
-          "safeTypes" : []
+          "safeTypes" : [],
+          "affectsDestructibleTiles": false
         }
       },
       {
@@ -904,7 +946,8 @@
         },
         "toxC" : {
           "damage" : 0.5,
-          "safeTypes" : []
+          "safeTypes" : [],
+          "affectsDestructibleTiles": false
         }
       }
     ],
@@ -1046,7 +1089,8 @@
         "colC" : {},
         "toxC" : {
           "damage" : 0.5,
-          "safeTypes" : []
+          "safeTypes" : [],
+          "affectsDestructibleTiles": true
         }
       },
       {
@@ -1059,7 +1103,8 @@
         "colC" : {},
         "toxC" : {
           "damage" : 0.25,
-          "safeTypes" : []
+          "safeTypes" : [],
+          "affectsDestructibleTiles": true
         }
       }
     ]
@@ -1215,6 +1260,12 @@
       0
     ],
     "cameraBoundary": [
+      0
+    ],
+    "coin": [
+      0
+    ],
+    "key": [
       0
     ]
   }

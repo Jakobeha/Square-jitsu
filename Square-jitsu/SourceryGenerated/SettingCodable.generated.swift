@@ -112,6 +112,71 @@ extension AnimatedOnDeathEntityViewTemplate {
         self.base.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
+extension CollectorComponent {
+    internal init(from setting: StructSetting<CollectorComponent>) {
+        self.init(
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<CollectorComponent>) -> CollectorComponent {
+        self.init(
+        )
+    }
+
+    internal func encode(to setting: StructSetting<CollectorComponent>) {
+    }
+}
+extension CollisionComponent {
+    internal init(from setting: StructSetting<CollisionComponent>) {
+        self.init(
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<CollisionComponent>) -> CollisionComponent {
+        self.init(
+        )
+    }
+
+    internal func encode(to setting: StructSetting<CollisionComponent>) {
+    }
+}
+extension ColorTileViewTemplate {
+    internal convenience init(from setting: StructSetting<ColorTileViewTemplate>) {
+        self.init(
+            color: setting.usedFieldSettings["color"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<ColorTileViewTemplate>) -> ColorTileViewTemplate {
+        self.init(
+            color: setting.usedFieldSettings["color"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<ColorTileViewTemplate>) {
+        self.color.encodeDynamically(to: setting.allFieldSettings["color"]!)
+    }
+}
+extension ContinuouslyAnimatedTileViewTemplate {
+    internal convenience init(from setting: StructSetting<ContinuouslyAnimatedTileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
+            totalDuration: setting.usedFieldSettings["totalDuration"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<ContinuouslyAnimatedTileViewTemplate>) -> ContinuouslyAnimatedTileViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically(),
+            totalDuration: setting.usedFieldSettings["totalDuration"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<ContinuouslyAnimatedTileViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
+        self.totalDuration.encodeDynamically(to: setting.allFieldSettings["totalDuration"]!)
+    }
+}
 extension CornerFacingTileViewTemplate {
     internal convenience init(from setting: StructSetting<CornerFacingTileViewTemplate>) {
         self.init(
@@ -249,6 +314,20 @@ extension Diamond4TileViewTemplate {
         self.semiAdjoiningTypes2.encodeDynamically(to: setting.allFieldSettings["semiAdjoiningTypes2"]!)
     }
 }
+extension DontClipComponent {
+    internal init(from setting: StructSetting<DontClipComponent>) {
+        self.init(
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<DontClipComponent>) -> DontClipComponent {
+        self.init(
+        )
+    }
+
+    internal func encode(to setting: StructSetting<DontClipComponent>) {
+    }
+}
 extension Edge4TileViewTemplate {
     internal convenience init(from setting: StructSetting<Edge4TileViewTemplate>) {
         self.init(
@@ -290,6 +369,7 @@ extension Entity.Components {
             helC: setting.usedFieldSettings["helC"]?.decodeDynamically(),
             toxC: setting.usedFieldSettings["toxC"]?.decodeDynamically(),
             turC: setting.usedFieldSettings["turC"]?.decodeDynamically(),
+            ctrC: setting.usedFieldSettings["ctrC"]?.decodeDynamically(),
             nijC: setting.usedFieldSettings["nijC"]?.decodeDynamically(),
             anjC: setting.usedFieldSettings["anjC"]?.decodeDynamically()
         )
@@ -318,6 +398,7 @@ extension Entity.Components {
             helC: setting.usedFieldSettings["helC"]?.decodeDynamically(),
             toxC: setting.usedFieldSettings["toxC"]?.decodeDynamically(),
             turC: setting.usedFieldSettings["turC"]?.decodeDynamically(),
+            ctrC: setting.usedFieldSettings["ctrC"]?.decodeDynamically(),
             nijC: setting.usedFieldSettings["nijC"]?.decodeDynamically(),
             anjC: setting.usedFieldSettings["anjC"]?.decodeDynamically()
         )
@@ -345,6 +426,7 @@ extension Entity.Components {
         self.helC?.encodeDynamically(to: setting.allFieldSettings["helC"]!)
         self.toxC?.encodeDynamically(to: setting.allFieldSettings["toxC"]!)
         self.turC?.encodeDynamically(to: setting.allFieldSettings["turC"]!)
+        self.ctrC?.encodeDynamically(to: setting.allFieldSettings["ctrC"]!)
         self.nijC?.encodeDynamically(to: setting.allFieldSettings["nijC"]!)
         self.anjC?.encodeDynamically(to: setting.allFieldSettings["anjC"]!)
     }
@@ -406,6 +488,86 @@ extension Free4TileViewTemplate {
         self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
     }
 }
+extension GlossyTileViewTemplate {
+    internal convenience init(from setting: StructSetting<GlossyTileViewTemplate>) {
+        self.init(
+            explicitGlossTemplate: setting.usedFieldSettings["explicitGlossTemplate"]?.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<GlossyTileViewTemplate>) -> GlossyTileViewTemplate {
+        self.init(
+            explicitGlossTemplate: setting.usedFieldSettings["explicitGlossTemplate"]?.decodeDynamically(),
+            base: setting.usedFieldSettings["base"]?.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<GlossyTileViewTemplate>) {
+        self.explicitGlossTemplate?.encodeDynamically(to: setting.allFieldSettings["explicitGlossTemplate"]!)
+        self.base?.encodeDynamically(to: setting.allFieldSettings["base"]!)
+    }
+}
+extension GrabbableComponent {
+    internal init(from setting: StructSetting<GrabbableComponent>) {
+        self.init(
+            thrownSpeedMultiplier: setting.usedFieldSettings["thrownSpeedMultiplier"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<GrabbableComponent>) -> GrabbableComponent {
+        self.init(
+            thrownSpeedMultiplier: setting.usedFieldSettings["thrownSpeedMultiplier"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<GrabbableComponent>) {
+        self.thrownSpeedMultiplier.encodeDynamically(to: setting.allFieldSettings["thrownSpeedMultiplier"]!)
+    }
+}
+extension GrabbingComponent {
+    internal init(from setting: StructSetting<GrabbingComponent>) {
+        self.init(
+            grabbableTypes: setting.usedFieldSettings["grabbableTypes"]!.decodeDynamically(),
+            grabOffset: setting.usedFieldSettings["grabOffset"]!.decodeDynamically(),
+            throwSpeed: setting.usedFieldSettings["throwSpeed"]!.decodeDynamically(),
+            throwAngularSpeed: setting.usedFieldSettings["throwAngularSpeed"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<GrabbingComponent>) -> GrabbingComponent {
+        self.init(
+            grabbableTypes: setting.usedFieldSettings["grabbableTypes"]!.decodeDynamically(),
+            grabOffset: setting.usedFieldSettings["grabOffset"]!.decodeDynamically(),
+            throwSpeed: setting.usedFieldSettings["throwSpeed"]!.decodeDynamically(),
+            throwAngularSpeed: setting.usedFieldSettings["throwAngularSpeed"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<GrabbingComponent>) {
+        self.grabbableTypes.encodeDynamically(to: setting.allFieldSettings["grabbableTypes"]!)
+        self.grabOffset.encodeDynamically(to: setting.allFieldSettings["grabOffset"]!)
+        self.throwSpeed.encodeDynamically(to: setting.allFieldSettings["throwSpeed"]!)
+        self.throwAngularSpeed.encodeDynamically(to: setting.allFieldSettings["throwAngularSpeed"]!)
+    }
+}
+extension HealthComponent {
+    internal init(from setting: StructSetting<HealthComponent>) {
+        self.init(
+            maxHealth: setting.usedFieldSettings["maxHealth"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<HealthComponent>) -> HealthComponent {
+        self.init(
+            maxHealth: setting.usedFieldSettings["maxHealth"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<HealthComponent>) {
+        self.maxHealth.encodeDynamically(to: setting.allFieldSettings["maxHealth"]!)
+    }
+}
 extension ImageMetadata {
     internal init(from setting: StructSetting<ImageMetadata>) {
         self.init(
@@ -424,6 +586,32 @@ extension ImageMetadata {
     internal func encode(to setting: StructSetting<ImageMetadata>) {
         self.imageTexture.encodeDynamically(to: setting.allFieldSettings["imageTexture"]!)
         self.sizeInTiles.encodeDynamically(to: setting.allFieldSettings["sizeInTiles"]!)
+    }
+}
+extension ImplicitForcesComponent {
+    internal init(from setting: StructSetting<ImplicitForcesComponent>) {
+        self.init(
+            gravity: setting.usedFieldSettings["gravity"]!.decodeDynamically(),
+            minSpeedOnIce: setting.usedFieldSettings["minSpeedOnIce"]!.decodeDynamically(),
+            solidFriction: setting.usedFieldSettings["solidFriction"]!.decodeDynamically(),
+            aerialAngularFriction: setting.usedFieldSettings["aerialAngularFriction"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<ImplicitForcesComponent>) -> ImplicitForcesComponent {
+        self.init(
+            gravity: setting.usedFieldSettings["gravity"]!.decodeDynamically(),
+            minSpeedOnIce: setting.usedFieldSettings["minSpeedOnIce"]!.decodeDynamically(),
+            solidFriction: setting.usedFieldSettings["solidFriction"]!.decodeDynamically(),
+            aerialAngularFriction: setting.usedFieldSettings["aerialAngularFriction"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<ImplicitForcesComponent>) {
+        self.gravity.encodeDynamically(to: setting.allFieldSettings["gravity"]!)
+        self.minSpeedOnIce.encodeDynamically(to: setting.allFieldSettings["minSpeedOnIce"]!)
+        self.solidFriction.encodeDynamically(to: setting.allFieldSettings["solidFriction"]!)
+        self.aerialAngularFriction.encodeDynamically(to: setting.allFieldSettings["aerialAngularFriction"]!)
     }
 }
 extension IndicatedInEditorTileViewTemplate {
@@ -464,6 +652,54 @@ extension LaserEntityViewTemplate {
     internal func encode(to setting: StructSetting<LaserEntityViewTemplate>) {
         self.color.encodeDynamically(to: setting.allFieldSettings["color"]!)
         self.thickness.encodeDynamically(to: setting.allFieldSettings["thickness"]!)
+    }
+}
+extension LineLocationComponent {
+    internal init(from setting: StructSetting<LineLocationComponent>) {
+        self.init(
+            thickness: setting.usedFieldSettings["thickness"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<LineLocationComponent>) -> LineLocationComponent {
+        self.init(
+            thickness: setting.usedFieldSettings["thickness"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<LineLocationComponent>) {
+        self.thickness.encodeDynamically(to: setting.allFieldSettings["thickness"]!)
+    }
+}
+extension LoadAroundComponent {
+    internal init(from setting: StructSetting<LoadAroundComponent>) {
+        self.init(
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<LoadAroundComponent>) -> LoadAroundComponent {
+        self.init(
+        )
+    }
+
+    internal func encode(to setting: StructSetting<LoadAroundComponent>) {
+    }
+}
+extension LocationComponent {
+    internal init(from setting: StructSetting<LocationComponent>) {
+        self.init(
+            radius: setting.usedFieldSettings["radius"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<LocationComponent>) -> LocationComponent {
+        self.init(
+            radius: setting.usedFieldSettings["radius"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<LocationComponent>) {
+        self.radius.encodeDynamically(to: setting.allFieldSettings["radius"]!)
     }
 }
 extension MacroButtonTileViewTemplate {
@@ -552,6 +788,23 @@ extension MovingComponent {
 
     internal func encode(to setting: StructSetting<MovingComponent>) {
         self.dynamicKnockbackMultiplier.encodeDynamically(to: setting.allFieldSettings["dynamicKnockbackMultiplier"]!)
+    }
+}
+extension NearTileComponent {
+    internal init(from setting: StructSetting<NearTileComponent>) {
+        self.init(
+            nearRadiusExtra: setting.usedFieldSettings["nearRadiusExtra"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<NearTileComponent>) -> NearTileComponent {
+        self.init(
+            nearRadiusExtra: setting.usedFieldSettings["nearRadiusExtra"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<NearTileComponent>) {
+        self.nearRadiusExtra.encodeDynamically(to: setting.allFieldSettings["nearRadiusExtra"]!)
     }
 }
 extension NinjaComponent {
@@ -689,20 +942,23 @@ extension ToxicComponent {
     internal init(from setting: StructSetting<ToxicComponent>) {
         self.init(
             damage: setting.usedFieldSettings["damage"]!.decodeDynamically(),
-            safeTypes: setting.usedFieldSettings["safeTypes"]!.decodeDynamically()
+            safeTypes: setting.usedFieldSettings["safeTypes"]!.decodeDynamically(),
+            affectsDestructibleTiles: setting.usedFieldSettings["affectsDestructibleTiles"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<ToxicComponent>) -> ToxicComponent {
         self.init(
             damage: setting.usedFieldSettings["damage"]!.decodeDynamically(),
-            safeTypes: setting.usedFieldSettings["safeTypes"]!.decodeDynamically()
+            safeTypes: setting.usedFieldSettings["safeTypes"]!.decodeDynamically(),
+            affectsDestructibleTiles: setting.usedFieldSettings["affectsDestructibleTiles"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<ToxicComponent>) {
         self.damage.encodeDynamically(to: setting.allFieldSettings["damage"]!)
         self.safeTypes.encodeDynamically(to: setting.allFieldSettings["safeTypes"]!)
+        self.affectsDestructibleTiles.encodeDynamically(to: setting.allFieldSettings["affectsDestructibleTiles"]!)
     }
 }
 extension TurretComponent {
@@ -830,7 +1086,6 @@ extension WorldSettings {
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
             edgeMaskTextureBase: setting.usedFieldSettings["edgeMaskTextureBase"]!.decodeDynamically(),
             glossTexture: setting.usedFieldSettings["glossTexture"]!.decodeDynamically(),
-            glossyTileViews: setting.usedFieldSettings["glossyTileViews"]!.decodeDynamically(),
             imagePlaceholderTexture: setting.usedFieldSettings["imagePlaceholderTexture"]!.decodeDynamically(),
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
@@ -859,7 +1114,6 @@ extension WorldSettings {
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
             edgeMaskTextureBase: setting.usedFieldSettings["edgeMaskTextureBase"]!.decodeDynamically(),
             glossTexture: setting.usedFieldSettings["glossTexture"]!.decodeDynamically(),
-            glossyTileViews: setting.usedFieldSettings["glossyTileViews"]!.decodeDynamically(),
             imagePlaceholderTexture: setting.usedFieldSettings["imagePlaceholderTexture"]!.decodeDynamically(),
             entityZPositions: setting.usedFieldSettings["entityZPositions"]!.decodeDynamically(),
             rotateTileViewBasedOnOrientation: setting.usedFieldSettings["rotateTileViewBasedOnOrientation"]!.decodeDynamically(),
@@ -887,7 +1141,6 @@ extension WorldSettings {
         self.entityViewTemplates.encodeDynamically(to: setting.allFieldSettings["entityViewTemplates"]!)
         self.edgeMaskTextureBase.encodeDynamically(to: setting.allFieldSettings["edgeMaskTextureBase"]!)
         self.glossTexture.encodeDynamically(to: setting.allFieldSettings["glossTexture"]!)
-        self.glossyTileViews.encodeDynamically(to: setting.allFieldSettings["glossyTileViews"]!)
         self.imagePlaceholderTexture.encodeDynamically(to: setting.allFieldSettings["imagePlaceholderTexture"]!)
         self.entityZPositions.encodeDynamically(to: setting.allFieldSettings["entityZPositions"]!)
         self.rotateTileViewBasedOnOrientation.encodeDynamically(to: setting.allFieldSettings["rotateTileViewBasedOnOrientation"]!)

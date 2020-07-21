@@ -35,6 +35,12 @@ extension Dictionary: HasDefault {
     var isDefault: Bool { isEmpty }
 }
 
+extension Int: HasDefault {
+    static var defaultValue: Int = 0
+
+    var isDefault: Bool { self == 0 }
+}
+
 extension String: HasDefault {
     static var defaultValue: String { "" }
 

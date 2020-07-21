@@ -5,4 +5,12 @@
 
 import Foundation
 
-struct DontClipComponent: SettingCodableByCodable, Codable {}
+struct DontClipComponent: SingleSettingCodable, Codable {
+    // region encoding and decoding
+    typealias AsSetting = StructSetting<DontClipComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [:], optionalFields: [:])
+    }
+    // endregion
+}

@@ -7,7 +7,7 @@ import SpriteKit
 
 /// An entity with this component gets more advanced (but slow to calculate)
 /// information about surrounding collisions
-struct CollisionComponent: SettingCodableByCodable, Codable {
+struct CollisionComponent: SingleSettingCodable, Codable {
     var adjacentSides: SideSet = []
     var adjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> = [:]
     var overlappingTypes: TileTypeSet = TileTypeSet()
@@ -48,5 +48,13 @@ struct CollisionComponent: SettingCodableByCodable, Codable {
         earlyOverlappingEntities.removeAll()
     }
 
+    // region encoding and decoding
+    typealias AsSetting = StructSetting<CollisionComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [:], optionalFields: [:])
+    }
+
     enum CodingKeys: CodingKey {}
+    // endregion
 }

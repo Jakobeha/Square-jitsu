@@ -7,7 +7,7 @@ import SpriteKit
 
 /// The entity's shape is actually a line segment,
 /// so a point + radius (as in a regular location component) isn't good enough
-struct LineLocationComponent: SettingCodableByCodable, Codable {
+struct LineLocationComponent: SingleSettingCodable, Codable {
     var position: LineSegment = LineSegment.nan
     var thickness: CGFloat
 
@@ -35,6 +35,14 @@ struct LineLocationComponent: SettingCodableByCodable, Codable {
     }
 
     // region encoding and decoding
+    typealias AsSetting = StructSetting<LineLocationComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [
+            "thickness": CGFloatRangeSetting(0...16)
+        ], optionalFields: [:])
+    }
+
     enum CodingKeys: String, CodingKey {
         case thickness
     }

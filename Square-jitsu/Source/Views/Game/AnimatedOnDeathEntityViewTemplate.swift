@@ -44,7 +44,7 @@ final class AnimatedOnDeathEntityViewTemplate: AugmentingEntityViewTemplate, Sin
     // region encoding and decoding
     typealias AsSetting = StructSetting<AnimatedOnDeathEntityViewTemplate>
 
-    static func newSetting() -> StructSetting<AnimatedOnDeathEntityViewTemplate> {
+    static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "base": DeferredSetting { EntityViewTemplateSetting() },
             "dyingTextureBase": TextureSetSetting(),

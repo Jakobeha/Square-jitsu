@@ -24,7 +24,6 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var entityViewTemplates: TileTypeMap<EntityViewTemplate>
     let edgeMaskTextureBase: TextureSet
     let glossTexture: SKTexture
-    let glossyTileViews: TileTypePred
     let imagePlaceholderTexture: SKTexture
     var entityZPositions: TileTypeMap<CGFloat>
     var rotateTileViewBasedOnOrientation: TileTypeMap<Bool>
@@ -49,12 +48,11 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>
     var selectableTypes: [TileBigType:[TileSmallType]]
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, edgeMaskTextureBase: TextureSet, glossTexture: SKTexture, glossyTileViews: TileTypePred, imagePlaceholderTexture: SKTexture, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, playerInputSpeedFractionChangePerSecond: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, destructibleSolidInitialHealth: [CGFloat], dashEdgeBoostSpeed: [CGFloat], springEdgeBounceMultiplier: [CGFloat], defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, edgeMaskTextureBase: TextureSet, glossTexture: SKTexture, imagePlaceholderTexture: SKTexture, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, playerInputSpeedFractionChangePerSecond: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, destructibleSolidInitialHealth: [CGFloat], dashEdgeBoostSpeed: [CGFloat], springEdgeBounceMultiplier: [CGFloat], defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
         self.edgeMaskTextureBase = edgeMaskTextureBase
         self.glossTexture = glossTexture
-        self.glossyTileViews = glossyTileViews
         self.imagePlaceholderTexture = imagePlaceholderTexture
         self.entityZPositions = entityZPositions
         self.rotateTileViewBasedOnOrientation = rotateTileViewBasedOnOrientation
@@ -85,7 +83,6 @@ final class WorldSettings: SingleSettingCodable, Codable {
             "entityViewTemplates": TileTypeMapSetting<EntityViewTemplate> { EntityViewTemplateSetting() },
             "edgeMaskTextureBase": TextureSetSetting(),
             "glossTexture": TextureSetting(),
-            "glossyTileViews": TileTypePredSetting(),
             "imagePlaceholderTexture": TextureSetting(),
             "entityZPositions": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(-TileType.zPositionUpperBound...TileType.zPositionUpperBound) },
             "rotateTileViewBasedOnOrientation": TileTypeMapSetting<Bool> { BoolSetting() },

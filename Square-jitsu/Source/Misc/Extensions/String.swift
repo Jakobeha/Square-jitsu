@@ -41,12 +41,15 @@ extension String {
         var remaining = self
         while let nextSplitIndex = remaining.firstIndex(where: { character in character.isUppercase }) {
             let nextWordRange = ..<nextSplitIndex
-            // Only the first letter could be uppercase (in words which aren't the first).
-            // We want to make the first letter of these words lowercase,
-            // and we make the first word capitalized later
-            let nextWord = remaining[nextWordRange].localizedLowercase
-            words.append(nextWord)
+            let nextWord = remaining[nextWordRange]
+            words.append(String(nextWord))
             remaining.removeSubrange(nextWordRange)
+            if !remaining.isEmpty {
+                let firstCharacterRange = ..<remaining.index(after: remaining.startIndex)
+                remaining.modify(range: firstCharacterRange) { firstCharacter in
+                    firstCharacter.localizedLowercase
+                }
+            }
         }
         words.append(remaining)
 
@@ -61,5 +64,9 @@ extension String {
 
     func strip(prefix: String) -> Substring? {
         starts(with: prefix) ? self[index(startIndex, offsetBy: prefix.count)...] : nil
+    }
+
+    mutating func modify<R: RangeExpression, C: Collection>(range: R, with transformer: (Substring) throws -> C) rethrows where R.Bound == Index, C.Element == Element {
+        replaceSubrange(range, with: try transformer(self[range]))
     }
 }

@@ -5,4 +5,12 @@
 
 import Foundation
 
-struct LoadAroundComponent: SettingCodableByCodable, Codable {}
+struct LoadAroundComponent: SingleSettingCodable, Codable {
+    // region encoding and decoding
+    typealias AsSetting = StructSetting<LoadAroundComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [:], optionalFields: [:])
+    }
+    // endregion
+}

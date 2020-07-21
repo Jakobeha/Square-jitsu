@@ -30,33 +30,35 @@ class Entity: EqualityIsIdentity {
         var helC: HealthComponent?
         var toxC: ToxicComponent?
         var turC: TurretComponent?
+        var ctrC: CollectorComponent?
         var nijC: NinjaComponent?
         var anjC: AINinjaComponent?
 
         static func newSetting() -> AsSetting {
             StructSetting(requiredFields: [:], optionalFields: [
-                "locC": CodableStructSetting<LocationComponent>(),
-                "lilC": CodableStructSetting<LineLocationComponent>(),
-                "larC": CodableStructSetting<LoadAroundComponent>(),
+                "locC": LocationComponent.newSetting(),
+                "lilC": LineLocationComponent.newSetting(),
+                "larC": LoadAroundComponent.newSetting(),
                 "dalC": DestroyAfterLifetimeComponent.newSetting(),
                 "codC": CreateOnDestroyComponent.newSetting(),
                 "dynC": MovingComponent.newSetting(),
                 "accC": AccelerationComponent.newSetting(),
                 "ac3C": Acceleration3Component.newSetting(),
-                "colC": CodableStructSetting<CollisionComponent>(),
-                "ntlC": CodableStructSetting<NearTileComponent>(),
-                "imfC": CodableStructSetting<ImplicitForcesComponent>(),
-                "dciC": CodableStructSetting<DontClipComponent>(),
+                "colC": CollisionComponent.newSetting(),
+                "ntlC": NearTileComponent.newSetting(),
+                "imfC": ImplicitForcesComponent.newSetting(),
+                "dciC": DontClipComponent.newSetting(),
                 "docC": DestroyOnCollideComponent.newSetting(),
-                "cocC": CodableStructSetting<CreateOnCollideComponent>(),
+                "cocC": CreateOnCollideComponent.newSetting(),
                 "ricC": RicochetComponent.newSetting(),
                 "matC": MatterComponent.newSetting(),
-                "griC": CodableStructSetting<GrabbingComponent>(),
-                "graC": CodableStructSetting<GrabbableComponent>(),
-                "helC": CodableStructSetting<HealthComponent>(),
+                "griC": GrabbingComponent.newSetting(),
+                "graC": GrabbableComponent.newSetting(),
+                "helC": HealthComponent.newSetting(),
                 "toxC": ToxicComponent.newSetting(),
                 "turC": TurretComponent.newSetting(),
-                "nijC": CodableStructSetting<NinjaComponent>(),
+                "ctrC": CollectorComponent.newSetting(),
+                "nijC": NinjaComponent.newSetting(),
                 "anjC": AINinjaComponent.newSetting()
             ], allowedExtraFields: []) { setting in
                 let components: Components = setting.decodeDynamically()
@@ -86,6 +88,7 @@ class Entity: EqualityIsIdentity {
             "griC": ([["colC"], ["dynC"], ["locC"]], []),
             "graC": ([["dynC"], ["locC"]], []),
             "turC": ([["dynC"], ["locC"]], []),
+            "ctrC": ([["colC"]], []),
             "nijC": ([["helC"], ["ntlC"], ["colC"], ["dynC"], ["locC"]], []),
             "anjC": ([["nijC"]], [])
         ]

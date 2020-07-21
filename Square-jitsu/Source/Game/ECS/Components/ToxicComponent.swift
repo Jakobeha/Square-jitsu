@@ -9,6 +9,7 @@ import SpriteKit
 struct ToxicComponent: SingleSettingCodable, Codable {
     var damage: CGFloat
     var safeTypes: Set<TileType>
+    var affectsDestructibleTiles: Bool
 
     var safeEntities: Set<EntityRef> = []
 
@@ -16,6 +17,7 @@ struct ToxicComponent: SingleSettingCodable, Codable {
     enum CodingKeys: String, CodingKey {
         case damage
         case safeTypes
+        case affectsDestructibleTiles
     }
 
     typealias AsSetting = StructSetting<ToxicComponent>
@@ -23,7 +25,8 @@ struct ToxicComponent: SingleSettingCodable, Codable {
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "damage": CGFloatRangeSetting(0...1),
-            "safeTypes": CollectionSetting<Set<TileType>> { TileTypeSetting() }
+            "safeTypes": CollectionSetting<Set<TileType>> { TileTypeSetting() },
+            "affectsDestructibleTiles": BoolSetting()
         ], optionalFields: [:])
     }
     // endregion

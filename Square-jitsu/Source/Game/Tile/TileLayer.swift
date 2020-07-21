@@ -18,6 +18,8 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
 
     case free
 
+    case collectible
+
     case entity
 
     // region pattern matching
@@ -37,6 +39,8 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
             return TileLayerSet.edge
         case .free:
             return TileLayerSet.free
+        case .collectible:
+            return TileLayerSet.collectible
         case .entity:
             return TileLayerSet.entity
         }
@@ -46,7 +50,7 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
         switch self {
         case .edge:
             return true
-        case .air, .background, .backgroundDirectionBoost, .solid, .iceSolid, .free, .entity:
+        case .air, .background, .backgroundDirectionBoost, .solid, .iceSolid, .free, .collectible, .entity:
             return false
         }
     }
@@ -55,20 +59,21 @@ enum TileLayer: Int, Comparable, CaseIterable, Codable {
         switch self {
         case .solid, .iceSolid, .edge:
             return true
-        case .air, .background, .backgroundDirectionBoost, .free, .entity:
+        case .air, .background, .backgroundDirectionBoost, .free, .collectible, .entity:
             return false
         }
     }
 
     private static let layerOverlapDMatrix: [[Bool]] = [
-        //                              .entity .free .edge .iceSolid .solid .backgroundDirectionBoost .background .air
-        /* .air                      */ [true,  true, true, true,     true,  true,                     true,       true],
-        /* .background               */ [true,  true, true, false,    false, true,                     false],
-        /* .backgroundDirectionBoost */ [true,  true, true, false,    false, false],
-        /* .solid                    */ [false, true, true, false,    false],
-        /* .iceSolid                 */ [false, true, true, false],
-        /* .edge                     */ [true,  true, false],
-        /* .free                     */ [true,  true],
+        //                              .entity .collectible .free .edge .iceSolid .solid .backgroundDirectionBoost .background .air
+        /* .air                      */ [true,  true,        true, true, true,     true,  true,                     true,       true],
+        /* .background               */ [true,  true,        true, true, false,    false, true,                     false],
+        /* .backgroundDirectionBoost */ [true,  true,        true, true, false,    false, false],
+        /* .solid                    */ [false, false,       true, true, false,    false],
+        /* .iceSolid                 */ [false, false,       true, true, false],
+        /* .edge                     */ [true,  true,        true, false],
+        /* .free                     */ [true,  true,        true],
+        /* .collectible              */ [false, false],
         /* .entity                   */ [false]
     ]
 

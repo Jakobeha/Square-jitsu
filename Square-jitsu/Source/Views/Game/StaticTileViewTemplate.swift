@@ -25,7 +25,7 @@ final class StaticTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable 
     // region encoding and decoding
     typealias AsSetting = StructSetting<StaticTileViewTemplate>
 
-    static func newSetting() -> StructSetting<StaticTileViewTemplate> {
+    static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "texture": TextureSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])

@@ -21,12 +21,20 @@ class AugmentingTileViewTemplate: TileViewTemplate {
         base?.generateNode(world: world, pos3D: pos3D, tileType: tileType) ?? SKNode()
     }
 
+    func generateGlossNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode? {
+        base?.generateGlossNode(world: world, pos3D: pos3D, tileType: tileType) ?? SKNode()
+    }
+
     func generateEditorIndicatorNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode? {
         base?.generateEditorIndicatorNode(world: world, pos3D: pos3D, tileType: tileType)
     }
 
     func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
         base?.generatePreviewNodeRaw(size: size, settings: settings) ?? SKNode()
+    }
+
+    func generateGlossPreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode? {
+        base?.generateGlossPreviewNodeRaw(size: size, settings: settings)
     }
 
     func didPlaceInParent(node: SKNode) {

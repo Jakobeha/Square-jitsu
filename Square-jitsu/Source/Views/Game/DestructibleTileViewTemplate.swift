@@ -32,7 +32,7 @@ final class DestructibleTileViewTemplate: AugmentingTileViewTemplate, SingleSett
             updateDestructionAmount()
             destructibleBehavior.didChangeHealth.subscribe(observer: baseNode, priority: .view, handler: updateDestructionAmount)
         } else {
-            Logger.warnSettingsAreInvalid("destructible view on on-destructible tile")
+            Logger.warnSettingsAreInvalid("destructible view on non-destructible tile")
         }
 
         return baseNode

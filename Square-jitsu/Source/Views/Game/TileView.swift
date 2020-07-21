@@ -8,6 +8,17 @@ import SpriteKit
 class TileView: OptionalNodeView {
     private static func generateNode(template: TileViewTemplate?, world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType, coordinates: TileViewCoordinates) -> SKNode? {
         let node = template?.generateNode(world: world, pos3D: pos3D, tileType: tileType)
+        configure(node: node, world: world, pos3D: pos3D, tileType: tileType, coordinates: coordinates)
+        return node
+    }
+
+    private static func generateGlossNode(template: TileViewTemplate?, world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType, coordinates: TileViewCoordinates) -> SKNode? {
+        let node = template?.generateGlossNode(world: world, pos3D: pos3D, tileType: tileType)
+        configure(node: node, world: world, pos3D: pos3D, tileType: tileType, coordinates: coordinates)
+        return node
+    }
+
+    private static func configure(node: SKNode?, world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType, coordinates: TileViewCoordinates) {
         if let node = node {
             switch coordinates {
             case .chunk:
@@ -22,7 +33,6 @@ class TileView: OptionalNodeView {
                 node.angle = tileType.orientation.asSide.angle
             }
         }
-        return node
     }
 
     private let world: ReadonlyWorld
@@ -42,9 +52,9 @@ class TileView: OptionalNodeView {
         self.tileType = tileType
         template = world.settings.tileViewTemplates[tileType]
         self.glossMaskNode = glossMaskNode
-        glossMaskChild = glossMaskNode == nil || !world.settings.glossyTileViews.contains(tileType) ?
+        glossMaskChild = glossMaskNode == nil ?
                 nil :
-                TileView.generateNode(template: template, world: world, pos3D: pos3D, tileType: tileType, coordinates: coordinates)
+                TileView.generateGlossNode(template: template, world: world, pos3D: pos3D, tileType: tileType, coordinates: coordinates)
         super.init(node: TileView.generateNode(template: template, world: world, pos3D: pos3D, tileType: tileType, coordinates: coordinates))
 
         updateEditorIndicator()

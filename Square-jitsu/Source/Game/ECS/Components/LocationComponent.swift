@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-struct LocationComponent: SettingCodableByCodable, Codable {
+struct LocationComponent: SingleSettingCodable, Codable {
     var position: CGPoint = CGPoint.nan
     var rotation: Angle = Angle.zero
     var radius: CGFloat
@@ -31,6 +31,14 @@ struct LocationComponent: SettingCodableByCodable, Codable {
     }
 
     // region encoding and decoding
+    typealias AsSetting = StructSetting<LocationComponent>
+
+    static func newSetting() -> AsSetting {
+        StructSetting(requiredFields: [
+            "radius": CGFloatRangeSetting(0...16)
+        ], optionalFields: [:])
+    }
+
     enum CodingKeys: String, CodingKey {
         case radius
     }

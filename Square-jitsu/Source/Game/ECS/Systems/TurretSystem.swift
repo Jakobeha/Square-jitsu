@@ -52,7 +52,7 @@ struct TurretSystem: TopLevelSystem {
         for tilePositionFromTurretToEntity in tilePositionsFromTurretToEntity {
             let tileTypesAtPosition = world[tilePositionFromTurretToEntity]
             for tileTypeFromTurretToEntity in tileTypesAtPosition {
-                if tileTypeFromTurretToEntity.isSolid {
+                if tileTypeFromTurretToEntity.blocksVision {
                     return false
                 }
             }

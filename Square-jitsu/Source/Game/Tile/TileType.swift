@@ -60,6 +60,10 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
     /// - Note: If you change this, also change TileTypeSet.containsSolid
     var isSolid: Bool { bigType.layer == .solid || bigType.layer == .iceSolid || bigType == .solidEdge }
 
+    var blocksVision: Bool {
+        isSolid && bigType != .glassSolid
+    }
+
     var occupiedSides: SideSet {
         bigType.layer.doTilesOccupySides ? orientation.asSideSet : SideSet.all
     }
