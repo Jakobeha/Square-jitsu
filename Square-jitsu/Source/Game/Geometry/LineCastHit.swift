@@ -26,8 +26,8 @@ struct LineCastHit {
         // except this time we don't worry about adjacents or close calls
         let xWouldHitEastSide = line.end.x < line.start.x
         let yWouldHitNorthSide = line.end.y < line.start.y
-        let xSide = pos3D.pos.cgPoint.x + (xWouldHitEastSide ? -0.5 : 0.5)
-        let ySide = pos3D.pos.cgPoint.y + (yWouldHitNorthSide ? -0.5 : 0.5)
+        let xSide = pos3D.pos.cgPoint.x + (xWouldHitEastSide ? 0.5 : -0.5)
+        let ySide = pos3D.pos.cgPoint.y + (yWouldHitNorthSide ? 0.5 : -0.5)
         let tAtX = line.unclampedTAt(x: xSide)
         let tAtY = line.unclampedTAt(y: ySide)
         let xHitSide = xWouldHitEastSide ? Side.east : Side.west

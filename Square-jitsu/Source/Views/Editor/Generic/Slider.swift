@@ -62,7 +62,9 @@ class Slider<Number: SliderNumber>: UXView {
         knobNodes = []
         knobNodes = values.map(createKnobNode)
 
-        sliderNode.didSliderFractionsChange.subscribe(observer: self, priority: .view, handler: setSliderValueFromControl)
+        sliderNode.didSliderFractionsChange.subscribe(observer: self, priority: .view) { (self, fractions) in
+            self.setSliderValueFromControl(fractions: fractions)
+        }
     }
 
     private func createKnobNode(value: Number) -> SKSpriteNode {

@@ -12,18 +12,20 @@ class GameplayControlView: UXCompoundView {
         self.editor = editor
         super.init()
 
-        editor.didChangeState.subscribe(observer: self, priority: .view, handler: regenerateBody)
+        editor.didChangeState.subscribe(observer: self, priority: .view) { (self) in
+            self.regenerateBody()
+        }
     }
 
     override func newBody() -> UXView {
         switch editor.state {
         case .playing:
-            return Button(textureName: "UI/Pause") { self.editor.state = .editing }
+            return Button(owner: self, textureName: "UI/Pause") { (self) in self.editor.state = .editing }
         case .editing:
             return VStack([
-                Button(textureName: "UI/Play") { self.editor.state = .playing },
-                Button(textureName: "UI/ResetWorld") { self.editor.editableWorld.world.resetExceptForPlayer() },
-                Button(textureName: "UI/ResetPlayer") { self.editor.editableWorld.world.resetPlayer() }
+                Button(owner: self, textureName: "UI/Play") { (self) in self.editor.state = .playing },
+                Button(owner: self, textureName: "UI/ResetWorld") { (self) in self.editor.editableWorld.world.resetExceptForPlayer() },
+                Button(owner: self, textureName: "UI/ResetPlayer") { (self) in self.editor.editableWorld.world.resetPlayer() }
             ])
         }
     }

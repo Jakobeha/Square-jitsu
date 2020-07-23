@@ -20,7 +20,11 @@ class Camera {
     }
     weak var world: World? = nil {
         willSet { world?.didReset.unsubscribe(observer: self) }
-        didSet { world?.didReset.subscribe(observer: self, priority: .model, handler: loadVisibleChunks) }
+        didSet {
+            world?.didReset.subscribe(observer: self, priority: .model) { (self) in
+                self.loadVisibleChunks()
+            }
+        }
     }
 
     var screenSize: CGSize {
@@ -39,7 +43,9 @@ class Camera {
     init(userSettings: UserSettings) {
         self.userSettings = userSettings
 
-        didChange.subscribe(observer: self, priority: .model, handler: loadVisibleChunks)
+        didChange.subscribe(observer: self, priority: .model) { (self) in
+            self.loadVisibleChunks()
+        }
     }
 
     private func loadVisibleChunks() {

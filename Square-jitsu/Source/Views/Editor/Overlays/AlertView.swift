@@ -77,9 +77,10 @@ class AlertView: UXView, OverlayView {
             let optionPositionX = optionPositionFraction * AlertView.size.width
 
             let optionButton = TextButton(
+                owner: self,
                 text: option.description,
                 width: optionNodeWidth
-            ) {
+            ) { (self) in
                 self.alert.selectOption(index: index)
             }
 

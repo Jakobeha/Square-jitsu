@@ -24,7 +24,7 @@ class EditorToolsActionView: UXCompoundView {
         super.init()
 
         // We subscribe to changing the action because changing the selection might change buttons' tint colors
-        editorTools.didChangeEditAction.subscribe(observer: self, priority: .view) {
+        editorTools.didChangeEditAction.subscribe(observer: self, priority: .view) { (self) in
             self.regenerateBody()
         }
     }
@@ -36,33 +36,37 @@ class EditorToolsActionView: UXCompoundView {
                 nil
         return HStack([
             Button(
-                    textureName: "UI/RemoveTiles",
-                    isSelected: editActionMode == .remove,
-                    tintHue: instantActionIfSelectTintHue
-            ) {
+                owner: self,
+                textureName: "UI/RemoveTiles",
+                isSelected: editActionMode == .remove,
+                tintHue: instantActionIfSelectTintHue
+            ) { (self) in
                 self.editorTools.select(actionMode: .remove)
             },
             Button(
-                    textureName: editActionMode == .copy ? "UI/CopyTiles" : "UI/MoveTiles",
-                    rouletteNextItemTextureName: editActionMode == .copy ? "UI/MoveTiles" : "UI/CopyTiles",
-                    isSelected: editActionMode == .move || editActionMode == .copy,
-                    tintHue: instantActionIfSelectTintHue
-            ) {
+                owner: self,
+                textureName: editActionMode == .copy ? "UI/CopyTiles" : "UI/MoveTiles",
+                rouletteNextItemTextureName: editActionMode == .copy ? "UI/MoveTiles" : "UI/CopyTiles",
+                isSelected: editActionMode == .move || editActionMode == .copy,
+                tintHue: instantActionIfSelectTintHue
+            ) { (self) in
                 self.editorTools.select(actionMode: self.editActionMode == .move ? .copy : .move)
             },
             Button(
-                    textureName: "UI/InspectTiles",
-                    isSelected: editActionMode == .inspect,
-                    tintHue: instantActionIfSelectTintHue
-            ) {
+                owner: self,
+                textureName: "UI/InspectTiles",
+                isSelected: editActionMode == .inspect,
+                tintHue: instantActionIfSelectTintHue
+            ) { (self) in
                 self.editorTools.select(actionMode: .inspect)
             },
             Button(
-                    textureName: editActionMode == .deselect ? "UI/DeselectTiles" : "UI/SelectTiles",
-                    rouletteNextItemTextureName: editActionMode == .deselect ? "UI/SelectTiles" : "UI/DeselectTiles",
-                    isSelected: editActionMode == .select || editActionMode == .deselect
-            ) {
-               self.editorTools.select(actionMode: self.editActionMode == .select ? .deselect : .select)
+                owner: self,
+                textureName: editActionMode == .deselect ? "UI/DeselectTiles" : "UI/SelectTiles",
+                rouletteNextItemTextureName: editActionMode == .deselect ? "UI/SelectTiles" : "UI/DeselectTiles",
+                isSelected: editActionMode == .select || editActionMode == .deselect
+            ) { (self) in
+                self.editorTools.select(actionMode: self.editActionMode == .select ? .deselect : .select)
             },
             tileMenuView
         ])

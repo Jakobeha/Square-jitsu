@@ -60,12 +60,12 @@ class TouchTracker {
                 if var touch = touches[uiTouch.id] {
                     touch.updateFrom(uiTouch: uiTouch, container: container)
                     touch.phase = .ended
-                    touches[uiTouch.id] = nil
+                    touches[uiTouch.id] = touch
                 }
             case .cancelled:
                 if var touch = touches[uiTouch.id] {
                     touch.phase = .ended
-                    touches[uiTouch.id] = nil
+                    touches[uiTouch.id] = touch
                 }
             @unknown default:
                 fatalError("unhandled touch phase")

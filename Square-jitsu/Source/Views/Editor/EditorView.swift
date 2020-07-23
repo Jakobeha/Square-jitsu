@@ -8,6 +8,7 @@ import SpriteKit
 class EditorView: NodeView<SKNode> {
     private let editor: Editor
 
+    private let editorUiView: UXTopLevelView
     private let worldCameraView: CameraView
     private let glossMaskView: CameraView
 
@@ -15,7 +16,7 @@ class EditorView: NodeView<SKNode> {
         self.editor = editor
 
         let editorToolsView = EditorToolsView(editor: editor)
-        let editorUiView = UXTopLevelView(child: editorToolsView, scene: scene)
+        editorUiView = UXTopLevelView(child: editorToolsView, scene: scene)
 
         let glossNode = SKCropNode()
         let glossMaskNode = SKNode()
@@ -39,7 +40,9 @@ class EditorView: NodeView<SKNode> {
         glossNode.zPosition = TileType.zPositionUpperBound
         worldCameraView.node.zPosition = 0
 
-        editor.didChangeState.subscribe(observer: self, priority: .view, handler: changeCamera)
+        editor.didChangeState.subscribe(observer: self, priority: .view) { (self) in
+            self.changeCamera()
+        }
     }
 
     private func changeCamera() {

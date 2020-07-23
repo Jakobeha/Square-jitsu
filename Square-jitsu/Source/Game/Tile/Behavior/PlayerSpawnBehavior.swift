@@ -3,7 +3,7 @@
 // Copyright (c) 2020 Jakobeha. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 class PlayerSpawnBehavior: EmptyTileBehavior<Never> {
     private struct LoadInfo {
@@ -45,9 +45,17 @@ class PlayerSpawnBehavior: EmptyTileBehavior<Never> {
 
     func spawnPlayer() -> Entity {
         // Spawn the player
-        let pos = loadInfo!.playerSpawnPos
         let world = loadInfo!.playerSpawnWorld
-        return Entity.spawnForTile(type: TileType.player, world: world, pos: pos)
+        return Entity.spawn(type: TileType.player, world: world) { playerComponents in
+            if playerComponents.locC == nil {
+                Logger.warnSettingsAreInvalid("player has no location (locC)")
+                return
+            }
+
+            let playerOffset = CGPoint(x: 0, y: playerComponents.locC!.radius - 0.5)
+            let playerPosition = loadInfo!.playerSpawnPos.pos.cgPoint + playerOffset
+            playerComponents.locC!.position = playerPosition
+        }
     }
 
     func revert(world: World, pos3D: WorldTilePos3D) {

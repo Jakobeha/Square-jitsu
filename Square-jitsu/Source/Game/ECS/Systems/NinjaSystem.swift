@@ -18,7 +18,7 @@ struct NinjaSystem: TopLevelSystem {
 
     mutating func tick() {
         if entity.next.nijC != nil {
-            switch entity.prev.nijC!.actionState {
+            switch entity.next.nijC!.actionState {
             case .idle:
                 break
             case .doJump(let direction):

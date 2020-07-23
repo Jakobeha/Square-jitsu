@@ -26,23 +26,25 @@ final class TurretTileViewTemplate: AugmentingTileViewTemplate, SingleSettingCod
         let turretNode = SKSpriteNode(texture: turretTexture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
         baseNode.addChild(turretNode)
 
-        updateFor(turretNode: turretNode, metadata: turretBehavior.metadata)
-        turretBehavior.didChangeMetadata.subscribe(observer: turretNode, priority: .view) {
-            self.updateFor(turretNode: turretNode, metadata: turretBehavior.metadata)
+        TurretTileViewTemplate.updateFor(turretNode: turretNode, metadata: turretBehavior.metadata)
+        turretBehavior.didChangeMetadata.subscribe(observer: turretNode, priority: .view) { [weak turretBehavior] (turretNode) in
+            if let turretBehavior = turretBehavior {
+                TurretTileViewTemplate.updateFor(turretNode: turretNode, metadata: turretBehavior.metadata)
+            }
         }
 
         turretNode.isHidden = turretBehavior.spawned
-        turretBehavior.didSpawn.subscribe(observer: turretNode, priority: .view) { entity in
+        turretBehavior.didSpawn.subscribe(observer: turretNode, priority: .view) { (turretNode, _) in
             turretNode.isHidden = true
         }
-        turretBehavior.didRevert.subscribe(observer: turretNode, priority: .view) {
+        turretBehavior.didRevert.subscribe(observer: turretNode, priority: .view) { (turretNode, _) in
             turretNode.isHidden = false
         }
 
         return baseNode
     }
     
-    private func updateFor(turretNode: SKNode, metadata: TurretMetadata?) {
+    private static func updateFor(turretNode: SKNode, metadata: TurretMetadata?) {
         if let metadata = metadata {
             turretNode.angle = metadata.initialTurretDirectionRelativeToAnchor
         }
@@ -53,7 +55,7 @@ final class TurretTileViewTemplate: AugmentingTileViewTemplate, SingleSettingCod
 
     static func newSetting() -> StructSetting<TurretTileViewTemplate> {
         StructSetting(requiredFields: [
-            "base": DeferredSetting { TileViewTemplateSetting() },
+            "base": OptionalSetting<TileViewTemplate>(DeferredSetting { TileViewTemplateSetting() }),
             "turretTexture": TextureSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }

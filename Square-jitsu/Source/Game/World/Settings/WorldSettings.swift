@@ -39,7 +39,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var knockback: TileTypeMap<CGFloat>
     var entityData: TileTypeMap<Entity.Components>
     var entitySpawnRadius: TileTypeMap<CGFloat>
-    var destructibleSolidInitialHealth: [CGFloat]
+    var destructibleSolidInitialHealth: TileTypeMap<CGFloat>
     var dashEdgeBoostSpeed: [CGFloat]
     var springEdgeBounceMultiplier: [CGFloat]
 
@@ -48,7 +48,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>
     var selectableTypes: [TileBigType:[TileSmallType]]
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, edgeMaskTextureBase: TextureSet, glossTexture: SKTexture, imagePlaceholderTexture: SKTexture, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, playerInputSpeedFractionChangePerSecond: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, destructibleSolidInitialHealth: [CGFloat], dashEdgeBoostSpeed: [CGFloat], springEdgeBounceMultiplier: [CGFloat], defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, edgeMaskTextureBase: TextureSet, glossTexture: SKTexture, imagePlaceholderTexture: SKTexture, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, playerInputSpeedFractionChangePerSecond: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, destructibleSolidInitialHealth: TileTypeMap<CGFloat>, dashEdgeBoostSpeed: [CGFloat], springEdgeBounceMultiplier: [CGFloat], defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
         self.edgeMaskTextureBase = edgeMaskTextureBase
@@ -96,7 +96,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
             "knockback": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...128) },
             "entityData": TileTypeMapSetting<Entity.Components> { Entity.Components.newSetting() },
             "entitySpawnRadius": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(1...16) },
-            "destructibleSolidInitialHealth": CollectionSetting<[CGFloat]> { CGFloatRangeSetting(0...128) },
+            "destructibleSolidInitialHealth": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...128) },
             "dashEdgeBoostSpeed": CollectionSetting<[CGFloat]> { CGFloatRangeSetting(0...128) },
             "springEdgeBounceMultiplier": CollectionSetting<[CGFloat]> { CGFloatRangeSetting(0...128) },
             "defaultTileMetadatas": TileTypeMapSetting<TileMetadata> { type in type.bigType.newMetadataSetting() },
@@ -138,13 +138,13 @@ final class WorldSettings: SingleSettingCodable, Codable {
     }
 
     private func getUserFriendlyBigTypeDescriptionOf(bigType: TileBigType) -> String {
-        bigType.description.camelCaseToSentenceCase
+        bigType.description.camelCaseToSubSentenceCase
     }
 
     private func getUserFriendlySmallTypeDescriptionOf(tileType: TileType) -> String {
         let description = tileDescriptions[tileType]
         if let description = description {
-            return description
+            return description.camelCaseToSentenceCase
         } else {
             Logger.warnSettingsAreInvalid("tile type doesn't have a description: \(tileType)")
             return TileType.unknownDescription

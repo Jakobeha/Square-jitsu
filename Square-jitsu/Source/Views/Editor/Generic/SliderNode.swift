@@ -11,7 +11,7 @@ class SliderNode: ControlNode {
 
     override init(size: CGSize) {
         super.init(size: size)
-        didTouchMove.subscribe(observer: self, priority: .view) { newPositions in
+        didTouchMove.subscribe(observer: self, priority: .view) { (self, newPositions) in
             let newFractions: [CGFloat] = newPositions.map { newPosition in
                 let unclampedFraction = newPosition.x / size.width
                 return CGFloat.clamp(unclampedFraction, min: 0, max: 1)

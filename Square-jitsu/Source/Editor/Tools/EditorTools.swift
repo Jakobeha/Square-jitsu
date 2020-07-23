@@ -87,7 +87,7 @@ class EditorTools {
         self.undoManager = undoManager
         self.userSettings = userSettings
         tileMenu = TileMenu(settings: world.settings)
-        tileMenu.didSelect.subscribe(observer: self, priority: .view) {
+        tileMenu.didSelect.subscribe(observer: self, priority: .view) { (self) in
             if self.tileMenu.openLayer != nil {
                 self.select(actionMode: .place)
             }

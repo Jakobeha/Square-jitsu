@@ -71,11 +71,11 @@ struct Touch {
         var totalTimeElapsed: CGFloat = 0
         for priorState in priorStates.reversed() {
             let timeSinceLast = CGFloat(lastStateSinceTimestamp.timestamp - priorState.timestamp)
+            totalPositionOffset = lastStateSinceTimestamp.position - priorState.position
+            totalTimeElapsed = timeSinceLast
             if timeSinceLast > Touch.maxDurationForVelocityEstimation {
                 break
             }
-            totalPositionOffset = lastStateSinceTimestamp.position - priorState.position
-            totalTimeElapsed = timeSinceLast
         }
         let average = totalTimeElapsed == 0 ? CGPoint.zero : totalPositionOffset / totalTimeElapsed
         return average

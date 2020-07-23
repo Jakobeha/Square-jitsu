@@ -48,7 +48,8 @@ class InspectorView: UXCompoundView {
 
     private var tileNames: Set<String> {
         Set(inspector.positions.map { position in
-            let tileType = self.world[position]
+            self.world[position]
+        }.filter { tileType in tileType != TileType.air }.map { tileType in
             return self.settings.getUserFriendlyDescriptionOf(tileType: tileType)
         })
     }

@@ -8,8 +8,9 @@ import SpriteKit
 struct TurretComponent: SingleSettingCodable, Codable {
     enum RotationPattern: AutoCodable, SingleSettingCodable {
         case neverRotate
-        case rotateAtSpeed(speed: UnclampedAngle)
-        case rotateInstantly
+        case rotateContinuously(speed: UnclampedAngle)
+        case rotateToTarget(speed: UnclampedAngle)
+        case rotateToTargetInstantly
 
         // region encoding and decoding
         typealias AsSetting = ComplexEnumSetting<RotationPattern>
@@ -17,10 +18,13 @@ struct TurretComponent: SingleSettingCodable, Codable {
         static func newSetting() -> AsSetting {
             ComplexEnumSetting(cases: [
                 "neverRotate": [:],
-                "rotateAtSpeed": [
+                "rotateContinuously": [
                     "speed": UnclampedAngleSetting()
                 ],
-                "rotateInstantly": [:]
+                "rotateToTarget": [
+                    "speed": UnclampedAngleSetting()
+                ],
+                "rotateToTargetInstantly": [:]
             ])
         }
         // endregion
@@ -92,6 +96,24 @@ struct TurretComponent: SingleSettingCodable, Codable {
         // endregion
     }
 
+    enum SpreadPattern: AutoCodable, SingleSettingCodable {
+        case fireStraight
+        case fireAround(totalNumProjectiles: Int)
+
+        // region encoding and decoding
+        typealias AsSetting = ComplexEnumSetting<SpreadPattern>
+
+        static func newSetting() -> AsSetting {
+            ComplexEnumSetting(cases: [
+                "fireStraight": [:],
+                "fireAround": [
+                    "totalNumProjectiles": IntRangeSetting(1...32)
+                ]
+            ])
+        }
+        // endregion
+    }
+
     enum TargetState {
         case targetNotFound
         case targetFoundSeeking(entity: EntityRef)
@@ -114,11 +136,11 @@ struct TurretComponent: SingleSettingCodable, Codable {
         case targetFoundNeedToCharge(timeUntilFire: CGFloat)
         case didFireReloading(timeUntilFire: CGFloat)
         case didFireInBurstReloading(timeUntilFire: CGFloat, numShotsLeftInBurstAfterThis: Int)
-        case isFiringContinuous(projectile: EntityRef)
+        case isFiringContinuous(projectiles: [(projectileRef: EntityRef, directionOffset: Angle)])
 
         var isContinuous: Bool {
             switch self {
-            case .isFiringContinuous(projectile: _):
+            case .isFiringContinuous(projectiles: _):
                 return true
             default:
                 return false
@@ -138,6 +160,7 @@ struct TurretComponent: SingleSettingCodable, Codable {
     var howToFire: HowToFire
     var whatToFire: TileType
     var delayWhenTargetFoundBeforeFire: CGFloat
+    var spreadPattern: SpreadPattern
 
     var targetState: TargetState = .targetNotFound
     var fireState: FireState = .targetNotFound
@@ -150,6 +173,7 @@ struct TurretComponent: SingleSettingCodable, Codable {
         case howToFire
         case whatToFire
         case delayWhenTargetFoundBeforeFire
+        case spreadPattern
     }
 
     typealias AsSetting = StructSetting<TurretComponent>
@@ -161,7 +185,8 @@ struct TurretComponent: SingleSettingCodable, Codable {
             "whenToFire": WhenToFire.newSetting(),
             "howToFire": HowToFire.newSetting(),
             "whatToFire": TileTypeSetting(),
-            "delayWhenTargetFoundBeforeFire": CGFloatRangeSetting(0...64)
+            "delayWhenTargetFoundBeforeFire": CGFloatRangeSetting(0...64),
+            "spreadPattern": SpreadPattern.newSetting()
         ], optionalFields: [:])
     }
     // endregion

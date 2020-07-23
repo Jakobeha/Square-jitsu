@@ -10,7 +10,7 @@ class Chunk: ReadonlyChunk, Codable {
     static let numLayers: Int = 8
 
     static let cgSize: CGSize = CGSize.square(sideLength: CGFloat(widthHeight))
-    static let extraDistanceFromEntityToUnload: CGFloat = CGFloat(widthHeight) / 2
+    static let extraDistanceFromEntityToUnload: CGFloat = CGFloat(widthHeight) * 2.5
 
     private var tiles: ChunkMatrix<TileType> = ChunkMatrix()
     var tileBehaviors: [ChunkTilePos3D:TileBehavior] = [:]

@@ -26,7 +26,7 @@ final class MacroButtonTileViewTemplate: EmptyTileViewTemplate, SingleSettingCod
             world.peek(pos: adjacentPos).contains(tileType)
         })
         if adjoiningSides.isDisjoint(with: [.north, .west]) {
-            var button = Button(texture: foregroundTexture) {
+            var button = Button(owner: tileBehavior, texture: foregroundTexture) { (tileBehavior) in
                 tileBehavior.performAction(world: world, pos3D: pos3D)
             }
             // Need to offset button inside of the node since it uses UX coords

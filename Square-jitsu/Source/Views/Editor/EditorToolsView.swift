@@ -32,9 +32,11 @@ class EditorToolsView: UXCompoundView {
         gridView = GridView(camera: editor.editorCamera, settings: editor.settings)
         super.init()
 
-        editor.didChangeState.subscribe(observer: self, priority: .view, handler: regenerateBody)
+        editor.didChangeState.subscribe(observer: self, priority: .view) { (self) in
+            self.regenerateBody()
+        }
     }
-    
+
     override func newBody() -> UXView {
         switch editor.state {
         case .playing:
@@ -57,13 +59,13 @@ class EditorToolsView: UXCompoundView {
                             undoView
                         ])
                     ]),
-                    Button(textureName: "UI/Settings", size: .small) {
+                    Button(owner: self, textureName: "UI/Settings", size: .small) { (self) in
                         print("TODO")
                     },
-                    Button(textureName: "UI/Save", size: .small) { 
+                    Button(owner: self, textureName: "UI/Save", size: .small) { (self) in
                         self.editor.editableWorld.saveToDisk()
                     },
-                    Button(textureName: "UI/Quit", size: .small) {
+                    Button(owner: self, textureName: "UI/Quit", size: .small) { (self) in
                         self.editor.conduit.quit()
                     }
                 ]),

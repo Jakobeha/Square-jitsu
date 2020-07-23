@@ -34,28 +34,46 @@ extension String {
         count <= maxLength ? self : "\(self[..<index(startIndex, offsetBy: maxLength)])..."
     }
 
+    /// Example: "fooBarBaz" => "foo bar baz"
+    var camelCaseToSubSentenceCase: String {
+        let words = wordsInCamelCase
+        return words.joined(separator: " ")
+    }
+
     /// Example: "fooBarBaz" => "Foo bar baz"
     var camelCaseToSentenceCase: String {
+        var words = wordsInCamelCase
+        words[0] = words[0].localizedCapitalized
+        return words.joined(separator: " ")
+    }
+
+    /// Example: "fooBarBaz" => ["foo", "bar", "baz"]
+    var wordsInCamelCase: [String] {
         var words: [String] = []
 
         var remaining = self
         while let nextSplitIndex = remaining.firstIndex(where: { character in character.isUppercase }) {
-            let nextWordRange = ..<nextSplitIndex
-            let nextWord = remaining[nextWordRange]
-            words.append(String(nextWord))
-            remaining.removeSubrange(nextWordRange)
+            // Make the first character lowercase, since the resulting words are lowercase
             if !remaining.isEmpty {
                 let firstCharacterRange = ..<remaining.index(after: remaining.startIndex)
                 remaining.modify(range: firstCharacterRange) { firstCharacter in
                     firstCharacter.localizedLowercase
                 }
             }
+
+            // Get the next word and range
+            let nextWordRange = ..<nextSplitIndex
+            let nextWord = remaining[nextWordRange]
+
+            // Add the next word
+            words.append(String(nextWord))
+
+            // Remove the range from remaining
+            remaining.removeSubrange(nextWordRange)
         }
         words.append(remaining)
 
-        words[0] = words[0].localizedCapitalized
-
-        return words.joined(separator: " ")
+        return words
     }
 
     func leftPadding(toLength newLength: Int, withPad character: Character) -> String {

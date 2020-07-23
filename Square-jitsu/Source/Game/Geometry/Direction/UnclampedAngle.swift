@@ -6,6 +6,8 @@
 import SpriteKit
 
 struct UnclampedAngle: Equatable, Hashable, Codable, LosslessStringConvertible {
+    static let circle: UnclampedAngle = UnclampedAngle(radians: Float.pi * 2)
+
     static prefix func -(angle: UnclampedAngle) -> UnclampedAngle {
         UnclampedAngle(radians: -angle.radians)
     }

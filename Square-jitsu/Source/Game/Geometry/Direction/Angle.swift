@@ -9,8 +9,7 @@ struct Angle: Equatable, Hashable, Codable, LosslessStringConvertible {
     static let zero: Angle = Angle(radians: 0 as Float)
     static let right: Angle = Angle(radians: Float.pi / 2)
     static let straight: Angle = Angle(radians: Float.pi)
-    static let circle: Angle = Angle(radians: Float.pi * 2)
-    
+
     static func random<T: RandomNumberGenerator>(using generator: inout T) -> Angle {
         Angle(radians: Float.random(in: -Float.pi...Float.pi, using: &generator))
     }

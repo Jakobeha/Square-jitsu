@@ -66,11 +66,17 @@ class LocationSelector<Location: CustomStringConvertible>: UXView {
         selectedTextNode.verticalAlignmentMode = .top
         selectedTextNode.zPosition = 1
         buttonNode = ButtonNode(size: size)
-        buttonNode.didPress.subscribe(observer: self, priority: .view, handler: openLocationSelector)
+        buttonNode.didPress.subscribe(observer: self, priority: .view) { (self) in
+            self.openLocationSelector()
+        }
         buttonNode.addChild(backgroundNode)
         buttonNode.addChild(selectedTextNode)
-        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { self.isPressed = true }
-        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { self.isPressed = false }
+        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { (self) in
+            self.isPressed = true 
+        }
+        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { (self) in
+            self.isPressed = false
+        }
     }
 
     private func openLocationSelector() {

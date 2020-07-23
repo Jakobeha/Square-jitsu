@@ -20,17 +20,16 @@ final class DestructibleTileViewTemplate: AugmentingTileViewTemplate, SingleSett
         let destructionNode = SKSpriteNode(texture: destructionTexture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
         baseNode.addChild(destructionNode)
 
-        let maxHealthSettingIndex = Int(tileType.smallType.rawValue)
-        let maxHealth = world.settings.destructibleSolidInitialHealth.getIfPresent(at: maxHealthSettingIndex) ?? 0
+        let maxHealth = world.settings.destructibleSolidInitialHealth[tileType] ?? 0
 
         if let destructibleBehavior = world.getBehaviorAt(pos3D: pos3D) as? DestructibleBehavior {
-            func updateDestructionAmount() {
+            func updateDestructionAmount(destructionNode: SKNode) {
                 let healthFraction = destructibleBehavior.health / maxHealth
                 destructionNode.alpha = 1 - healthFraction
             }
 
-            updateDestructionAmount()
-            destructibleBehavior.didChangeHealth.subscribe(observer: baseNode, priority: .view, handler: updateDestructionAmount)
+            updateDestructionAmount(destructionNode: destructionNode)
+            destructibleBehavior.didChangeHealth.subscribe(observer: destructionNode, priority: .view, handler: updateDestructionAmount)
         } else {
             Logger.warnSettingsAreInvalid("destructible view on non-destructible tile")
         }

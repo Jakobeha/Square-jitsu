@@ -59,16 +59,18 @@ class Button: UXView {
 
     var size: CGSize { buttonSize.cgSize }
 
-    convenience init(
+    convenience init<Owner: AnyObject>(
+        owner: Owner,
         textureName: String,
         rouletteNextItemTextureName: String? = nil,
         size: ButtonSize = .medium,
         isEnabled: Bool = true,
         isSelected: Bool = false,
         tintHue: CGFloat? = nil,
-        action: @escaping () -> ()
+        action: @escaping (Owner) -> ()
     ) {
         self.init(
+            owner: owner,
             texture: SKTexture(imageNamed: textureName),
             rouletteNextItemTextureName: rouletteNextItemTextureName,
             size: size,
@@ -79,14 +81,15 @@ class Button: UXView {
         )
     }
 
-    init(
+    init<Owner: AnyObject>(
+        owner: Owner,
         texture: SKTexture,
         rouletteNextItemTextureName: String? = nil,
         size: ButtonSize = .medium,
         isEnabled: Bool = true,
         isSelected: Bool = false,
         tintHue: CGFloat? = nil,
-        action: @escaping () -> ()
+        action: @escaping (Owner) -> ()
     ) {
         buttonSize = size
         self.isEnabled = isEnabled
@@ -117,14 +120,25 @@ class Button: UXView {
         foregroundNode.anchorPoint = UXSpriteAnchor
         foregroundNode.zPosition = 2
         buttonNode = ButtonNode(size: buttonSize.cgSize)
-        buttonNode.didPress.subscribe(observer: self, priority: .view, handler: action)
+        buttonNode.didPress.subscribe(observer: self, priority: .view) { [weak owner] _ in
+            guard let owner = owner else {
+                Logger.warn("button pressed but it's owner was deallocated, so it can't perform its action")
+                return
+            }
+
+            action(owner)
+        }
         buttonNode.addChild(backgroundNode)
         if let rouletteNextItemNode = rouletteNextItemNode {
             buttonNode.addChild(rouletteNextItemNode)
         }
         buttonNode.addChild(foregroundNode)
-        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { self.isPressed = true }
-        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { self.isPressed = false }
+        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { (self) in
+            self.isPressed = true
+        }
+        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { (self) in
+            self.isPressed = false
+        }
 
         updateForIsEnabled()
     }

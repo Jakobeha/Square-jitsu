@@ -18,9 +18,10 @@ class PlayerInput {
         init(touchId: ObjectIdentifier, playerInput: PlayerInput) {
             self.touchId = touchId
             self.playerInput = playerInput
+            print("Created swipe")
         }
 
-        func tick(touch: Touch) {
+        func update(touch: Touch) {
             assert(touch.id == touchId)
             // Once a swipe was performed it's only saved to prevent the touch from being reused
             if !wasPerformed {
@@ -29,10 +30,14 @@ class PlayerInput {
                     let stateAtStartOfPrimarySwipe = touch.getLatestStateWhenVelocityWas(atMost: playerInput.userSettings.minPrimarySwipeSpeed) ?? touch.priorStates.first!
                     let primarySwipeOffset = stateAtEndOfPrimarySwipe.position - stateAtStartOfPrimarySwipe.position
                     let primarySwipeDistance = primarySwipeOffset.magnitude
+                    print("Trying to swipe: \(primarySwipeDistance)")
                     if primarySwipeDistance >= playerInput.userSettings.minPrimarySwipeDistance {
+                        print("Did swipe!")
                         let primarySwipeDirection = primarySwipeOffset.directionFromOrigin
                         playerInput.performPrimary(swipe: self, direction: primarySwipeDirection)
                     }
+                } else {
+                    print("Not fast enough")
                 }
             }
         }
@@ -57,16 +62,19 @@ class PlayerInput {
     var addedTouchIds: Set<ObjectIdentifier> {
         Set(tracker.touches.keys).subtracting(swipes.keys)
     }
+
     init(userSettings: UserSettings) {
         self.userSettings = userSettings
+        tracker.didUpdateTouches.subscribe(observer: self, priority: .input) { (self) in
+            self.updateSwipes()
+        }
     }
 
     func tick() {
-        tickSwipes()
         updateWorldSpeed()
     }
 
-    private func tickSwipes() {
+    private func updateSwipes() {
         for touchId in removedTouchIds {
             swipes[touchId] = nil
         }
@@ -74,7 +82,7 @@ class PlayerInput {
             swipes[touchId] = Swipe(touchId: touchId, playerInput: self)
         }
         for (touchId, touch) in tracker.touches {
-            swipes[touchId]!.tick(touch: touch)
+            swipes[touchId]!.update(touch: touch)
         }
     }
 

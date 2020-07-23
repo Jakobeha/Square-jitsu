@@ -164,6 +164,7 @@ class World: ReadonlyWorld {
     }
 
     func resetPlayer() {
+        playerCamera.reset()
         // Otherwise player died so it's already removed
         if player.world === self {
             remove(entity: player)

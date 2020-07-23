@@ -47,14 +47,14 @@ class UndoView: UXCompoundView {
     }
 
     private func newUndoButton() -> UXView {
-        Button(textureName: "UI/Undo", isEnabled: undoManager.canUndo) { 
+        Button(owner: self, textureName: "UI/Undo", isEnabled: undoManager.canUndo) { (self) in
             self.undoManager.undo()
             self.regenerateBody()
         }
     }
 
     private func newRedoButton() -> UXView {
-        Button(textureName: "UI/Redo") { 
+        Button(owner: self, textureName: "UI/Redo") { (self) in
             self.undoManager.redo()
             self.regenerateBody()
         }

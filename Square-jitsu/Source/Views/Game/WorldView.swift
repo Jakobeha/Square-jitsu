@@ -17,12 +17,26 @@ class WorldView: NodeView<SKNode> {
         super.init(node: SKNode())
 
         placeExisting()
-        world.didReset.subscribe(observer: self, priority: .view, handler: reSynchronize)
-        world.didLoadChunk.subscribe(observer: self, priority: .view, handler: placeChunkView)
-        world.didUnloadChunk.subscribe(observer: self, priority: .view, handler: removeChunkView)
-        world.didAddEntity.subscribe(observer: self, priority: .view, handler: placeEntityView)
-        world.didRemoveEntity.subscribe(observer: self, priority: .view, handler: removeEntityView)
-        world.didTick.subscribe(observer: self, priority: .view, handler: update)
+        world.didReset.subscribe(observer: self, priority: .view) { (self) in
+            self.reSynchronize()
+        }
+        world.didLoadChunk.subscribe(observer: self, priority: .view) { (self, posAndChunk) in
+            let (pos, chunk) = posAndChunk
+            self.placeChunkView(pos: pos, chunk: chunk)
+        }
+        world.didUnloadChunk.subscribe(observer: self, priority: .view) { (self, posAndChunk) in
+            let (pos, chunk) = posAndChunk
+            self.removeChunkView(pos: pos, chunk: chunk)
+        }
+        world.didAddEntity.subscribe(observer: self, priority: .view) { (self, entity) in
+            self.placeEntityView(entity: entity)
+        }
+        world.didRemoveEntity.subscribe(observer: self, priority: .view) { (self, entity) in
+            self.removeEntityView(entity: entity)
+        }
+        world.didTick.subscribe(observer: self, priority: .view) { (self) in
+            self.update()
+        }
     }
 
     required init?(coder: NSCoder) {

@@ -40,7 +40,7 @@ class TileButton: UXView {
 
     var size: CGSize { ButtonSize.tile.cgSize }
 
-    init(tileType: TileType, settings: WorldSettings, isEnabled: Bool = true, isSelected: Bool = false, action: @escaping () -> ()) {
+    init<Owner: AnyObject>(owner: Owner, tileType: TileType, settings: WorldSettings, isEnabled: Bool = true, isSelected: Bool = false, action: @escaping (Owner) -> ()) {
         self.isEnabled = isEnabled
         self.isSelected = isSelected
         backgroundNode = SKSpriteNode(texture: TileButton.background, size: ButtonSize.tile.cgSize)
@@ -55,7 +55,14 @@ class TileButton: UXView {
         borderNode.zPosition = 3
 
         buttonNode = ButtonNode(size: ButtonSize.tile.cgSize)
-        buttonNode.didPress.subscribe(observer: self, priority: .view, handler: action)
+        buttonNode.didPress.subscribe(observer: self, priority: .view) { [weak owner] _ in
+            guard let owner = owner else {
+                Logger.warn("tile button pressed but it's owner was deallocated, so it can't perform its action")
+                return
+            }
+
+            action(owner)
+        }
         buttonNode.addChild(backgroundNode)
         if let tilePreviewNode = tilePreviewNode {
             buttonNode.addChild(tilePreviewNode)
@@ -64,8 +71,12 @@ class TileButton: UXView {
             buttonNode.addChild(entityPreviewNode)
         }
         buttonNode.addChild(borderNode)
-        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { self.isPressed = true }
-        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { self.isPressed = false }
+        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { (self) in
+            self.isPressed = true
+        }
+        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { (self) in
+            self.isPressed = false
+        }
 
         updateForIsEnabled()
     }

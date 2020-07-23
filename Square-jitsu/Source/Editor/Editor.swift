@@ -81,8 +81,8 @@ class Editor: EditorToolsDelegate {
         }
 
         didPerformAction()
-        undoManager.registerUndo(withTarget: self) { this in
-            this.overwrite(tiles: originalTiles)
+        undoManager.registerUndo(withTarget: self) { (self) in
+            self.overwrite(tiles: originalTiles)
         }
     }
 
@@ -101,8 +101,8 @@ class Editor: EditorToolsDelegate {
         }
 
         didPerformAction()
-        undoManager.registerUndo(withTarget: self) { this in
-            this.overwrite(tiles: originalTiles)
+        undoManager.registerUndo(withTarget: self) { (self) in
+            self.overwrite(tiles: originalTiles)
         }
     }
 
@@ -114,8 +114,8 @@ class Editor: EditorToolsDelegate {
         }
 
         didPerformAction()
-        undoManager.registerUndo(withTarget: self) { this in
-            this.overwrite(tiles: originalTiles)
+        undoManager.registerUndo(withTarget: self) { (self) in
+            self.overwrite(tiles: originalTiles)
         }
     }
 
@@ -127,8 +127,8 @@ class Editor: EditorToolsDelegate {
         }
 
         didPerformAction()
-        undoManager.registerUndo(withTarget: self) { this in
-            this.overwrite(tiles: originalTiles)
+        undoManager.registerUndo(withTarget: self) { (self) in
+            self.overwrite(tiles: originalTiles)
         }
     }
 

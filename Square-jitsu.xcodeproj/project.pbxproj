@@ -87,6 +87,7 @@
 		60372298BF50786532D8F6F8 /* NumericSign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037258901BA43ACD8190C3F /* NumericSign.swift */; };
 		6037229A46DB1E6F6EAF10EB /* SJStartMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603729213060B3E0ACADFC84 /* SJStartMode.swift */; };
 		6037229BF1ED7C4F6A19778A /* DamageSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372B1CD5263117D920B0E1 /* DamageSystem.swift */; };
+		603722A24AAA93B950051FA7 /* default.settings.json in Resources */ = {isa = PBXBuildFile; fileRef = 60372DD5207E243231EEC8F5 /* default.settings.json */; };
 		603722A76FB0E8EE98E3417F /* OnDestroySystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603720E168693938E488267E /* OnDestroySystem.swift */; };
 		603722BED090F34EE585A9EA /* LocationSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037228BAF726D2DDCC461D0 /* LocationSelector.swift */; };
 		603722C860FA11A719CBB071 /* InspectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037213D3FCD1A4BA9B27B14 /* InspectorView.swift */; };
@@ -787,6 +788,7 @@
 		60372DBCF2E364F65982C8E9 /* AnimatedByLifetimeEntityViewTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimatedByLifetimeEntityViewTemplate.swift; sourceTree = "<group>"; };
 		60372DCDB97AF3DEDEC67785 /* TurretSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurretSystem.swift; sourceTree = "<group>"; };
 		60372DD2B93129B5BE897E34 /* RootLevelJsonWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootLevelJsonWrapper.swift; sourceTree = "<group>"; };
+		60372DD5207E243231EEC8F5 /* default.settings.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = default.settings.json; sourceTree = "<group>"; };
 		60372DEE965C893C77208824 /* NinjaSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NinjaSystem.swift; sourceTree = "<group>"; };
 		60372DFCBA768B72E0AC782B /* StaticTileViewTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StaticTileViewTemplate.swift; sourceTree = "<group>"; };
 		60372E10DBCC4A6F568F8BFE /* UnclampedAngle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnclampedAngle.swift; sourceTree = "<group>"; };
@@ -1134,6 +1136,7 @@
 			isa = PBXGroup;
 			children = (
 				60372A213E6A52A534CB310C /* default.json */,
+				60372DD5207E243231EEC8F5 /* default.settings.json */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1751,6 +1754,7 @@
 				60372ED4A004400823EC4F32 /* LevelPickerInDirectoryViewController.storyboard in Resources */,
 				6037284E4B61B341945EA431 /* Tiles in Resources */,
 				603724EF55E6FB46A4EBA047 /* Misc in Resources */,
+				603722A24AAA93B950051FA7 /* default.settings.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

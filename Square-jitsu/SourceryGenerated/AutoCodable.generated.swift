@@ -73,8 +73,9 @@ extension TurretComponent.RotationPattern {
 
     enum CodingKeys: String, CodingKey {
         case neverRotate
-        case rotateAtSpeed
-        case rotateInstantly
+        case rotateContinuously
+        case rotateToTarget
+        case rotateToTargetInstantly
         case speed
     }
 
@@ -85,14 +86,20 @@ extension TurretComponent.RotationPattern {
             self = .neverRotate
             return
         }
-        if container.allKeys.contains(.rotateAtSpeed), try container.decodeNil(forKey: .rotateAtSpeed) == false {
-            let associatedValues = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .rotateAtSpeed)
+        if container.allKeys.contains(.rotateContinuously), try container.decodeNil(forKey: .rotateContinuously) == false {
+            let associatedValues = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .rotateContinuously)
             let speed = try associatedValues.decode(UnclampedAngle.self, forKey: .speed)
-            self = .rotateAtSpeed(speed: speed)
+            self = .rotateContinuously(speed: speed)
             return
         }
-        if container.allKeys.contains(.rotateInstantly), try container.decodeNil(forKey: .rotateInstantly) == false {
-            self = .rotateInstantly
+        if container.allKeys.contains(.rotateToTarget), try container.decodeNil(forKey: .rotateToTarget) == false {
+            let associatedValues = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .rotateToTarget)
+            let speed = try associatedValues.decode(UnclampedAngle.self, forKey: .speed)
+            self = .rotateToTarget(speed: speed)
+            return
+        }
+        if container.allKeys.contains(.rotateToTargetInstantly), try container.decodeNil(forKey: .rotateToTargetInstantly) == false {
+            self = .rotateToTargetInstantly
             return
         }
         throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown enum case"))
@@ -104,11 +111,52 @@ extension TurretComponent.RotationPattern {
         switch self {
         case .neverRotate:
             _ = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .neverRotate)
-        case let .rotateAtSpeed(speed):
-            var associatedValues = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .rotateAtSpeed)
+        case let .rotateContinuously(speed):
+            var associatedValues = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .rotateContinuously)
             try associatedValues.encode(speed, forKey: .speed)
-        case .rotateInstantly:
-            _ = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .rotateInstantly)
+        case let .rotateToTarget(speed):
+            var associatedValues = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .rotateToTarget)
+            try associatedValues.encode(speed, forKey: .speed)
+        case .rotateToTargetInstantly:
+            _ = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .rotateToTargetInstantly)
+        }
+    }
+
+}
+
+extension TurretComponent.SpreadPattern {
+
+    enum CodingKeys: String, CodingKey {
+        case fireStraight
+        case fireAround
+        case totalNumProjectiles
+    }
+
+    internal init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        if container.allKeys.contains(.fireStraight), try container.decodeNil(forKey: .fireStraight) == false {
+            self = .fireStraight
+            return
+        }
+        if container.allKeys.contains(.fireAround), try container.decodeNil(forKey: .fireAround) == false {
+            let associatedValues = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .fireAround)
+            let totalNumProjectiles = try associatedValues.decode(Int.self, forKey: .totalNumProjectiles)
+            self = .fireAround(totalNumProjectiles: totalNumProjectiles)
+            return
+        }
+        throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown enum case"))
+    }
+
+    internal func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        switch self {
+        case .fireStraight:
+            _ = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .fireStraight)
+        case let .fireAround(totalNumProjectiles):
+            var associatedValues = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .fireAround)
+            try associatedValues.encode(totalNumProjectiles, forKey: .totalNumProjectiles)
         }
     }
 

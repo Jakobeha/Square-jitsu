@@ -32,12 +32,13 @@ class TextButton: UXView {
         CGSize(width: width, height: TextButton.height)
     }
 
-    init(
+    init<Owner: AnyObject>(
+        owner: Owner,
         text: String,
         width: CGFloat,
         isEnabled: Bool = true,
         isSelected: Bool = false,
-        action: @escaping () -> ()
+        action: @escaping (Owner) -> ()
     ) {
         self.width = width
         let size = CGSize(width: width, height: TextButton.height)
@@ -60,11 +61,22 @@ class TextButton: UXView {
         textNode.alpha = isEnabled ? 1 : Button.disabledForegroundAlpha
         textNode.zPosition = 2
         buttonNode = ButtonNode(size: size)
-        buttonNode.didPress.subscribe(observer: self, priority: .view, handler: action)
+        buttonNode.didPress.subscribe(observer: self, priority: .view) { [weak owner] _ in
+            guard let owner = owner else {
+                Logger.warn("text button pressed but its owner was deallocated, so it can't perform its action")
+                return
+            }
+
+            action(owner)
+        }
         buttonNode.addChild(backgroundNode)
         buttonNode.addChild(textNode)
-        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { self.isPressed = true }
-        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { self.isPressed = false }
+        buttonNode.didTouchDown.subscribe(observer: self, priority: .view) { (self) in
+            self.isPressed = true
+        }
+        buttonNode.didTouchUp.subscribe(observer: self, priority: .view) { (self) in
+            self.isPressed = false
+        }
 
         updateForIsEnabled()
     }

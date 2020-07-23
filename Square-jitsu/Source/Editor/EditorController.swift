@@ -66,7 +66,7 @@ class EditorController: WorldConduit {
 
         let world = loaded!.world
         updater.fixedDeltaTime = world.settings.fixedDeltaTime / world.speed
-        world.didChangeSpeed.subscribe(observer: self, priority: .model) {
+        world.didChangeSpeed.subscribe(observer: self, priority: .model) { (self) in
             self.updater.fixedDeltaTime = world.settings.fixedDeltaTime / world.speed
             self.parent.speed = world.speed
         }

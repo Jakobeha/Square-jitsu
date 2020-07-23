@@ -24,7 +24,7 @@ struct ToxicComponent: SingleSettingCodable, Codable {
 
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
-            "damage": CGFloatRangeSetting(0...1),
+            "damage": CGFloatRangeSetting(0...128),
             "safeTypes": CollectionSetting<Set<TileType>> { TileTypeSetting() },
             "affectsDestructibleTiles": BoolSetting()
         ], optionalFields: [:])

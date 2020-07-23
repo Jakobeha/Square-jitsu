@@ -16,8 +16,10 @@ class OverlayContainerView: UXCompoundView {
         self.overlayContainer = overlayContainer
         super.init()
 
-        overlayContainer.didPresentOverlay.subscribe(observer: self, priority: .view, handler: regenerateBody)
-        overlayContainer.didDismissOverlay.subscribe(observer: self, priority: .view) { dismissedIndex in
+        overlayContainer.didPresentOverlay.subscribe(observer: self, priority: .view) { (self) in
+            self.regenerateBody()
+        }
+        overlayContainer.didDismissOverlay.subscribe(observer: self, priority: .view) { (self, _) in
             self.regenerateBody()
         }
     }

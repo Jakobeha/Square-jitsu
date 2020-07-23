@@ -120,4 +120,8 @@ class PlayerCamera: Camera {
     func add(shake newShake: CGFloat) {
         shake += newShake
     }
+
+    func reset() {
+        simplePosition = CGPoint.nan
+    }
 }

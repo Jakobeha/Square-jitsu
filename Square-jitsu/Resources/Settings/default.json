@@ -61,7 +61,7 @@
             "solid/0",
             "ice/0",
             "destructibleSolid/0",
-            "glassSolid/0"
+            "glassSolid"
           ]
         }
       }
@@ -91,7 +91,7 @@
             "solid/0",
             "ice/0",
             "destructibleSolid/0",
-            "glassSolid/0"
+            "glassSolid"
           ]
         }
       }
@@ -107,7 +107,7 @@
             "solid/0",
             "ice/0",
             "destructibleSolid/0",
-            "glassSolid/0"
+            "glassSolid"
           ]
         }
       }
@@ -222,6 +222,29 @@
           "texture" : "Tiles/Turret/Anchor"
         },
         "turretTexture" : "Tiles/Turret/LavaLaserHead"
+      },
+      {
+        "type" : "turret",
+        "base" : null,
+        "turretTexture" : "Tiles/Turret/4Head"
+      },
+      {
+        "type" : "turret",
+        "base" : null,
+        "turretTexture" : "Tiles/Turret/RocketHead"
+      },
+      {
+        "type" : "turret",
+        "base" : null,
+        "turretTexture" : "Tiles/Turret/2LaserHead"
+      },
+      {
+        "type" : "turret",
+        "base" : {
+          "type" : "static",
+          "texture" : "Tiles/Turret/Anchor"
+        },
+        "turretTexture" : "Tiles/Turret/InstakillLaserHead"
       }
     ],
     "image" : [
@@ -317,7 +340,33 @@
               "solid/0",
               "ice/0",
               "destructibleSolid/0",
-              "glassSolid/0"
+              "glassSolid"
+            ]
+          }
+        }
+      },
+      {
+        "type": "glossy",
+        "explicitGlossTemplate": {
+          "type": "color",
+          "color": {
+            "hue": 0,
+            "saturation": 0,
+            "brightness": 0,
+            "alpha": 1
+          }
+        },
+        "base": {
+          "type": "destructible",
+          "destructionTexture": "Tiles/Destruction",
+          "base": {
+            "type": "square8",
+            "textureBase": "Tiles/StrongGlassSolid",
+            "adjoiningTypes": [
+              "solid/0",
+              "ice/0",
+              "destructibleSolid/0",
+              "glassSolid"
             ]
           }
         }
@@ -414,6 +463,26 @@
           "alpha" : 1
         },
         "thickness" : 0.125
+      },
+      {
+        "type" : "laser",
+        "color" : {
+          "hue" : 0.0833,
+          "saturation" : 0.5,
+          "brightness" : 1,
+          "alpha" : 1
+        },
+        "thickness" : 0.125
+      },
+      {
+        "type" : "laser",
+        "color" : {
+          "hue" : 0,
+          "saturation" : 0,
+          "brightness" : 0,
+          "alpha" : 1
+        },
+        "thickness" : 0.25
       }
     ],
     "turret" : [
@@ -525,6 +594,98 @@
             0
           ],
           "chargingCircleColor" : {
+            "hue" : 0.0833,
+            "saturation" : 0.5,
+            "brightness" : 1,
+            "alpha" : 1
+          }
+        }
+      },
+      {
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "turret",
+          "base" : {
+            "type" : "static",
+            "texture" : "Tiles/Turret/4Head"
+          },
+          "maxChargingCircleRadius" : 0.5,
+          "minChargingCircleRadius" : 0,
+          "chargingCircleOffset" : [
+            0,
+            0
+          ],
+          "chargingCircleColor" : {
+            "hue" : 0,
+            "saturation" : 0,
+            "brightness" : 1,
+            "alpha" : 1
+          }
+        }
+      },
+      {
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "turret",
+          "base" : {
+            "type" : "static",
+            "texture" : "Tiles/Turret/RocketHead"
+          },
+          "maxChargingCircleRadius" : 0.5,
+          "minChargingCircleRadius" : 0,
+          "chargingCircleOffset" : [
+            0,
+            0
+          ],
+          "chargingCircleColor" : {
+            "hue" : 0,
+            "saturation" : 0,
+            "brightness" : 1,
+            "alpha" : 1
+          }
+        }
+      },
+      {
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "turret",
+          "base" : {
+            "type" : "static",
+            "texture" : "Tiles/Turret/2LaserHead"
+          },
+          "maxChargingCircleRadius" : 0.5,
+          "minChargingCircleRadius" : 0,
+          "chargingCircleOffset" : [
+            0,
+            0
+          ],
+          "chargingCircleColor" : {
+            "hue" : 0,
+            "saturation" : 0,
+            "brightness" : 1,
+            "alpha" : 1
+          }
+        }
+      },
+      {
+        "type" : "fadeOnDeath",
+        "duration" : 1,
+        "base" : {
+          "type" : "turret",
+          "base" : {
+            "type" : "static",
+            "texture" : "Tiles/Turret/InstakillLaserHead"
+          },
+          "maxChargingCircleRadius" : 0.5,
+          "minChargingCircleRadius" : 0.125,
+          "chargingCircleOffset" : [
+            0.4375,
+            0
+          ],
+          "chargingCircleColor" : {
             "hue" : 0,
             "saturation" : 0,
             "brightness" : 1,
@@ -558,11 +719,16 @@
     "projectile" : [
       null,
       null,
-      3.999
+      2.999,
+      2.999
     ]
   },
   "rotateTileViewBasedOnOrientation" : {
     "turret" : [
+      true,
+      true,
+      true,
+      true,
       true,
       true,
       true,
@@ -604,6 +770,7 @@
     "projectile" : [
       0.03125,
       0,
+      0.5,
       0.75
     ],
     "explosion": [
@@ -671,14 +838,20 @@
     "projectile" : [
       "Bullet",
       "Rocket",
-      "Laser"
+      "Laser",
+      "LavaLaser",
+      "InstakillLaser"
     ],
     "turret" : [
-      "Default",
-      "Burst",
+      "Bullet",
+      "BurstBullet",
       "Rocket",
       "Laser",
-      "LavaLaser"
+      "LavaLaser",
+      "4Bullet",
+      "RocketSpinner",
+      "2Laser",
+      "InstakillLaser"
     ],
     "explosion" : [
       "From-Bomb",
@@ -698,7 +871,8 @@
       "Settings"
     ],
     "glassSolid": [
-      "Default"
+      "Default",
+      "SuperStrong"
     ],
     "cameraBoundary": [
       ""
@@ -710,7 +884,7 @@
       "Default"
     ]
   },
-  "playerInputSpeedMultiplier" : 0.125,
+  "playerInputSpeedMultiplier" : 1,
   "playerInputSpeedFractionChangePerSecond" : 2,
   "tileDamage" : {
     "lava" : [
@@ -724,7 +898,8 @@
     "projectile" : [
       null,
       null,
-      5
+      5,
+      48
     ],
     "explosion" : [
       8
@@ -743,7 +918,7 @@
         "imfC" : {
           "gravity" : 0.25,
           "minSpeedOnIce" : 2,
-          "solidFriction" : 0.015625,
+          "solidFriction" : 0.125,
           "aerialAngularFriction" : 0.02083333333
         },
         "colC" : {},
@@ -788,7 +963,7 @@
         "imfC" : {
           "gravity" : 0.25,
           "minSpeedOnIce" : 2,
-          "solidFriction" : 0.015625,
+          "solidFriction" : 0.125,
           "aerialAngularFriction" : 0.02083333333
         },
         "colC" : {},
@@ -890,7 +1065,7 @@
           "radius" : 0.0833
         },
         "dalC" : {
-          "maxLifetime" : 8
+          "maxLifetime" : 4
         },
         "dynC" : {
           "dynamicKnockbackMultiplier" : 0.25
@@ -901,7 +1076,7 @@
           "destroyOnSolidCollision" : true,
           "ignoredTypes" : [
             "projectile/0",
-            "glassSolid/0"
+            "glassSolid"
           ]
         },
         "toxC" : {
@@ -915,7 +1090,7 @@
           "radius" : 0.333
         },
         "dalC" : {
-          "maxLifetime" : 8
+          "maxLifetime" : 4
         },
         "codC" : {
           "createdType" : "explosion/1"
@@ -941,13 +1116,35 @@
           "thickness" : 0.0625
         },
         "colC" : {},
+        "toxC" : {
+          "damage" : 0.5,
+          "safeTypes" : [],
+          "affectsDestructibleTiles": false
+        }
+      },
+      {
+        "lilC" : {
+          "thickness" : 0.0625
+        },
+        "colC" : {},
         "cocC" : {
           "createdType" : "lava"
         },
         "toxC" : {
           "damage" : 0.5,
           "safeTypes" : [],
-          "affectsDestructibleTiles": false
+          "affectsDestructibleTiles": true
+        }
+      },
+      {
+        "lilC" : {
+          "thickness" : 0.25
+        },
+        "colC" : {},
+        "toxC" : {
+          "damage" : 64,
+          "safeTypes" : [],
+          "affectsDestructibleTiles": true
         }
       }
     ],
@@ -961,7 +1158,7 @@
         },
         "turC" : {
           "rotationPattern" : {
-            "type" : "rotateAtSpeed",
+            "type" : "rotateToTarget",
             "speed" : "80°"
           },
           "whoToTarget" : [
@@ -974,7 +1171,8 @@
             "delay" : 0.05
           },
           "whatToFire" : "projectile/0",
-          "delayWhenTargetFoundBeforeFire" : 1
+          "delayWhenTargetFoundBeforeFire" : 1,
+          "spreadPattern": "fireStraight"
         }
       },
       {
@@ -986,7 +1184,7 @@
         },
         "turC" : {
           "rotationPattern" : {
-            "type" : "rotateAtSpeed",
+            "type" : "rotateToTarget",
             "speed" : "80°"
           },
           "whoToTarget" : [
@@ -1001,7 +1199,8 @@
             "delayInBurst" : 0.025
           },
           "whatToFire" : "projectile/0",
-          "delayWhenTargetFoundBeforeFire" : 1
+          "delayWhenTargetFoundBeforeFire" : 1,
+          "spreadPattern": "fireStraight"
         }
       },
       {
@@ -1013,7 +1212,7 @@
         },
         "turC" : {
           "rotationPattern" : {
-            "type" : "rotateAtSpeed",
+            "type" : "rotateToTarget",
             "speed" : "80°"
           },
           "whoToTarget" : [
@@ -1026,7 +1225,8 @@
             "delay" : 0.25
           },
           "whatToFire" : "projectile/1",
-          "delayWhenTargetFoundBeforeFire" : 1
+          "delayWhenTargetFoundBeforeFire" : 1,
+          "spreadPattern": "fireStraight"
         }
       },
       {
@@ -1038,8 +1238,8 @@
         },
         "turC" : {
           "rotationPattern" : {
-            "type" : "rotateAtSpeed",
-            "speed" : "40°"
+            "type" : "rotateToTarget",
+            "speed" : "54°"
           },
           "whoToTarget" : [
             "player"
@@ -1050,7 +1250,8 @@
             "projectileEndTiles": ["Layer.solid", "-glassSolid"]
           },
           "whatToFire" : "projectile/2",
-          "delayWhenTargetFoundBeforeFire" : 1
+          "delayWhenTargetFoundBeforeFire" : 1,
+          "spreadPattern": "fireStraight"
         }
       },
       {
@@ -1062,7 +1263,7 @@
         },
         "turC" : {
           "rotationPattern" : {
-            "type" : "rotateAtSpeed",
+            "type" : "rotateToTarget",
             "speed" : "40°"
           },
           "whoToTarget" : [
@@ -1071,10 +1272,120 @@
           "whenToFire" : "fireOnSeek",
           "howToFire": {
             "type": "continuous",
-            "projectileEndTiles": ["Layer.solid", "-glassSolid"]
+            "projectileEndTiles": ["Layer.solid"]
           },
-          "whatToFire" : "projectile/2",
-          "delayWhenTargetFoundBeforeFire" : 1
+          "whatToFire" : "projectile/3",
+          "delayWhenTargetFoundBeforeFire" : 1,
+          "spreadPattern": "fireStraight"
+        }
+      },
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0
+        },
+        "turC" : {
+          "rotationPattern" : {
+            "type" : "rotateContinuously",
+            "speed" : "90°"
+          },
+          "whoToTarget" : [
+            "player"
+          ],
+          "whenToFire" : "alwaysFire",
+          "howToFire": {
+            "type": "consistent",
+            "projectileSpeed": 24,
+            "delay": 0.75
+          },
+          "whatToFire" : "projectile/0",
+          "delayWhenTargetFoundBeforeFire" : 0,
+          "spreadPattern": {
+            "type": "fireAround",
+            "totalNumProjectiles": 4
+          }
+        }
+      },
+      {
+        "locC": {
+          "radius": 0.5
+        },
+        "dynC": {
+          "dynamicKnockbackMultiplier": 0
+        },
+        "turC": {
+          "rotationPattern": {
+            "type": "rotateContinuously",
+            "speed": "90°"
+          },
+          "whoToTarget": [
+            "player"
+          ],
+          "whenToFire": "alwaysFire",
+          "howToFire": {
+            "type": "consistent",
+            "projectileSpeed": 1,
+            "delay": 0.25
+          },
+          "whatToFire": "projectile/1",
+          "delayWhenTargetFoundBeforeFire": 0,
+          "spreadPattern": "fireStraight"
+        }
+      },
+      {
+        "locC": {
+          "radius": 0.5
+        },
+        "dynC": {
+          "dynamicKnockbackMultiplier": 0
+        },
+        "turC": {
+          "rotationPattern": {
+            "type": "rotateContinuously",
+            "speed": "90°"
+          },
+          "whoToTarget": [
+            "player"
+          ],
+          "whenToFire": "alwaysFire",
+          "howToFire": {
+            "type": "continuous",
+            "projectileEndTiles": [
+              "Layer.solid",
+              "-glassSolid"
+            ]
+          },
+          "whatToFire": "projectile/2",
+          "delayWhenTargetFoundBeforeFire": 0,
+          "spreadPattern": {
+            "type": "fireAround",
+            "totalNumProjectiles": 2
+          }
+        }
+      },
+      {
+        "locC" : {
+          "radius" : 0.5
+        },
+        "dynC" : {
+          "dynamicKnockbackMultiplier" : 0
+        },
+        "turC" : {
+          "rotationPattern" : "rotateToTargetInstantly",
+          "whoToTarget" : [
+            "enemy",
+            "player"
+          ],
+          "whenToFire" : "fireOnSeek",
+          "howToFire": {
+            "type": "continuous",
+            "projectileEndTiles": ["Layer.solid"]
+          },
+          "whatToFire" : "projectile/4",
+          "delayWhenTargetFoundBeforeFire" : 0,
+          "spreadPattern": "fireStraight"
         }
       }
     ],
@@ -1114,9 +1425,15 @@
       5
     ]
   },
-  "destructibleSolidInitialHealth" : [
-    1
-  ],
+  "destructibleSolidInitialHealth" : {
+    "destructibleSolid": [
+      1
+    ],
+    "glassSolid": [
+      1,
+      32
+    ]
+  },
   "dashEdgeBoostSpeed" : [
     16
   ],
@@ -1125,6 +1442,18 @@
   ],
   "defaultTileMetadatas" : {
     "turret" : [
+      {
+        "initialTurretDirectionRelativeToAnchor" : "-90°"
+      },
+      {
+        "initialTurretDirectionRelativeToAnchor" : "-90°"
+      },
+      {
+        "initialTurretDirectionRelativeToAnchor" : "-90°"
+      },
+      {
+        "initialTurretDirectionRelativeToAnchor" : "-90°"
+      },
       {
         "initialTurretDirectionRelativeToAnchor" : "-90°"
       },
@@ -1180,6 +1509,10 @@
       "atSolidBorder"
     ],
     "turret" : [
+      "directionAdjacentToSolid",
+      "directionAdjacentToSolid",
+      "directionAdjacentToSolid",
+      "directionAdjacentToSolid",
       "directionAdjacentToSolid",
       "directionAdjacentToSolid",
       "directionAdjacentToSolid",
@@ -1241,7 +1574,11 @@
       1,
       2,
       3,
-      4
+      4,
+      5,
+      6,
+      7,
+      8
     ],
     "image" : [
       0
@@ -1257,7 +1594,8 @@
       2
     ],
     "glassSolid": [
-      0
+      0,
+      1
     ],
     "cameraBoundary": [
       0

@@ -14,7 +14,7 @@ class TileMenuView: UXCompoundView {
         self.settings = settings
         super.init()
 
-        tileMenu.didSelect.subscribe(observer: self, priority: .view) {
+        tileMenu.didSelect.subscribe(observer: self, priority: .view) { (self) in
             self.regenerateBody()
         }
     }
@@ -30,7 +30,13 @@ class TileMenuView: UXCompoundView {
     private func newLayerView() -> UXView {
         HStack(tileMenu.layerSubmenuLayout.map { layer in
             let tileType = tileMenu.selectedTileTypesPerLayer[layer]!
-            return TileButton(tileType: tileType, settings: settings, isSelected: tileMenu.openLayer == layer) {
+            return TileButton(
+                owner: self,
+                tileType: tileType,
+                settings: settings,
+                isSelected: tileMenu.openLayer == layer
+            ) {
+                (self) in
                 self.tileMenu.openLayer = layer
             }
         })
@@ -42,7 +48,12 @@ class TileMenuView: UXCompoundView {
         let xOffsetInPoints = CGFloat(xOffsetInTiles) * ButtonSize.tile.sideLength
         return RePosition(
             HStack(types.map { tileType in
-                TileButton(tileType: tileType, settings: settings, isSelected: tileMenu.selectedBigType == tileType.bigType) {
+                TileButton(
+                    owner: self,
+                    tileType: tileType,
+                    settings: settings,
+                    isSelected: tileMenu.selectedBigType == tileType.bigType
+                ) { (self) in
                     self.tileMenu.selectedBigType = tileType.bigType
                 }
             }),
@@ -58,7 +69,12 @@ class TileMenuView: UXCompoundView {
         let xOffsetInPoints = CGFloat(xOffsetInTiles) * ButtonSize.tile.sideLength
         return RePosition(
             HStack(types.map { tileType in
-                TileButton(tileType: tileType, settings: settings, isSelected: tileMenu.selectedSmallType == tileType.smallType ) {
+                TileButton(
+                    owner: self,
+                    tileType: tileType,
+                    settings: settings,
+                    isSelected: tileMenu.selectedSmallType == tileType.smallType
+                ) { (self) in
                     self.tileMenu.selectedSmallType = tileType.smallType
                 }
             }),

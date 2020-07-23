@@ -969,7 +969,8 @@ extension TurretComponent {
             whenToFire: setting.usedFieldSettings["whenToFire"]!.decodeDynamically(),
             howToFire: setting.usedFieldSettings["howToFire"]!.decodeDynamically(),
             whatToFire: setting.usedFieldSettings["whatToFire"]!.decodeDynamically(),
-            delayWhenTargetFoundBeforeFire: setting.usedFieldSettings["delayWhenTargetFoundBeforeFire"]!.decodeDynamically()
+            delayWhenTargetFoundBeforeFire: setting.usedFieldSettings["delayWhenTargetFoundBeforeFire"]!.decodeDynamically(),
+            spreadPattern: setting.usedFieldSettings["spreadPattern"]!.decodeDynamically()
         )
     }
 
@@ -980,7 +981,8 @@ extension TurretComponent {
             whenToFire: setting.usedFieldSettings["whenToFire"]!.decodeDynamically(),
             howToFire: setting.usedFieldSettings["howToFire"]!.decodeDynamically(),
             whatToFire: setting.usedFieldSettings["whatToFire"]!.decodeDynamically(),
-            delayWhenTargetFoundBeforeFire: setting.usedFieldSettings["delayWhenTargetFoundBeforeFire"]!.decodeDynamically()
+            delayWhenTargetFoundBeforeFire: setting.usedFieldSettings["delayWhenTargetFoundBeforeFire"]!.decodeDynamically(),
+            spreadPattern: setting.usedFieldSettings["spreadPattern"]!.decodeDynamically()
         )
     }
 
@@ -991,6 +993,7 @@ extension TurretComponent {
         self.howToFire.encodeDynamically(to: setting.allFieldSettings["howToFire"]!)
         self.whatToFire.encodeDynamically(to: setting.allFieldSettings["whatToFire"]!)
         self.delayWhenTargetFoundBeforeFire.encodeDynamically(to: setting.allFieldSettings["delayWhenTargetFoundBeforeFire"]!)
+        self.spreadPattern.encodeDynamically(to: setting.allFieldSettings["spreadPattern"]!)
     }
 }
 extension TurretEntityViewTemplate {
@@ -1206,12 +1209,16 @@ extension TurretComponent.RotationPattern {
         switch setting.selectedCase {
         case "neverRotate":
             return TurretComponent.RotationPattern.neverRotate
-        case "rotateAtSpeed":
-            return TurretComponent.RotationPattern.rotateAtSpeed(
+        case "rotateContinuously":
+            return TurretComponent.RotationPattern.rotateContinuously(
                 speed: setting.selectedCaseFieldSettings["speed"]!.decodeDynamically()
             )
-        case "rotateInstantly":
-            return TurretComponent.RotationPattern.rotateInstantly
+        case "rotateToTarget":
+            return TurretComponent.RotationPattern.rotateToTarget(
+                speed: setting.selectedCaseFieldSettings["speed"]!.decodeDynamically()
+            )
+        case "rotateToTargetInstantly":
+            return TurretComponent.RotationPattern.rotateToTargetInstantly
         default:
             fatalError("Can't decode case with name because it doesn't exist: \(setting.selectedCase)")
         }
@@ -1221,10 +1228,35 @@ extension TurretComponent.RotationPattern {
         switch self {
         case .neverRotate:
             break
-        case .rotateAtSpeed(let speed):
+        case .rotateContinuously(let speed):
             speed.encodeDynamically(to: setting.selectedCaseFieldSettings["speed"]!)
-        case .rotateInstantly:
+        case .rotateToTarget(let speed):
+            speed.encodeDynamically(to: setting.selectedCaseFieldSettings["speed"]!)
+        case .rotateToTargetInstantly:
             break
+        }
+    }
+}
+extension TurretComponent.SpreadPattern {
+    static internal func decode(from setting: ComplexEnumSetting<TurretComponent.SpreadPattern>) -> TurretComponent.SpreadPattern {
+        switch setting.selectedCase {
+        case "fireStraight":
+            return TurretComponent.SpreadPattern.fireStraight
+        case "fireAround":
+            return TurretComponent.SpreadPattern.fireAround(
+                totalNumProjectiles: setting.selectedCaseFieldSettings["totalNumProjectiles"]!.decodeDynamically()
+            )
+        default:
+            fatalError("Can't decode case with name because it doesn't exist: \(setting.selectedCase)")
+        }
+    }
+
+    internal func encode(to setting: ComplexEnumSetting<TurretComponent.SpreadPattern>) {
+        switch self {
+        case .fireStraight:
+            break
+        case .fireAround(let totalNumProjectiles):
+            totalNumProjectiles.encodeDynamically(to: setting.selectedCaseFieldSettings["totalNumProjectiles"]!)
         }
     }
 }

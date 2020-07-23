@@ -21,7 +21,21 @@ class DestructibleBehavior: EmptyTileBehavior<Never> {
         if entity.next.toxC != nil {
             let myType = entity.world![pos]
             if DamageSystem.isToxic(toxicEntity: entity, damagedType: myType) {
-                receiveDamageFrom(entity: entity, pos3D: pos)
+                receiveInstantDamageFrom(entity: entity, pos3D: pos)
+            }
+        }
+    }
+
+    override func tick(world: World, pos: WorldTilePos3D) {
+        for entity in world.entities {
+            if entity.next.lilC != nil &&
+               entity.next.toxC != nil &&
+               entity.next.colC != nil &&
+               entity.next.colC!.adjacentPositions.allElements.contains(pos.pos) {
+                let myType = entity.world![pos]
+                if DamageSystem.isToxic(toxicEntity: entity, damagedType: myType) {
+                    receiveContinuousDamageFrom(entity: entity, pos3D: pos)
+                }
             }
         }
     }
@@ -32,19 +46,28 @@ class DestructibleBehavior: EmptyTileBehavior<Never> {
 
     private func resetHealth(world: World, pos: WorldTilePos3D) {
         let myType = world[pos]
-        let settingIndex = Int(myType.smallType.rawValue)
-        if let initialHealth = world.settings.destructibleSolidInitialHealth.getIfPresent(at: settingIndex) {
+        if let initialHealth = world.settings.destructibleSolidInitialHealth[myType] {
             health = initialHealth
         } else {
-            Logger.warnSettingsAreInvalid("destructible solid has no initial health because its index is out of destructibleSolidInitialHealth's bounds: \(settingIndex)")
+            Logger.warnSettingsAreInvalid("destructible solid has no initial health: \(myType)")
             health = 0
         }
     }
 
-    private func receiveDamageFrom(entity: Entity, pos3D: WorldTilePos3D) {
-        health -= entity.next.toxC!.damage
+    private func receiveInstantDamageFrom(entity: Entity, pos3D: WorldTilePos3D) {
+        receiveDamage(entity.next.toxC!.damage, world: entity.world!, pos3D: pos3D)
+    }
+
+    private func receiveContinuousDamageFrom(entity: Entity, pos3D: WorldTilePos3D) {
+        let world = entity.world!
+        let damageThisTick = entity.next.toxC!.damage * world.settings.fixedDeltaTime
+        receiveDamage(damageThisTick, world: world, pos3D: pos3D)
+    }
+
+    private func receiveDamage(_ damage: CGFloat, world: World, pos3D: WorldTilePos3D) {
+        health -= damage
         if health <= 0 {
-            destroyTile(world: entity.world!, pos3D: pos3D)
+            destroyTile(world: world, pos3D: pos3D)
         }
     }
 

@@ -8,11 +8,13 @@ import Foundation
 class Publisher<Event> {
     private class ObserverInfo<Event> {
         let priority: ObservablePriority
-        let receive: (Event)->()
+        let receive: (Event) -> ()
 
-        init(priority: ObservablePriority, handler: @escaping (Event) -> ()) {
+        init<Observer: AnyObject>(observer: Observer, priority: ObservablePriority, handler: @escaping (Observer, Event) -> ()) {
             self.priority = priority
-            self.receive = handler
+            self.receive = { [unowned observer] event in
+                handler(observer, event)
+            }
         }
     }
 
@@ -23,9 +25,9 @@ class Publisher<Event> {
     }
 
     /// Higher priority = receives messages earlier (this is bad design)
-    func subscribe(observer: AnyObject, priority: ObservablePriority, handler: @escaping (Event) -> ()) {
+    func subscribe<Observer: AnyObject>(observer: Observer, priority: ObservablePriority, handler: @escaping (Observer, Event) -> ()) {
         assert(observers[observer] == nil, "already subscribed")
-        observers[observer] = ObserverInfo(priority: priority, handler: handler)
+        observers[observer] = ObserverInfo(observer: observer, priority: priority, handler: handler)
     }
 
     func unsubscribe(observer: AnyObject) {
@@ -41,6 +43,12 @@ class Publisher<Event> {
 }
 
 extension Publisher where Event == () {
+    func subscribe<Observer: AnyObject>(observer: Observer, priority: ObservablePriority, handler: @escaping (Observer) -> ()) {
+        subscribe(observer: observer, priority: priority) { (observer, _) in
+            handler(observer)
+        }
+    }
+
     func publish() {
         publish(())
     }

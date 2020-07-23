@@ -38,7 +38,7 @@ struct LoadPositionSystem: TopLevelSystem {
 
     func extendLoadAroundEntityBoundingBox(world: World, entityBounds: CGRect) {
         let boundsToPreventUnload = entityBounds.insetBy(
-                sideLength: -(CGFloat(Chunk.widthHeight) + Chunk.extraDistanceFromEntityToUnload)
+            sideLength: -(CGFloat(Chunk.widthHeight) + Chunk.extraDistanceFromEntityToUnload)
         )
         world.boundingBoxToPreventUnload = world.boundingBoxToPreventUnload.union(boundsToPreventUnload)
     }

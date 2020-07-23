@@ -58,7 +58,9 @@ class TileView: OptionalNodeView {
         super.init(node: TileView.generateNode(template: template, world: world, pos3D: pos3D, tileType: tileType, coordinates: coordinates))
 
         updateEditorIndicator()
-        world.didChangeEditorIndicatorVisibility.subscribe(observer: self, priority: .view, handler: updateEditorIndicator)
+        world.didChangeEditorIndicatorVisibility.subscribe(observer: self, priority: .view) { (self) in
+            self.updateEditorIndicator()
+        }
     }
 
     // region editor node
