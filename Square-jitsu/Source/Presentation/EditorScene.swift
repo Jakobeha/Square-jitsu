@@ -13,6 +13,12 @@ class EditorScene: SJScene {
                 fatalError("worldController shouldn't be set twice")
             }
         }
+        didSet {
+            updateForLoadedEditor()
+            editorController.didChangeLoaded.subscribe(observer: self, priority: .presenter) { (self) in
+                self.updateForLoadedEditor()
+            }
+        }
     }
 
     override var size: CGSize {
@@ -40,6 +46,12 @@ class EditorScene: SJScene {
         fatalError("EditorScene can't be encoded or decoded")
     }
     // endregion
+
+    private func updateForLoadedEditor() {
+        if let loadedEditor = loadedEditor {
+            view!.preferredFramesPerSecond = Int(round(1 / loadedEditor.settings.fixedDeltaTime))
+        }
+    }
 
     // region game sessions
     private var quitHandler: (() -> ())? = nil

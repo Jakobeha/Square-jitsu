@@ -29,6 +29,7 @@ struct ChunkTilePos3D: Equatable, Comparable, Hashable, CaseIterable, LosslessSt
     }()
 
     init(pos: ChunkTilePos, layer: Int) {
+        assert(layer < Chunk.numLayers)
         self.pos = pos
         self.layer = layer
     }

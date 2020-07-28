@@ -11,11 +11,17 @@ struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
     var rawValue: UInt8
 
     var asSide: Side {
-        Side(rawValue: Int(rawValue))!
+        rawValue == 0 ? .east : Side(rawValue: Int(rawValue - 1)) ?? {
+            Logger.warn("tried to access tile orientation as side but it isn't one")
+            return .east
+        }()
     }
 
     var asCorner: Corner {
-        Corner(rawValue: Int(rawValue))!
+        rawValue == 0 ? .east : Corner(rawValue: Int(rawValue - 1)) ?? {
+            Logger.warn("tried to access tile orientation as corner but it isn't one")
+            return .east
+        }()
     }
 
     var asSideSet: SideSet {
@@ -24,11 +30,11 @@ struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
     }
 
     init(side: Side) {
-        self.rawValue = UInt8(side.rawValue)
+        self.rawValue = UInt8(side.rawValue + 1)
     }
 
     init(corner: Corner) {
-        self.rawValue = UInt8(corner.rawValue)
+        self.rawValue = UInt8(corner.rawValue + 1)
     }
 
     init(sideSet: SideSet) {

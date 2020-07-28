@@ -15,6 +15,17 @@ protocol ReadonlyStatelessWorld: AnyObject {
 }
 
 extension ReadonlyStatelessWorld {
+    func doesType(_ dependentType: TileType, dependOn requiredType: TileType) -> Bool {
+        switch settings.tileOrientationMeanings[dependentType] ?? .unused {
+        case .unused, .directionAdjacentToSolid, .directionToCorner, .freeSideSet:
+            return false
+        case .atBackgroundBorder:
+            return requiredType.isBackground
+        case .atSolidBorder:
+            return requiredType.isSolid
+        }
+    }
+
     func getTileAt(pos3D: WorldTilePos3D) -> TileAtPosition {
         TileAtPosition(type: self[pos3D], position: pos3D, metadata: getMetadataAt(pos3D: pos3D))
     }
@@ -63,11 +74,40 @@ extension ReadonlyStatelessWorld {
         return getConnectedSideAdjacents(origin: pos3D) { testPos in
             let typesAtPos = self[testPos]
             // Technically it doesn't matter whether we use firstIndex or lastIndex
-            if let indexWithSameTypeAtPos = typesAtPos.lastIndex(of: type) {
+            if let indexWithSameTypeAtPos = typesAtPos.lastIndex(where: { typeAtPos in
+                type.withDefaultOrientation == typeAtPos.withDefaultOrientation
+            }) {
                 return [indexWithSameTypeAtPos]
             } else {
                 return []
             }
+        }
+    }
+
+    /// Note: doesn't return nil for air.
+    /// Returns connected tiles with the same type,
+    /// and tiles which are only supposed to exist on (possibly other types or) this type,
+    /// such as solid and background edge tiles.
+    func getSideAdjacentsWithSameTypeAsTileAndDependentsAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
+        let type = self[pos3D]
+
+        return getConnectedSideAdjacents(origin: pos3D) { testPos in
+            let typesAtPos = self[testPos]
+            var connectedIndices: [Int] = []
+
+            // Add position if the tile has the same type as the origin
+            if let indexWithSameTypeAtPos = typesAtPos.lastIndex(where: { typeAtPos in
+                type.withDefaultOrientation == typeAtPos.withDefaultOrientation
+            }) {
+                connectedIndices.append(indexWithSameTypeAtPos)
+
+                // Add positions of tiles on this type which depend on it existing
+                connectedIndices.append(contentsOf: typesAtPos.indicesWhere { typeAtPos in
+                    self.doesType(typeAtPos, dependOn: type)
+                })
+            }
+
+            return connectedIndices
         }
     }
 

@@ -252,8 +252,8 @@ struct CollisionSystem: EarlyTopLevelSystem {
         switch (xIsImpossible, yIsImpossible) {
         case (false, false):
             // If we hit a corner it's technically ambiguous.
-            // We choose whichever axis is hit first and ignore the other
-            return (timeToXBarrier! < timeToYBarrier!) ? .horizontal : .vertical
+            // We choose whichever axis is hit last and ignore the other
+            return (timeToXBarrier! > timeToYBarrier!) ? .horizontal : .vertical
         case (true, false):
             return .vertical
         case (false, true):

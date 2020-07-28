@@ -23,7 +23,12 @@ class EditorController: WorldConduit {
     private let userSettings: UserSettings
     private weak var parent: EditorScene! = nil
     private let updater: FixedUpdater = FixedUpdater()
-    private(set) var loaded: EditorModelView? = nil
+    private(set) var loaded: EditorModelView? = nil {
+        didSet { _didChangeLoaded.publish() }
+    }
+
+    private let _didChangeLoaded: Publisher<()> = Publisher()
+    var didChangeLoaded: Observable<()> { Observable(publisher: _didChangeLoaded) }
 
     init(userSettings: UserSettings, parent: EditorScene) {
         self.userSettings = userSettings

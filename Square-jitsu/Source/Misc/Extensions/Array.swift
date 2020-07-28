@@ -13,4 +13,10 @@ extension Array {
     func getIfPresent(at index: Int) -> Element? {
         (index >= 0 && index < count) ? self[index] : nil
     }
+
+    func indicesWhere(_ predicate: (Element) throws -> Bool) rethrows -> [Int] {
+        try enumerated().filter { (_, element) in
+            try predicate(element)
+        }.map { (index, _) in index }
+    }
 }

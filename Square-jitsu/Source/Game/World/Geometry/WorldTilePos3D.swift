@@ -34,6 +34,7 @@ struct WorldTilePos3D: Equatable, Hashable {
     }
 
     init(pos: WorldTilePos, layer: Int) {
+        assert(layer < Chunk.numLayers)
         self.pos = pos
         self.layer = layer
     }

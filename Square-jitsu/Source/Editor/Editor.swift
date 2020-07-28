@@ -13,7 +13,7 @@ class Editor: EditorToolsDelegate {
     let editorCamera: Camera
     var state: EditorState = .editing {
         didSet {
-            editableWorld.world.showEditingIndicators = state.showEditingIndicators
+            editableWorld.world.set(editorState: state)
             _didChangeState.publish()
         }
     }

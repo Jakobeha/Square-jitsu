@@ -38,7 +38,7 @@ struct LineCastHit {
             let t = min(tAtX, tAtY)
             let hitPoint = line.lerp(t: CGFloat.clamp(t, min: 0, max: 1))
             return (hitPoint, hitSide: nil)
-        } else if !canHitY || (canHitX && tAtX < tAtY) {
+        } else if !canHitY || (canHitX && tAtX > tAtY) {
             // We hit the x axis
             let hitPoint = line.lerp(t: CGFloat.clamp(tAtX, min: 0, max: 1))
             return (hitPoint, hitSide: xHitSide)

@@ -49,6 +49,9 @@ class EditSelectionView: UXView {
         editor.tools.didChangeEditAction.subscribe(observer: self, priority: .view) { (self) in
             self.updateInteractedNodePath()
         }
+        editor.tools.didChangeInspector.subscribe(observer: self, priority: .view) { (self) in
+            self.updateInteractedNodePath()
+        }
         editor.tools.didChangeEditSelection.subscribe(observer: self, priority: .view) { (self) in
             self.updateCurrentSelectionNodePath()
         }

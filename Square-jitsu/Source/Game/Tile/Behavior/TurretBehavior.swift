@@ -30,6 +30,9 @@ class TurretBehavior: AbstractSpawnBehavior<TurretMetadata> {
         let anchorRotation = myTileType.orientation.asSide.angle
 
         let entity = super.spawn(world: world, pos: pos)
+        if let rotatesClockwise = metadata.rotatesClockwise {
+            entity.next.turC!.rotatesClockwiseWhenContinuously = rotatesClockwise
+        }
         entity.next.locC!.rotation = metadata.initialTurretDirectionRelativeToAnchor + anchorRotation.toUnclamped
         return entity
     }

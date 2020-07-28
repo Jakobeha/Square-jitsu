@@ -12,7 +12,7 @@ struct Observable<Event> {
         self.publisher = publisher
     }
 
-    func subscribe<Observer: AnyObject>(observer: Observer, priority: ObservablePriority, handler: @escaping (Observer, Event) -> ()) {
+    func subscribe<Observer: AnyObject>(observer: Observer, priority: ObserverPriority, handler: @escaping (Observer, Event) -> ()) {
         publisher.subscribe(observer: observer, priority: priority, handler: handler)
     }
 
@@ -22,7 +22,7 @@ struct Observable<Event> {
 }
 
 extension Observable where Event == () {
-    func subscribe<Observer: AnyObject>(observer: Observer, priority: ObservablePriority, handler: @escaping (Observer) -> ()) {
+    func subscribe<Observer: AnyObject>(observer: Observer, priority: ObserverPriority, handler: @escaping (Observer) -> ()) {
         publisher.subscribe(observer: observer, priority: priority, handler: handler)
     }
 }

@@ -92,7 +92,11 @@ struct TurretSystem: TopLevelSystem {
             break
         case .rotateContinuously(let speed):
             let deltaRotation = speed * world.settings.fixedDeltaTime
-            entity.next.locC!.rotation += deltaRotation
+            if entity.next.turC!.rotatesClockwiseWhenContinuously {
+                entity.next.locC!.rotation += deltaRotation
+            } else {
+                entity.next.locC!.rotation -= deltaRotation
+            }
         case .rotateToTarget(let speed):
             if let directionToTarget = directionToTarget {
                 let currentDirection = entity.prev.locC!.rotation
@@ -183,7 +187,12 @@ struct TurretSystem: TopLevelSystem {
     var shouldTurretFire: Bool {
         switch entity.next.turC!.whenToFire {
         case .alwaysFire:
-            return true
+            let whoToTarget = entity.next.turC!.whoToTarget
+            return world.entities.contains { otherEntity in
+                whoToTarget.contains(otherEntity.type) &&
+                otherEntity.next.locC != nil &&
+                (entity.next.locC!.position - otherEntity.next.locC!.position).magnitude < TurretComponent.turretVisibilityRadius
+            }
         case .fireOnSeek:
             return entity.next.turC!.targetState.target != nil
         }

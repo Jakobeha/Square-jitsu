@@ -1028,18 +1028,21 @@ extension TurretEntityViewTemplate {
 extension TurretMetadata {
     internal init(from setting: StructSetting<TurretMetadata>) {
         self.init(
-            initialTurretDirectionRelativeToAnchor: setting.usedFieldSettings["initialTurretDirectionRelativeToAnchor"]!.decodeDynamically()
+            initialTurretDirectionRelativeToAnchor: setting.usedFieldSettings["initialTurretDirectionRelativeToAnchor"]!.decodeDynamically(),
+            rotatesClockwise: setting.usedFieldSettings["rotatesClockwise"]?.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<TurretMetadata>) -> TurretMetadata {
         self.init(
-            initialTurretDirectionRelativeToAnchor: setting.usedFieldSettings["initialTurretDirectionRelativeToAnchor"]!.decodeDynamically()
+            initialTurretDirectionRelativeToAnchor: setting.usedFieldSettings["initialTurretDirectionRelativeToAnchor"]!.decodeDynamically(),
+            rotatesClockwise: setting.usedFieldSettings["rotatesClockwise"]?.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<TurretMetadata>) {
         self.initialTurretDirectionRelativeToAnchor.encodeDynamically(to: setting.allFieldSettings["initialTurretDirectionRelativeToAnchor"]!)
+        self.rotatesClockwise?.encodeDynamically(to: setting.allFieldSettings["rotatesClockwise"]!)
     }
 }
 extension TurretTileViewTemplate {
@@ -1085,6 +1088,7 @@ extension WithAlternatePreviewTileViewTemplate {
 extension WorldSettings {
     internal convenience init(from setting: StructSetting<WorldSettings>) {
         self.init(
+            tileViewWidthHeight: setting.usedFieldSettings["tileViewWidthHeight"]!.decodeDynamically(),
             tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
             edgeMaskTextureBase: setting.usedFieldSettings["edgeMaskTextureBase"]!.decodeDynamically(),
@@ -1113,6 +1117,7 @@ extension WorldSettings {
 
     static internal func decode(from setting: StructSetting<WorldSettings>) -> WorldSettings {
         self.init(
+            tileViewWidthHeight: setting.usedFieldSettings["tileViewWidthHeight"]!.decodeDynamically(),
             tileViewTemplates: setting.usedFieldSettings["tileViewTemplates"]!.decodeDynamically(),
             entityViewTemplates: setting.usedFieldSettings["entityViewTemplates"]!.decodeDynamically(),
             edgeMaskTextureBase: setting.usedFieldSettings["edgeMaskTextureBase"]!.decodeDynamically(),
@@ -1140,6 +1145,7 @@ extension WorldSettings {
     }
 
     internal func encode(to setting: StructSetting<WorldSettings>) {
+        self.tileViewWidthHeight.encodeDynamically(to: setting.allFieldSettings["tileViewWidthHeight"]!)
         self.tileViewTemplates.encodeDynamically(to: setting.allFieldSettings["tileViewTemplates"]!)
         self.entityViewTemplates.encodeDynamically(to: setting.allFieldSettings["entityViewTemplates"]!)
         self.edgeMaskTextureBase.encodeDynamically(to: setting.allFieldSettings["edgeMaskTextureBase"]!)

@@ -7,6 +7,8 @@ import SpriteKit
 
 struct NinjaComponent: SingleSettingCodable, Codable {
     static let maxOffsetFromOverriddenDirectionForJumpToStillOccur: Angle = Angle.right / 1.5
+    /// Offset from the ground or walls when the entity jumps, so it can do a sideways jump easier
+    static let jumpOffSolidInstantDistance: CGFloat = 0.25
 
     enum ActionState: Equatable {
         case idle

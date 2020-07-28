@@ -57,7 +57,7 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
     /// - Note: If you change this, also change TileTypeSet.containsBackground
     var isBackground: Bool { bigType.layer == .background }
 
-    /// - Note: If you change this, also change TileTypeSet.containsSolid
+    /// - Note: If you change this, also change TileTypeSet.containsSolid and TileTypePred1Way.insertSolidTypes
     var isSolid: Bool { bigType.layer == .solid || bigType.layer == .iceSolid || bigType == .solidEdge }
 
     var blocksVision: Bool {

@@ -57,4 +57,10 @@ struct TileTypePred1Way: Codable {
         containedLayers.contains(anyOf: types.map { $0.bigType.layer }) ||
         containsAll
     }
+
+    mutating func insertSolidTypes() {
+        containedLayers.insert(.solid)
+        containedLayers.insert(.iceSolid)
+        containedBigTypes.insert(.solidEdge)
+    }
 }

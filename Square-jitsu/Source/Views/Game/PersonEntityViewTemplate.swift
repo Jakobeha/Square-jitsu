@@ -12,7 +12,8 @@ final class PersonEntityViewTemplate: EmptyEntityViewTemplate, SingleSettingCoda
         (.west, "West"),
         (.south, "South")
     )
-    private static let noSideTextureName: String = "InAir"
+    private static let noSideCanJumpTextureName: String = "InAirCanJump"
+    private static let noSideCantJumpTextureName: String = "InAirCantJump"
 
     private static func getPreferredAdjacentSideIn(sideSet: SideSet) -> Side? {
         if sideSet.contains(.south) {
@@ -31,7 +32,7 @@ final class PersonEntityViewTemplate: EmptyEntityViewTemplate, SingleSettingCoda
     let textureBase: TextureSet
 
     private var defaultTexture: SKTexture {
-        getTextureFor(side: .south)
+        getTextureFor(side: .south, canJump: false)
     }
 
     init(textureBase: TextureSet) {
@@ -55,23 +56,32 @@ final class PersonEntityViewTemplate: EmptyEntityViewTemplate, SingleSettingCoda
     }
 
     private func getTextureFor(entity: Entity) -> SKTexture {
-        if entity.next.colC == nil {
-            Logger.warnSettingsAreInvalid("person entity view template must be assigned to an entity which detects collisions")
+        if entity.next.nijC == nil {
+            Logger.warnSettingsAreInvalid("person entity view template must be assigned to a ninja entity (nijC)")
             return defaultTexture
         }
+        // nijC also depends on colC, so the entity also detects collisions
 
-        return getTextureFor(sideSet: entity.next.colC!.adjacentSides)
+        return getTextureFor(
+            sideSet: entity.next.colC!.adjacentSides,
+            canJump: NinjaSystem.canEntityJumpInAnyDirection(entity: entity)
+        )
     }
 
-    private func getTextureFor(sideSet: SideSet) -> SKTexture {
-        getTextureFor(side: PersonEntityViewTemplate.getPreferredAdjacentSideIn(sideSet: sideSet))
+    private func getTextureFor(sideSet: SideSet, canJump: Bool) -> SKTexture {
+        getTextureFor(
+            side: PersonEntityViewTemplate.getPreferredAdjacentSideIn(sideSet: sideSet),
+            canJump: canJump
+        )
     }
 
-    private func getTextureFor(side: Side?) -> SKTexture {
+    private func getTextureFor(side: Side?, canJump: Bool) -> SKTexture {
         if let side = side {
             return textureBase[PersonEntityViewTemplate.sideTextureNames[side]]
+        } else if canJump {
+            return textureBase[PersonEntityViewTemplate.noSideCanJumpTextureName]
         } else {
-            return textureBase[PersonEntityViewTemplate.noSideTextureName]
+            return textureBase[PersonEntityViewTemplate.noSideCantJumpTextureName]
         }
     }
 

@@ -50,12 +50,21 @@ struct NinjaSystem: TopLevelSystem {
     private mutating func jump(direction: Angle) {
         assert(entity.prev.nijC != nil && entity.prev.dynC != nil)
 
-        let actualJumpDirection = getActualJumpDirection(intendedDirection: direction)
+        // If jumping off a solid, move away so a sideways jump would work
+        for side in Side.allCases {
+            if entity.next.colC!.adjacentSides.contains(side.toSet) && !entity.next.colC!.adjacentSides.contains(side.opposite.toSet) {
+                entity.next.locC!.position -= side.perpendicularOffset.toCgPoint * NinjaComponent.jumpOffSolidInstantDistance
+            }
+        }
 
+        // Set velocity
+        let actualJumpDirection = getActualJumpDirection(intendedDirection: direction)
         entity.next.dynC!.velocity = CGPoint(
             magnitude: entity.prev.nijC!.jumpSpeed,
             directionFromOrigin: actualJumpDirection
         )
+
+        // Set angular velocity
         if isNearOrOnSolid {
             // Since angular velocity would be 0 on solid,
             // to prevent infinite angular velocity from jumping near the ground
@@ -63,7 +72,11 @@ struct NinjaSystem: TopLevelSystem {
         } else {
             entity.next.dynC!.angularVelocity += entity.prev.nijC!.jumpAngularSpeed
         }
+
+        // Mark # of background jumps remaining, and background types used,
+        // to prevent excessive jumps
         if isNearOrOnSolid {
+            entity.next.nijC!.backgroundTypesUsed.removeAll()
             entity.next.nijC!.numJumpsWithoutBackgroundRemaining = entity.next.nijC!.minNumJumpsWithoutBackground
         } else {
             // Technically this is cleared somewhere else if on solid anyways...
@@ -93,6 +106,11 @@ struct NinjaSystem: TopLevelSystem {
         }
     }
 
+    static func canEntityJumpInAnyDirection(entity: Entity) -> Bool {
+        assert(entity.next.nijC != nil, "canEntityJumpInAnyDirection called on entity which isn't a ninja (no nijC)")
+        return NinjaSystem(entity: entity).canJumpInAnyDirection
+    }
+
     private var canJumpInAnyDirection: Bool {
         isNearOrOnSolid || isOnUnusedBackground || entity.next.nijC!.numJumpsWithoutBackgroundRemaining > 0
     }
@@ -104,7 +122,9 @@ struct NinjaSystem: TopLevelSystem {
     private var isNearOrOnSolid: Bool {
         let nearTypes = entity.prev.ntlC!.nearTypes
         let onTypes = entity.prev.colC!.overlappingTypes
-        return (nearTypes.contains(layer: .solid) && !onTypes.contains(bigType: .lava)) || onTypes.contains(layer: .solid)
+        return
+            ((nearTypes.contains(layer: .solid) || nearTypes.contains(bigType: .solidEdge)) && !onTypes.contains(bigType: .lava)) ||
+            (onTypes.contains(layer: .solid) || onTypes.contains(bigType: .solidEdge))
     }
 
     private var isOnUnusedBackground: Bool {

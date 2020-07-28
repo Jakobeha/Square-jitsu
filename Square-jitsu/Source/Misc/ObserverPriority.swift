@@ -5,12 +5,13 @@
 
 import Foundation
 
-enum ObservablePriority: Int, Comparable {
+enum ObserverPriority: Int, Comparable {
     case model
     case input
     case view
+    case presenter
 
-    static func <(lhs: ObservablePriority, rhs: ObservablePriority) -> Bool {
+    static func <(lhs: ObserverPriority, rhs: ObserverPriority) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
 }

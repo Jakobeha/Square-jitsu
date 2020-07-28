@@ -10,16 +10,14 @@ import SpriteKit
 final class WorldSettings: SingleSettingCodable, Codable {
     // Global game constants which can't actually be changed
 
-    // SpriteKit tries to run 60fps so we run 2x.
-    // This makes user input same-frame, since velocity changes must propagate into an entity's prev state to be rendered
-    let tileViewWidthHeight: CGFloat = 32
-    let fixedDeltaTime: CGFloat = 1.0 / 120
+    let fixedDeltaTime: CGFloat = 1.0 / 50
     let cameraSpeed: CGFloat = 1.0 / 16
     let shakeFade: CGFloat = 2
     let shakeInterpolationFractionPerFrame: CGFloat = 0.5
     let shakeInterpolationDistanceBeforeChange: CGFloat = 0.125
 
     // Display info
+    let tileViewWidthHeight: CGFloat
     var tileViewTemplates: TileTypeMap<TileViewTemplate>
     var entityViewTemplates: TileTypeMap<EntityViewTemplate>
     let edgeMaskTextureBase: TextureSet
@@ -48,7 +46,8 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>
     var selectableTypes: [TileBigType:[TileSmallType]]
 
-    init(tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, edgeMaskTextureBase: TextureSet, glossTexture: SKTexture, imagePlaceholderTexture: SKTexture, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, playerInputSpeedFractionChangePerSecond: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, destructibleSolidInitialHealth: TileTypeMap<CGFloat>, dashEdgeBoostSpeed: [CGFloat], springEdgeBounceMultiplier: [CGFloat], defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewWidthHeight: CGFloat, tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, edgeMaskTextureBase: TextureSet, glossTexture: SKTexture, imagePlaceholderTexture: SKTexture, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, playerInputSpeedFractionChangePerSecond: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, destructibleSolidInitialHealth: TileTypeMap<CGFloat>, dashEdgeBoostSpeed: [CGFloat], springEdgeBounceMultiplier: [CGFloat], defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+        self.tileViewWidthHeight = tileViewWidthHeight
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
         self.edgeMaskTextureBase = edgeMaskTextureBase
@@ -79,6 +78,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
 
     static func newSetting() -> StructSetting<WorldSettings> {
         StructSetting(requiredFields: [
+            "tileViewWidthHeight": CGFloatRangeSetting(1...192),
             "tileViewTemplates": TileTypeMapSetting<TileViewTemplate> { TileViewTemplateSetting() },
             "entityViewTemplates": TileTypeMapSetting<EntityViewTemplate> { EntityViewTemplateSetting() },
             "edgeMaskTextureBase": TextureSetSetting(),

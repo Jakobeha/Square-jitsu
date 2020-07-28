@@ -46,7 +46,8 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
     }
 
     func forceCreateTile(pos: WorldTilePos, type: TileType) {
-        let orientedType = autoReorientType(type, pos: pos)
+        var orientedType = type
+        orientedType.orientation = autoReorientType(type, pos: pos)
         world.forceCreateTileNotPersistent(pos: pos, type: orientedType)
         worldFile.forceCreateTile(pos: pos, type: orientedType)
     }
@@ -66,42 +67,54 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
         setMetadataAt(pos3D: tileAtPosition.position, to: tileAtPosition.metadata)
     }
 
-    private func autoReorientType(_ type: TileType, pos: WorldTilePos) -> TileType {
-        var type = type
+    private func autoReorientType(_ type: TileType, pos: WorldTilePos) -> TileOrientation {
+        let oldOrientation = type.orientation
         let orientationMeaning = world.settings.tileOrientationMeanings[type] ?? .unused
         switch orientationMeaning {
         case .unused, .freeSideSet:
-            break
+            return oldOrientation
         case .directionAdjacentToSolid:
             let sidesWithAdjacentSolid = getSolidAdjacentSidesTo(pos: pos)
-            if let aSideWithAdjacentSolid = sidesWithAdjacentSolid.first {
-                type.orientation = TileOrientation(side: aSideWithAdjacentSolid)
+            if !sidesWithAdjacentSolid.contains(oldOrientation.asSide.toSet),
+               let aSideWithAdjacentSolid = sidesWithAdjacentSolid.first {
+                return TileOrientation(side: aSideWithAdjacentSolid)
             } else {
-                type.orientation = TileOrientation.none
+                return oldOrientation
             }
         case .directionToCorner:
-            let preferredCorner = pos.sideAdjacents.values.compactMap { adjacentPos -> Corner? in
-                let adjacentTypes = self[adjacentPos]
-                let adjacentSameTypeIgnoringOrientation = adjacentTypes.first { adjacentType in
-                    adjacentType.withDefaultOrientation == type.withDefaultOrientation
+            if oldOrientation != TileOrientation.none {
+                return oldOrientation
+            } else {
+                let preferredCorner = pos.sideAdjacents.values.compactMap { adjacentPos -> Corner? in
+                    let adjacentTypes = self[adjacentPos]
+                    let adjacentSameTypeIgnoringOrientation = adjacentTypes.first { adjacentType in
+                        adjacentType.withDefaultOrientation == type.withDefaultOrientation
+                    }
+                    return adjacentSameTypeIgnoringOrientation?.orientation.asCorner
+                }.first
+                if let preferredCorner = preferredCorner {
+                    return TileOrientation(corner: preferredCorner)
+                } else {
+                    return oldOrientation
                 }
-                return adjacentSameTypeIgnoringOrientation?.orientation.asCorner
-            }.first
-            if let preferredCorner = preferredCorner {
-                type.orientation = TileOrientation(corner: preferredCorner)
             }
         case .atBackgroundBorder:
             let sidesWithAdjacentBackground = getBackgroundAdjacentSidesTo(pos: pos)
             let alreadyOccupiedSides = getOccupiedTileSidesAt(pos: pos, tileLayer: type.bigType.layer)
-            let orientationSides = sidesWithAdjacentBackground.inverted.subtracting(alreadyOccupiedSides)
-            type.orientation = TileOrientation(sideSet: orientationSides)
+            var orientationSides = sidesWithAdjacentBackground.inverted.subtracting(alreadyOccupiedSides)
+            if type.orientation != TileOrientation.none {
+                orientationSides.formIntersection(type.orientation.asSideSet)
+            }
+            return TileOrientation(sideSet: orientationSides)
         case .atSolidBorder:
             let sidesWithAdjacentSolid = getSolidAdjacentSidesTo(pos: pos)
             let alreadyOccupiedSides = getOccupiedTileSidesAt(pos: pos, tileLayer: type.bigType.layer)
-            let orientationSides = sidesWithAdjacentSolid.inverted.subtracting(alreadyOccupiedSides)
-            type.orientation = TileOrientation(sideSet: orientationSides)
+            var orientationSides = sidesWithAdjacentSolid.inverted.subtracting(alreadyOccupiedSides)
+            if type.orientation != TileOrientation.none {
+                orientationSides.formIntersection(type.orientation.asSideSet)
+            }
+            return TileOrientation(sideSet: orientationSides)
         }
-        return type
     }
     // endregion
 

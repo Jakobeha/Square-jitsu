@@ -8,8 +8,9 @@ import Foundation
 enum SerialWorldVersion: String, Comparable, CaseIterable, Codable {
     case _0_1_0
     case _0_1_1
+    case _0_1_2
 
-    static let latest: SerialWorldVersion = ._0_1_1
+    static let latest: SerialWorldVersion = ._0_1_2
 
     // region ordering
     static func <(lhs: SerialWorldVersion, rhs: SerialWorldVersion) -> Bool {

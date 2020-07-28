@@ -1,4 +1,5 @@
 {
+  "tileViewWidthHeight": 32,
   "tileViewTemplates" : {
     "background" : [
       {
@@ -60,7 +61,7 @@
           "adjoiningTypes": [
             "solid/0",
             "ice/0",
-            "destructibleSolid/0",
+            "destructibleSolid",
             "glassSolid"
           ]
         }
@@ -90,7 +91,21 @@
           "adjoiningTypes" : [
             "solid/0",
             "ice/0",
-            "destructibleSolid/0",
+            "destructibleSolid",
+            "glassSolid"
+          ]
+        }
+      },
+      {
+        "type" : "destructible",
+        "destructionTexture" : "Tiles/Destruction",
+        "base" : {
+          "type" : "square8",
+          "textureBase" : "Tiles/FragileDestructibleSolid",
+          "adjoiningTypes" : [
+            "solid/0",
+            "ice/0",
+            "destructibleSolid",
             "glassSolid"
           ]
         }
@@ -106,7 +121,7 @@
           "adjoiningTypes": [
             "solid/0",
             "ice/0",
-            "destructibleSolid/0",
+            "destructibleSolid",
             "glassSolid"
           ]
         }
@@ -339,7 +354,7 @@
             "adjoiningTypes": [
               "solid/0",
               "ice/0",
-              "destructibleSolid/0",
+              "destructibleSolid",
               "glassSolid"
             ]
           }
@@ -365,7 +380,7 @@
             "adjoiningTypes": [
               "solid/0",
               "ice/0",
-              "destructibleSolid/0",
+              "destructibleSolid",
               "glassSolid"
             ]
           }
@@ -799,7 +814,8 @@
       "Default-On"
     ],
     "destructibleSolid" : [
-      "Default"
+      "Default",
+      "Fragile"
     ],
     "ice" : [
       "Default"
@@ -916,9 +932,9 @@
           "dynamicKnockbackMultiplier" : 0.25
         },
         "imfC" : {
-          "gravity" : 0.25,
+          "gravity" : 0,
           "minSpeedOnIce" : 2,
-          "solidFriction" : 0.125,
+          "solidFriction" : 0.0625,
           "aerialAngularFriction" : 0.02083333333
         },
         "colC" : {},
@@ -946,7 +962,7 @@
         },
         "ctrC": {},
         "nijC" : {
-          "jumpSpeed" : 16,
+          "jumpSpeed" : 8,
           "jumpAngularSpeed" : "720°",
           "minNumJumpsWithoutBackground" : 0
         }
@@ -961,7 +977,7 @@
           "dynamicKnockbackMultiplier" : 0.25
         },
         "imfC" : {
-          "gravity" : 0.25,
+          "gravity" : 0,
           "minSpeedOnIce" : 2,
           "solidFriction" : 0.125,
           "aerialAngularFriction" : 0.02083333333
@@ -978,7 +994,7 @@
           "maxHealth" : 1
         },
         "nijC" : {
-          "jumpSpeed" : 12,
+          "jumpSpeed" : 6,
           "jumpAngularSpeed" : "180°",
           "minNumJumpsWithoutBackground" : 3
         },
@@ -1001,7 +1017,7 @@
           "radius" : 0.5
         },
         "dalC" : {
-          "maxLifetime" : 8
+          "maxLifetime" : 3
         },
         "dynC" : {
           "dynamicKnockbackMultiplier" : 0.5
@@ -1042,7 +1058,7 @@
           "dynamicKnockbackMultiplier" : 0.75
         },
         "imfC" : {
-          "gravity" : 0.5,
+          "gravity" : 0.25,
           "minSpeedOnIce" : 0,
           "solidFriction" : 0.015625,
           "aerialAngularFriction" : 0.0625
@@ -1065,7 +1081,7 @@
           "radius" : 0.0833
         },
         "dalC" : {
-          "maxLifetime" : 4
+          "maxLifetime" : 3
         },
         "dynC" : {
           "dynamicKnockbackMultiplier" : 0.25
@@ -1090,7 +1106,7 @@
           "radius" : 0.333
         },
         "dalC" : {
-          "maxLifetime" : 4
+          "maxLifetime" : 3
         },
         "codC" : {
           "createdType" : "explosion/1"
@@ -1159,7 +1175,7 @@
         "turC" : {
           "rotationPattern" : {
             "type" : "rotateToTarget",
-            "speed" : "80°"
+            "speed" : "45°"
           },
           "whoToTarget" : [
             "player"
@@ -1185,7 +1201,7 @@
         "turC" : {
           "rotationPattern" : {
             "type" : "rotateToTarget",
-            "speed" : "80°"
+            "speed" : "45°"
           },
           "whoToTarget" : [
             "player"
@@ -1213,7 +1229,7 @@
         "turC" : {
           "rotationPattern" : {
             "type" : "rotateToTarget",
-            "speed" : "80°"
+            "speed" : "45°"
           },
           "whoToTarget" : [
             "player"
@@ -1239,7 +1255,7 @@
         "turC" : {
           "rotationPattern" : {
             "type" : "rotateToTarget",
-            "speed" : "54°"
+            "speed" : "36°"
           },
           "whoToTarget" : [
             "player"
@@ -1247,7 +1263,7 @@
           "whenToFire" : "fireOnSeek",
           "howToFire": {
             "type": "continuous",
-            "projectileEndTiles": ["Layer.solid", "-glassSolid"]
+            "projectileEndTiles": ["Solid", "-glassSolid"]
           },
           "whatToFire" : "projectile/2",
           "delayWhenTargetFoundBeforeFire" : 1,
@@ -1264,7 +1280,7 @@
         "turC" : {
           "rotationPattern" : {
             "type" : "rotateToTarget",
-            "speed" : "40°"
+            "speed" : "36°"
           },
           "whoToTarget" : [
             "player"
@@ -1272,7 +1288,7 @@
           "whenToFire" : "fireOnSeek",
           "howToFire": {
             "type": "continuous",
-            "projectileEndTiles": ["Layer.solid"]
+            "projectileEndTiles": ["Solid"]
           },
           "whatToFire" : "projectile/3",
           "delayWhenTargetFoundBeforeFire" : 1,
@@ -1289,7 +1305,7 @@
         "turC" : {
           "rotationPattern" : {
             "type" : "rotateContinuously",
-            "speed" : "90°"
+            "speed" : "45°"
           },
           "whoToTarget" : [
             "player"
@@ -1318,7 +1334,7 @@
         "turC": {
           "rotationPattern": {
             "type": "rotateContinuously",
-            "speed": "90°"
+            "speed": "60°"
           },
           "whoToTarget": [
             "player"
@@ -1344,7 +1360,7 @@
         "turC": {
           "rotationPattern": {
             "type": "rotateContinuously",
-            "speed": "90°"
+            "speed": "36°"
           },
           "whoToTarget": [
             "player"
@@ -1353,7 +1369,7 @@
           "howToFire": {
             "type": "continuous",
             "projectileEndTiles": [
-              "Layer.solid",
+              "Solid",
               "-glassSolid"
             ]
           },
@@ -1381,7 +1397,7 @@
           "whenToFire" : "fireOnSeek",
           "howToFire": {
             "type": "continuous",
-            "projectileEndTiles": ["Layer.solid"]
+            "projectileEndTiles": ["Solid"]
           },
           "whatToFire" : "projectile/4",
           "delayWhenTargetFoundBeforeFire" : 0,
@@ -1427,7 +1443,8 @@
   },
   "destructibleSolidInitialHealth" : {
     "destructibleSolid": [
-      1
+      1,
+      0.0625
     ],
     "glassSolid": [
       1,
@@ -1443,31 +1460,40 @@
   "defaultTileMetadatas" : {
     "turret" : [
       {
-        "initialTurretDirectionRelativeToAnchor" : "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°",
+        "rotatesClockwise": null
       },
       {
-        "initialTurretDirectionRelativeToAnchor" : "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°",
+        "rotatesClockwise": null
       },
       {
-        "initialTurretDirectionRelativeToAnchor" : "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°",
+        "rotatesClockwise": null
       },
       {
-        "initialTurretDirectionRelativeToAnchor" : "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°",
+        "rotatesClockwise": null
       },
       {
-        "initialTurretDirectionRelativeToAnchor" : "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°",
+        "rotatesClockwise": null
       },
       {
-        "initialTurretDirectionRelativeToAnchor" : "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°",
+        "rotatesClockwise": false
       },
       {
-        "initialTurretDirectionRelativeToAnchor" : "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°",
+        "rotatesClockwise": false
       },
       {
-        "initialTurretDirectionRelativeToAnchor" : "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°",
+        "rotatesClockwise": false
       },
       {
-        "initialTurretDirectionRelativeToAnchor" : "-90°"
+        "initialTurretDirectionRelativeToAnchor" : "-90°",
+        "rotatesClockwise": null
       }
     ],
     "image": [
@@ -1539,7 +1565,8 @@
       0
     ],
     "destructibleSolid" : [
-      0
+      0,
+      1
     ],
     "ice" : [
       0

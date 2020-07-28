@@ -12,6 +12,19 @@ final class TurretInspector: SubInspector {
     private let undoManager: UndoManager
 
     private(set) var initialTurretDirections: [Angle] = []
+    var rotatesClockwise: Bool? {
+        get { (tiles.first!.metadata! as! TurretMetadata).rotatesClockwise }
+        set {
+            let newTiles: [TileAtPosition] = tiles.map { tileAtPosition in
+                var newTile = tileAtPosition
+                var newMetadata = newTile.metadata as! TurretMetadata
+                newMetadata.rotatesClockwise = newValue
+                newTile.metadata = newMetadata
+                return newTile
+            }
+            delegate?.overwrite(tiles: newTiles)
+        }
+    }
 
     required init(tiles: [TileAtPosition], world: ReadonlyStatelessWorld, delegate: EditorToolsDelegate?, undoManager: UndoManager) {
         self.tiles = tiles

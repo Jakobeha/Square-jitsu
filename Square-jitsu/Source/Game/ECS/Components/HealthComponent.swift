@@ -18,6 +18,11 @@ struct HealthComponent: SingleSettingCodable, Codable {
         health = maxHealth
     }
 
+    mutating func restoreAllHealth() {
+        health = maxHealth
+    }
+
+    // region encoding and decoding
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(maxHealth: try container.decode(CGFloat.self, forKey: .maxHealth))
@@ -28,7 +33,6 @@ struct HealthComponent: SingleSettingCodable, Codable {
         try container.encode(maxHealth, forKey: .maxHealth)
     }
 
-    // region encoding and decoding
     typealias AsSetting = StructSetting<HealthComponent>
 
     static func newSetting() -> AsSetting {

@@ -43,10 +43,17 @@ class Slider<Number: SliderNumber>: UXView {
         }
     }
 
-    init(range: ClosedRange<Number>, values: [Number], _ didValueChange: @escaping (Number) -> ()) {
+    init<Owner: AnyObject>(owner: Owner, range: ClosedRange<Number>, values: [Number], _ didValueChange: @escaping (Owner, Number) -> ()) {
         self.range = range
         self.values = values
-        self.didValueChange = didValueChange
+        self.didValueChange = { [weak owner] newValue in
+            guard let owner = owner else {
+                Logger.warn("slider's value changed but its owner was deallocated, so nothing will happen")
+                return
+            }
+
+            didValueChange(owner, newValue)
+        }
 
         sliderNode = SliderNode(size: SliderSize)
 

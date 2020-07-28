@@ -7,7 +7,7 @@ import SpriteKit
 
 class Chunk: ReadonlyChunk, Codable {
     static let widthHeight: Int = 32
-    static let numLayers: Int = 8
+    static let numLayers: Int = 4
 
     static let cgSize: CGSize = CGSize.square(sideLength: CGFloat(widthHeight))
     static let extraDistanceFromEntityToUnload: CGFloat = CGFloat(widthHeight) * 2.5
@@ -104,7 +104,7 @@ class Chunk: ReadonlyChunk, Codable {
                 return layer
             } else {
                 removeNonOverlappingTiles(pos: pos, type: type)
-                assert(tiles.hasFreeLayerAt(pos: pos), "there are no overlapping tiles but no free layer, this isn't allowed - num layers should be increased")
+                assert(tiles.hasFreeLayerAt(pos: pos), "removed tiles to place a tile of type '\(type)', but there are still no free layers")
                 return placeTile(pos: pos, type: type)
             }
         }
@@ -133,13 +133,18 @@ class Chunk: ReadonlyChunk, Codable {
     }
 
     private func removeNonOverlappingTiles(pos: ChunkTilePos, type: TileType) {
-        // We go backwards because removing earlier tiles moves later ones down
-        for layer in (0..<Chunk.numLayers).reversed() {
+        for layer in 0..<Chunk.numLayers {
             let pos3D = ChunkTilePos3D(pos: pos, layer: layer)
             let existingType = self[pos3D]
             if !TileType.typesCanOverlap(type, existingType) {
                 removeTile(pos3D: pos3D)
             }
+        }
+
+        // Still need to remove a tile if there is no free chunk layer.
+        // We could remove one at any layer (all layers are occupied), but we choose the last one
+        if !tiles.hasFreeLayerAt(pos: pos) {
+            removeTile(pos3D: ChunkTilePos3D(pos: pos, layer: Chunk.numLayers - 1))
         }
     }
 

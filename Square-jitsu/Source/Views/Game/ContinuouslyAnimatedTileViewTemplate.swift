@@ -24,8 +24,13 @@ final class ContinuouslyAnimatedTileViewTemplate: EmptyTileViewTemplate, SingleS
 
     override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         let node = SKSpriteNode(texture: getCurrentTextureIn(world: world), size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
-        world.didTick.subscribe(observer: self, priority: .view) { [weak node] (self) in
-            node?.texture = self.getCurrentTextureIn(world: world)
+        world.didTick.subscribe(observer: node, priority: .view) { [weak self] (node) in
+            guard let self = self else {
+                Logger.warn("continuously animated template deallocated before node, so it can't update its texture")
+                return
+            }
+
+            node.texture = self.getCurrentTextureIn(world: world)
         }
         return node
     }

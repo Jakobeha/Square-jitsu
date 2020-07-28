@@ -53,6 +53,7 @@
 		6037213284F584B57B434325 /* EditActionMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372A1412DC6F2DF6B111C8 /* EditActionMode.swift */; };
 		60372144A8D6B49FCFD7D51B /* SettingOptionRecognizerByName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603729071315EC41B193F008 /* SettingOptionRecognizerByName.swift */; };
 		603721465A3C9D84FC63BCD4 /* CollectibleBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372BC289A4919F343CA2E6 /* CollectibleBehavior.swift */; };
+		6037215BBB0196641E0B05DC /* ChunkMatrixV_0_1_1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603726115F8E8B75C2DD9FF7 /* ChunkMatrixV_0_1_1.swift */; };
 		6037215CB9DF72B2CB2B6643 /* TileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372EE846B6AE74E34BC484 /* TileView.swift */; };
 		60372167C32936885C31DBC1 /* Square_jitsuUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037260087AD070442393B87 /* Square_jitsuUITests.swift */; };
 		60372175510008A0C28F9107 /* RePosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372D640392A06B82C47531 /* RePosition.swift */; };
@@ -208,6 +209,7 @@
 		6037275694D7684C16376B9D /* JSONCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037226B5AA7EEBF0070E4CD /* JSONCodable.swift */; };
 		6037275FBFA8A61F88680744 /* AnimatedOnDeathEntityViewTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372F91F7F6A3BB9DB3C311 /* AnimatedOnDeathEntityViewTemplate.swift */; };
 		603727642DB972B37D0613EE /* DontClipComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372132FE3A072F6B7623B3 /* DontClipComponent.swift */; };
+		6037276CE9BA3CEC6CD9F1F8 /* ChunkV_0_1_1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372A35A8B27BBAB3FB7972 /* ChunkV_0_1_1.swift */; };
 		6037276F35603447A75BB0B2 /* LevelItemPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037224BF797C67872DBC414 /* LevelItemPreviewViewController.swift */; };
 		603727944B36D1C29982C6D0 /* StandardAlertOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372B380C12A38CEA99744B /* StandardAlertOption.swift */; };
 		6037279D5D79C1EB1ADD3923 /* ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372895986068C47AA5C912 /* ImageMetadata.swift */; };
@@ -255,7 +257,7 @@
 		6037293A505CAE5F53D235B3 /* TextureSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603728E784D606F609F30097 /* TextureSet.swift */; };
 		6037294996D786F1C61B1AE0 /* NeverSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037280F96E5A07883B5D669 /* NeverSetting.swift */; };
 		6037294B20C3B70A8D3B898E /* WorldLoaderFromFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372D7C68C49166A9632745 /* WorldLoaderFromFile.swift */; };
-		603729539A26FC0B3CE2C93C /* ObservablePriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372F3B66476DC3AADD5992 /* ObservablePriority.swift */; };
+		603729539A26FC0B3CE2C93C /* ObserverPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372F3B66476DC3AADD5992 /* ObserverPriority.swift */; };
 		60372967AED25EFF42AED57B /* TileBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372E222C9EB864D240CC6D /* TileBehavior.swift */; };
 		60372970152E3AB3DB1B4B2B /* HashableArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603726788FC83ACE789F8612 /* HashableArray.swift */; };
 		603729837543BEE92FA49C18 /* EmptyTileBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037210A1386FD97B10BC6F6 /* EmptyTileBehavior.swift */; };
@@ -319,9 +321,11 @@
 		60372C229D443FF3BEA8AB2A /* EmptyTileViewTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722EDEE1D2135784C9694 /* EmptyTileViewTemplate.swift */; };
 		60372C249FD1ED46059ADF57 /* PortalMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037286225DE26DF380EA604 /* PortalMetadata.swift */; };
 		60372C45295C64EE09D13EBE /* AugmentingEntityViewTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603720413321BDEDFEB9AEFB /* AugmentingEntityViewTemplate.swift */; };
+		60372C45AF08B3EAE4919BC0 /* ChunkTilePos3DV_0_1_1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603728F0B86F7A7C91C256A7 /* ChunkTilePos3DV_0_1_1.swift */; };
 		60372C4B5B98EA76FAA99A82 /* HasDefault.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603728AE62862305FF05978B /* HasDefault.swift */; };
 		60372C4FE138700F29F8B879 /* DimView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372812CAA7D54702A05A23 /* DimView.swift */; };
 		60372C5354E2FD221907F25C /* UnionSettingOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6037243C66BFDB4EAF9D893B /* UnionSettingOption.swift */; };
+		60372C567DAFA078197530A4 /* TileBehaviorV_0_1_1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372A927A3E837FEAD400AB /* TileBehaviorV_0_1_1.swift */; };
 		60372C5BCC35D9B88EA7550B /* Appendable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603722DB122506B161F67C54 /* Appendable.swift */; };
 		60372C61BE019B3E3A583402 /* LevelPickerInDirectoryDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372A85327FBB19FDEF6BD9 /* LevelPickerInDirectoryDelegate.swift */; };
 		60372C9D4598DD0C5F226C31 /* TileTypePredSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60372C7D0F836354CC467F02 /* TileTypePredSetting.swift */; };
@@ -603,6 +607,7 @@
 		6037260087AD070442393B87 /* Square_jitsuUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Square_jitsuUITests.swift; sourceTree = "<group>"; };
 		6037260F526740484AC79423 /* TextButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextButton.swift; sourceTree = "<group>"; };
 		6037261157DE7559AFC17E65 /* BackgroundWorldLoaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundWorldLoaders.swift; sourceTree = "<group>"; };
+		603726115F8E8B75C2DD9FF7 /* ChunkMatrixV_0_1_1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkMatrixV_0_1_1.swift; sourceTree = "<group>"; };
 		6037262AA1AED704902E3CDE /* WorldChunkPos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorldChunkPos.swift; sourceTree = "<group>"; };
 		6037263A1644D352F65BEE68 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6037263EFB615B07FCEA2915 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
@@ -663,6 +668,7 @@
 		603728D4DF2C2F55CC6D9C18 /* Stack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
 		603728E784D606F609F30097 /* TextureSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextureSet.swift; sourceTree = "<group>"; };
 		603728EFA0D4C8D505359697 /* StaticEntityViewTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StaticEntityViewTemplate.swift; sourceTree = "<group>"; };
+		603728F0B86F7A7C91C256A7 /* ChunkTilePos3DV_0_1_1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkTilePos3DV_0_1_1.swift; sourceTree = "<group>"; };
 		603728F13FC24B2BC56BED2C /* InspectorContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InspectorContainerView.swift; sourceTree = "<group>"; };
 		6037290076A7ABE8B66636FF /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		603729071315EC41B193F008 /* SettingOptionRecognizerByName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingOptionRecognizerByName.swift; sourceTree = "<group>"; };
@@ -702,6 +708,7 @@
 		60372A213E6A52A534CB310C /* default.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = default.json; sourceTree = "<group>"; };
 		60372A2723A42AB670C38FF6 /* ArrayOfEquatables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArrayOfEquatables.swift; sourceTree = "<group>"; };
 		60372A30580A3E352A1BD5D3 /* UnionSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnionSetting.swift; sourceTree = "<group>"; };
+		60372A35A8B27BBAB3FB7972 /* ChunkV_0_1_1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkV_0_1_1.swift; sourceTree = "<group>"; };
 		60372A593AACD569B5EE4730 /* DictionarySetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DictionarySetting.swift; sourceTree = "<group>"; };
 		60372A69AD33E3C9A1D3547C /* SimpleEnumSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleEnumSetting.swift; sourceTree = "<group>"; };
 		60372A70EAB3F8CC4BADC36D /* CGPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
@@ -709,6 +716,7 @@
 		60372A8169AC52EB280C373F /* FreeSideSetInspector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FreeSideSetInspector.swift; sourceTree = "<group>"; };
 		60372A85327FBB19FDEF6BD9 /* LevelPickerInDirectoryDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelPickerInDirectoryDelegate.swift; sourceTree = "<group>"; };
 		60372A9201010043C1FAD825 /* WorldFileSyncError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorldFileSyncError.swift; sourceTree = "<group>"; };
+		60372A927A3E837FEAD400AB /* TileBehaviorV_0_1_1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileBehaviorV_0_1_1.swift; sourceTree = "<group>"; };
 		60372A95EBB0EE73970CE79F /* StubWorldConduit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StubWorldConduit.swift; sourceTree = "<group>"; };
 		60372A9EA28B76284F2BC6C8 /* ContinueAlertOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContinueAlertOption.swift; sourceTree = "<group>"; };
 		60372ACCA148EBB0B593C617 /* JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSON.swift; sourceTree = "<group>"; };
@@ -819,7 +827,7 @@
 		60372F2A8E94B0B12597AD4B /* WorldController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorldController.swift; sourceTree = "<group>"; };
 		60372F35BCA0D9DC9AA714BE /* AutoCodable.swifttemplate */ = {isa = PBXFileReference; lastKnownFileType = file.swifttemplate; path = AutoCodable.swifttemplate; sourceTree = "<group>"; };
 		60372F35E389CDF18313C889 /* LevelItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelItem.swift; sourceTree = "<group>"; };
-		60372F3B66476DC3AADD5992 /* ObservablePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservablePriority.swift; sourceTree = "<group>"; };
+		60372F3B66476DC3AADD5992 /* ObserverPriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObserverPriority.swift; sourceTree = "<group>"; };
 		60372F400D93D057D480C5AD /* SliderNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SliderNode.swift; sourceTree = "<group>"; };
 		60372F44E7D7BC329DB98BDF /* TileViewTemplateSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TileViewTemplateSetting.swift; sourceTree = "<group>"; };
 		60372F4A100AD5A8AB20CADA /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -1031,6 +1039,14 @@
 			path = Editor;
 			sourceTree = "<group>";
 		};
+		60372174522772CCDDC3BEB4 /* Legacy */ = {
+			isa = PBXGroup;
+			children = (
+				603727F3C96E37EEF43EFF17 /* V_0_1_1 */,
+			);
+			path = Legacy;
+			sourceTree = "<group>";
+		};
 		60372343077B4217453C5B7C /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -1128,6 +1144,7 @@
 				603725CBEA2D8AB87586C8FB /* Presentation */,
 				6037208A05376AAAE8F5A847 /* Editor */,
 				60372AE1B15A3A9529EF1335 /* Views */,
+				60372174522772CCDDC3BEB4 /* Legacy */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -1264,7 +1281,7 @@
 				6037272D6E614FEC8B3DFF3D /* LosslessStringConvertibleEnum.swift */,
 				603729765FE60682DC3C0EE8 /* CompactCodable.swift */,
 				60372FA10CCC820338DF9EDE /* CompactCodableByValue.swift */,
-				60372F3B66476DC3AADD5992 /* ObservablePriority.swift */,
+				60372F3B66476DC3AADD5992 /* ObserverPriority.swift */,
 				60372DD2B93129B5BE897E34 /* RootLevelJsonWrapper.swift */,
 				60372B71B861DBA328E3C630 /* Monoid.swift */,
 				60372E828A6DC4533BAA9991 /* MonoidOptionSet.swift */,
@@ -1275,6 +1292,17 @@
 				6037258901BA43ACD8190C3F /* NumericSign.swift */,
 			);
 			path = Misc;
+			sourceTree = "<group>";
+		};
+		603727F3C96E37EEF43EFF17 /* V_0_1_1 */ = {
+			isa = PBXGroup;
+			children = (
+				603728F0B86F7A7C91C256A7 /* ChunkTilePos3DV_0_1_1.swift */,
+				60372A35A8B27BBAB3FB7972 /* ChunkV_0_1_1.swift */,
+				603726115F8E8B75C2DD9FF7 /* ChunkMatrixV_0_1_1.swift */,
+				60372A927A3E837FEAD400AB /* TileBehaviorV_0_1_1.swift */,
+			);
+			path = V_0_1_1;
 			sourceTree = "<group>";
 		};
 		6037286BE68131FD1B75A9CC /* Components */ = {
@@ -1958,7 +1986,7 @@
 				60372ECE638A88248D69BAA4 /* TurretInspector.swift in Sources */,
 				603723527256671E2A14EF12 /* SubInspector.swift in Sources */,
 				60372A765211414A3CB0B894 /* SKTexture.swift in Sources */,
-				603729539A26FC0B3CE2C93C /* ObservablePriority.swift in Sources */,
+				603729539A26FC0B3CE2C93C /* ObserverPriority.swift in Sources */,
 				6037293748893EE3FF499996 /* EdgePanGradientPoint.swift in Sources */,
 				60372BB95BBC8E29FADF3D69 /* SpawnOnGrabBehavior.swift in Sources */,
 				603729837543BEE92FA49C18 /* EmptyTileBehavior.swift in Sources */,
@@ -2161,6 +2189,10 @@
 				60372ABF50A54DAE2A2328D8 /* CollectibleType.swift in Sources */,
 				60372697E257F4A3072A0016 /* CollectorComponent.swift in Sources */,
 				60372CC9C1619FF3A581DB81 /* ContinuouslyAnimatedTileViewTemplate.swift in Sources */,
+				60372C45AF08B3EAE4919BC0 /* ChunkTilePos3DV_0_1_1.swift in Sources */,
+				6037276CE9BA3CEC6CD9F1F8 /* ChunkV_0_1_1.swift in Sources */,
+				6037215BBB0196641E0B05DC /* ChunkMatrixV_0_1_1.swift in Sources */,
+				60372C567DAFA078197530A4 /* TileBehaviorV_0_1_1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

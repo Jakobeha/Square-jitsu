@@ -162,6 +162,7 @@ struct TurretComponent: SingleSettingCodable, Codable {
     var delayWhenTargetFoundBeforeFire: CGFloat
     var spreadPattern: SpreadPattern
 
+    var rotatesClockwiseWhenContinuously: Bool = false
     var targetState: TargetState = .targetNotFound
     var fireState: FireState = .targetNotFound
 

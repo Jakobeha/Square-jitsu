@@ -29,7 +29,9 @@ class TileTypePredSetting: SerialSetting {
                         isExcluded = true
                     }
 
-                    if let tileLayerSubstring = typePredString.strip(prefix: "Layer.") {
+                    if typePredString == "Solid" {
+                        pred1Way.insertSolidTypes()
+                    } else if let tileLayerSubstring = typePredString.strip(prefix: "Layer.") {
                         if let tileLayer = TileLayer(String(tileLayerSubstring)) {
                             pred1Way.containedLayers.insert(tileLayer)
                         } else {

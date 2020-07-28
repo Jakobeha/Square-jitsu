@@ -172,6 +172,16 @@ class World: ReadonlyWorld {
         _player = playerBehavior!.spawnPlayer()
         runActions() // Adds the player
     }
+
+    /// Restores the player's health, and if they died,
+    /// respawns them at the position where they died
+    private func reanimatePlayer() {
+        if player.world === nil {
+            add(entity: player)
+        }
+        player.next.helC?.restoreAllHealth()
+        runActions() // Necessary to actually trigger changes this frame
+    }
     //endregion
 
     // region loading
@@ -325,6 +335,8 @@ class World: ReadonlyWorld {
 
     // region tile mutation
     func set(pos3D: WorldTilePos3D, to newType: TileType, persistInGame: Bool) {
+        let oldType = self[pos3D]
+
         // Set in chunk (actual read data)
         let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
         let chunkPos3D = pos3D.chunkTilePos3D
@@ -338,6 +350,18 @@ class World: ReadonlyWorld {
         persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = chunk.tileBehaviors[chunkPos3D]
 
         notifyObserversOfAdjacentTileChanges(pos: pos3D.pos)
+
+        // Trigger cascading changes. Specifically,
+        // tiles which depend on the old tile to exist but can't depend on the new one
+        for otherLayer in 0..<Chunk.numLayers {
+            if otherLayer != pos3D.layer {
+                let otherPos3D = WorldTilePos3D(pos: pos3D.pos, layer: otherLayer)
+                let otherType = self[otherPos3D]
+                if doesType(otherType, dependOn: oldType) && !doesType(otherType, dependOn: newType) {
+                    set(pos3D: otherPos3D, to: TileType.air, persistInGame: persistInGame)
+                }
+            }
+        }
     }
 
     /// If you changed a tile and had the change persist,
@@ -567,4 +591,11 @@ class World: ReadonlyWorld {
         entitiesToRemove.removeAll()
     }
     // endregion
+
+    func set(editorState: EditorState) {
+        showEditingIndicators = editorState.showEditingIndicators
+        if editorState == .editing {
+            reanimatePlayer()
+        }
+    }
 }
