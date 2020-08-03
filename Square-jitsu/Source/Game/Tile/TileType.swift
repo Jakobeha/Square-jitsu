@@ -24,6 +24,14 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
         TileType(bigType: TileBigType.turret, smallType: TileSmallType(1), orientation: TileOrientation(side: side))
     }
 
+    static func filler(type: TileFillerType, id: Int, direction: Side, targetLayer: Int) -> TileType {
+        TileType(
+            bigType: .filler,
+            smallType: TileSmallType(fillerData: TileFillerData(type: type, id: id)),
+            orientation: TileOrientation(fillerOrientation: TileFillerOrientation(direction: direction, targetLayer: targetLayer))
+        )
+    }
+
     static func indexOfHighestLayerIn(array: [TileType]) -> Int {
         array.lastIndex(of: typeWithHighestLayerIn(array: array))!
     }

@@ -60,7 +60,7 @@ extension AbstractSensitiveSystem {
                 let pos3D = WorldTilePos3D(pos: position, layer: layer)
                 var newTileType = tileType
                 newTileType.smallType.isOn = isOn
-                world.set(pos3D: pos3D, to: newTileType, persistInGame: false)
+                world[pos3D] = newTileType
             }
         }
     }

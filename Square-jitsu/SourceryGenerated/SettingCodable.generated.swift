@@ -471,6 +471,23 @@ extension FadeOnRemoveTileViewTemplate {
         self.base?.encodeDynamically(to: setting.allFieldSettings["base"]!)
     }
 }
+extension FillerTileViewTemplate {
+    internal convenience init(from setting: StructSetting<FillerTileViewTemplate>) {
+        self.init(
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<FillerTileViewTemplate>) -> FillerTileViewTemplate {
+        self.init(
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<FillerTileViewTemplate>) {
+        self.texture.encodeDynamically(to: setting.allFieldSettings["texture"]!)
+    }
+}
 extension Free4TileViewTemplate {
     internal convenience init(from setting: StructSetting<Free4TileViewTemplate>) {
         self.init(
@@ -485,6 +502,57 @@ extension Free4TileViewTemplate {
     }
 
     internal func encode(to setting: StructSetting<Free4TileViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
+    }
+}
+extension FreeCornerFacingTileViewTemplate {
+    internal convenience init(from setting: StructSetting<FreeCornerFacingTileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<FreeCornerFacingTileViewTemplate>) -> FreeCornerFacingTileViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<FreeCornerFacingTileViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
+    }
+}
+extension FreeOptionalSideFacingTileViewTemplate {
+    internal convenience init(from setting: StructSetting<FreeOptionalSideFacingTileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<FreeOptionalSideFacingTileViewTemplate>) -> FreeOptionalSideFacingTileViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<FreeOptionalSideFacingTileViewTemplate>) {
+        self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
+    }
+}
+extension FreeSideFacingTileViewTemplate {
+    internal convenience init(from setting: StructSetting<FreeSideFacingTileViewTemplate>) {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<FreeSideFacingTileViewTemplate>) -> FreeSideFacingTileViewTemplate {
+        self.init(
+            textureBase: setting.usedFieldSettings["textureBase"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<FreeSideFacingTileViewTemplate>) {
         self.textureBase.encodeDynamically(to: setting.allFieldSettings["textureBase"]!)
     }
 }
@@ -705,21 +773,18 @@ extension LocationComponent {
 extension MacroButtonTileViewTemplate {
     internal convenience init(from setting: StructSetting<MacroButtonTileViewTemplate>) {
         self.init(
-            foregroundTexture: setting.usedFieldSettings["foregroundTexture"]!.decodeDynamically(),
-            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+            foregroundTexture: setting.usedFieldSettings["foregroundTexture"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<MacroButtonTileViewTemplate>) -> MacroButtonTileViewTemplate {
         self.init(
-            foregroundTexture: setting.usedFieldSettings["foregroundTexture"]!.decodeDynamically(),
-            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+            foregroundTexture: setting.usedFieldSettings["foregroundTexture"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<MacroButtonTileViewTemplate>) {
         self.foregroundTexture.encodeDynamically(to: setting.allFieldSettings["foregroundTexture"]!)
-        self.sizeInTiles.encodeDynamically(to: setting.allFieldSettings["sizeInTiles"]!)
     }
 }
 extension MacroImageTileViewTemplate {
@@ -739,21 +804,18 @@ extension MacroImageTileViewTemplate {
 extension MacroTileViewTemplate {
     internal convenience init(from setting: StructSetting<MacroTileViewTemplate>) {
         self.init(
-            texture: setting.usedFieldSettings["texture"]!.decodeDynamically(),
-            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
         )
     }
 
     static internal func decode(from setting: StructSetting<MacroTileViewTemplate>) -> MacroTileViewTemplate {
         self.init(
-            texture: setting.usedFieldSettings["texture"]!.decodeDynamically(),
-            sizeInTiles: setting.usedFieldSettings["sizeInTiles"]!.decodeDynamically()
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
         )
     }
 
     internal func encode(to setting: StructSetting<MacroTileViewTemplate>) {
         self.texture.encodeDynamically(to: setting.allFieldSettings["texture"]!)
-        self.sizeInTiles.encodeDynamically(to: setting.allFieldSettings["sizeInTiles"]!)
     }
 }
 extension MatterComponent {
@@ -830,6 +892,26 @@ extension NinjaComponent {
         self.minNumJumpsWithoutBackground.encodeDynamically(to: setting.allFieldSettings["minNumJumpsWithoutBackground"]!)
     }
 }
+extension OptionalSideFacingTileViewTemplate {
+    internal convenience init(from setting: StructSetting<OptionalSideFacingTileViewTemplate>) {
+        self.init(
+            sideTexture: setting.usedFieldSettings["sideTexture"]!.decodeDynamically(),
+            noneTexture: setting.usedFieldSettings["noneTexture"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<OptionalSideFacingTileViewTemplate>) -> OptionalSideFacingTileViewTemplate {
+        self.init(
+            sideTexture: setting.usedFieldSettings["sideTexture"]!.decodeDynamically(),
+            noneTexture: setting.usedFieldSettings["noneTexture"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<OptionalSideFacingTileViewTemplate>) {
+        self.sideTexture.encodeDynamically(to: setting.allFieldSettings["sideTexture"]!)
+        self.noneTexture.encodeDynamically(to: setting.allFieldSettings["noneTexture"]!)
+    }
+}
 extension PersonEntityViewTemplate {
     internal convenience init(from setting: StructSetting<PersonEntityViewTemplate>) {
         self.init(
@@ -884,6 +966,23 @@ extension RicochetComponent {
         self.numBouncesBeforeDestroy.encodeDynamically(to: setting.allFieldSettings["numBouncesBeforeDestroy"]!)
     }
 }
+extension SideFacingTileViewTemplate {
+    internal convenience init(from setting: StructSetting<SideFacingTileViewTemplate>) {
+        self.init(
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<SideFacingTileViewTemplate>) -> SideFacingTileViewTemplate {
+        self.init(
+            texture: setting.usedFieldSettings["texture"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<SideFacingTileViewTemplate>) {
+        self.texture.encodeDynamically(to: setting.allFieldSettings["texture"]!)
+    }
+}
 extension Square8TileViewTemplate {
     internal convenience init(from setting: StructSetting<Square8TileViewTemplate>) {
         self.init(
@@ -936,6 +1035,26 @@ extension StaticTileViewTemplate {
 
     internal func encode(to setting: StructSetting<StaticTileViewTemplate>) {
         self.texture.encodeDynamically(to: setting.allFieldSettings["texture"]!)
+    }
+}
+extension TileMovementMetadata {
+    internal init(from setting: StructSetting<TileMovementMetadata>) {
+        self.init(
+            offset: setting.usedFieldSettings["offset"]!.decodeDynamically(),
+            repeatMode: setting.usedFieldSettings["repeatMode"]!.decodeDynamically()
+        )
+    }
+
+    static internal func decode(from setting: StructSetting<TileMovementMetadata>) -> TileMovementMetadata {
+        self.init(
+            offset: setting.usedFieldSettings["offset"]!.decodeDynamically(),
+            repeatMode: setting.usedFieldSettings["repeatMode"]!.decodeDynamically()
+        )
+    }
+
+    internal func encode(to setting: StructSetting<TileMovementMetadata>) {
+        self.offset.encodeDynamically(to: setting.allFieldSettings["offset"]!)
+        self.repeatMode.encodeDynamically(to: setting.allFieldSettings["repeatMode"]!)
     }
 }
 extension ToxicComponent {
@@ -1109,6 +1228,7 @@ extension WorldSettings {
             destructibleSolidInitialHealth: setting.usedFieldSettings["destructibleSolidInitialHealth"]!.decodeDynamically(),
             dashEdgeBoostSpeed: setting.usedFieldSettings["dashEdgeBoostSpeed"]!.decodeDynamically(),
             springEdgeBounceMultiplier: setting.usedFieldSettings["springEdgeBounceMultiplier"]!.decodeDynamically(),
+            macroTileSizes: setting.usedFieldSettings["macroTileSizes"]!.decodeDynamically(),
             defaultTileMetadatas: setting.usedFieldSettings["defaultTileMetadatas"]!.decodeDynamically(),
             tileOrientationMeanings: setting.usedFieldSettings["tileOrientationMeanings"]!.decodeDynamically(),
             selectableTypes: setting.usedFieldSettings["selectableTypes"]!.decodeDynamically()
@@ -1138,6 +1258,7 @@ extension WorldSettings {
             destructibleSolidInitialHealth: setting.usedFieldSettings["destructibleSolidInitialHealth"]!.decodeDynamically(),
             dashEdgeBoostSpeed: setting.usedFieldSettings["dashEdgeBoostSpeed"]!.decodeDynamically(),
             springEdgeBounceMultiplier: setting.usedFieldSettings["springEdgeBounceMultiplier"]!.decodeDynamically(),
+            macroTileSizes: setting.usedFieldSettings["macroTileSizes"]!.decodeDynamically(),
             defaultTileMetadatas: setting.usedFieldSettings["defaultTileMetadatas"]!.decodeDynamically(),
             tileOrientationMeanings: setting.usedFieldSettings["tileOrientationMeanings"]!.decodeDynamically(),
             selectableTypes: setting.usedFieldSettings["selectableTypes"]!.decodeDynamically()
@@ -1166,6 +1287,7 @@ extension WorldSettings {
         self.destructibleSolidInitialHealth.encodeDynamically(to: setting.allFieldSettings["destructibleSolidInitialHealth"]!)
         self.dashEdgeBoostSpeed.encodeDynamically(to: setting.allFieldSettings["dashEdgeBoostSpeed"]!)
         self.springEdgeBounceMultiplier.encodeDynamically(to: setting.allFieldSettings["springEdgeBounceMultiplier"]!)
+        self.macroTileSizes.encodeDynamically(to: setting.allFieldSettings["macroTileSizes"]!)
         self.defaultTileMetadatas.encodeDynamically(to: setting.allFieldSettings["defaultTileMetadatas"]!)
         self.tileOrientationMeanings.encodeDynamically(to: setting.allFieldSettings["tileOrientationMeanings"]!)
         self.selectableTypes.encodeDynamically(to: setting.allFieldSettings["selectableTypes"]!)

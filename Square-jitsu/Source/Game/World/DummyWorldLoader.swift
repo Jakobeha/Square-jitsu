@@ -17,34 +17,34 @@ struct DummyWorldLoader : WorldLoader {
             if x != Chunk.widthHeight - 3 {
                 for y in 0..<2 {
                     let pos = ChunkTilePos(x: x, y: y)
-                    chunk.forcePlaceTile(pos: pos, type: solidType)
+                    chunk.placeTile(pos: pos, type: solidType, force: true)
                 }
                 for y in 10..<11 {
                     let pos = ChunkTilePos(x: x, y: y)
-                    chunk.forcePlaceTile(pos: pos, type: solidType)
+                    chunk.placeTile(pos: pos, type: solidType, force: true)
                 }
             }
         }
         for y in 5..<10 {
             let pos = ChunkTilePos(x: 3, y: y)
-            chunk.forcePlaceTile(pos: pos, type: TileType.basicIce)
+            chunk.placeTile(pos: pos, type: TileType.basicIce, force: true)
         }
         for x in 19..<28 {
             for y in (29 - x)..<10 {
                 let pos = ChunkTilePos(x: x, y: y)
-                chunk.forcePlaceTile(pos: pos, type: backgroundType)
+                chunk.placeTile(pos: pos, type: backgroundType, force: true)
             }
         }
         for y in 2..<5 {
             let pos = ChunkTilePos(x: 28, y: y)
-            chunk.forcePlaceTile(pos: pos, type: solidType)
+            chunk.placeTile(pos: pos, type: solidType, force: true)
         }
-        chunk.forcePlaceTile(pos: ChunkTilePos(x: 17, y: 2), type: TileType.basicEnemy)
-        chunk.forcePlaceTile(pos: ChunkTilePos(x: 12, y: 7), type: TileType.basicShuriken)
-        chunk.forcePlaceTile(pos: ChunkTilePos(x: 9, y: 9), type: TileType.basicTurret(side: Side.north))
-        chunk.forcePlaceTile(pos: ChunkTilePos(x: 19, y: 9), type: TileType.burstTurret(side: Side.north))
+        chunk.placeTile(pos: ChunkTilePos(x: 17, y: 2), type: TileType.basicEnemy, force: true)
+        chunk.placeTile(pos: ChunkTilePos(x: 12, y: 7), type: TileType.basicShuriken, force: true)
+        chunk.placeTile(pos: ChunkTilePos(x: 9, y: 9), type: TileType.basicTurret(side: Side.north), force: true)
+        chunk.placeTile(pos: ChunkTilePos(x: 19, y: 9), type: TileType.burstTurret(side: Side.north), force: true)
         if pos == playerSpawnChunkPos {
-            chunk.forcePlaceTile(pos: ChunkTilePos(x: 6, y: 2), type: TileType.player)
+            chunk.placeTile(pos: ChunkTilePos(x: 6, y: 2), type: TileType.player, force: true)
         }
         return chunk
     }

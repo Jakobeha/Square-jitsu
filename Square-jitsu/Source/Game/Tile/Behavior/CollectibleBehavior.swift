@@ -21,6 +21,6 @@ class CollectibleBehavior: EmptyTileBehavior<Never> {
     }
 
     private func destroyTile(world: World, pos3D: WorldTilePos3D) {
-        world.set(pos3D: pos3D, to: TileType.air, persistInGame: true)
+        world.destroyTile(pos3D: pos3D)
     }
 }

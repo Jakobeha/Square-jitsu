@@ -7,26 +7,21 @@ import SpriteKit
 
 final class MacroTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
     let texture: SKTexture
-    let sizeInTiles: CGSize
 
-    init(texture: SKTexture, sizeInTiles: CGSize) {
+    init(texture: SKTexture) {
         self.texture = texture
-        self.sizeInTiles = sizeInTiles
         super.init()
     }
 
     override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
-        // TODO: Show outline in editor so we know which tiles exist
-        let adjoiningSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
-            world.peek(pos: adjacentPos).contains(tileType)
-        })
-        if adjoiningSides.isDisjoint(with: [.south, .west]) {
-            let node = SKSpriteNode(texture: texture, size: sizeInTiles * world.settings.tileViewWidthHeight)
-            node.anchorPoint = (CGSize.square(sideLength: 0.5) / sizeInTiles).toPoint
-            return node
-        } else {
+        guard let sizeInTiles = world.settings.macroTileSizes[tileType]?.toCgSize else {
+            Logger.warnSettingsAreInvalid("macro template assigned to type '\(tileType)' which doesn't have a defined macro tile size")
             return SKNode()
         }
+
+        let node = SKSpriteNode(texture: texture, size: sizeInTiles * world.settings.tileViewWidthHeight)
+        node.anchorPoint = (CGSize.square(sideLength: 0.5) / sizeInTiles).toPoint
+        return node
     }
 
     override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
@@ -41,7 +36,6 @@ final class MacroTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "texture": TextureSetting(),
-            "sizeInTiles": CGSizeRangeSetting(width: 1...CGFloat(Chunk.widthHeight), height: 1...CGFloat(Chunk.widthHeight))
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }
     // endregion

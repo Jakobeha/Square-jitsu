@@ -129,16 +129,20 @@ class EditorTools {
         case .place:
             performPlaceAction(selectedPositions3D: selectedPositions)
         case .remove:
-            delegate?.performRemoveAction(selectedPositions: selectedPositions)
+            let extendedSelectedPositions = world.extendFillersIn(positions: selectedPositions)
+            delegate?.performRemoveAction(selectedPositions: extendedSelectedPositions)
         case .inspect:
-            presentInspector(selectedPositions: selectedPositions)
+            let extendedSelectedPositions = world.extendFillersIn(positions: selectedPositions)
+            presentInspector(selectedPositions: extendedSelectedPositions)
         case .select(selectedPositions: let oldSelectedPositions):
             let selectedNonAirPositions = selectedPositions.filter { pos3D in world[pos3D].bigType.canBeSelected }
-            let newSelectedPositions = oldSelectedPositions.union(selectedNonAirPositions)
+            let extendedSelectedNonAirPositions = world.extendFillersIn(positions: selectedNonAirPositions)
+            let newSelectedPositions = oldSelectedPositions.union(extendedSelectedNonAirPositions)
             editAction = .select(selectedPositions: newSelectedPositions)
         case .deselect(selectedPositions: let oldSelectedPositions):
+            let extendedSelectedPositions = world.extendFillersIn(positions: selectedPositions)
             // Don't need to filter non-air positions because those are not present either way
-            let newSelectedPositions = oldSelectedPositions.subtracting(selectedPositions)
+            let newSelectedPositions = oldSelectedPositions.subtracting(extendedSelectedPositions)
             editAction = .deselect(selectedPositions: newSelectedPositions)
         case .move(selectedPositions: _, state: _), .copy(selectedPositions: _, state: _):
             fatalError("illegal state - performCurrentAction called with move or copy action, use performMoveAction instead ")
@@ -153,9 +157,11 @@ class EditorTools {
             case .place:
                 performPlaceAction(selectedPositions3D: selectedPositions)
             case .remove:
-                delegate?.performRemoveAction(selectedPositions: selectedPositions)
+                let extendedSelectedPositions = world.extendFillersIn(positions: selectedPositions)
+                delegate?.performRemoveAction(selectedPositions: extendedSelectedPositions)
             case .inspect:
-                presentInspector(selectedPositions: selectedPositions)
+                let extendedSelectedPositions = world.extendFillersIn(positions: selectedPositions)
+                presentInspector(selectedPositions: extendedSelectedPositions)
             case .move, .copy, .select, .deselect:
                 // Not necessary on select
                 break
@@ -241,7 +247,8 @@ class EditorTools {
             }
 
             let distanceMoved = editMoveState.distanceMovedAfterTouchUp(finalTouchPos: touchPos)
-            delegate?.performMoveAction(selectedPositions: editAction.selectedPositions, distanceMoved: distanceMoved, isCopy: editAction.mode == .copy)
+            let extendedSelectedPositions = world.extendFillersIn(positions: editAction.selectedPositions)
+            delegate?.performMoveAction(selectedPositions: extendedSelectedPositions, distanceMoved: distanceMoved, isCopy: editAction.mode == .copy)
 
             editAction.selectedPositions = []
             if !editSelection.mode.canInstantSelect {

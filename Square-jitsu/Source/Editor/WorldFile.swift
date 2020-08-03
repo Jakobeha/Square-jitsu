@@ -68,6 +68,7 @@ class WorldFile: WritableStatelessWorld, CustomStringConvertible {
         }
     }
 
+    // region access
     func readChunkAt(pos: WorldChunkPos) -> ReadonlyChunk {
         loaded.chunks.getOrInsert(pos) {
             backgroundLoader.loadChunk(pos: pos)
@@ -79,22 +80,55 @@ class WorldFile: WritableStatelessWorld, CustomStringConvertible {
         return chunk[pos.chunkTilePos]
     }
 
-    subscript(pos3D: WorldTilePos3D) -> TileType {
-        get {
-            let chunk = readChunkAt(pos: pos3D.pos.worldChunkPos)
-            return chunk[pos3D.chunkTilePos3D]
-        }
-        set {
-            mutateChunkAt(pos: pos3D.pos.worldChunkPos) { chunk in
-                chunk[pos3D.chunkTilePos3D] = newValue
-            }
-        }
+    func _getTileTypeAt(pos3D: WorldTilePos3D) -> TileType {
+        let chunk = readChunkAt(pos: pos3D.pos.worldChunkPos)
+        return chunk[pos3D.chunkTilePos3D]
     }
 
     func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
         let chunk = readChunkAt(pos: pos3D.pos.worldChunkPos)
         return chunk.getMetadataAt(pos3D: pos3D.chunkTilePos3D)
     }
+    // endregion
+
+    // region mutation
+    func setInternally(pos3D: WorldTilePos3D, to newType: TileType) {
+        mutateChunkAt(pos: pos3D.pos.worldChunkPos) { chunk in
+            chunk[pos3D.chunkTilePos3D] = newType
+        }
+    }
+
+    func createTileInternally(pos: WorldTilePos, explicitLayer: Int?, type: TileType, force: Bool) -> Int? {
+        assert(type.bigType != TileBigType.player, "can't create or move player")
+        return mutateChunkAt(pos: pos.worldChunkPos) { chunk in
+            chunk.placeTile(pos: pos.chunkTilePos, explicitLayer: explicitLayer, type: type, force: true)
+        }
+    }
+
+    func destroyTilesInternally(pos: WorldTilePos) {
+        mutateChunkAt(pos: pos.worldChunkPos) { chunk in
+            chunk.removeTiles(pos: pos.chunkTilePos)
+        }
+    }
+
+    func destroyTileInternally(pos3D: WorldTilePos3D) {
+        mutateChunkAt(pos: pos3D.pos.worldChunkPos) { chunk in
+            chunk[pos3D.chunkTilePos3D] = TileType.air
+        }
+    }
+
+    func finishCreatingTileAt(pos3D: WorldTilePos3D, type: TileType) {
+        mutateChunkAt(pos: pos3D.pos.worldChunkPos) { chunk in
+            // Notify behavior to set metadata
+            if let tileBehavior = chunk.tileBehaviors[pos3D.chunkTilePos3D] {
+                tileBehavior.onCreate(world: self, pos3D: pos3D)
+            }
+        }
+    }
+
+    func finishChangingTileAt(pos3D: WorldTilePos3D, type: TileType) {}
+
+    func finishDestroyingTilesAt(pos: WorldTilePos) {}
 
     func setMetadataAt(pos3D: WorldTilePos3D, to metadata: TileMetadata?) {
         mutateChunkAt(pos: pos3D.pos.worldChunkPos) { chunk in
@@ -106,38 +140,15 @@ class WorldFile: WritableStatelessWorld, CustomStringConvertible {
         }
     }
 
-    func forceCreateTile(pos: WorldTilePos, type: TileType) {
-        assert(type.bigType != TileBigType.player, "can't create or move player")
-        mutateChunkAt(pos: pos.worldChunkPos) { chunk in
-            guard let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type) else {
-                return
-            }
-
-            // Notify behavior to set metadata
-            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
-            let tileBehavior = chunk.tileBehaviors[pos3D.chunkTilePos3D]
-            tileBehavior?.onCreate(world: self, pos3D: pos3D)
-        }
-    }
-
-    func destroyTiles(pos: WorldTilePos) {
-        mutateChunkAt(pos: pos.worldChunkPos) { chunk in
-            chunk.removeTiles(pos: pos.chunkTilePos)
-        }
-    }
-
-    func destroyTile(pos3D: WorldTilePos3D) {
-        mutateChunkAt(pos: pos3D.pos.worldChunkPos) { chunk in
-            chunk[pos3D.chunkTilePos3D] = TileType.air
-        }
-    }
-
-    private func mutateChunkAt(pos: WorldChunkPos, transformChunk: (Chunk) -> ()) {
+    private func mutateChunkAt<T>(pos: WorldChunkPos, transformChunk: (Chunk) -> T) -> T {
         let chunk = loaded.chunks[pos] ?? Chunk()
-        transformChunk(chunk)
+        let result = transformChunk(chunk)
         hasUnsavedChanges = true
+        return result
     }
+    // endregion
 
+    // region loading and saving
     private func loadFromDisk() {
         // Currently we read all the data even though it blocks
         // In the future we would read loaded chunks first,
@@ -191,12 +202,14 @@ class WorldFile: WritableStatelessWorld, CustomStringConvertible {
             throw WorldFileSyncError(action: "writing", error: error)
         }
     }
+    // endregion
 
     /// Converts the file into data, for writing
     func encode() throws -> Data {
         try loaded.encode()
     }
 
+    // region handle manipulation
     private func resetReadHandle() throws {
         try closeReadHandle()
         try reopenReadHandle()
@@ -213,7 +226,9 @@ class WorldFile: WritableStatelessWorld, CustomStringConvertible {
     private func reopenReadHandle() throws {
         readHandle = try FileHandle(forReadingFrom: url)
     }
+    // endregion
 
+    // region descriptive
     private func raiseAsync(error: Error) {
         Logger.warn("\(self) got error: \(error)")
         _didGetError.publish(error)
@@ -222,4 +237,5 @@ class WorldFile: WritableStatelessWorld, CustomStringConvertible {
     var description: String {
         "WorldFile(fileName: \(url.lastPathComponent), isMutable: \(isMutable)"
     }
+    // endregion
 }

@@ -21,6 +21,7 @@ enum Corner: Int, CaseIterable {
         CornerSet(rawValue: 1 << UInt8(rawValue))
     }
 
+    // region pattern matching
     var isActualCorner: Bool {
         switch self {
         case .east, .north, .west, .south:
@@ -49,10 +50,6 @@ enum Corner: Int, CaseIterable {
         case .southEast:
             return RelativePos(x: 1, y: -1)
         }
-    }
-
-    var directionFromCenter: Angle {
-        Angle.zero + (Angle.right.toUnclamped / 2 * CGFloat(rawValue))
     }
     
     /// Returns itself if already a side,
@@ -99,5 +96,31 @@ enum Corner: Int, CaseIterable {
         case .southEast:
             return [(lhs: .south, rhs: .east), (lhs: .east, rhs: .south)]
         }
+    }
+
+    var textureName: String {
+        switch self {
+        case .east:
+            return "East"
+        case .northEast:
+            return "NorthEast"
+        case .north:
+            return "North"
+        case .northWest:
+            return "NorthWest"
+        case .west:
+            return "West"
+        case .southWest:
+            return "SouthWest"
+        case .south:
+            return "South"
+        case .southEast:
+            return "SouthEast"
+        }
+    }
+    // endregion
+
+    var directionFromCenter: Angle {
+        Angle.zero + (Angle.right.toUnclamped / 2 * CGFloat(rawValue))
     }
 }

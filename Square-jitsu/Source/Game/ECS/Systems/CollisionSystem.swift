@@ -74,7 +74,8 @@ struct CollisionSystem: EarlyTopLevelSystem {
         for tilePosition in trajectoryNextFrame.capsuleCastTilePositions(capsuleRadius: entity.prev.locC!.radius) {
             for layer in 0..<Chunk.numLayers {
                 let pos3D = WorldTilePos3D(pos: tilePosition, layer: layer)
-                let tileType = world[pos3D]
+                let pos3DAfterFillers = world.followFillersAt(pos3D: pos3D)
+                let tileType = world[pos3DAfterFillers]
 
                 handleCollisionWith(tileType: tileType, pos3D: pos3D)
                 if entityBlockedFromFurtherCollisions {
@@ -109,8 +110,9 @@ struct CollisionSystem: EarlyTopLevelSystem {
 
         // Notify metadatas if this is a new collision
         if !collidedOnLastFrameWith(tileType: tileType) {
-            if let tileBehavior = world.getBehaviorAt(pos3D: pos3D) {
-                tileBehavior.onEntityCollide(entity: entity, pos: pos3D)
+            let pos3DAfterFillers = world.followFillersAt(pos3D: pos3D)
+            if let tileBehavior = world.getBehaviorAt(pos3D: pos3DAfterFillers) {
+                tileBehavior.onEntityCollide(entity: entity, pos: pos3DAfterFillers)
             }
         }
     }
@@ -171,8 +173,9 @@ struct CollisionSystem: EarlyTopLevelSystem {
 
             // Notify metadatas if this is a new collision at this (2D) position
             if !collidedOnLastFrameWith(tileType: tileType) {
-                if let tileBehavior = world.getBehaviorAt(pos3D: pos3D) {
-                    tileBehavior.onEntitySolidCollide(entity: entity, pos: pos3D, side: side)
+                let pos3DAfterFillers = world.followFillersAt(pos3D: pos3D)
+                if let tileBehavior = world.getBehaviorAt(pos3D: pos3DAfterFillers) {
+                    tileBehavior.onEntitySolidCollide(entity: entity, pos: pos3DAfterFillers, side: side)
                 }
             }
         }

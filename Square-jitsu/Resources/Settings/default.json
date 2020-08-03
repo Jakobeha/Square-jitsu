@@ -283,54 +283,30 @@
         },
         "base": {
           "type": "macro",
-          "texture": "Tiles/BluePortal",
-          "sizeInTiles": [
-            2,
-            2
-          ]
+          "texture": "Tiles/BluePortal"
         }
       },
       {
         "type" : "macro",
-        "texture" : "Tiles/GreenPortal",
-        "sizeInTiles" : [
-          2,
-          2
-        ]
+        "texture" : "Tiles/GreenPortal"
       },
       {
         "type" : "macro",
-        "texture" : "Tiles/RedPortal",
-        "sizeInTiles" : [
-          2,
-          2
-        ]
+        "texture" : "Tiles/RedPortal"
       }
     ],
     "button" : [
       {
         "type" : "macroButton",
-        "foregroundTexture" : "UI/Play",
-        "sizeInTiles" : [
-          2,
-          2
-        ]
+        "foregroundTexture" : "UI/Play"
       },
       {
         "type" : "macroButton",
-        "foregroundTexture" : "UI/Edit",
-        "sizeInTiles" : [
-          2,
-          2
-        ]
+        "foregroundTexture" : "UI/Edit"
       },
       {
         "type" : "macroButton",
-        "foregroundTexture" : "UI/Settings",
-        "sizeInTiles" : [
-          2,
-          2
-        ]
+        "foregroundTexture" : "UI/Settings"
       }
     ],
     "glassSolid": [
@@ -402,6 +378,21 @@
           },
           "base": null
         }
+      },
+      {
+        "type": "withAlternatePreview",
+        "preview": {
+          "type": "static",
+          "texture": "Tiles/EditorIndicators/CameraShift/1111"
+        },
+        "base": {
+          "type": "indicatedInEditor",
+          "editorIndicator": {
+            "type": "freeSideFacing",
+            "textureBase": "Tiles/EditorIndicators/CameraShift"
+          },
+          "base": null
+        }
       }
     ],
     "coin": [
@@ -416,6 +407,24 @@
         "type": "continuouslyAnimated",
         "textureBase": "Tiles/Key",
         "totalDuration": 1
+      }
+    ],
+    "filler": [
+      {
+        "type": "indicatedInEditor",
+        "editorIndicator": {
+          "type": "filler",
+          "texture": "Tiles/EditorIndicators/MacroFiller"
+        },
+        "base": null
+      },
+      {
+        "type": "indicatedInEditor",
+        "editorIndicator": {
+          "type": "filler",
+          "texture": "Tiles/EditorIndicators/MovingFiller"
+        },
+        "base": null
       }
     ]
   },
@@ -891,13 +900,18 @@
       "SuperStrong"
     ],
     "cameraBoundary": [
-      ""
+      "Boundary",
+      "Shift"
     ],
     "coin": [
       "Default"
     ],
     "key": [
       "Default"
+    ],
+    "filler": [
+      "Macro",
+      "Moving"
     ]
   },
   "playerInputSpeedMultiplier" : 1,
@@ -1457,6 +1471,18 @@
   "springEdgeBounceMultiplier" : [
     1
   ],
+  "macroTileSizes": {
+    "portal": [
+      [2, 2],
+      [2, 2],
+      [2, 2]
+    ],
+    "button": [
+      [2, 2],
+      [2, 2],
+      [2, 2]
+    ]
+  },
   "defaultTileMetadatas" : {
     "turret" : [
       {
@@ -1546,7 +1572,12 @@
       "directionAdjacentToSolid"
     ],
     "cameraBoundary": [
+      "freeSideSet",
       "freeSideSet"
+    ],
+    "filler": [
+      "freeDirection",
+      "freeDirection"
     ]
   },
   "selectableTypes" : {
@@ -1625,7 +1656,8 @@
       1
     ],
     "cameraBoundary": [
-      0
+      0,
+      1
     ],
     "coin": [
       0

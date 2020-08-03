@@ -49,8 +49,8 @@ class InspectorView: UXCompoundView {
     private var tileNames: Set<String> {
         Set(inspector.positions.map { position in
             self.world[position]
-        }.filter { tileType in tileType != TileType.air }.map { tileType in
-            return self.settings.getUserFriendlyDescriptionOf(tileType: tileType)
+        }.compactMap { tileType in
+            self.settings.getUserFriendlyDescriptionOf(tileType: tileType)
         })
     }
 
@@ -59,6 +59,9 @@ class InspectorView: UXCompoundView {
 
         if let adjacentToSolidInspector = inspector.adjacentToSolidInspector {
             views.append(LabeledSIV(SideBasedOrientationSIV(adjacentToSolidInspector), label: "Connected side"))
+        }
+        if let freeDirectionInspector = inspector.freeDirectionInspector {
+            views.append(LabeledSIV(SideBasedOrientationSIV(freeDirectionInspector), label: "Direction"))
         }
         if let directionToCornerInspector = inspector.directionToCornerInspector {
             views.append(LabeledSIV(CornerBasedOrientationSIV(directionToCornerInspector), label: "Corner this faces"))

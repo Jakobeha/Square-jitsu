@@ -18,6 +18,18 @@ struct TileSmallType: Equatable, Hashable, LosslessStringConvertible {
             }
         }
     }
+
+    var isCameraBoundaryShift: Bool {
+        get { (rawValue & 1) == 1 }
+        set {
+            if newValue {
+                rawValue |= 1
+            } else {
+                rawValue &= ~1
+            }
+        }
+    }
+
     var isClockwise: Bool {
         get { (rawValue & 2) == 2 }
         set {
@@ -38,8 +50,17 @@ struct TileSmallType: Equatable, Hashable, LosslessStringConvertible {
         }
     }
 
+    var asFillerData: TileFillerData {
+        get { TileFillerData(rawValue: rawValue) }
+        set { rawValue = newValue.rawValue }
+    }
+
     init(buttonAction: TileButtonAction) {
         self.init(buttonAction.rawValue)
+    }
+
+    init(fillerData: TileFillerData) {
+        self.init(fillerData.rawValue)
     }
 
     init(_ rawValue: UInt8) {

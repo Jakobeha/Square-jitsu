@@ -23,11 +23,14 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
         self.worldFile = worldFile
     }
 
-    // region tile access and mutation
+    // region tile access
     subscript(pos: WorldTilePos) -> [TileType] {
         worldFile[pos]
     }
 
+    func _getTileTypeAt(pos3D: WorldTilePos3D) -> TileType {
+        worldFile[pos3D]
+    }
     subscript(pos3D: WorldTilePos3D) -> TileType {
         get { worldFile[pos3D] }
         set {
@@ -39,27 +42,47 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
     func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
         worldFile.getMetadataAt(pos3D: pos3D)
     }
+    // endregion
 
-    func setMetadataAt(pos3D: WorldTilePos3D, to metadata: TileMetadata?) {
-        worldFile.setMetadataAt(pos3D: pos3D, to: metadata)
+    // region tile mutation
+    func setInternally(pos3D: WorldTilePos3D, to newType: TileType) {
+        worldFile.setInternally(pos3D: pos3D, to: newType)
+    }
+
+    func createTileInternally(pos: WorldTilePos, explicitLayer: Int? = nil, type: TileType, force: Bool) -> Int? {
+        // Reorient type
+        var orientedType = type
+        orientedType.orientation = autoReorientType(type, pos: pos)
+
+        // Actually create
+        return worldFile.createTileInternally(pos: pos, explicitLayer: explicitLayer, type: orientedType, force: force)
+    }
+
+    func destroyTileInternally(pos3D: WorldTilePos3D) {
+        worldFile.destroyTileInternally(pos3D: pos3D)
+    }
+
+    func destroyTilesInternally(pos: WorldTilePos) {
+        worldFile.destroyTilesInternally(pos: pos)
+    }
+
+    func finishChangingTileAt(pos3D: WorldTilePos3D, type: TileType) {
         resetStateAt(pos3D: pos3D)
     }
 
-    func forceCreateTile(pos: WorldTilePos, type: TileType) {
-        var orientedType = type
-        orientedType.orientation = autoReorientType(type, pos: pos)
-        world.forceCreateTileNotPersistent(pos: pos, type: orientedType)
-        worldFile.forceCreateTile(pos: pos, type: orientedType)
+    func finishCreatingTileAt(pos3D: WorldTilePos3D, type: TileType) {
+        worldFile.finishCreatingTileAt(pos3D: pos3D, type: type)
+        resetStateAt(pos3D: pos3D)
     }
 
-    func destroyTiles(pos: WorldTilePos) {
-        world.destroyTilesNotPersistent(pos: pos)
-        worldFile.destroyTiles(pos: pos)
+    func finishDestroyingTilesAt(pos: WorldTilePos) {
+        worldFile.finishDestroyingTilesAt(pos: pos)
+        resetStateAt(pos: pos)
     }
-
-    func destroyTile(pos3D: WorldTilePos3D) {
-        world.set(pos3D: pos3D, to: TileType.air, persistInGame: false)
-        worldFile.destroyTile(pos3D: pos3D)
+    
+    func setMetadataAt(pos3D: WorldTilePos3D, to metadata: TileMetadata?) {
+        worldFile.setMetadataAt(pos3D: pos3D, to: metadata)
+        resetStateAt(pos3D: pos3D)
     }
 
     func setTileAtPositionTo(_ tileAtPosition: TileAtPosition) {
@@ -71,11 +94,12 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
         let oldOrientation = type.orientation
         let orientationMeaning = world.settings.tileOrientationMeanings[type] ?? .unused
         switch orientationMeaning {
-        case .unused, .freeSideSet:
+        case .unused, .freeDirection, .freeSideSet:
             return oldOrientation
         case .directionAdjacentToSolid:
             let sidesWithAdjacentSolid = getSolidAdjacentSidesTo(pos: pos)
-            if !sidesWithAdjacentSolid.contains(oldOrientation.asSide.toSet),
+            if oldOrientation.asOptionalSide != nil &&
+               !sidesWithAdjacentSolid.contains(oldOrientation.asOptionalSide!.toSet),
                let aSideWithAdjacentSolid = sidesWithAdjacentSolid.first {
                 return TileOrientation(side: aSideWithAdjacentSolid)
             } else {
@@ -123,15 +147,16 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
     func temporarilyHide(positions: Set<WorldTilePos3D>) {
         for pos3D in positions {
             assert(!isInGameAndFileDefinitelyNotSynchronizedAt(pos3D: pos3D), "when hiding or showing a tile at a position, the in-game and file worlds must be synchronized at the position")
-            world.set(pos3D: pos3D, to: TileType.air, persistInGame: true)
+            world.destroyTile(pos3D: pos3D)
         }
     }
 
     func showTemporarilyHidden(positions: Set<WorldTilePos3D>) {
         for pos3D in positions {
             assert(!isInGameAndFileDefinitelyNotSynchronizedAt(pos3D: pos3D), "when hiding or showing a tile at a position, the in-game and file worlds must be synchronized at the position")
-            world.clearPersistentTileTypeAt(pos3D: pos3D)
-            world.set(pos3D: pos3D, to: worldFile[pos3D], persistInGame: false)
+            world.resetStateAt(pos3D: pos3D)
+            world[pos3D] = worldFile[pos3D]
+            world.resetStateAt(pos3D: pos3D)
         }
     }
     // endregion
@@ -145,8 +170,15 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
         }
 
         // Set tile
-        world.clearPersistentTileTypeAt(pos3D: pos3D)
-        world.set(pos3D: pos3D, to: worldFile[pos3D], persistInGame: false)
+        world.resetStateAt(pos3D: pos3D)
+        world[pos3D] = worldFile[pos3D]
+    }
+
+    func resetStateAt(pos: WorldTilePos) {
+        for layer in 0..<Chunk.numLayers {
+            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+            resetStateAt(pos3D: pos3D)
+        }
     }
 
     /// We don't prove in-game and file are synchronized (too much work), but we can disprove some cases easily.

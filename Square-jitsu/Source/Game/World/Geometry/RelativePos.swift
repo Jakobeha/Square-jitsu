@@ -6,6 +6,8 @@
 import SpriteKit
 
 struct RelativePos: Equatable, Hashable {
+    static let zero: RelativePos = RelativePos(x: 0, y: 0)
+
     let x: Int
     let y: Int
 

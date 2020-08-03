@@ -66,7 +66,7 @@ class CornerBasedOrientationInspector: SubInspector {
     // region orientation changes
     private func addCornerToOrientation(type: TileType, corner: Corner) -> TileOrientation {
         switch world.settings.tileOrientationMeanings[type] ?? .unused {
-        case .unused, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder, .freeSideSet:
+        case .unused, .freeDirection, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder, .freeSideSet:
             fatalError("orientation isn't corner-based")
         case .directionToCorner:
             return TileOrientation(corner: corner)
@@ -75,7 +75,7 @@ class CornerBasedOrientationInspector: SubInspector {
 
     private func removeCornerFromOrientation(type: TileType, corner: Corner) -> TileOrientation {
         switch world.settings.tileOrientationMeanings[type] ?? .unused {
-        case .unused, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder, .freeSideSet:
+        case .unused, .freeDirection, .directionAdjacentToSolid, .atBackgroundBorder, .atSolidBorder, .freeSideSet:
             fatalError("orientation isn't corner-based")
         case .directionToCorner:
             // Can't remove because there is only one side

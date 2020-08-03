@@ -7,11 +7,9 @@ import SpriteKit
 
 final class MacroButtonTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
     let foregroundTexture: SKTexture
-    let sizeInTiles: CGSize
 
-    init(foregroundTexture: SKTexture, sizeInTiles: CGSize) {
+    init(foregroundTexture: SKTexture) {
         self.foregroundTexture = foregroundTexture
-        self.sizeInTiles = sizeInTiles
         super.init()
     }
 
@@ -21,23 +19,15 @@ final class MacroButtonTileViewTemplate: EmptyTileViewTemplate, SingleSettingCod
             return SKNode()
         }
 
-        // TODO: Show outline in editor so we know which tiles exist
-        let adjoiningSides = SideSet(pos3D.pos.sideAdjacents.mapValues { adjacentPos in
-            world.peek(pos: adjacentPos).contains(tileType)
-        })
-        if adjoiningSides.isDisjoint(with: [.north, .west]) {
-            var button = Button(owner: tileBehavior, texture: foregroundTexture) { (tileBehavior) in
-                tileBehavior.performAction(world: world, pos3D: pos3D)
-            }
-            // Need to offset button inside of the node since it uses UX coords
-            button.topLeft = -CGSize.square(sideLength: world.settings.tileViewWidthHeight / 2).toPoint
-
-            let node = SKNode()
-            node.addChild(button.node)
-            return node
-        } else {
-            return SKNode()
+        var button = Button(owner: tileBehavior, texture: foregroundTexture) { (tileBehavior) in
+            tileBehavior.performAction(world: world, pos3D: pos3D)
         }
+        // Need to offset button inside of the node since it uses UX coords
+        button.topLeft = -CGSize.square(sideLength: world.settings.tileViewWidthHeight / 2).toPoint - CGPoint(x: 0, y: world.settings.tileViewWidthHeight)
+
+        let node = SKNode()
+        node.addChild(button.node)
+        return node
     }
 
     override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
@@ -62,7 +52,6 @@ final class MacroButtonTileViewTemplate: EmptyTileViewTemplate, SingleSettingCod
     static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "foregroundTexture": TextureSetting(),
-            "sizeInTiles": CGSizeRangeSetting(width: 1...CGFloat(Chunk.widthHeight), height: 1...CGFloat(Chunk.widthHeight))
         ], optionalFields: [:], allowedExtraFields: ["type"])
     }
     // endregion

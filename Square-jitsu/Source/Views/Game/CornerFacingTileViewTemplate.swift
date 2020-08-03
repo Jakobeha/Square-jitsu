@@ -6,7 +6,14 @@
 import SpriteKit
 
 final class CornerFacingTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
+    private static let cornerTextureName: String = "NorthEast"
+    private static let sideTextureName: String = "East"
+    
     let textureBase: TextureSet
+
+    private var defaultTexture: SKTexture {
+        textureBase[CornerFacingTileViewTemplate.sideTextureName]
+    }
 
     init(textureBase: TextureSet) {
         self.textureBase = textureBase
@@ -15,7 +22,9 @@ final class CornerFacingTileViewTemplate: EmptyTileViewTemplate, SingleSettingCo
     override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         let corner = tileType.orientation.asCorner
 
-        let textureName = corner.isActualCorner ? "NorthEast" : "East"
+        let textureName = corner.isActualCorner ?
+                CornerFacingTileViewTemplate.cornerTextureName :
+                CornerFacingTileViewTemplate.sideTextureName
         let texture = textureBase[textureName]
 
         // 0 for east, rounds down to 0 for north east, 1 for north, rounds down to 1 for north west ...
@@ -29,7 +38,7 @@ final class CornerFacingTileViewTemplate: EmptyTileViewTemplate, SingleSettingCo
     }
 
     override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {
-        let node = SKSpriteNode(texture: textureBase["East"], size: size)
+        let node = SKSpriteNode(texture: defaultTexture, size: size)
         node.anchorPoint = UXSpriteAnchor
         return node
     }
@@ -37,7 +46,7 @@ final class CornerFacingTileViewTemplate: EmptyTileViewTemplate, SingleSettingCo
     // region encoding and decoding
     typealias AsSetting = StructSetting<CornerFacingTileViewTemplate>
 
-    static func newSetting() -> StructSetting<CornerFacingTileViewTemplate> {
+    static func newSetting() -> AsSetting {
         StructSetting(requiredFields: [
             "textureBase": TextureSetSetting()
         ], optionalFields: [:], allowedExtraFields: ["type"])

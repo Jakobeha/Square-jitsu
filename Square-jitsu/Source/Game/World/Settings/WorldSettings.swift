@@ -40,13 +40,14 @@ final class WorldSettings: SingleSettingCodable, Codable {
     var destructibleSolidInitialHealth: TileTypeMap<CGFloat>
     var dashEdgeBoostSpeed: [CGFloat]
     var springEdgeBounceMultiplier: [CGFloat]
+    var macroTileSizes: TileTypeMap<RelativeSize>
 
     // Editor info
     var defaultTileMetadatas: TileTypeMap<TileMetadata>
     var tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>
     var selectableTypes: [TileBigType:[TileSmallType]]
 
-    init(tileViewWidthHeight: CGFloat, tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, edgeMaskTextureBase: TextureSet, glossTexture: SKTexture, imagePlaceholderTexture: SKTexture, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, playerInputSpeedFractionChangePerSecond: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, destructibleSolidInitialHealth: TileTypeMap<CGFloat>, dashEdgeBoostSpeed: [CGFloat], springEdgeBounceMultiplier: [CGFloat], defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
+    init(tileViewWidthHeight: CGFloat, tileViewTemplates: TileTypeMap<TileViewTemplate>, entityViewTemplates: TileTypeMap<EntityViewTemplate>, edgeMaskTextureBase: TextureSet, glossTexture: SKTexture, imagePlaceholderTexture: SKTexture, entityZPositions: TileTypeMap<CGFloat>, rotateTileViewBasedOnOrientation: TileTypeMap<Bool>, entityViewScaleModes: TileTypeMap<ScaleMode>, entityGrabColors: TileTypeMap<SKColor>, amountScreenShakesWhenEntityCollides: TileTypeMap<CGFloat>, tileDescriptions: TileTypeMap<String>, playerInputSpeedMultiplier: CGFloat, playerInputSpeedFractionChangePerSecond: CGFloat, tileDamage: TileTypeMap<CGFloat>, knockback: TileTypeMap<CGFloat>, entityData: TileTypeMap<Entity.Components>, entitySpawnRadius: TileTypeMap<CGFloat>, destructibleSolidInitialHealth: TileTypeMap<CGFloat>, dashEdgeBoostSpeed: [CGFloat], springEdgeBounceMultiplier: [CGFloat], macroTileSizes: TileTypeMap<RelativeSize>, defaultTileMetadatas: TileTypeMap<TileMetadata>, tileOrientationMeanings: TileTypeMap<TileOrientationMeaning>, selectableTypes: [TileBigType: [TileSmallType]]) {
         self.tileViewWidthHeight = tileViewWidthHeight
         self.tileViewTemplates = tileViewTemplates
         self.entityViewTemplates = entityViewTemplates
@@ -68,6 +69,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
         self.destructibleSolidInitialHealth = destructibleSolidInitialHealth
         self.dashEdgeBoostSpeed = dashEdgeBoostSpeed
         self.springEdgeBounceMultiplier = springEdgeBounceMultiplier
+        self.macroTileSizes = macroTileSizes
         self.defaultTileMetadatas = defaultTileMetadatas
         self.tileOrientationMeanings = tileOrientationMeanings
         self.selectableTypes = selectableTypes
@@ -99,6 +101,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
             "destructibleSolidInitialHealth": TileTypeMapSetting<CGFloat> { CGFloatRangeSetting(0...128) },
             "dashEdgeBoostSpeed": CollectionSetting<[CGFloat]> { CGFloatRangeSetting(0...128) },
             "springEdgeBounceMultiplier": CollectionSetting<[CGFloat]> { CGFloatRangeSetting(0...128) },
+            "macroTileSizes": TileTypeMapSetting<RelativeSize> { RelativeSizeRangeSetting(width: 1...32, height: 1...32) },
             "defaultTileMetadatas": TileTypeMapSetting<TileMetadata> { type in type.bigType.newMetadataSetting() },
             "tileOrientationMeanings": TileTypeMapSetting<TileOrientationMeaning> { SimpleEnumSetting<TileOrientationMeaning>() },
             "selectableTypes": DictionarySetting<TileBigType, [TileSmallType]> { CollectionSetting<[TileSmallType]> { TileSmallTypeSetting() } }
@@ -127,7 +130,11 @@ final class WorldSettings: SingleSettingCodable, Codable {
 
     /// Miscellaneous helper which is only here because I don't know where else to put it.
     /// Otherwise the settings object doesn't have helpers, just data
-    func getUserFriendlyDescriptionOf(tileType: TileType) -> String {
+    func getUserFriendlyDescriptionOf(tileType: TileType) -> String? {
+        if tileType.bigType == .air || tileType.bigType == .filler {
+            return nil
+        }
+
         let bigTypeDescription = getUserFriendlyBigTypeDescriptionOf(bigType: tileType.bigType)
         let smallTypeDescription = getUserFriendlySmallTypeDescriptionOf(tileType: tileType)
         if smallTypeDescription.isEmpty {
@@ -138,13 +145,13 @@ final class WorldSettings: SingleSettingCodable, Codable {
     }
 
     private func getUserFriendlyBigTypeDescriptionOf(bigType: TileBigType) -> String {
-        bigType.description.camelCaseToSubSentenceCase
+        bigType.description.capitalized
     }
 
     private func getUserFriendlySmallTypeDescriptionOf(tileType: TileType) -> String {
         let description = tileDescriptions[tileType]
         if let description = description {
-            return description.camelCaseToSentenceCase
+            return description
         } else {
             Logger.warnSettingsAreInvalid("tile type doesn't have a description: \(tileType)")
             return TileType.unknownDescription

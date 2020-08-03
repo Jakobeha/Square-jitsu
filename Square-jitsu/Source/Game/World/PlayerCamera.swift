@@ -80,7 +80,20 @@ class PlayerCamera: Camera {
                     let containsBoundaryForThisSide = newTileTypes.contains { newTileType in
                         newTileType.bigType == .cameraBoundary && newTileType.orientation.asSideSet.contains(side.toSet)
                     }
-                    if containsBoundaryForThisSide {
+                    let containsShiftForThisSide = newTileTypes.contains { newTileType in
+                        newTileType.bigType == .cameraBoundary &&
+                        newTileType.smallType.isCameraBoundaryShift &&
+                        newTileType.orientation.asSideSet.contains(side.opposite.toSet)
+                    }
+                    if containsShiftForThisSide {
+                        let currentPositionOnAxis = resultPosition[side.axis]
+                        let constrainedPositionOnAxis = CGFloat(newTilePos1D + rectAt0.edgeAt(side: side))
+                        if side.isPositiveOnAxis ?
+                            currentPositionOnAxis > constrainedPositionOnAxis :
+                            currentPositionOnAxis < constrainedPositionOnAxis {
+                            resultPosition[side.axis] = constrainedPositionOnAxis
+                        }
+                    } else if containsBoundaryForThisSide {
                         let currentPositionOnAxis = resultPosition[side.axis]
                         let constrainedPositionOnAxis = CGFloat(newTilePos1D - rectAt0.edgeAt(side: side))
                         if side.isPositiveOnAxis ?

@@ -10,6 +10,10 @@ struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
 
     var rawValue: UInt8
 
+    var asOptionalSide: Side? {
+        Side(rawValue: Int(rawValue - 1))
+    }
+
     var asSide: Side {
         rawValue == 0 ? .east : Side(rawValue: Int(rawValue - 1)) ?? {
             Logger.warn("tried to access tile orientation as side but it isn't one")
@@ -29,16 +33,33 @@ struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
         set { self = TileOrientation(sideSet: newValue) }
     }
 
+    var asFillerOrientation: TileFillerOrientation {
+        get { TileFillerOrientation(rawValue: rawValue) }
+        set { rawValue = newValue.rawValue }
+    }
+
+    init(optionalSide: Side?) {
+        if let side = optionalSide {
+            rawValue = UInt8(side.rawValue + 1)
+        } else {
+            rawValue = 0
+        }
+    }
+
     init(side: Side) {
-        self.rawValue = UInt8(side.rawValue + 1)
+        rawValue = UInt8(side.rawValue + 1)
     }
 
     init(corner: Corner) {
-        self.rawValue = UInt8(corner.rawValue + 1)
+        rawValue = UInt8(corner.rawValue + 1)
     }
 
     init(sideSet: SideSet) {
         self.init(rawValue: sideSet.rawValue)
+    }
+
+    init(fillerOrientation: TileFillerOrientation) {
+        self.init(rawValue: fillerOrientation.rawValue)
     }
 
     init(rawValue: UInt8) {

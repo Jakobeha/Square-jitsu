@@ -68,7 +68,7 @@ class SideBasedOrientationInspector: SubInspector {
         switch world.settings.tileOrientationMeanings[type] ?? .unused {
         case .unused, .directionToCorner:
             fatalError("orientation isn't side-based")
-        case .directionAdjacentToSolid:
+        case .freeDirection, .directionAdjacentToSolid:
             return TileOrientation(side: side)
         case .atBackgroundBorder, .atSolidBorder, .freeSideSet:
             var orientation = type.orientation
@@ -78,14 +78,18 @@ class SideBasedOrientationInspector: SubInspector {
     }
 
     private func removeSideFromOrientation(type: TileType, side: Side) -> TileOrientation {
+        var orientation = type.orientation
+
         switch world.settings.tileOrientationMeanings[type] ?? .unused {
         case .unused, .directionToCorner:
             fatalError("orientation isn't side-based")
-        case .directionAdjacentToSolid:
-            // Can't remove because there is only one side
-            return type.orientation
+        case .freeDirection, .directionAdjacentToSolid:
+            if side == orientation.asOptionalSide {
+                return TileOrientation(optionalSide: nil)
+            } else {
+                return orientation
+            }
         case .atBackgroundBorder, .atSolidBorder, .freeSideSet:
-            var orientation = type.orientation
             orientation.asSideSet.remove(side.toSet)
             return orientation
         }

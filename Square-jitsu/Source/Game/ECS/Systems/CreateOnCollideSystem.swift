@@ -29,7 +29,7 @@ struct CreateOnCollideSystem: TopLevelSystem {
     private func createTileIfNecessaryAt(side: Side, pos: WorldTilePos) {
         var tileType: TileType = entity.next.cocC!.createdType
         tileType.orientation.asSideSet.insert(side.toSet)
-        world.tryCreateTilePersistent(pos: pos, type: tileType)
+        world.createTile(pos: pos, type: tileType, force: false)
     }
 
     private var newAdjacentPositions: DenseEnumMap<Side, Set<WorldTilePos>> {

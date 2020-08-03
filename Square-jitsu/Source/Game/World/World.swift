@@ -5,7 +5,7 @@
 
 import SpriteKit
 
-class World: ReadonlyWorld {
+class World: ReadonlyWorld, WritableStatelessWorld {
     private let loader: WorldLoader
     let settings: WorldSettings
     private weak var _conduit: WorldConduit?
@@ -319,7 +319,7 @@ class World: ReadonlyWorld {
         return chunk[pos.chunkTilePos]
     }
 
-    subscript(_ pos3D: WorldTilePos3D) -> TileType {
+    func _getTileTypeAt(pos3D: WorldTilePos3D) -> TileType {
         self[pos3D.pos][pos3D.layer]
     }
 
@@ -331,47 +331,6 @@ class World: ReadonlyWorld {
     func peek(pos3D: WorldTilePos3D) -> TileType {
         peek(pos: pos3D.pos)[pos3D.layer]
     }
-    // endregion
-
-    // region tile mutation
-    func set(pos3D: WorldTilePos3D, to newType: TileType, persistInGame: Bool) {
-        let oldType = self[pos3D]
-
-        // Set in chunk (actual read data)
-        let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
-        let chunkPos3D = pos3D.chunkTilePos3D
-        chunk[chunkPos3D] = newType
-
-        // Set in persistent data
-        let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
-        if persistInGame {
-            persistentDataForChunk.overwrittenTiles[chunkPos3D] = newType
-        }
-        persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = chunk.tileBehaviors[chunkPos3D]
-
-        notifyObserversOfAdjacentTileChanges(pos: pos3D.pos)
-
-        // Trigger cascading changes. Specifically,
-        // tiles which depend on the old tile to exist but can't depend on the new one
-        for otherLayer in 0..<Chunk.numLayers {
-            if otherLayer != pos3D.layer {
-                let otherPos3D = WorldTilePos3D(pos: pos3D.pos, layer: otherLayer)
-                let otherType = self[otherPos3D]
-                if doesType(otherType, dependOn: oldType) && !doesType(otherType, dependOn: newType) {
-                    set(pos3D: otherPos3D, to: TileType.air, persistInGame: persistInGame)
-                }
-            }
-        }
-    }
-
-    /// If you changed a tile and had the change persist,
-    /// but want to revert the change to the same tile as the world loader provides,
-    /// call this to clear the persistent data and then call
-    /// set(pos3D: pos3D, to: <#original#>, persistInGame: false)`
-    func clearPersistentTileTypeAt(pos3D: WorldTilePos3D) {
-        let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
-        persistentDataForChunk.overwrittenTiles[pos3D.chunkTilePos3D] = nil
-    }
 
     func getBehaviorAt(pos3D: WorldTilePos3D) -> TileBehavior? {
         let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
@@ -382,86 +341,106 @@ class World: ReadonlyWorld {
         getBehaviorAt(pos3D: pos3D)?.untypedMetadata
     }
 
-    /// Places the tile if there are no overlapping tiles at the given position
-    /// - Returns: The layer of the tile if it was placed, otherwise nil
-    /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
-    ///   places the tile, while "place" may mean it was loaded
-    @discardableResult func tryCreateTilePersistent(pos: WorldTilePos, type: TileType) -> Int? {
+    private func getChunkAt(pos: WorldChunkPos) -> Chunk {
+        load(pos: pos)
+        return chunks[pos]!
+    }
+    // endregion
+
+    // region tile mutation
+    /// If you changed a tile and had the change persist,
+    /// but want to revert the change to the same tile as the world loader provides,
+    /// call this to clear the persistent data and then call
+    /// `self[pos3D] = <#original#>`
+    func resetStateAt(pos3D: WorldTilePos3D) {
+        let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
+        persistentDataForChunk.overwrittenTiles[pos3D.chunkTilePos3D] = nil
+    }
+
+    /// If you changed a tile and had the change persist,
+    /// but want to revert the change to the same tile as the world loader provides,
+    /// call this to clear the persistent data and then call
+    /// `self[pos3D] = <#original#>`
+    func resetStateAt(pos: WorldTilePos) {
+        for layer in 0..<Chunk.numLayers {
+            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+            resetStateAt(pos3D: pos3D)
+        }
+    }
+
+    func setInternally(pos3D: WorldTilePos3D, to newType: TileType) {
+        let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
+        let chunkPos3D = pos3D.chunkTilePos3D
+        chunk[chunkPos3D] = newType
+    }
+
+    @discardableResult func createTileInternally(pos: WorldTilePos, explicitLayer: Int?, type: TileType, force: Bool) -> Int? {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
-        guard let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type) else {
+        guard let layer = chunk.placeTile(pos: pos.chunkTilePos, explicitLayer: explicitLayer, type: type, force: force) else {
             return nil
         }
-
-        // Update metadata persistence
-        let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
-        for layer in 0..<Chunk.numLayers {
-            let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
-            persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = chunk.tileBehaviors[chunkPos3D]
-        }
-
-        // Notify metadata onCreate
         let pos3D = WorldTilePos3D(pos: pos, layer: layer)
-        let behavior = getBehaviorAt(pos3D: pos3D)
-        behavior?.onCreate(world: self, pos3D: pos3D)
 
-        notifyObserversOfAdjacentTileChanges(pos: pos)
+        notifyBehaviorTileWasCreatedAt(pos3D: pos3D)
 
         return layer
     }
 
-    /// Places the tile, removing any non-overlapping tiles. Won't place if the tile is meaningless in-game
-    /// (e.g. it functions based on orientation but its orientation is empty)
-    /// - Returns: The layer of the tile if it was placed, or nil
-    /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
-    ///   places the tile, while "place" may mean it was loaded
-    @discardableResult func forceCreateTileNotPersistent(pos: WorldTilePos, type: TileType) -> Int? {
-        let chunk = getChunkAt(pos: pos.worldChunkPos)
-        guard let layer = chunk.forcePlaceTile(pos: pos.chunkTilePos, type: type) else {
-            return nil
-        }
-
-        // Update metadata persistence
-        let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
-        for layer in 0..<Chunk.numLayers {
-            let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
-            persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = chunk.tileBehaviors[chunkPos3D]
-        }
-
-        // Notify metadata onCreate
-        let pos3D = WorldTilePos3D(pos: pos, layer: layer)
-        let behavior = getBehaviorAt(pos3D: pos3D)
-        behavior?.onCreate(world: self, pos3D: pos3D)
-
-        notifyObserversOfAdjacentTileChanges(pos: pos)
-
-        return layer
-    }
-
-    /// Note: "destroy" is distinguished from "remove" are different in that "destroy" means e.g. the user explicitly
-    /// deletes the tile, while "remove" may mean it was unloaded
-    func destroyTilesNotPersistent(pos: WorldTilePos) {
+    func destroyTilesInternally(pos: WorldTilePos) {
         let chunk = getChunkAt(pos: pos.worldChunkPos)
         chunk.removeTiles(pos: pos.chunkTilePos)
+    }
 
-        // Update metadata persistence
-        let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
-        for layer in 0..<Chunk.numLayers {
-            let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
-            persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = nil
+    func destroyTileInternally(pos3D: WorldTilePos3D) {
+        let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
+        chunk[pos3D.chunkTilePos3D] = TileType.air
+    }
+
+    func finishChangingTileAt(pos3D: WorldTilePos3D, type: TileType) {
+        assert(self[pos3D] == type)
+
+        updatePersistentDataAt(pos3D: pos3D, type: type)
+        notifyObserversOfAdjacentTileChanges(pos: pos3D.pos)
+    }
+
+    func finishCreatingTileAt(pos3D: WorldTilePos3D, type: TileType) {
+        // Notify behavior to set metadata
+        if let tileBehavior = getBehaviorAt(pos3D: pos3D) {
+            tileBehavior.onCreate(world: self, pos3D: pos3D)
         }
 
+        finishChangingTileAt(pos3D: pos3D, type: type)
+    }
+
+    func finishDestroyingTilesAt(pos: WorldTilePos) {
+        destroyPersistentDataAt(pos: pos)
         notifyObserversOfAdjacentTileChanges(pos: pos)
     }
 
-    func destroyTileNotPersistent(pos3D: WorldTilePos3D) {
-        let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
-        chunk[pos3D.chunkTilePos3D] = TileType.air
+    private func updatePersistentDataAt(pos3D: WorldTilePos3D, type: TileType) {
+        assert(self[pos3D] == type)
 
-        // Update metadata persistence
         let persistentDataForChunk = persistentChunkData[pos3D.pos.worldChunkPos]!
-        persistentDataForChunk.overwrittenTileBehaviors[pos3D.chunkTilePos3D] = nil
+        let chunkPos3D = pos3D.chunkTilePos3D
 
-        notifyObserversOfAdjacentTileChanges(pos: pos3D.pos)
+        persistentDataForChunk.overwrittenTiles[chunkPos3D] = type
+        persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = getBehaviorAt(pos3D: pos3D)
+    }
+
+    private func destroyPersistentDataAt(pos: WorldTilePos) {
+        // Update persistent data
+        let persistentDataForChunk = persistentChunkData[pos.worldChunkPos]!
+        for layer in 0..<Chunk.numLayers {
+            let chunkPos3D = ChunkTilePos3D(pos: pos.chunkTilePos, layer: layer)
+
+            persistentDataForChunk.overwrittenTiles[chunkPos3D] = TileType.air
+            persistentDataForChunk.overwrittenTileBehaviors[chunkPos3D] = nil
+        }
+    }
+
+    private func notifyBehaviorTileWasCreatedAt(pos3D: WorldTilePos3D) {
+        let behavior = getBehaviorAt(pos3D: pos3D)
+        behavior?.onCreate(world: self, pos3D: pos3D)
     }
 
     private func notifyObserversOfAdjacentTileChanges(pos: WorldTilePos) {
@@ -471,11 +450,6 @@ class World: ReadonlyWorld {
             let chunkWithAdjacentPos = getChunkAt(pos: adjacentPos.worldChunkPos)
             chunkWithAdjacentPos._didAdjacentTileChange.publish(adjacentPos.chunkTilePos)
         }
-    }
-
-    private func getChunkAt(pos: WorldChunkPos) -> Chunk {
-        load(pos: pos)
-        return chunks[pos]!
     }
     // endregion
 

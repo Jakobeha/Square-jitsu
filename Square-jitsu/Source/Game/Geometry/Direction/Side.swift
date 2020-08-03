@@ -11,10 +11,13 @@ enum Side: Int, CaseIterable {
     case west
     case south
 
+    static let count: UInt8 = UInt8(allCases.count)
+
     var toSet: SideSet {
         SideSet(rawValue: 1 << UInt8(rawValue))
     }
 
+    // region pattern matching
     var toCorner: Corner {
         switch self {
         case .east:
@@ -98,6 +101,20 @@ enum Side: Int, CaseIterable {
             return RelativePos(x: 0, y: -1)
         }
     }
+
+    var textureName: String {
+        switch self {
+        case .east:
+            return "East"
+        case .north:
+            return "North"
+        case .west:
+            return "West"
+        case .south:
+            return "South"
+        }
+    }
+    // endregion
 
     var angle: Angle {
         Angle.right * CGFloat(rawValue)

@@ -30,7 +30,7 @@ class TileView: OptionalNodeView {
             }
             node.zPosition = tileType.bigType.zPosition
             if world.settings.rotateTileViewBasedOnOrientation[tileType] ?? false {
-                node.angle = tileType.orientation.asSide.angle
+                node.angle = tileType.orientation.asOptionalSide?.angle ?? Angle.zero
             }
         }
     }

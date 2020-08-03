@@ -6,12 +6,6 @@
 import SpriteKit
 
 final class PersonEntityViewTemplate: EmptyEntityViewTemplate, SingleSettingCodable {
-    private static let sideTextureNames: DenseEnumMap<Side, String> = DenseEnumMap(dictionaryLiteral:
-        (.east, "East"),
-        (.north, "North"),
-        (.west, "West"),
-        (.south, "South")
-    )
     private static let noSideCanJumpTextureName: String = "InAirCanJump"
     private static let noSideCantJumpTextureName: String = "InAirCantJump"
 
@@ -77,7 +71,7 @@ final class PersonEntityViewTemplate: EmptyEntityViewTemplate, SingleSettingCoda
 
     private func getTextureFor(side: Side?, canJump: Bool) -> SKTexture {
         if let side = side {
-            return textureBase[PersonEntityViewTemplate.sideTextureNames[side]]
+            return textureBase[side.textureName]
         } else if canJump {
             return textureBase[PersonEntityViewTemplate.noSideCanJumpTextureName]
         } else {

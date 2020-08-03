@@ -69,15 +69,16 @@ class Editor: EditorToolsDelegate {
 
         if !isCopy {
             for oldPosition in selectedPositions {
-                editableWorld[oldPosition] = TileType.air
+                editableWorld.destroyTile(pos3D: oldPosition)
             }
         }
 
         for tileToMove in tilesToMove {
             let newPosition = tileToMove.position.pos + distanceMoved
+            let layer = tileToMove.position.layer
             let typeToMove = tileToMove.type
 
-            editableWorld.forceCreateTile(pos: newPosition, type: typeToMove)
+            editableWorld.createTile(pos: newPosition, explicitLayer: layer, type: typeToMove, force: true)
         }
 
         didPerformAction()
@@ -97,7 +98,7 @@ class Editor: EditorToolsDelegate {
         let originalTiles = possibleChangedPositions.map(editableWorld.getTileAt)
 
         for position2D in selectedPositions2D {
-            editableWorld.forceCreateTile(pos: position2D, type: selectedTileType)
+            editableWorld.createTile(pos: position2D, type: selectedTileType, force: true)
         }
 
         didPerformAction()
@@ -110,7 +111,7 @@ class Editor: EditorToolsDelegate {
         let originalTiles = selectedPositions.map(editableWorld.getTileAt)
         
         for position in selectedPositions {
-            editableWorld[position] = TileType.air
+            editableWorld.destroyTile(pos3D: position)
         }
 
         didPerformAction()

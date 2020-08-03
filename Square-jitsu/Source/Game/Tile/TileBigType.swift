@@ -48,6 +48,8 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
     case coin
     case key
 
+    case filler
+
     // region pattern matching
     var layer: TileLayer {
         switch self {
@@ -73,7 +75,8 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
             return .edge
         case .image,
              .portal,
-             .cameraBoundary:
+             .cameraBoundary,
+             .filler:
             return .free
         case .coin, .key:
             return .collectible
@@ -112,7 +115,8 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
              .glassSolid,
              .cameraBoundary,
              .coin,
-             .key:
+             .key,
+             .filler:
             return NeverSetting()
         case .turret:
             return TurretMetadata.newSetting()
@@ -134,7 +138,8 @@ enum TileBigType: UInt16, CaseIterable, Codable, LosslessStringConvertibleEnum {
              .backgroundDirectionBoost,
              .solidEdge,
              .lava,
-             .cameraBoundary:
+             .cameraBoundary,
+             .filler:
             return nil
         case .destructibleSolid,
              .glassSolid:

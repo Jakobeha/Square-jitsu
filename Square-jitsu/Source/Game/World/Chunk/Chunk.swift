@@ -62,11 +62,56 @@ class Chunk: ReadonlyChunk, Codable {
         tileBehaviors[pos3D]?.untypedMetadata
     }
 
+    /// Tries to place the tile, but won't place if it's meaningless
+    /// (e.g. a tile which functions based on orientation but has none)
+    /// or if there are other overlapping tiles which must be removed and the flag is set to false.
+    /// If it's set to true, the overlapping tiles will be removed.
+    /// If an explicit layer is provided and the tile is placed, it will be placed at said layer
+    /// and the tile previously at that layer might be moved
+    /// - Returns: The layer of the tile if it was placed, otherwise nil
+    /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
+    ///   places the tile, while "place" may mean it was loaded
+    @discardableResult func placeTile(pos: ChunkTilePos, explicitLayer: Int?, type: TileType, force: Bool) -> Int? {
+        guard let originalLayer = placeTile(pos: pos, type: type, force: force) else {
+            return nil
+        }
+
+        if let explicitLayer = explicitLayer {
+            if originalLayer != explicitLayer {
+                // Swap so that the placed layer is the explicit layer
+                let originalPos3D = ChunkTilePos3D(pos: pos, layer: originalLayer)
+                let explicitPos3D = ChunkTilePos3D(pos: pos, layer: explicitLayer)
+                let intermediateTile = self[originalPos3D]
+                self[originalPos3D] = self[explicitPos3D]
+                self[explicitPos3D] = intermediateTile
+            }
+
+            return explicitLayer
+        } else {
+            return originalLayer
+        }
+    }
+
+    /// Tries to place the tile, but won't place if it's meaningless
+    /// (e.g. a tile which functions based on orientation but has none)
+    /// or if there are other overlapping tiles which must be removed and the flag is set to false.
+    /// If it's set to true, the overlapping tiles will be removed
+    /// - Returns: The layer of the tile if it was placed, otherwise nil
+    /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
+    ///   places the tile, while "place" may mean it was loaded
+    @discardableResult func placeTile(pos: ChunkTilePos, type: TileType, force: Bool) -> Int? {
+        if force {
+            return forcePlaceTile(pos: pos, type: type)
+        } else {
+            return tryPlaceTile(pos: pos, type: type)
+        }
+    }
+
     /// Places the tile if there are no overlapping tiles
     /// - Returns: The layer of the tile if it was placed, otherwise nil
     /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
     ///   places the tile, while "place" may mean it was loaded
-    @discardableResult func tryPlaceTile(pos: ChunkTilePos, type: TileType) -> Int? {
+    @discardableResult private func tryPlaceTile(pos: ChunkTilePos, type: TileType) -> Int? {
         if type.isMeaninglessInGame {
             return nil
         } else {
@@ -94,7 +139,7 @@ class Chunk: ReadonlyChunk, Codable {
     /// - Returns: The layer of the tile if it was placed, otherwise nil
     /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
     ///   places the tile, while "place" may mean it was loaded
-    @discardableResult func forcePlaceTile(pos: ChunkTilePos, type: TileType) -> Int? {
+    @discardableResult private func forcePlaceTile(pos: ChunkTilePos, type: TileType) -> Int? {
         if type.isMeaninglessInGame {
             return nil
         } else {
@@ -142,9 +187,11 @@ class Chunk: ReadonlyChunk, Codable {
         }
 
         // Still need to remove a tile if there is no free chunk layer.
-        // We could remove one at any layer (all layers are occupied), but we choose the last one
+        // We could remove one at any layer (all layers are occupied),
+        // but we choose the last one
         if !tiles.hasFreeLayerAt(pos: pos) {
-            removeTile(pos3D: ChunkTilePos3D(pos: pos, layer: Chunk.numLayers - 1))
+            let layerToFree = Chunk.numLayers - 1
+            removeTile(pos3D: ChunkTilePos3D(pos: pos, layer: layerToFree))
         }
     }
 

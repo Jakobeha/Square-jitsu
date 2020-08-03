@@ -14,7 +14,7 @@ class AbstractSpawnAndRemoveBehavior<Metadata: TileMetadata>: AbstractSpawnBehav
 
         // Remove tile
         myTileType = world[pos]
-        world.set(pos3D: pos, to: TileType.air, persistInGame: true)
+        world.destroyTile(pos3D: pos)
 
         return entity
     }
@@ -25,8 +25,9 @@ class AbstractSpawnAndRemoveBehavior<Metadata: TileMetadata>: AbstractSpawnBehav
 
         if let myTileType = myTileType {
             // Reset the tile
-            world.clearPersistentTileTypeAt(pos3D: pos)
-            world.set(pos3D: pos, to: myTileType, persistInGame: false)
+            world.resetStateAt(pos3D: pos)
+            world[pos] = myTileType
+            world.resetStateAt(pos3D: pos)
         }
     }
 }

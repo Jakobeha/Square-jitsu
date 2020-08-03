@@ -10,6 +10,7 @@ final class Inspector {
     let world: ReadonlyStatelessWorld
     
     let adjacentToSolidInspector: AdjacentToSolidInspector?
+    let freeDirectionInspector: FreeDirectionInspector?
     let directionToCornerInspector: DirectionToCornerInspector?
     let edgeInspector: EdgeInspector?
     let freeSideSetInspector: FreeSideSetInspector?
@@ -20,6 +21,7 @@ final class Inspector {
     var subInspectors: [SubInspector] {
         ([
             adjacentToSolidInspector,
+            freeDirectionInspector,
             directionToCornerInspector,
             edgeInspector,
             freeSideSetInspector,
@@ -48,6 +50,9 @@ final class Inspector {
 
         adjacentToSolidInspector = createSubInspectorIfNecessary(type: AdjacentToSolidInspector.self) { tileType in
             (world.settings.tileOrientationMeanings[tileType] ?? .unused) == .directionAdjacentToSolid
+        }
+        freeDirectionInspector = createSubInspectorIfNecessary(type: FreeDirectionInspector.self) { tileType in
+            (world.settings.tileOrientationMeanings[tileType] ?? .unused) == .freeDirection
         }
         directionToCornerInspector = createSubInspectorIfNecessary(type: DirectionToCornerInspector.self) { tileType in
             (world.settings.tileOrientationMeanings[tileType] ?? .unused) == .directionToCorner

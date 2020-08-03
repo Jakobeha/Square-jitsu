@@ -11,6 +11,6 @@ final class AdjacentToSolidInspector: SideBasedOrientationInspector {
     }
 
     override func isTileConnectedToSide(tileAtPosition: TileAtPosition, side: Side) -> Bool {
-        tileAtPosition.type.orientation.asSide == side
+        tileAtPosition.type.orientation.asOptionalSide == side
     }
 }
