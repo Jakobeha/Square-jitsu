@@ -40,7 +40,7 @@ final class Edge4TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
 
     private func generateTextureNode(world: ReadonlyWorld, mySides: SideSet) -> SKSpriteNode {
         let texture = textures[mySides.inverted]
-        return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        return SKSpriteNode(texture: texture, size: world.settings.tileViewSize)
     }
     
     private func generateMaskNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, mySides: SideSet) -> SKSpriteNode? {
@@ -60,7 +60,7 @@ final class Edge4TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
         let maskedSides = adjoiningSides.inverted.subtracting(mySides)
 
         if let (maskTexture, numRightAngleRotations) = Edge4TileViewTemplate.getMaskTextureAndNumRightAngleRotations(settings: world.settings, maskedSides: maskedSides) {
-            let maskNode = SKSpriteNode(texture: maskTexture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+            let maskNode = SKSpriteNode(texture: maskTexture, size: world.settings.tileViewSize)
             maskNode.angle = Angle(numRightAngleRotations: numRightAngleRotations)
             return maskNode
         } else {

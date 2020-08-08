@@ -12,7 +12,7 @@ struct EmptyWorldLoader: WorldLoader {
     func loadChunk(pos: WorldChunkPos) -> Chunk {
         let chunk = Chunk()
         if pos == WorldChunkPos(x: 0, y: 0) {
-            chunk.placeTile(pos: ChunkTilePos(x: 0, y: 0), type: TileType.player, force: true)
+            chunk.placeTile(pos: ChunkTilePos(x: 0, y: 0), type: TileType.player)
         }
 
         return chunk

@@ -13,7 +13,7 @@ final class ColorTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
     }
 
     override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
-        SKSpriteNode(texture: nil, color: color, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        SKSpriteNode(texture: nil, color: color, size: world.settings.tileViewSize)
     }
 
     override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {

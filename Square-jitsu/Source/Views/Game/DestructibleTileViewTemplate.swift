@@ -17,7 +17,7 @@ final class DestructibleTileViewTemplate: AugmentingTileViewTemplate, SingleSett
 
     override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
         let baseNode = super.generateNode(world: world, pos3D: pos3D, tileType: tileType)
-        let destructionNode = SKSpriteNode(texture: destructionTexture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        let destructionNode = SKSpriteNode(texture: destructionTexture, size: world.settings.tileViewSize)
         baseNode.addChild(destructionNode)
 
         let maxHealth = world.settings.destructibleSolidInitialHealth[tileType] ?? 0

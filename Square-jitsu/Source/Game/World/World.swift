@@ -323,6 +323,11 @@ class World: ReadonlyWorld, WritableStatelessWorld {
         self[pos3D.pos][pos3D.layer]
     }
 
+    func getNextFreeLayerAt(pos: WorldTilePos) -> Int? {
+        let chunk = getChunkAt(pos: pos.worldChunkPos)
+        return chunk.getNextFreeLayerAt(pos: pos.chunkTilePos)
+    }
+
     func peek(pos: WorldTilePos) -> [TileType] {
         let chunk = peekLoad(pos: pos.worldChunkPos)
         return chunk[pos.chunkTilePos]
@@ -372,18 +377,6 @@ class World: ReadonlyWorld, WritableStatelessWorld {
         let chunk = getChunkAt(pos: pos3D.pos.worldChunkPos)
         let chunkPos3D = pos3D.chunkTilePos3D
         chunk[chunkPos3D] = newType
-    }
-
-    @discardableResult func createTileInternally(pos: WorldTilePos, explicitLayer: Int?, type: TileType, force: Bool) -> Int? {
-        let chunk = getChunkAt(pos: pos.worldChunkPos)
-        guard let layer = chunk.placeTile(pos: pos.chunkTilePos, explicitLayer: explicitLayer, type: type, force: force) else {
-            return nil
-        }
-        let pos3D = WorldTilePos3D(pos: pos, layer: layer)
-
-        notifyBehaviorTileWasCreatedAt(pos3D: pos3D)
-
-        return layer
     }
 
     func destroyTilesInternally(pos: WorldTilePos) {

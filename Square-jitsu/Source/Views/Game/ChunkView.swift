@@ -21,8 +21,8 @@ class ChunkView: NodeView<SKNode> {
         glossMaskChild = glossMaskNode == nil ? nil : SKNode()
         super.init(node: SKNode())
 
-        node.position = worldChunkPos.originCgPoint * world.settings.tileViewWidthHeight
-        glossMaskChild?.position = worldChunkPos.originCgPoint * world.settings.tileViewWidthHeight
+        node.position = world.settings.convertTileToView(point: worldChunkPos.originCgPoint)
+        glossMaskChild?.position = world.settings.convertTileToView(point: worldChunkPos.originCgPoint)
 
         placeExistingTiles(chunk: chunk)
         chunk.didChangeTile.subscribe(observer: self, priority: .view) { (self, chunkTilePos3DAndOldType) in

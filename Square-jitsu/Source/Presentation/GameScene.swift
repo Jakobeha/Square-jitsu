@@ -40,7 +40,7 @@ class GameScene: SJScene {
         if !isPaused {
             if let loadedWorld = loadedWorld,
                let cameraNode = camera {
-                loadedWorld.playerCamera.applyTo(cameraNode: cameraNode, settings: loadedWorld.settings)
+                loadedWorld.playerCamera.applyTo(cameraNode: cameraNode)
             }
         }
     }

@@ -30,11 +30,11 @@ class EntityView: OptionalNodeView {
     func update() {
         if let node = node {
             if let locC = entity.next.locC {
-                node.position = locC.position * settings.tileViewWidthHeight
+                node.position = settings.convertTileToView(point: locC.position)
                 node.angle = locC.rotation
                 if let spriteNode = node as? SKSpriteNode {
                     let scaleMode = settings.entityViewScaleModes[entity.type] ?? ScaleMode.ignoreAspect
-                    spriteNode.resizeTo(size: CGSize.square(sideLength: locC.radius * 2 * settings.tileViewWidthHeight), scaleMode: scaleMode)
+                    spriteNode.resizeTo(size: settings.tileViewSize * (locC.radius * 2), scaleMode: scaleMode)
                 }
             }
             if let graC = entity.next.graC {

@@ -14,6 +14,7 @@ protocol ReadonlyStatelessWorld: AnyObject {
     /// The only reason this method exists is because a setter for said subscript is defined in an extension,
     /// and you can't define a setter without overriding the getter.
     func _getTileTypeAt(pos3D: WorldTilePos3D) -> TileType
+    func getNextFreeLayerAt(pos: WorldTilePos) -> Int?
     func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata?
 }
 
@@ -29,6 +30,10 @@ extension ReadonlyStatelessWorld {
 
     func getUpdatedTileAtPosition(oldTileAtPosition: TileAtPosition) -> TileAtPosition {
         getTileAt(pos3D: oldTileAtPosition.position)
+    }
+
+    func hasFreeLayerAt(pos: WorldTilePos) -> Bool {
+        getNextFreeLayerAt(pos: pos) != nil
     }
     // endregion
 
@@ -91,12 +96,13 @@ extension ReadonlyStatelessWorld {
         }
     }
 
-    func getFillerPositionsTo(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
+    func getFillerPositionsTo(pos3D: WorldTilePos3D, type: TileFillerType? = nil) -> Set<WorldTilePos3D> {
         if let fillerId: Int = pos3D.pos.sideAdjacents.compactMap({ (adjacentSide, adjacentPos) in
             let typesAtAdjacentPos = self[adjacentPos]
             let directionToPos = adjacentSide.opposite
             let typeOfFiller = typesAtAdjacentPos.first { typeAtPos in
-                if typeAtPos.bigType == .filler {
+                if typeAtPos.bigType == .filler &&
+                   (type == nil || typeAtPos.smallType.asFillerData.type == type!) {
                     let fillerOrientationAtPos = typeAtPos.orientation.asFillerOrientation
                     return fillerOrientationAtPos.targetLayer == pos3D.layer &&
                         fillerOrientationAtPos.direction == directionToPos
@@ -123,6 +129,7 @@ extension ReadonlyStatelessWorld {
                         if !fillerPositions.contains(adjacentPos3D) {
                             let adjacentType = adjacentTypes[layer]
                             if adjacentType.bigType == .filler &&
+                               (type == nil || adjacentType.smallType.asFillerData.type == type!) &&
                                adjacentType.smallType.asFillerData.id == fillerId &&
                                adjacentType.orientation.asFillerOrientation.direction == directionIfConnected {
                                 // Add position to fillers, and add to workset (if not already seen) to get fillers connected to this
@@ -143,8 +150,8 @@ extension ReadonlyStatelessWorld {
         }
     }
 
-    func getFillerPositionsToAndIncluding(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
-        var result = getFillerPositionsTo(pos3D: pos3D)
+    func getFillerPositionsToAndIncluding(pos3D: WorldTilePos3D, type: TileFillerType? = nil) -> Set<WorldTilePos3D> {
+        var result = getFillerPositionsTo(pos3D: pos3D, type: type)
         result.insert(pos3D)
         return result
     }
@@ -152,9 +159,10 @@ extension ReadonlyStatelessWorld {
     /// If the tile at the given position is a filler,
     /// retries with the tile it immediately points toward,
     /// repeated until we get a position without a filler tile.
-    func followFillersAt(pos3D: WorldTilePos3D) -> WorldTilePos3D {
+    func followFillersAt(pos3D: WorldTilePos3D, type: TileFillerType? = nil) -> WorldTilePos3D {
         let initialTile = self[pos3D]
-        if initialTile.bigType != .filler {
+        if initialTile.bigType != .filler ||
+           (type != nil && initialTile.smallType.asFillerData.type != type!) {
             return pos3D
         }
 
@@ -169,7 +177,9 @@ extension ReadonlyStatelessWorld {
             let nextPos = currentPos + currentFiller.orientation.asFillerOrientation.direction.perpendicularOffset
             let nextTiles = self[nextPos]
             if let nextFiller = nextTiles.first(where: { nextTile in
-                nextTile.bigType == .filler && nextTile.smallType.asFillerData.id == fillerId
+                nextTile.bigType == .filler &&
+                (type == nil || nextTile.smallType.asFillerData.type == type!) &&
+                nextTile.smallType.asFillerData.id == fillerId
             }) {
                 currentPos = nextPos
                 currentFiller = nextFiller
@@ -182,14 +192,16 @@ extension ReadonlyStatelessWorld {
 
     /// If the tile at the given position has or is a filler,
     /// returns the target and all other connected fillers
-    func extendFillersAt(pos3D: WorldTilePos3D) -> Set<WorldTilePos3D> {
-        getFillerPositionsToAndIncluding(pos3D: followFillersAt(pos3D: pos3D))
+    func extendFillersAt(pos3D: WorldTilePos3D, type: TileFillerType? = nil) -> Set<WorldTilePos3D> {
+        getFillerPositionsToAndIncluding(pos3D: followFillersAt(pos3D: pos3D, type: type), type: type)
     }
 
     /// Returns all of the tiles, as well as any connected fillers and
     /// (if any of the tiles are fillers themselves) targeted tiles.
-    func extendFillersIn(positions: Set<WorldTilePos3D>) -> Set<WorldTilePos3D> {
-        positions.map(extendFillersAt).reduce()
+    func extendFillersIn(positions: Set<WorldTilePos3D>, type: TileFillerType? = nil) -> Set<WorldTilePos3D> {
+        positions.map { pos3D in
+            self.extendFillersAt(pos3D: pos3D, type: type)
+        }.reduce()
     }
     // endregion
     // endregion

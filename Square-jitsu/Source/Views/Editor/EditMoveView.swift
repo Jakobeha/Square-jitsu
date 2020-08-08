@@ -75,7 +75,7 @@ class EditMoveView: UXView {
     }
 
     private func updateMovedTileViewPositions(startTouchPos: TouchPos, endTouchPos: TouchPos) {
-        let offsetFromMove = (endTouchPos.worldScreenPos - startTouchPos.worldScreenPos) * editor.settings.tileViewWidthHeight
+        let offsetFromMove = editor.settings.convertTileToView(point: (endTouchPos.worldScreenPos - startTouchPos.worldScreenPos))
         tileViewsNode.position = offsetFromMove
     }
 

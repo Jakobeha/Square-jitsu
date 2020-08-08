@@ -63,15 +63,15 @@ class EditSelectionView: UXView {
 
     private func updateCurrentSelectionNodePath() {
         let editSelection = editor.tools.editSelection
-        let selectedPositions3D = editSelection.isNone ? [] : editSelection.getSelectedPositions(world: editor.editableWorld.world)
+        let selectedPositions3D = editSelection.getSelectedPositions(world: editor.editableWorld.world)
         let selectedPositions = Set(selectedPositions3D.map { pos3D in pos3D.pos })
-        currentSelectionNode.path = WorldTilePos.pathOfShapeMadeBy(positions: selectedPositions, scale: editor.settings.tileViewWidthHeight, offset: CGPoint.zero)
+        currentSelectionNode.path = editor.settings.generatePathOfShapeMadeBy(positions: selectedPositions)
     }
 
     private func updateInteractedNodePath() {
         let interactedPositions3D = editor.tools.interactedTiles
         let interactedPositions = Set(interactedPositions3D.map { pos3D in pos3D.pos })
-        interactedNode.path = WorldTilePos.pathOfShapeMadeBy(positions: interactedPositions, scale: editor.settings.tileViewWidthHeight, offset: CGPoint.zero)
+        interactedNode.path = editor.settings.generatePathOfShapeMadeBy(positions: interactedPositions)
     }
 
     func set(scene: SJScene) {

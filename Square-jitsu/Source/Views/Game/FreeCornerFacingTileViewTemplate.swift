@@ -20,7 +20,7 @@ final class FreeCornerFacingTileViewTemplate: EmptyTileViewTemplate, SingleSetti
         let corner = tileType.orientation.asCorner
         let texture = textureBase[corner.textureName]
 
-        let node = SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        let node = SKSpriteNode(texture: texture, size: world.settings.tileViewSize)
 
         return node
     }

@@ -21,7 +21,7 @@ struct LineCastHit {
         (hitPoint, hitSide) = LineCastHit.calculateHitPointAndSide(line: line, pos3D: pos3D, blockedAdjacentSides: blockedAdjacentSides)
     }
 
-    private static func calculateHitPointAndSide(line: LineSegment, pos3D: WorldTilePos3D, blockedAdjacentSides: SideSet) -> (hitPoint: CGPoint, hitSide: Side?) {
+    static func calculateHitPointAndSide(line: LineSegment, pos3D: WorldTilePos3D, blockedAdjacentSides: SideSet) -> (hitPoint: CGPoint, hitSide: Side?) {
         // Similar to in CollisionSystem we calculate which side we hit
         // except this time we don't worry about adjacents or close calls
         let xWouldHitEastSide = line.end.x < line.start.x

@@ -62,10 +62,6 @@ struct ChunkMatrix<Value: HasDefault> {
         }
         return guess
     }
-
-    func hasFreeLayerAt(pos: ChunkTilePos) -> Bool {
-        getNextFreeLayerAt(pos: pos) != nil
-    }
 }
 
 extension ChunkMatrix: CompactCodable where Value: CompactCodable {

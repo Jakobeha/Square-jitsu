@@ -46,6 +46,6 @@ struct TouchPos {
 
         let prevScreenPos = TouchPos.getPreviousPosition(uiTouch: uiTouch, container: container)
         let screenPosDelta = screenPos - prevScreenPos
-        worldPosDelta = screenPosDelta / settings.tileViewWidthHeight
+        worldPosDelta = settings.convertViewToTile(point: screenPosDelta)
     }
 }

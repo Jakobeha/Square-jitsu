@@ -8,9 +8,9 @@ import SpriteKit
 enum EditSelection {
     case none(mode: EditSelectMode)
     case rect(startPos: TouchPos, touchPos: TouchPos)
-    case precision(touchPos: TouchPos)
+    case precision(backIndex: Int, touchPos: TouchPos)
     case freeHand(selectedPositions: Set<WorldTilePos>, touchPos: TouchPos)
-    case sameType(touchPos: TouchPos)
+    case sameType(backIndex: Int, touchPos: TouchPos)
 
     var mode: EditSelectMode {
         switch self {
@@ -18,12 +18,12 @@ enum EditSelection {
             return mode
         case .rect(startPos: _, touchPos: _):
             return .rect
-        case .precision(touchPos: _):
-            return .precision
+        case .precision(let backIndex, touchPos: _):
+            return .precision(backIndex: backIndex)
         case .freeHand(selectedPositions: _, touchPos: _):
             return .freeHand
-        case .sameType(touchPos: _):
-            return .sameType
+        case .sameType(let backIndex, touchPos: _):
+            return .sameType(backIndex: backIndex)
         }
     }
 
@@ -42,10 +42,10 @@ enum EditSelection {
 
     private static func instantSelect(mode: EditSelectMode, touchPos: TouchPos, world: ReadonlyStatelessWorld) -> Set<WorldTilePos3D> {
         switch mode {
-        case .precision:
-            return precisionSelection(touchPos: touchPos, world: world)
-        case .sameType:
-            return sameTypeSelection(touchPos: touchPos, world: world)
+        case .precision(let backIndex):
+            return precisionSelection(backIndex: backIndex, touchPos: touchPos, world: world)
+        case .sameType(let backIndex):
+            return sameTypeSelection(backIndex: backIndex, touchPos: touchPos, world: world)
         case .rect, .freeHand:
             fatalError("illegal state - tried to instant select but the select mode doesn't support it")
         }
@@ -64,12 +64,12 @@ enum EditSelection {
         switch mode {
         case .rect:
             return .rect(startPos: firstTouchPos, touchPos: firstTouchPos)
-        case .precision:
-            return .precision(touchPos: firstTouchPos)
+        case .precision(let backIndex):
+            return .precision(backIndex: backIndex, touchPos: firstTouchPos)
         case .freeHand:
             return .freeHand(selectedPositions: [firstTouchPos.worldTilePos], touchPos: firstTouchPos)
-        case .sameType:
-            return .sameType(touchPos: firstTouchPos)
+        case .sameType(let backIndex):
+            return .sameType(backIndex: backIndex, touchPos: firstTouchPos)
         }
     }
 
@@ -79,14 +79,14 @@ enum EditSelection {
             fatalError("illegal state - afterTouchMove called on .none selection, when touch hasn't started")
         case .rect(let startPos, touchPos: _):
             return .rect(startPos: startPos, touchPos: nextTouchPos)
-        case .precision(touchPos: _):
-            return .precision(touchPos: nextTouchPos)
+        case .precision(let backIndex, touchPos: _):
+            return .precision(backIndex: backIndex, touchPos: nextTouchPos)
         case .freeHand(let selectedPositions, touchPos: _):
             var nextSelectedPositions = selectedPositions
             nextSelectedPositions.insert(nextTouchPos.worldTilePos)
             return .freeHand(selectedPositions: nextSelectedPositions, touchPos: nextTouchPos)
-        case .sameType(touchPos: _):
-            return .sameType(touchPos: nextTouchPos)
+        case .sameType(let backIndex, touchPos: _):
+            return .sameType(backIndex: backIndex, touchPos: nextTouchPos)
         }
     }
 
@@ -98,15 +98,15 @@ enum EditSelection {
     func getSelectedPositions(world: ReadonlyStatelessWorld) -> Set<WorldTilePos3D> {
         switch self {
         case .none(mode: _):
-            fatalError("illegal state - getSelectedPositionsAfterTouchUp called on .none selection, when touch hasn't started")
+            return []
         case .rect(let startPos, let touchPos):
             return EditSelection.rectSelection(startPos: startPos, touchPos: touchPos, world: world)
-        case .precision(let touchPos):
-            return EditSelection.precisionSelection(touchPos: touchPos, world: world)
+        case .precision(let backIndex, let touchPos):
+            return EditSelection.precisionSelection(backIndex: backIndex, touchPos: touchPos, world: world)
         case .freeHand(let selectedPositions, touchPos: _):
             return EditSelection.freeHandSelection(selectedPositions: selectedPositions, world: world)
-        case .sameType(let touchPos):
-            return EditSelection.sameTypeSelection(touchPos: touchPos, world: world)
+        case .sameType(let backIndex, let touchPos):
+            return EditSelection.sameTypeSelection(backIndex: backIndex, touchPos: touchPos, world: world)
         }
     }
 
@@ -123,9 +123,9 @@ enum EditSelection {
         })
     }
 
-    private static func precisionSelection(touchPos: TouchPos, world: ReadonlyStatelessWorld) -> Set<WorldTilePos3D> {
+    private static func precisionSelection(backIndex: Int, touchPos: TouchPos, world: ReadonlyStatelessWorld) -> Set<WorldTilePos3D> {
         let tilePos = touchPos.worldTilePos
-        let tileLayer = TileType.indexOfHighestLayerIn(array: world[tilePos])
+        let tileLayer = TileType.indexOfNthHighestLayerIn(array: world[tilePos], n: backIndex)
         let tilePos3D = WorldTilePos3D(pos: tilePos, layer: tileLayer)
         return [tilePos3D]
     }
@@ -136,9 +136,9 @@ enum EditSelection {
         })
     }
 
-    private static func sameTypeSelection(touchPos: TouchPos, world: ReadonlyStatelessWorld) -> Set<WorldTilePos3D> {
+    private static func sameTypeSelection(backIndex: Int, touchPos: TouchPos, world: ReadonlyStatelessWorld) -> Set<WorldTilePos3D> {
         let tilePos = touchPos.worldTilePos
-        let tileLayer = TileType.indexOfHighestLayerIn(array: world[tilePos])
+        let tileLayer = TileType.indexOfNthHighestLayerIn(array: world[tilePos], n: backIndex)
         let tilePos3D = WorldTilePos3D(pos: tilePos, layer: tileLayer)
         if world[tilePos3D] == TileType.air {
             return []

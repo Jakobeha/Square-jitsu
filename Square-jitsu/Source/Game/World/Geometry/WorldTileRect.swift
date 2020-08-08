@@ -34,6 +34,22 @@ struct WorldTileRect {
     var minX: Int
     var minY: Int
 
+    var positions: [WorldTilePos] {
+        (minX...maxX).flatMap { x in
+            (minY...maxY).map { y in
+                WorldTilePos(x: x, y: y)
+            }
+        }
+    }
+    
+    var pos3Ds: [WorldTilePos3D] {
+        positions.flatMap { pos in
+            (0..<Chunk.numLayers).map { layer in
+                WorldTilePos3D(pos: pos, layer: layer)
+            }
+        }
+    }
+
     init(maxX: Int, maxY: Int, minX: Int, minY: Int) {
         assert(maxX >= minX && maxY >= minY)
         

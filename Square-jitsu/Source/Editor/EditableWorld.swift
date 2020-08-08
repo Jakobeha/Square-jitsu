@@ -31,12 +31,18 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
     func _getTileTypeAt(pos3D: WorldTilePos3D) -> TileType {
         worldFile[pos3D]
     }
+
     subscript(pos3D: WorldTilePos3D) -> TileType {
         get { worldFile[pos3D] }
         set {
             worldFile[pos3D] = newValue
             resetStateAt(pos3D: pos3D)
         }
+    }
+
+    func getNextFreeLayerAt(pos: WorldTilePos) -> Int? {
+        // It needs to be the world file, since the world can have tiles hidden
+        worldFile.getNextFreeLayerAt(pos: pos)
     }
 
     func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
@@ -47,15 +53,6 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
     // region tile mutation
     func setInternally(pos3D: WorldTilePos3D, to newType: TileType) {
         worldFile.setInternally(pos3D: pos3D, to: newType)
-    }
-
-    func createTileInternally(pos: WorldTilePos, explicitLayer: Int? = nil, type: TileType, force: Bool) -> Int? {
-        // Reorient type
-        var orientedType = type
-        orientedType.orientation = autoReorientType(type, pos: pos)
-
-        // Actually create
-        return worldFile.createTileInternally(pos: pos, explicitLayer: explicitLayer, type: orientedType, force: force)
     }
 
     func destroyTileInternally(pos3D: WorldTilePos3D) {
@@ -147,6 +144,8 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
     func temporarilyHide(positions: Set<WorldTilePos3D>) {
         for pos3D in positions {
             assert(!isInGameAndFileDefinitelyNotSynchronizedAt(pos3D: pos3D), "when hiding or showing a tile at a position, the in-game and file worlds must be synchronized at the position")
+        }
+        for pos3D in positions {
             world.destroyTile(pos3D: pos3D)
         }
     }
@@ -154,8 +153,10 @@ class EditableWorld: WritableStatelessWorld, EditableReadonlyStatelessWorld {
     func showTemporarilyHidden(positions: Set<WorldTilePos3D>) {
         for pos3D in positions {
             assert(!isInGameAndFileDefinitelyNotSynchronizedAt(pos3D: pos3D), "when hiding or showing a tile at a position, the in-game and file worlds must be synchronized at the position")
-            world.resetStateAt(pos3D: pos3D)
-            world[pos3D] = worldFile[pos3D]
+        }
+
+        for pos3D in positions {
+            world.setInternally(pos3D: pos3D, to: worldFile[pos3D])
             world.resetStateAt(pos3D: pos3D)
         }
     }

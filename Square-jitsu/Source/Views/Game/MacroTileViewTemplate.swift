@@ -19,7 +19,7 @@ final class MacroTileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
             return SKNode()
         }
 
-        let node = SKSpriteNode(texture: texture, size: sizeInTiles * world.settings.tileViewWidthHeight)
+        let node = SKSpriteNode(texture: texture, size: world.settings.tileViewSize * sizeInTiles)
         node.anchorPoint = (CGSize.square(sideLength: 0.5) / sizeInTiles).toPoint
         return node
     }

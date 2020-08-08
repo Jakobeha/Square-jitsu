@@ -8,6 +8,7 @@ import SpriteKit
 class EditorTools {
     private(set) var editSelection: EditSelection = EditSelection.none(mode: .rect) {
         didSet {
+            resetStateAt(positions: editSelection.getSelectedPositions(world: world))
             if oldValue.mode != editSelection.mode {
                 _didChangeEditSelectMode.publish()
             }
@@ -16,6 +17,7 @@ class EditorTools {
     }
     var editAction: EditAction = .place {
         didSet {
+            resetStateAt(positions: editAction.selectedPositions)
             if oldValue.mode != editAction.mode {
                 _didChangeEditActionMode.publish()
             }
@@ -195,6 +197,7 @@ class EditorTools {
         if editAction.mode.requiresSelection && editAction.selectedPositions.isEmpty {
             // Move initiated with no selection, so we instant-select
             let selectedPositions = editSelection.instantSelect(touchPos: touchPos, world: world)
+            resetStateAt(positions: selectedPositions)
             switch editAction.mode {
             case .move:
                 // Perform a move with these tiles - select them and then perform a move
@@ -220,7 +223,7 @@ class EditorTools {
         if hasEditMoveState && editMoveState.isStarted && editAction.mode == .move {
             // We need to synchronize before hiding, we don't put it in temporarilyHide
             // because it would be misleading
-            world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+            world.resetStateAt(positions: editAction.selectedPositions)
             world.temporarilyHide(positions: editAction.selectedPositions)
         }
     }
@@ -242,7 +245,7 @@ class EditorTools {
             if editAction.mode == .move {
                 // We need to synchronize before showing, we don't put it in showTemporarilyHidden
                 // because it would be misleading
-                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+                world.resetStateAt(positions: editAction.selectedPositions)
                 world.showTemporarilyHidden(positions: editAction.selectedPositions)
             }
 
@@ -271,7 +274,7 @@ class EditorTools {
             if editAction.mode == .move && editMoveState.isStarted {
                 // We need to synchronize before showing, we don't put it in showTemporarilyHidden
                 // because it would be misleading
-                world.synchronizeInGameAndFileAt(positions: editAction.selectedPositions)
+                world.resetStateAt(positions: editAction.selectedPositions)
                 world.showTemporarilyHidden(positions: editAction.selectedPositions)
             }
 
@@ -355,10 +358,16 @@ class EditorTools {
     }
 
     private func edgePan(side: Side, edgePanGradientPoint: EdgePanGradientPoint) {
-        let speed = edgePanGradientPoint.speedInPixelsPerSecond / world.settings.tileViewWidthHeight
+        let speed = edgePanGradientPoint.speedInPixelsPerSecond * world.settings.tileViewWidthHeight
         let offsetDistance = speed * world.settings.fixedDeltaTime
         let offset = CGPoint(magnitude: offsetDistance, sideDirection: side)
         editorCamera.position += offset
     }
     // endregion
+
+    private func resetStateAt(positions: Set<WorldTilePos3D>) {
+        for pos3D in positions {
+            world.resetStateAt(pos3D: pos3D)
+        }
+    }
 }

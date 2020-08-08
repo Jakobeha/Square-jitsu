@@ -23,7 +23,7 @@ final class TurretTileViewTemplate: AugmentingTileViewTemplate, SingleSettingCod
 
         let turretBehavior = world.getBehaviorAt(pos3D: pos3D)! as! TurretBehavior
 
-        let turretNode = SKSpriteNode(texture: turretTexture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        let turretNode = SKSpriteNode(texture: turretTexture, size: world.settings.tileViewSize)
         baseNode.addChild(turretNode)
 
         TurretTileViewTemplate.updateFor(turretNode: turretNode, metadata: turretBehavior.metadata)

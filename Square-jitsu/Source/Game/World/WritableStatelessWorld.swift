@@ -7,13 +7,9 @@ import Foundation
 
 protocol WritableStatelessWorld: ReadonlyStatelessWorld {
     func setInternally(pos3D: WorldTilePos3D, to: TileType)
-    func createTileInternally(pos: WorldTilePos, explicitLayer: Int?, type: TileType, force: Bool) -> Int?
     /// Technically this is equivalent to setting all tiles at the position to air,
     /// but the specific implementation could be faster
     func destroyTilesInternally(pos: WorldTilePos)
-    /// Technically this is equivalent to setting the tile to air,
-    /// but the specific implementation could be faster
-    func destroyTileInternally(pos3D: WorldTilePos3D)
 
     func finishChangingTileAt(pos3D: WorldTilePos3D, type: TileType)
     func finishCreatingTileAt(pos3D: WorldTilePos3D, type: TileType)
@@ -36,8 +32,6 @@ extension WritableStatelessWorld {
 
     /// Places the tile if there are no overlapping tiles at the given position
     /// - Returns: The layer of the tile if it was placed, otherwise nil
-    /// - Note: "create" is distinguished from "place" are different in that "create" means e.g. the user explicitly
-    ///   places the tile, while "place" may mean it was loaded
     @discardableResult func createTile(pos: WorldTilePos, explicitLayer: Int? = nil, type: TileType, force: Bool) -> Int? {
         guard let layer = createTileInternally(pos: pos, explicitLayer: explicitLayer, type: type, force: force) else {
             return nil
@@ -54,16 +48,12 @@ extension WritableStatelessWorld {
         return layer
     }
 
-    /// Note: "destroy" is distinguished from "remove" are different in that "destroy" means e.g. the user explicitly
-    /// deletes the tile, while "remove" may mean it was unloaded
     func destroyTiles(pos: WorldTilePos) {
         destroyTilesDependentOn(pos: pos)
         destroyTilesInternally(pos: pos)
         finishDestroyingTilesAt(pos: pos)
     }
 
-    /// Note: "destroy" is distinguished from "remove" are different in that "destroy" means e.g. the user explicitly
-    /// deletes the tile, while "remove" may mean it was unloaded
     func destroyTile(pos3D: WorldTilePos3D) {
         destroyTilesDependentOn(pos3D: pos3D)
         destroyTileInternally(pos3D: pos3D)
@@ -77,9 +67,9 @@ extension WritableStatelessWorld {
 
     private func destroyTilesDependentOn(pos3D: WorldTilePos3D) {
         let oldType = self[pos3D]
-        // Remove fillers to old tile
+        // Destroy fillers to old tile
         destroyFillersTo(pos3D: pos3D, type: oldType)
-        // Remove tiles which depend on the old tile to exist but can't depend on the new one
+        // Destroy tiles which depend on the old tile to exist but can't depend on the new one
         destroyTilesDependentOnOverlapping(pos3D: pos3D, type: oldType)
     }
 
@@ -144,5 +134,152 @@ extension WritableStatelessWorld {
 
         return !failed
     }
+
+    // region shared internal implementations of mutating methods
+    /// Tries to create the tile, but won't create if it's meaningless
+    /// (e.g. a tile which functions based on orientation but has none)
+    /// or if there are other overlapping tiles which must be destroyed and the flag is set to false.
+    /// If it's set to true, the overlapping tiles will be destroyed.
+    /// If an explicit layer is provided and the tile is created, it will be created at said layer
+    /// and the tile previously at that layer might be moved
+    /// - Returns: The layer of the tile if it was created, otherwise nil
+    @discardableResult func createTileInternally(pos: WorldTilePos, explicitLayer: Int?, type: TileType, force: Bool) -> Int? {
+        guard let originalLayer = createTileInternally(pos: pos, type: type, force: force) else {
+            return nil
+        }
+
+        if let explicitLayer = explicitLayer {
+            if originalLayer != explicitLayer {
+                // Swap so that the created layer is the explicit layer
+                let originalPos3D = WorldTilePos3D(pos: pos, layer: originalLayer)
+                let explicitPos3D = WorldTilePos3D(pos: pos, layer: explicitLayer)
+                let intermediateTile = self[originalPos3D]
+
+                // We use setInternally because we don't want to destroy extra tiles,
+                // and we get a finishChangingTileAt event after calling this method anyways
+                setInternally(pos3D: originalPos3D, to: self[explicitPos3D])
+                setInternally(pos3D: explicitPos3D, to: intermediateTile)
+            }
+
+            return explicitLayer
+        } else {
+            return originalLayer
+        }
+    }
+
+    /// Tries to create the tile, but won't create if it's meaningless
+    /// (e.g. a tile which functions based on orientation but has none)
+    /// or if there are other overlapping tiles which must be destroyed and the flag is set to false.
+    /// If it's set to true, the overlapping tiles will be destroyed
+    /// - Returns: The layer of the tile if it was created, otherwise nil
+    @discardableResult func createTileInternally(pos: WorldTilePos, type: TileType, force: Bool) -> Int? {
+        if force {
+            return forceCreateTileInternally(pos: pos, type: type)
+        } else {
+            return tryCreateTileInternally(pos: pos, type: type)
+        }
+    }
+
+    /// Creates the tile if there are no overlapping tiles
+    /// - Returns: The layer of the tile if it was created, otherwise nil
+    @discardableResult private func tryCreateTileInternally(pos: WorldTilePos, type: TileType) -> Int? {
+        if type.isMeaninglessInGame {
+            return nil
+        } else {
+            if let layer = getLayerWithSameNotOrientedType(pos: pos, type: type.withDefaultOrientation) {
+                if type.bigType.layer.doTilesOccupySides {
+                    let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+
+                    var type = self[pos3D]
+                    type.orientation.asSideSet.formUnion(type.orientation.asSideSet)
+                    setInternally(pos3D: pos3D, to: type)
+
+                    return layer
+                } else {
+                    return nil
+                }
+            } else {
+                if !hasOverlappingTiles(pos: pos, type: type) {
+                    assert(hasFreeLayerAt(pos: pos), "there are no overlapping tiles but no free layer, this isn't allowed - num layers should be increased")
+                    return createTileInternallyInFreeLayer(pos: pos, type: type)
+                } else {
+                    return nil
+                }
+            }
+        }
+    }
+
+    /// Creates the tile, removing any non-overlapping tiles. The tile still won't be created if it's meaningless
+    /// (e.g. a tile which functions based on its orientation, but has none)
+    /// - Returns: The layer of the tile if it was created, otherwise nil
+    @discardableResult private func forceCreateTileInternally(pos: WorldTilePos, type: TileType) -> Int? {
+        if type.isMeaninglessInGame {
+            return nil
+        } else {
+            if let layer = getLayerWithSameNotOrientedType(pos: pos, type: type.withDefaultOrientation) {
+                let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+                setInternally(pos3D: pos3D, to: self[pos3D].mergedOrReplaced(orientation: type.orientation))
+                return layer
+            } else {
+                destroyNonOverlappingTiles(pos: pos, type: type)
+                return createTileInternallyInFreeLayer(pos: pos, type: type)
+            }
+        }
+    }
+
+    private func destroyNonOverlappingTiles(pos: WorldTilePos, type: TileType) {
+        for layer in 0..<Chunk.numLayers {
+            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+            let pos3DFollowingFillers = followFillersAt(pos3D: pos3D, type: .macro)
+            let existingType = self[pos3DFollowingFillers]
+            if !TileType.typesCanOverlap(type, existingType) {
+                destroyTile(pos3D: pos3D)
+            }
+        }
+
+        // Still need to destroy a tile if there is no free chunk layer.
+        // We could destroy one at any layer (all layers are occupied),
+        // but we choose the last one
+        if !hasFreeLayerAt(pos: pos) {
+            let layerToFree = Chunk.numLayers - 1
+            destroyTile(pos3D: WorldTilePos3D(pos: pos, layer: layerToFree))
+        }
+    }
+
+    private func hasOverlappingTiles(pos: WorldTilePos, type: TileType) -> Bool {
+        // We go backwards because removing earlier tiles moves later ones down
+        for layer in (0..<Chunk.numLayers).reversed() {
+            let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+            let pos3DFollowingFillers = followFillersAt(pos3D: pos3D, type: .macro)
+            let existingType = self[pos3DFollowingFillers]
+            if !TileType.typesCanOverlap(type, existingType) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /// Asserts that there is a free layer at the given position.
+    /// Creates the tile at that layer and returns it.
+    @discardableResult private func createTileInternallyInFreeLayer(pos: WorldTilePos, type: TileType) -> Int {
+        guard let layer = getNextFreeLayerAt(pos: pos) else {
+            fatalError("createTileInFreeLayer - no free layer at \(pos)")
+        }
+
+        let pos3D = WorldTilePos3D(pos: pos, layer: layer)
+        setInternally(pos3D: pos3D, to: type)
+
+        return layer
+    }
+
+    private func getLayerWithSameNotOrientedType(pos: WorldTilePos, type: TileType) -> Int? {
+        assert(type.withDefaultOrientation == type)
+        return self[pos].firstIndex { otherType in otherType.withDefaultOrientation == type }
+    }
+
+    func destroyTileInternally(pos3D: WorldTilePos3D) {
+        setInternally(pos3D: pos3D, to: TileType.air)
+    }
+    // endregion
     // endregion
 }

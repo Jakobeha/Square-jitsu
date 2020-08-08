@@ -32,12 +32,17 @@ struct TileType: Equatable, Hashable, Codable, CompactCodableByValue, HasDefault
         )
     }
 
-    static func indexOfHighestLayerIn(array: [TileType]) -> Int {
-        array.lastIndex(of: typeWithHighestLayerIn(array: array))!
+    /// This uses 0-based indexing, so 0 = highest, 1 = 2nd highest, etc.
+    static func indexOfNthHighestLayerIn(array: [TileType], n: Int) -> Int {
+        array.lastIndex(of: typeWithNthHighestLayerIn(array: array, n: n))!
     }
 
-    private static func typeWithHighestLayerIn(array: [TileType]) -> TileType {
-        array.max { lhs, rhs in lhs.bigType.layer < rhs.bigType.layer }!
+    private static func typeWithNthHighestLayerIn(array: [TileType], n: Int) -> TileType {
+        array.filter { type in
+            type != TileType.air
+        }.sorted { lhs, rhs in
+            lhs.bigType.layer > rhs.bigType.layer
+        }.getIfPresent(at: n) ?? TileType.air
     }
 
     static let defaultValue: TileType = air

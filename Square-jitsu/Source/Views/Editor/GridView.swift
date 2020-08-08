@@ -39,25 +39,7 @@ class GridView: UXView {
     }
 
     private func updateGridPath() {
-        let bounds = ConvertToUXCoords(rect: CGRect(origin: CGPoint.zero, size: sceneSize).insetBy(sideLength: -settings.tileViewWidthHeight / 2))
-
-        let gridPath = CGMutablePath()
-        // Add vertical lines
-        var nextVerticalLineX = bounds.minX
-        while nextVerticalLineX < bounds.maxX {
-            gridPath.move(to: CGPoint(x: nextVerticalLineX, y: bounds.minY))
-            gridPath.addLine(to: CGPoint(x: nextVerticalLineX, y: bounds.maxY))
-
-            nextVerticalLineX += settings.tileViewWidthHeight
-        }
-        // Add horizontal lines
-        var nextHorizontalLineY = bounds.minY
-        while nextHorizontalLineY < bounds.maxY {
-            gridPath.move(to: CGPoint(x: bounds.minX, y: nextHorizontalLineY))
-            gridPath.addLine(to: CGPoint(x: bounds.maxX, y: nextHorizontalLineY))
-
-            nextHorizontalLineY += settings.tileViewWidthHeight
-        }
+        let gridPath = settings.generateGridPathForView(sceneSize: sceneSize)
 
         gridNode.path = gridPath
     }
@@ -66,7 +48,7 @@ class GridView: UXView {
         camera.inverseTransformUX(rootNode: gridNode)
 
         // So grid appears infinite
-        gridNode.position %= settings.tileViewWidthHeight
+        gridNode.position %= settings.gridViewModulo
     }
 
     func set(scene: SJScene) {

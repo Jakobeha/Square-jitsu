@@ -11,7 +11,12 @@ struct TileOrientation: Equatable, Hashable, LosslessStringConvertible {
     var rawValue: UInt8
 
     var asOptionalSide: Side? {
-        Side(rawValue: Int(rawValue - 1))
+        if rawValue > Side.count {
+            Logger.warn("tried to access tile orientation as side but it isn't one")
+            return .east
+        } else {
+            return rawValue == 0 ? nil : Side(rawValue: Int(rawValue - 1))
+        }
     }
 
     var asSide: Side {

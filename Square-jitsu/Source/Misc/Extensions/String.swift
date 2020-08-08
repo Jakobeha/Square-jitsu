@@ -34,6 +34,16 @@ extension String {
         count <= maxLength ? self : "\(self[..<index(startIndex, offsetBy: maxLength)])..."
     }
 
+    /// Capitalizes the first letter but leaves the rest of the string unchanged
+    var capitalizedCamelCase: String {
+        var result = self
+        let firstCharacterRange = ..<index(after: startIndex)
+        result.modify(range: firstCharacterRange) { firstCharacter in
+            firstCharacter.localizedUppercase
+        }
+        return result
+    }
+
     /// Example: "fooBarBaz" => "foo bar baz"
     var camelCaseToSubSentenceCase: String {
         let words = wordsInCamelCase

@@ -34,7 +34,7 @@ final class Free4TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable {
 
     private func generateNode(world: ReadonlyWorld, mySides: SideSet) -> SKSpriteNode {
         let texture = textures[mySides]
-        return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        return SKSpriteNode(texture: texture, size: world.settings.tileViewSize)
     }
 
     override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {

@@ -21,7 +21,7 @@ class ImageSIV: UXCompoundView {
             selectedLocation: subInspector.metadata.imageTexture
         ) { newLocation in
             let newTexture = newLocation.texture
-            let newSizeInTiles = newTexture.size() / self.settings.tileViewWidthHeight
+            let newSizeInTiles = self.settings.convertViewToTile(size: newTexture.size())
             self.subInspector.metadata = ImageMetadata(
                 imageTexture: newLocation,
                 sizeInTiles: newSizeInTiles

@@ -85,6 +85,11 @@ class WorldFile: WritableStatelessWorld, CustomStringConvertible {
         return chunk[pos3D.chunkTilePos3D]
     }
 
+    func getNextFreeLayerAt(pos: WorldTilePos) -> Int? {
+        let chunk = readChunkAt(pos: pos.worldChunkPos)
+        return chunk.getNextFreeLayerAt(pos: pos.chunkTilePos)
+    }
+
     func getMetadataAt(pos3D: WorldTilePos3D) -> TileMetadata? {
         let chunk = readChunkAt(pos: pos3D.pos.worldChunkPos)
         return chunk.getMetadataAt(pos3D: pos3D.chunkTilePos3D)
@@ -95,13 +100,6 @@ class WorldFile: WritableStatelessWorld, CustomStringConvertible {
     func setInternally(pos3D: WorldTilePos3D, to newType: TileType) {
         mutateChunkAt(pos: pos3D.pos.worldChunkPos) { chunk in
             chunk[pos3D.chunkTilePos3D] = newType
-        }
-    }
-
-    func createTileInternally(pos: WorldTilePos, explicitLayer: Int?, type: TileType, force: Bool) -> Int? {
-        assert(type.bigType != TileBigType.player, "can't create or move player")
-        return mutateChunkAt(pos: pos.worldChunkPos) { chunk in
-            chunk.placeTile(pos: pos.chunkTilePos, explicitLayer: explicitLayer, type: type, force: true)
         }
     }
 

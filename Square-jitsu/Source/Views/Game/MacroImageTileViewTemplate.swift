@@ -20,7 +20,7 @@ final class MacroImageTileViewTemplate: EmptyTileViewTemplate, SingleSettingCoda
             world.peek(pos: adjacentPos).contains(tileType)
         })
         if adjoiningSides.isDisjoint(with: [.south, .west]) {
-            let node = SKSpriteNode(texture: texture, size: sizeInTiles * world.settings.tileViewWidthHeight)
+            let node = SKSpriteNode(texture: texture, size: world.settings.tileViewSize * sizeInTiles)
             node.anchorPoint = (CGSize.square(sideLength: 0.5) / sizeInTiles).toPoint
             return node
         } else {

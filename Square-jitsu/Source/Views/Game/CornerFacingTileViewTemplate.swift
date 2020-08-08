@@ -31,7 +31,7 @@ final class CornerFacingTileViewTemplate: EmptyTileViewTemplate, SingleSettingCo
         let numRightAngleRotations = corner.rawValue / 2
         let rotation = Angle(numRightAngleRotations: numRightAngleRotations)
 
-        let node = SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        let node = SKSpriteNode(texture: texture, size: world.settings.tileViewSize)
         node.angle = rotation
 
         return node

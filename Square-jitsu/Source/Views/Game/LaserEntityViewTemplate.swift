@@ -47,7 +47,7 @@ final class LaserEntityViewTemplate: EmptyEntityViewTemplate, SingleSettingCodab
     }
 
     private func generatePath(entity: Entity) -> CGPath {
-        CGPath.of(line: entity.next.lilC!.position.scaleCoordsBy(scale: entity.world!.settings.tileViewWidthHeight))
+        CGPath.of(line: entity.world!.settings.convertTileToView(line: entity.next.lilC!.position))
     }
 
     // region encoding and decoding

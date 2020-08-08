@@ -46,7 +46,7 @@ final class Square8TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodable
             adjoiningTypes.contains(anyOf: world.peek(pos: adjacentPos))
         })
         let texture = textures[adjoiningCorners]
-        return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        return SKSpriteNode(texture: texture, size: world.settings.tileViewSize)
     }
 
     override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {

@@ -16,7 +16,7 @@ final class OptionalSideFacingTileViewTemplate: EmptyTileViewTemplate, SingleSet
     }
 
     override func generateNode(world: ReadonlyWorld, pos3D: WorldTilePos3D, tileType: TileType) -> SKNode {
-        let nodeSize = CGSize.square(sideLength: world.settings.tileViewWidthHeight)
+        let nodeSize = world.settings.tileViewSize
 
         if let side = tileType.orientation.asOptionalSide {
             let numRightAngleRotations = side.rawValue

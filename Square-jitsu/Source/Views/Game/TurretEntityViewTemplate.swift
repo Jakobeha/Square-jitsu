@@ -52,7 +52,7 @@ final class TurretEntityViewTemplate: AugmentingEntityViewTemplate, SingleSettin
 
     private func configureChargingCircle(entity: Entity, chargingCircleNode: SKShapeNode) {
         chargingCircleNode.name = TurretEntityViewTemplate.chargingCircleName
-        chargingCircleNode.position = chargingCircleOffset * entity.world!.settings.tileViewWidthHeight
+        chargingCircleNode.position = entity.world!.settings.convertTileToView(point: chargingCircleOffset)
         chargingCircleNode.fillColor = chargingCircleColor
         chargingCircleNode.strokeColor = SKColor.clear
     }

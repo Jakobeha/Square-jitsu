@@ -22,7 +22,8 @@ class EditorToolsSelectModeView: UXCompoundView {
     }
 
     override func newBody() -> UXView {
-        HStack([
+        let nextBackIndex = EditSelectMode.getBackIndexAfter(editorTools.editSelection.mode.backIndex)
+        return HStack([
             Button(
                 owner: self,
                 textureName: "UI/SelectRect",
@@ -31,10 +32,11 @@ class EditorToolsSelectModeView: UXCompoundView {
             ) { (self) in self.editorTools.select(selectMode: .rect) },
             Button(
                 owner: self,
-                textureName: "UI/SelectPrecision",
-                isEnabled: EditSelectMode.precision.canInstantSelect || !editorTools.editAction.mode.requiresSelection,
-                isSelected: editorTools.editSelection.mode == .precision
-            ) { (self) in self.editorTools.select(selectMode: .precision) },
+                textureName: "UI/SelectPrecision/\(editorTools.editSelection.mode.backIndex ?? 0)",
+                rouletteNextItemTextureName: "UI/SelectPrecision/\(nextBackIndex)",
+                isEnabled: EditSelectMode.precision(backIndex: 0).canInstantSelect || !editorTools.editAction.mode.requiresSelection,
+                isSelected: editorTools.editSelection.mode.isPrecision
+            ) { (self) in self.editorTools.select(selectMode: .precision(backIndex: self.editorTools.editSelection.mode.isPrecision ? nextBackIndex : 0)) },
             Button(
                 owner: self,
                 textureName: "UI/SelectFreehand",
@@ -43,10 +45,11 @@ class EditorToolsSelectModeView: UXCompoundView {
             ) { (self) in self.editorTools.select(selectMode: .freeHand) },
             Button(
                 owner: self,
-                textureName: "UI/SelectSameType",
-                isEnabled: EditSelectMode.sameType.canInstantSelect || !editorTools.editAction.mode.requiresSelection,
-                isSelected: editorTools.editSelection.mode == .sameType
-            ) { (self) in self.editorTools.select(selectMode: .sameType) }
+                textureName: "UI/SelectSameType/\(editorTools.editSelection.mode.backIndex ?? 0)",
+                rouletteNextItemTextureName: "UI/SelectSameType/\(nextBackIndex)",
+                isEnabled: EditSelectMode.sameType(backIndex: 0).canInstantSelect || !editorTools.editAction.mode.requiresSelection,
+                isSelected: editorTools.editSelection.mode.isSameType
+            ) { (self) in self.editorTools.select(selectMode: .sameType(backIndex: self.editorTools.editSelection.mode.isSameType ? nextBackIndex : 0)) }
         ])
     }
 }

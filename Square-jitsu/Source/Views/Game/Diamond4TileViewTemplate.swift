@@ -69,7 +69,7 @@ final class Diamond4TileViewTemplate: EmptyTileViewTemplate, SingleSettingCodabl
             .union(Diamond4TileViewTemplate.resolve(semiAdjoiningSides: semiAdjoiningSides1, preferClockwise: false))
             .union(Diamond4TileViewTemplate.resolve(semiAdjoiningSides: semiAdjoiningSides2, preferClockwise: true))
         let texture = textures[adjoiningSides]
-        return SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        return SKSpriteNode(texture: texture, size: world.settings.tileViewSize)
     }
 
     override func generatePreviewNodeRaw(size: CGSize, settings: WorldSettings) -> SKNode {

@@ -36,6 +36,8 @@ class PlayerCamera: Camera {
     }
 
     private func applyBoundariesTo(newPosition: CGPoint) -> CGPoint {
+        let settings = world!.settings
+
         let rectAt0 = WorldTileRect.around(cgRect: CGRect(
             center: CGPoint.zero,
             size: sizeInWorldCoords
@@ -55,6 +57,8 @@ class PlayerCamera: Camera {
         ))
 
         var resultPosition = newPosition
+
+        // Apply camera boundaries
         for side in Side.allCases {
             let newTilePositions1DInThisDirection = ExplicitStepRange(
                 start: rectAroundOldPosition.edgeAt(side: side),
@@ -80,20 +84,7 @@ class PlayerCamera: Camera {
                     let containsBoundaryForThisSide = newTileTypes.contains { newTileType in
                         newTileType.bigType == .cameraBoundary && newTileType.orientation.asSideSet.contains(side.toSet)
                     }
-                    let containsShiftForThisSide = newTileTypes.contains { newTileType in
-                        newTileType.bigType == .cameraBoundary &&
-                        newTileType.smallType.isCameraBoundaryShift &&
-                        newTileType.orientation.asSideSet.contains(side.opposite.toSet)
-                    }
-                    if containsShiftForThisSide {
-                        let currentPositionOnAxis = resultPosition[side.axis]
-                        let constrainedPositionOnAxis = CGFloat(newTilePos1D + rectAt0.edgeAt(side: side))
-                        if side.isPositiveOnAxis ?
-                            currentPositionOnAxis > constrainedPositionOnAxis :
-                            currentPositionOnAxis < constrainedPositionOnAxis {
-                            resultPosition[side.axis] = constrainedPositionOnAxis
-                        }
-                    } else if containsBoundaryForThisSide {
+                    if containsBoundaryForThisSide {
                         let currentPositionOnAxis = resultPosition[side.axis]
                         let constrainedPositionOnAxis = CGFloat(newTilePos1D - rectAt0.edgeAt(side: side))
                         if side.isPositiveOnAxis ?
@@ -106,6 +97,28 @@ class PlayerCamera: Camera {
                 }
             }
         }
+
+        // Apply camera shifts
+        for pos3D in rectAroundNewPosition.pos3Ds {
+            let tileType = world![pos3D]
+            if tileType.bigType == .cameraBoundary && tileType.smallType.isCameraBoundaryShift {
+                let sideToShift = tileType.orientation.asSide.opposite
+                let currentPositionOnAxis = CGFloat(resultPosition[sideToShift.axis] + CGFloat(rectAt0.edgeAt(side: sideToShift)))
+                let pos1D = pos3D.pos[sideToShift.axis]
+                let constrainedPositionOnAxis = CGFloat(pos1D + rectAt0.edgeAt(side: sideToShift))
+                if sideToShift.isPositiveOnAxis ?
+                       currentPositionOnAxis < constrainedPositionOnAxis :
+                       currentPositionOnAxis > constrainedPositionOnAxis {
+                    let interpolatedConstrainedPositionOnAxis = CGFloat.lerp(
+                            start: currentPositionOnAxis,
+                            end: constrainedPositionOnAxis,
+                            t: settings.cameraShiftSpeed
+                    )
+                    resultPosition[sideToShift.axis] = interpolatedConstrainedPositionOnAxis
+                }
+            }
+        }
+
         return resultPosition
     }
 

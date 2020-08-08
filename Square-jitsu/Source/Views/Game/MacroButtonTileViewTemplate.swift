@@ -23,7 +23,7 @@ final class MacroButtonTileViewTemplate: EmptyTileViewTemplate, SingleSettingCod
             tileBehavior.performAction(world: world, pos3D: pos3D)
         }
         // Need to offset button inside of the node since it uses UX coords
-        button.topLeft = -CGSize.square(sideLength: world.settings.tileViewWidthHeight / 2).toPoint - CGPoint(x: 0, y: world.settings.tileViewWidthHeight)
+        button.topLeft = -(world.settings.tileViewSize / 2).toPoint - CGPoint(x: 0, y: world.settings.tileViewWidthHeight)
 
         let node = SKNode()
         node.addChild(button.node)

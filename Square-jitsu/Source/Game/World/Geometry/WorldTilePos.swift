@@ -23,24 +23,6 @@ struct WorldTilePos: Equatable, Hashable {
                 FBRange(center.y - distance + 1, center.y - 1).map { y in WorldTilePos(x: center.x + distance, y: y) }
     }
 
-    /// A path made up of squares covering each of the tiles, possibly optimized.
-    /// Returns nil if `positions` is empty.
-    /// `scale` is provided because this is used for views that want paths in screen coordinates
-    static func pathOfShapeMadeBy(positions: Set<WorldTilePos>, scale: CGFloat, offset: CGPoint) -> CGPath? {
-        if positions.isEmpty {
-            return nil
-        } else {
-            let path = CGMutablePath()
-
-            // TODO: Fancier path with no positions in-between
-            for position in positions {
-                path.addRect(position.cgBounds.offsetBy(vector: offset).scaleCoordsBy(scale: scale))
-            }
-
-            return path
-        }
-    }
-
     private static func clustersFrom(positions: Set<WorldTilePos>) -> Set<Set<WorldTilePos>> {
         var remainingPositions = positions
         var clusters: Set<Set<WorldTilePos>> = []
@@ -120,5 +102,14 @@ struct WorldTilePos: Equatable, Hashable {
     init(x: Int, y: Int) {
         self.x = x
         self.y = y
+    }
+
+    subscript(axis: Axis) -> Int {
+        switch axis {
+        case .horizontal:
+            return x
+        case .vertical:
+            return y
+        }
     }
 }

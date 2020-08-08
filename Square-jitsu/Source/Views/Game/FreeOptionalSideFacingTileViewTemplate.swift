@@ -23,7 +23,7 @@ final class FreeOptionalSideFacingTileViewTemplate: EmptyTileViewTemplate, Singl
         let textureName = side?.textureName ?? FreeOptionalSideFacingTileViewTemplate.noneTextureName
         let texture = textureBase[textureName]
 
-        let node = SKSpriteNode(texture: texture, size: CGSize.square(sideLength: world.settings.tileViewWidthHeight))
+        let node = SKSpriteNode(texture: texture, size: world.settings.tileViewSize)
 
         return node
     }

@@ -15,7 +15,7 @@ protocol EditableReadonlyStatelessWorld: ReadonlyStatelessWorld {
 }
 
 extension EditableReadonlyStatelessWorld {
-    func synchronizeInGameAndFileAt(positions: Set<WorldTilePos3D>) {
+    func resetStateAt(positions: Set<WorldTilePos3D>) {
         for pos3D in positions {
             resetStateAt(pos3D: pos3D)
         }

@@ -12,6 +12,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
 
     let fixedDeltaTime: CGFloat = 1.0 / 50
     let cameraSpeed: CGFloat = 1.0 / 16
+    let cameraShiftSpeed: CGFloat = 1.0 / 4
     let shakeFade: CGFloat = 2
     let shakeInterpolationFractionPerFrame: CGFloat = 0.5
     let shakeInterpolationDistanceBeforeChange: CGFloat = 0.125
@@ -128,6 +129,91 @@ final class WorldSettings: SingleSettingCodable, Codable {
     }
     // endregion
 
+    // region helpers
+    // region coordinates
+    func convertTileToView(point: CGPoint) -> CGPoint {
+        point * tileViewWidthHeight
+    }
+
+    func convertTileToView(size: CGSize) -> CGSize {
+        size * tileViewWidthHeight
+    }
+    
+    func convertTileToView(rect: CGRect) -> CGRect {
+        rect.scaleCoordsBy(scale: tileViewWidthHeight)
+    }
+
+    func convertTileToView(line: LineSegment) -> LineSegment {
+        line.scaleCoordsBy(scale: tileViewWidthHeight)
+    }
+
+    func convertViewToTile(point: CGPoint) -> CGPoint {
+        point / tileViewWidthHeight
+    }
+
+    func convertViewToTile(size: CGSize) -> CGSize {
+        size / tileViewWidthHeight
+    }
+
+    func convertViewToTile(rect: CGRect) -> CGRect {
+        rect.scaleCoordsBy(scale: 1 / tileViewWidthHeight)
+    }
+
+    func convertViewToTile(line: LineSegment) -> LineSegment {
+        line.scaleCoordsBy(scale: 1 / tileViewWidthHeight)
+    }
+    // endregion
+
+    // region extra view helpers
+    var tileViewSize: CGSize {
+        CGSize.square(sideLength: tileViewWidthHeight)
+    }
+
+    /// A path made up of squares covering each of the tiles, possibly optimized.
+    /// Returns nil if `positions` is empty.
+    /// `scale` is provided because this is used for views that want paths in screen coordinates
+    func generatePathOfShapeMadeBy(positions: Set<WorldTilePos>) -> CGPath? {
+        if positions.isEmpty {
+            return nil
+        } else {
+            let path = CGMutablePath()
+            for position in positions {
+                path.addRect(convertTileToView(rect: position.cgBounds))
+            }
+            return path
+        }
+    }
+
+    var gridViewModulo: CGFloat {
+        tileViewWidthHeight
+    }
+
+    func generateGridPathForView(sceneSize: CGSize) -> CGPath {
+        let bounds = ConvertToUXCoords(rect: CGRect(origin: CGPoint.zero, size: sceneSize).insetBy(sideLength: -tileViewWidthHeight / 2))
+
+        let gridPath = CGMutablePath()
+        // Add vertical lines
+        var nextVerticalLineX = bounds.minX
+        while nextVerticalLineX < bounds.maxX {
+            gridPath.move(to: CGPoint(x: nextVerticalLineX, y: bounds.minY))
+            gridPath.addLine(to: CGPoint(x: nextVerticalLineX, y: bounds.maxY))
+
+            nextVerticalLineX += tileViewWidthHeight
+        }
+        // Add horizontal lines
+        var nextHorizontalLineY = bounds.minY
+        while nextHorizontalLineY < bounds.maxY {
+            gridPath.move(to: CGPoint(x: bounds.minX, y: nextHorizontalLineY))
+            gridPath.addLine(to: CGPoint(x: bounds.maxX, y: nextHorizontalLineY))
+
+            nextHorizontalLineY += tileViewWidthHeight
+        }
+
+        return gridPath
+    }
+    // endregion
+
+    // region descriptions
     /// Miscellaneous helper which is only here because I don't know where else to put it.
     /// Otherwise the settings object doesn't have helpers, just data
     func getUserFriendlyDescriptionOf(tileType: TileType) -> String? {
@@ -145,7 +231,7 @@ final class WorldSettings: SingleSettingCodable, Codable {
     }
 
     private func getUserFriendlyBigTypeDescriptionOf(bigType: TileBigType) -> String {
-        bigType.description.capitalized
+        bigType.description.capitalizedCamelCase
     }
 
     private func getUserFriendlySmallTypeDescriptionOf(tileType: TileType) -> String {
@@ -158,4 +244,6 @@ final class WorldSettings: SingleSettingCodable, Codable {
         }
 
     }
+    // endregion
+    // endregion
 }

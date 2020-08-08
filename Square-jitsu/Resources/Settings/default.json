@@ -388,7 +388,7 @@
         "base": {
           "type": "indicatedInEditor",
           "editorIndicator": {
-            "type": "freeSideFacing",
+            "type": "free4",
             "textureBase": "Tiles/EditorIndicators/CameraShift"
           },
           "base": null
@@ -1382,10 +1382,7 @@
           "whenToFire": "alwaysFire",
           "howToFire": {
             "type": "continuous",
-            "projectileEndTiles": [
-              "Solid",
-              "-glassSolid"
-            ]
+            "projectileEndTiles": ["Solid", "-glassSolid"]
           },
           "whatToFire": "projectile/2",
           "delayWhenTargetFoundBeforeFire": 0,

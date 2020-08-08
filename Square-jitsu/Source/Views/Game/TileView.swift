@@ -24,9 +24,9 @@ class TileView: OptionalNodeView {
             case .chunk:
                 // Uses chunk position because this node is a child of the chunk's node
                 let chunkPos = pos3D.pos.chunkTilePos
-                node.position = chunkPos.cgPoint * world.settings.tileViewWidthHeight
+                node.position = world.settings.convertTileToView(point: chunkPos.cgPoint)
             case .world:
-                node.position = pos3D.pos.cgPoint * world.settings.tileViewWidthHeight
+                node.position = world.settings.convertTileToView(point: pos3D.pos.cgPoint)
             }
             node.zPosition = tileType.bigType.zPosition
             if world.settings.rotateTileViewBasedOnOrientation[tileType] ?? false {
